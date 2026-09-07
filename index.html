@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- ROTB 2026 — V15.13 -->
+  <!-- ROTB 2026 — V15.14 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3921,7 +3921,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   ROTB V15.13 — LEADERBOARD STATUS 18-HOLE PROGRESS
+   ROTB V15.14 — LEADERBOARD STATUS SMOOTH PROGRESS
    ========================================================= */
 
 #leaderRows .leader-through-cell {
@@ -3933,22 +3933,9 @@ body.score-team-menu-open .score-fixed-top{
 #leaderRows .leader-through-cell::before {
   content: "" !important;
   position: absolute !important;
-  inset: 0 !important;
-  background:
-    repeating-linear-gradient(
-      to right,
-      #e6e6e6 0,
-      #e6e6e6 calc((100% / 18) - 1px),
-      transparent calc((100% / 18) - 1px),
-      transparent calc(100% / 18)
-    ) !important;
-  clip-path:
-    inset(
-      0
-      calc(100% - var(--thru-progress, 0%))
-      0
-      0
-    ) !important;
+  inset: 0 auto 0 0 !important;
+  width: var(--thru-progress, 0%) !important;
+  background: #e6e6e6 !important;
   z-index: -1 !important;
   pointer-events: none !important;
 }
@@ -3993,7 +3980,7 @@ body.score-team-menu-open .score-fixed-top{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">V15.13</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">V15.14</button>
 
       <div class="splash-image-wrap">
 
@@ -4455,7 +4442,7 @@ body.score-team-menu-open .score-fixed-top{
   <script>
 
     // ==========================================================
-    // ROTB 2026 — V15.13
+    // ROTB 2026 — V15.14
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
