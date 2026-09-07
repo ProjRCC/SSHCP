@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.2 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.3 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V1.2 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V1.3 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -3973,6 +3973,19 @@ body.score-team-menu-open .score-fixed-top{
 .modal-overlay.switch-authorization .modal-title{text-align:center;color:#000;font-size:23px}
 .switch-auth-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
 .switch-auth-button{min-height:54px;border:2px solid var(--gold);border-radius:9px;background:#fafafa;color:#000;font-size:16px;font-weight:700}
+.test-valid-qr-list{min-height:36px;border:2px solid var(--gold);border-radius:8px;background:#fafafa;color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.2px}
+.passkey-team-select-wrap{position:relative;width:100%;margin:12px 0 0}
+.passkey-team-select{width:100%;height:46px;padding:0 42px 0 12px;border:2px solid var(--gold);border-radius:9px;background:#fff;color:#000;font-size:16px;font-weight:700;text-align:center;text-align-last:center;appearance:none;-webkit-appearance:none;outline:none}
+.passkey-team-select-wrap::after{content:"";position:absolute;right:16px;top:50%;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #000;transform:translateY(-30%);pointer-events:none}
+.qr-list-scroll{max-height:min(58dvh,520px);overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border:1px solid rgba(0,0,0,.72);border-radius:9px;background:#fff}
+.qr-list-row{display:grid;grid-template-columns:18% 31% 51%;min-height:38px;border-bottom:1px solid #ccc;font-size:11px;line-height:1.15}
+.qr-list-row:last-child{border-bottom:0}
+.qr-list-row.header{position:sticky;top:0;z-index:2;background:#f2f2f2;font-weight:800}
+.qr-list-row>div{min-width:0;display:flex;align-items:center;justify-content:center;padding:6px 5px;border-right:1px solid #ccc;text-align:center}
+.qr-list-row>div:last-child{border-right:0}
+.qr-list-passkey{font-family:monospace;font-size:9px;word-break:break-all;user-select:all;-webkit-user-select:all}
+.qr-list-unassigned{color:#888;font-style:italic}
+.qr-list-loading{padding:24px 10px;text-align:center;color:#666;font-size:14px;font-weight:600}
 .switch-auth-key{margin-top:14px;color:#999;font-family:monospace;font-size:8px;line-height:1.2;word-break:break-all;user-select:all;-webkit-user-select:all}
 .quick-guide-separator{width:78%;height:1px;margin:10px auto;background:#b9b9b9}
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
@@ -4011,7 +4024,7 @@ body.score-team-menu-open .score-fixed-top{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.2</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.3</button>
 
       <div class="splash-image-wrap">
 
@@ -4330,6 +4343,7 @@ body.score-team-menu-open .score-fixed-top{
           <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTHORIZATION</button>
           <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTHORIZATION</button>
         </div>
+        <button id="testValidQrListButton" class="test-valid-qr-list" type="button">VALID QR CODE LIST</button>
       </div>
       <div class="test-score-controls">
         <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR CURRENT</button>
@@ -4483,7 +4497,7 @@ body.score-team-menu-open .score-fixed-top{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.2
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.3
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -4594,6 +4608,9 @@ body.score-team-menu-open .score-fixed-top{
 
       testSwitchAuthorizationButton:
         document.getElementById('testSwitchAuthorizationButton'),
+
+      testValidQrListButton:
+        document.getElementById('testValidQrListButton'),
 
       testQrCameraInput:
         document.getElementById('testQrCameraInput'),
@@ -5035,7 +5052,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V1.2 — QR AUTHORIZATION
+       SSHCP V1.3 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5046,6 +5063,67 @@ let scoreTimingDetail =
     const SSHCP_QR_SLOT_KEY = 'sshcpQrSlot';
     const SSHCP_TEAM_AUTH_KEY = 'sshcpTeamAuthorization';
     const SSHCP_MASTER_TEST_KEY = 'glmNnV63TWS42fcRB8z2yldF';
+
+    const SSHCP_TEST_QR_DIRECTORY = [
+      { qrId: 'MASTER', passkey: 'glmNnV63TWS42fcRB8z2yldF' },
+      { qrId: '1', passkey: 'cexi41BQO3cwcY8DxUko8Fsb' },
+      { qrId: '1A', passkey: '4eXz7LFbZ73ZVL09aPEPgnXZ' },
+      { qrId: '1B', passkey: 'nK3-zvn5CNp9G_7p8xKaUnBz' },
+      { qrId: '2', passkey: 'peAxwxNRSTk1a-nZ9yDcQnpV' },
+      { qrId: '2A', passkey: '1qCbGbWDUt68qZzhdmegZOud' },
+      { qrId: '2B', passkey: '_XAsTSK_yvdh97mtXOwpw84x' },
+      { qrId: '3', passkey: 'tj7v8roys8wYAvY3EFKbUWZH' },
+      { qrId: '3A', passkey: 'HRQ4xPlQm9au_0W4W8BGFavP' },
+      { qrId: '3B', passkey: '5_v3I8t5eI8RrHUOGgRL-eQG' },
+      { qrId: '4', passkey: 'OLGrt6sN_KdHhFE9bGhCBCeY' },
+      { qrId: '4A', passkey: 'iJJOi0PaQ_ttte3lZRurLAOi' },
+      { qrId: '4B', passkey: '6-TG0I8ftPunxyb29alWFMhu' },
+      { qrId: '5', passkey: 'e20Kdxo_wjO8OoFZqdPzl4lD' },
+      { qrId: '5A', passkey: 'UJBNLT094OePbhXlhCXArFSq' },
+      { qrId: '5B', passkey: 'GatWWC3INyeGSmtOH6N-Vuf1' },
+      { qrId: '6', passkey: '_-ZzGdhov11C2S19HtNngnSD' },
+      { qrId: '6A', passkey: 'uChE5FY6Al5J-cPfYg6UVdI4' },
+      { qrId: '6B', passkey: '2caY32d63zrZdiT34Kc585Ik' },
+      { qrId: '7', passkey: 'YX6dLikLRgh0jOaI3skyPJX0' },
+      { qrId: '7A', passkey: 'pnWJowE9I7DRDBV_1bU33joB' },
+      { qrId: '7B', passkey: 'ugq_J9AidXyLfZnWDMUHgqKH' },
+      { qrId: '8', passkey: '9JMcNPCGf8nuDjMUY3rvDJHt' },
+      { qrId: '8A', passkey: 'wpuwvPEPAJJBLAbmGge_UHwk' },
+      { qrId: '8B', passkey: 'bHTm3RyQqz3O7i-_X3Dd1v3h' },
+      { qrId: '9', passkey: 'JI7ORAHOYSvb5vWnZry9bPgV' },
+      { qrId: '9A', passkey: '-1YfVMBYwadHufq1-qXoStuf' },
+      { qrId: '9B', passkey: 'L3ZMhVgl20QxIJt3Zi2yZdiN' },
+      { qrId: '10', passkey: 'Os_C7yHr3CIOhfWpiJOxpV8H' },
+      { qrId: '10A', passkey: '79nfqZu0iXomCIeYbWlSvXiU' },
+      { qrId: '10B', passkey: 'TKzKkp8SHAtAMEpHQXt916sn' },
+      { qrId: '11', passkey: '4YGUys0XVa2Xc26OIQ-uyJgn' },
+      { qrId: '11A', passkey: 'ceCd45k0dr9BZHWmOqAld1Rr' },
+      { qrId: '11B', passkey: '8WZVnpqLDdcH7ed3FMtSs394' },
+      { qrId: '12', passkey: 'xdw5fnOIzd19pgOqYblhkbLa' },
+      { qrId: '12A', passkey: 'te7VQJSHR1e6wf3U57Ez8yDY' },
+      { qrId: '12B', passkey: 'En3ixyhbo9PXSftHB3Sue8Vz' },
+      { qrId: '13', passkey: 'nMSDtMh3qA8SN1NRgACVavg0' },
+      { qrId: '13A', passkey: 'sE6gOl2Sa1S-XL3FXaHJluh6' },
+      { qrId: '13B', passkey: 'hHgfLSLIzbhairwEIvwd4xzu' },
+      { qrId: '14', passkey: 'h7CnxukTReRWmZQmBqrQ02nf' },
+      { qrId: '14A', passkey: '__bBZsLELWjQy5mcOh0dxYtR' },
+      { qrId: '14B', passkey: 'kFeT1hMRtaZPYASkLw1-YVR2' },
+      { qrId: '15', passkey: '9layXaO2CAg7L8EtdXdPMo1r' },
+      { qrId: '15A', passkey: 'Hd5cYmaDFZgosJ7MC7HlwUUZ' },
+      { qrId: '15B', passkey: '6Cuei_hgUX8TBQxcnrtmqDAn' },
+      { qrId: '16', passkey: 'e4KfS8NWje_37EPbSYobv0P0' },
+      { qrId: '16A', passkey: 'PAi3ixl8kU5TJn_IkIKCHH6o' },
+      { qrId: '16B', passkey: 'cnrz9zbU8_Gk6B0fmiREuWuT' },
+      { qrId: '17', passkey: 'sbnZmHxuugy07Gbq1sjh7fwA' },
+      { qrId: '17A', passkey: '3dYNVVzdZfMqmiCUnqnoe04o' },
+      { qrId: '17B', passkey: 'S-HSQMcnYQgaSNHpR8Qt3mbY' },
+      { qrId: '18', passkey: 'SpuKN0k9oboQRBYa2CiGm2HD' },
+      { qrId: '18A', passkey: 'I5OZXdNqOFkslols5_VVTY-0' },
+      { qrId: '18B', passkey: 'qtdhEqjMRHjbmEZKfoRZjS2D' }
+    ];
+
+    let sshcpQrDirectoryCache = null;
+    let sshcpQrDirectoryPromise = null;
 
     function getQrPasskey(){ return localStorage.getItem(SSHCP_QR_PASSKEY_KEY) || ''; }
     function getQrRole(){ return localStorage.getItem(SSHCP_QR_ROLE_KEY) || 'NONE'; }
@@ -5209,6 +5287,117 @@ let scoreTimingDetail =
       if(isTeamQr()) return normalizeName(team.name)===normalizeName(getQrTeam());
       return true;
     }
+    async function loadTestQrDirectory() {
+      if (sshcpQrDirectoryCache) return sshcpQrDirectoryCache;
+      if (sshcpQrDirectoryPromise) return sshcpQrDirectoryPromise;
+
+      sshcpQrDirectoryPromise = (async () => {
+        const results = new Array(SSHCP_TEST_QR_DIRECTORY.length);
+        let nextIndex = 0;
+        const workers = Array.from({ length: 6 }, async () => {
+          while (true) {
+            const index = nextIndex++;
+            if (index >= SSHCP_TEST_QR_DIRECTORY.length) return;
+            const entry = SSHCP_TEST_QR_DIRECTORY[index];
+            if (entry.qrId === 'MASTER') {
+              results[index] = {
+                qrId: 'MASTER',
+                passkey: entry.passkey,
+                role: 'MASTER',
+                assigned: true,
+                team: 'MASTER'
+              };
+              continue;
+            }
+            try {
+              const response = await fetch(
+                CLOUDFLARE_API_URL +
+                '?action=qrAuth&passkey=' + encodeURIComponent(entry.passkey) +
+                '&refresh=' + Date.now(),
+                { cache: 'no-store' }
+              );
+              const data = await response.json();
+              results[index] = {
+                qrId: entry.qrId,
+                passkey: entry.passkey,
+                role: data && data.role ? data.role : 'QR',
+                assigned: !!(response.ok && data && data.ok === true && data.valid === true && data.assigned === true),
+                team: data && data.team ? String(data.team) : ''
+              };
+            } catch (_) {
+              results[index] = {
+                qrId: entry.qrId,
+                passkey: entry.passkey,
+                role: 'QR',
+                assigned: false,
+                team: ''
+              };
+            }
+          }
+        });
+        await Promise.all(workers);
+        sshcpQrDirectoryCache = results.filter(Boolean);
+        sshcpQrDirectoryPromise = null;
+        return sshcpQrDirectoryCache;
+      })();
+
+      return sshcpQrDirectoryPromise;
+    }
+
+    function clearTestQrDirectoryCache() {
+      sshcpQrDirectoryCache = null;
+      sshcpQrDirectoryPromise = null;
+    }
+
+    function populatePasskeyTeamSelect(select, directory) {
+      if (!select) return;
+      const assigned = (directory || [])
+        .filter(item => item.qrId !== 'MASTER' && item.assigned && item.team)
+        .sort((a, b) => {
+          const as = Number((String(a.team).match(/\d+/) || [999])[0]);
+          const bs = Number((String(b.team).match(/\d+/) || [999])[0]);
+          return as - bs || String(a.team).localeCompare(String(b.team));
+        });
+
+      select.innerHTML = '<option value="">MASTER / SELECT ASSIGNED TEAM</option>' +
+        assigned.map(item =>
+          '<option value="' + escapeHtml(item.passkey) + '">' + escapeHtml(item.team.toUpperCase()) + '</option>'
+        ).join('');
+      select.disabled = false;
+    }
+
+    async function showValidQrCodeList() {
+      closeModal();
+      els.modalOverlay.classList.add('switch-authorization');
+      els.modalTitle.textContent = 'VALID QR CODE LIST';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.innerHTML = '<div id="qrListScroll" class="qr-list-scroll"><div class="qr-list-loading">LOADING LIVE QR ASSIGNMENTS...</div></div>';
+      els.modalInput.style.display = 'none';
+      const close = makeModalButton('CLOSE', '', closeModal);
+      els.modalActions.className = 'modal-actions single';
+      els.modalActions.replaceChildren(close);
+      els.modalOverlay.classList.add('open');
+
+      clearTestQrDirectoryCache();
+      const directory = await loadTestQrDirectory();
+      const target = document.getElementById('qrListScroll');
+      if (!target || !els.modalOverlay.classList.contains('open')) return;
+
+      target.innerHTML =
+        '<div class="qr-list-row header"><div>QR</div><div>TEAM</div><div>PASSKEY</div></div>' +
+        directory.map(item => {
+          const team = item.qrId === 'MASTER'
+            ? 'MASTER'
+            : (item.assigned && item.team ? item.team.toUpperCase() : 'UNASSIGNED');
+          const teamClass = team === 'UNASSIGNED' ? ' qr-list-unassigned' : '';
+          return '<div class="qr-list-row">' +
+            '<div>' + escapeHtml(item.qrId) + '</div>' +
+            '<div class="' + teamClass.trim() + '">' + escapeHtml(team) + '</div>' +
+            '<div class="qr-list-passkey">' + escapeHtml(item.passkey) + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
     function showSwitchAuthorization(){
       closeModal();
       els.modalOverlay.classList.add('switch-authorization');
@@ -5227,7 +5416,13 @@ let scoreTimingDetail =
       closeModal();
       els.modalOverlay.classList.add('switch-authorization');
       els.modalTitle.textContent='ENTER PASSKEY';
-      els.modalBody.textContent='Enter the QR passkey.';
+      els.modalBody.innerHTML=
+        '<div>Enter the QR passkey.</div>' +
+        '<div class="passkey-team-select-wrap">' +
+          '<select id="passkeyTeamSelect" class="passkey-team-select" disabled>' +
+            '<option value="">LOADING ASSIGNED TEAMS...</option>' +
+          '</select>' +
+        '</div>';
       els.modalInput.style.display='block';
       els.modalInput.value=SSHCP_MASTER_TEST_KEY;
       els.modalInput.placeholder='PASSKEY';
@@ -5242,6 +5437,25 @@ let scoreTimingDetail =
       els.modalActions.className='modal-actions';
       els.modalActions.replaceChildren(cancel,enter);
       els.modalOverlay.classList.add('open');
+
+      const select = document.getElementById('passkeyTeamSelect');
+      if (select) {
+        select.addEventListener('change', () => {
+          if (select.value) {
+            els.modalInput.value = select.value;
+            els.modalInput.focus();
+            els.modalInput.select();
+          } else {
+            els.modalInput.value = SSHCP_MASTER_TEST_KEY;
+          }
+        });
+      }
+
+      loadTestQrDirectory().then(directory => {
+        const activeSelect = document.getElementById('passkeyTeamSelect');
+        populatePasskeyTeamSelect(activeSelect, directory);
+      });
+
       setTimeout(()=>{ els.modalInput.focus(); els.modalInput.select(); },50);
     }
     async function decodeQrImage(file){
@@ -9968,6 +10182,7 @@ let scoreTimingDetail =
     els.testLogCloseButton.addEventListener('click', showHome);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
+    if (els.testValidQrListButton) els.testValidQrListButton.addEventListener('click', showValidQrCodeList);
     if (els.testRemoveAuthorizationButton) els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
     if (els.testTeamAuthorizationCheck) {
       els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
