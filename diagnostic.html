@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SSHCP QR Worker Diagnostic</title>
+<style>
+:root{--gold:#D0A621;--red:#CC3535;--green:#18864b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#fff;color:#000}
+.shell{width:min(820px,100%);margin:auto;padding:16px 14px 30px}
+h1{font-size:24px;margin:0 0 6px}.sub{font-size:13px;color:#555;line-height:1.35}
+.card{margin-top:12px;padding:13px;border:1px solid #999;border-radius:11px;background:#fafafa}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button{min-height:46px;padding:8px 12px;border:2px solid var(--gold);border-radius:8px;background:#fff;font-weight:700}
+button.primary{background:var(--gold)}button:disabled{opacity:.45}
+.status{margin-top:10px;font-weight:800}.pass{color:var(--green)}.fail{color:var(--red)}.warn{color:#8b6500}
+.progress{height:7px;background:#ddd;border-radius:99px;overflow:hidden;margin-top:9px}.progress div{height:100%;width:0;background:var(--gold)}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
+.metric{background:#fff;border:1px solid #ccc;border-radius:8px;padding:8px}.metric small{color:#666}.metric b{display:block;font-size:18px;margin-top:2px}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}th,td{border:1px solid #ccc;padding:6px;text-align:left}th{background:#eee}
+.log{max-height:320px;overflow:auto;background:#fff;border:1px solid #bbb;border-radius:8px;margin-top:8px}
+.line{font:11px/1.3 monospace;padding:6px 7px;border-bottom:1px solid #eee;word-break:break-word}
+@media(max-width:560px){button{flex:1 1 calc(50% - 8px)}table{font-size:10px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<h1>SSHCP QR Worker Diagnostic</h1>
+<div class="sub">READ-ONLY: this page calls only the Worker's <b>qrAuth</b> action. It does not perform score writes.</div>
+
+<div class="card">
+  <div class="row">
+    <button id="all" class="primary">RUN ALL TESTS</button>
+    <button id="repeat">1. REPEATABILITY</button>
+    <button id="burst">2. 10-WAY BURST</button>
+    <button id="mixed">3. MIXED CONDITIONS</button>
+    <button id="clear">CLEAR</button>
+  </div>
+  <div id="status" class="status">Ready.</div>
+  <div class="progress"><div id="bar"></div></div>
+</div>
+
+<div class="card">
+<b>Discovery</b>
+<div class="sub">Known permanent credentials are checked read-only, four requests at a time, to discover the Worker's current assigned/unassigned state.</div>
+<div class="metrics">
+  <div class="metric"><small>Valid</small><b id="valid">—</b></div>
+  <div class="metric"><small>Assigned</small><b id="assigned">—</b></div>
+  <div class="metric"><small>Unassigned</small><b id="unassigned">—</b></div>
+  <div class="metric"><small>Discovery errors</small><b id="discErrors">—</b></div>
+</div>
+</div>
+
+<div class="card">
+<b>Overall timing</b>
+<div class="metrics">
+  <div class="metric"><small>Requests</small><b id="requests">0</b></div>
+  <div class="metric"><small>Request failures</small><b id="failures">0</b></div>
+  <div class="metric"><small>Average</small><b id="avg">—</b></div>
+  <div class="metric"><small>Median</small><b id="median">—</b></div>
+  <div class="metric"><small>Fastest</small><b id="fast">—</b></div>
+  <div class="metric"><small>Slowest</small><b id="slow">—</b></div>
+</div>
+</div>
+
+<div class="card">
+<b>Results</b>
+<table>
+<thead><tr><th>Test</th><th>Result</th><th>Requests</th><th>Wrong/Failed</th><th>Timing</th></tr></thead>
+<tbody id="results"></tbody>
+</table>
+</div>
+
+<div class="card">
+<b>Request log</b>
+<div id="log" class="log"></div>
+</div>
+</div>
+
+<script>
+const W='https://rotbtest.projrcc.workers.dev';
+const QR=[
+['MASTER','glmNnV63TWS42fcRB8z2yldF'],
+['1','cexi41BQO3cwcY8DxUko8Fsb'],['1A','4eXz7LFbZ73ZVL09aPEPgnXZ'],['1B','nK3-zvn5CNp9G_7p8xKaUnBz'],
+['2','peAxwxNRSTk1a-nZ9yDcQnpV'],['2A','1qCbGbWDUt68qZzhdmegZOud'],['2B','_XAsTSK_yvdh97mtXOwpw84x'],
+['3','tj7v8roys8wYAvY3EFKbUWZH'],['3A','HRQ4xPlQm9au_0W4W8BGFavP'],['3B','5_v3I8t5eI8RrHUOGgRL-eQG'],
+['4','OLGrt6sN_KdHhFE9bGhCBCeY'],['4A','iJJOi0PaQ_ttte3lZRurLAOi'],['4B','6-TG0I8ftPunxyb29alWFMhu'],
+['5','e20Kdxo_wjO8OoFZqdPzl4lD'],['5A','UJBNLT094OePbhXlhCXArFSq'],['5B','GatWWC3INyeGSmtOH6N-Vuf1'],
+['6','_-ZzGdhov11C2S19HtNngnSD'],['6A','uChE5FY6Al5J-cPfYg6UVdI4'],['6B','2caY32d63zrZdiT34Kc585Ik'],
+['7','YX6dLikLRgh0jOaI3skyPJX0'],['7A','pnWJowE9I7DRDBV_1bU33joB'],['7B','ugq_J9AidXyLfZnWDMUHgqKH'],
+['8','9JMcNPCGf8nuDjMUY3rvDJHt'],['8A','wpuwvPEPAJJBLAbmGge_UHwk'],['8B','bHTm3RyQqz3O7i-_X3Dd1v3h'],
+['9','JI7ORAHOYSvb5vWnZry9bPgV'],['9A','-1YfVMBYwadHufq1-qXoStuf'],['9B','L3ZMhVgl20QxIJt3Zi2yZdiN'],
+['10','Os_C7yHr3CIOhfWpiJOxpV8H'],['10A','79nfqZu0iXomCIeYbWlSvXiU'],['10B','TKzKkp8SHAtAMEpHQXt916sn'],
+['11','4YGUys0XVa2Xc26OIQ-uyJgn'],['11A','ceCd45k0dr9BZHWmOqAld1Rr'],['11B','8WZVnpqLDdcH7ed3FMtSs394'],
+['12','xdw5fnOIzd19pgOqYblhkbLa'],['12A','te7VQJSHR1e6wf3U57Ez8yDY'],['12B','En3ixyhbo9PXSftHB3Sue8Vz'],
+['13','nMSDtMh3qA8SN1NRgACVavg0'],['13A','sE6gOl2Sa1S-XL3FXaHJluh6'],['13B','hHgfLSLIzbhairwEIvwd4xzu'],
+['14','h7CnxukTReRWmZQmBqrQ02nf'],['14A','__bBZsLELWjQy5mcOh0dxYtR'],['14B','kFeT1hMRtaZPYASkLw1-YVR2'],
+['15','9layXaO2CAg7L8EtdXdPMo1r'],['15A','Hd5cYmaDFZgosJ7MC7HlwUUZ'],['15B','6Cuei_hgUX8TBQxcnrtmqDAn'],
+['16','e4KfS8NWje_37EPbSYobv0P0'],['16A','PAi3ixl8kU5TJn_IkIKCHH6o'],['16B','cnrz9zbU8_Gk6B0fmiREuWuT'],
+['17','sbnZmHxuugy07Gbq1sjh7fwA'],['17A','3dYNVVzdZfMqmiCUnqnoe04o'],['17B','S-HSQMcnYQgaSNHpR8Qt3mbY'],
+['18','SpuKN0k9oboQRBYa2CiGm2HD'],['18A','I5OZXdNqOFkslols5_VVTY-0'],['18B','qtdhEqjMRHjbmEZKfoRZjS2D']
+];
+
+const S={disc:null,times:[],requests:0,failures:0,busy:false};
+const $=x=>document.getElementById(x);
+function stamp(s,c=''){const d=document.createElement('div');d.className='line '+c;d.textContent=new Date().toLocaleTimeString()+'  '+s;$('log').prepend(d)}
+function status(s,c=''){$('status').className='status '+c;$('status').textContent=s}
+function progress(p){$('bar').style.width=Math.max(0,Math.min(100,p))+'%'}
+function calc(a){if(!a.length)return{};a=[...a].sort((x,y)=>x-y);const n=a.length,m=Math.floor(n/2);return{avg:a.reduce((x,y)=>x+y,0)/n,med:n%2?a[m]:(a[m-1]+a[m])/2,min:a[0],max:a[n-1]}}
+function fmt(x){return Number.isFinite(x)?Math.round(x)+' ms':'—'}
+function metrics(){const z=calc(S.times);$('requests').textContent=S.requests;$('failures').textContent=S.failures;$('avg').textContent=fmt(z.avg);$('median').textContent=fmt(z.med);$('fast').textContent=fmt(z.min);$('slow').textContent=fmt(z.max)}
+async function auth(id,key){
+  const t=performance.now();let http=null,data=null,error='';
+  try{
+    const r=await fetch(W+'?action=qrAuth&passkey='+encodeURIComponent(key)+'&refresh='+Date.now()+'_'+Math.random(),{cache:'no-store'});
+    http=r.status;data=await r.json();
+  }catch(e){error=(e&&e.message)||'Request error'}
+  const ms=performance.now()-t;S.times.push(ms);S.requests++;if(error||http===null||http>=500)S.failures++;metrics();
+  stamp(error?`${id}: ERROR ${error} (${Math.round(ms)} ms)`:`${id}: HTTP ${http} valid=${data&&data.valid} assigned=${data&&data.assigned} role=${data&&data.role} slot=${data&&data.slot} team=${data&&data.team} (${Math.round(ms)} ms)`,error?'fail':'');
+  return{id,key,http,data,error,ms};
+}
+function sig(r){const d=r.data||{};return JSON.stringify([r.http,d.ok,d.valid,d.role,d.qrId,d.assigned,d.slot,d.team])}
+async function pool(items,n,fn,cb){const out=new Array(items.length);let next=0,done=0;async function w(){while(true){const i=next++;if(i>=items.length)return;out[i]=await fn(items[i]);done++;if(cb)cb(done,items.length)}}await Promise.all(Array.from({length:Math.min(n,items.length)},w));return out}
+async function discover(force=false){
+  if(S.disc&&!force)return S.disc;status('Discovering current QR state…','warn');progress(0);
+  const rs=await pool(QR,4,x=>auth(x[0],x[1]),(d,t)=>progress(d/t*100));
+  const valid=rs.filter(r=>r.data&&r.data.valid===true),assigned=valid.filter(r=>r.data&&r.data.assigned===true),unassigned=valid.filter(r=>r.data&&r.data.role==='QR'&&r.data.assigned===false),errors=rs.filter(r=>r.error||!r.data);
+  S.disc={rs,valid,assigned,unassigned,errors};$('valid').textContent=valid.length;$('assigned').textContent=assigned.length;$('unassigned').textContent=unassigned.length;$('discErrors').textContent=errors.length;
+  stamp(`DISCOVERY: ${valid.length} valid / ${assigned.length} assigned / ${unassigned.length} unassigned / ${errors.length} errors`);progress(100);return S.disc;
+}
+function result(name,ok,n,bad,timing){const tr=document.createElement('tr');tr.innerHTML=`<td>${name}</td><td class="${ok?'pass':'fail'}">${ok?'PASS':'FAIL'}</td><td>${n}</td><td>${bad}</td><td>${timing}</td>`;$('results').appendChild(tr)}
+async function repeatTest(){
+  const d=await discover(),master=d.valid.find(r=>r.id==='MASTER'),team3=d.valid.find(r=>r.id==='2A'),un=d.unassigned[0];
+  if(!master||!team3||!un){result('1. Repeatability',false,0,'setup','Need MASTER, 2A, and one unassigned QR');return false}
+  status('Running repeatability…','warn');let bad=0,n=0,t=[];
+  for(const base of [master,team3,un]){const expected=sig(base);for(let i=0;i<25;i++){progress(n/75*100);const r=await auth(base.id,base.key);n++;t.push(r.ms);if(sig(r)!==expected)bad++}}
+  const z=calc(t);result('1. Repeatability',bad===0,n,bad,`${fmt(z.avg)} avg / ${fmt(z.max)} max`);progress(100);return bad===0;
+}
+async function burstTest(){
+  const d=await discover(),list=d.valid.slice(0,10);if(list.length<10){result('2. 10-way burst',false,0,'setup','Need 10 valid credentials');return false}
+  status('Running 10-way burst…','warn');const expected=new Map(list.map(r=>[r.id,sig(r)])),t=performance.now(),rs=await Promise.all(list.map(r=>auth(r.id,r.key)));let bad=0;for(const r of rs)if(sig(r)!==expected.get(r.id))bad++;
+  result('2. 10-way burst',bad===0,rs.length,bad,Math.round(performance.now()-t)+' ms wall');return bad===0;
+}
+async function mixedTest(){
+  const d=await discover(),m=d.valid.find(r=>r.id==='MASTER'),a=d.assigned.filter(r=>r.id!=='MASTER').slice(0,2),u=d.unassigned[0];
+  if(!m||a.length<2||!u){result('3. Mixed conditions',false,0,'setup','Need MASTER, 2 assigned, 1 unassigned');return false}
+  status('Running mixed conditions…','warn');const known=[m,...a,u],expected=new Map(known.map(r=>[r.id,sig(r)]));let bad=0,n=0,t=[];
+  for(let round=0;round<10;round++){progress(round*10);const rs=await Promise.all([...known.map(r=>auth(r.id,r.key)),auth('GARBAGE','NOT_A_VALID_SSHCP_PASSKEY_'+round)]);n+=rs.length;rs.forEach(r=>t.push(r.ms));for(const r of rs.slice(0,known.length))if(sig(r)!==expected.get(r.id))bad++;const g=rs.at(-1);if(!(g.data&&g.data.valid===false))bad++}
+  const z=calc(t);result('3. Mixed conditions',bad===0,n,bad,`${fmt(z.avg)} avg / ${fmt(z.max)} max`);progress(100);return bad===0;
+}
+function busy(v){S.busy=v;['all','repeat','burst','mixed'].forEach(x=>$(x).disabled=v)}
+async function run(fn){if(S.busy)return;busy(true);try{await fn()}catch(e){status('HARNESS ERROR: '+((e&&e.message)||e),'fail');stamp('HARNESS ERROR: '+((e&&e.stack)||e),'fail')}finally{busy(false)}}
+$('all').onclick=()=>run(async()=>{$('results').innerHTML='';S.disc=null;await discover(true);const a=await repeatTest(),b=await burstTest(),c=await mixedTest();status(a&&b&&c?'ALL TESTS PASSED':'ONE OR MORE TESTS FAILED',a&&b&&c?'pass':'fail');progress(100)});
+$('repeat').onclick=()=>run(async()=>{const x=await repeatTest();status(x?'REPEATABILITY PASSED':'REPEATABILITY FAILED',x?'pass':'fail')});
+$('burst').onclick=()=>run(async()=>{const x=await burstTest();status(x?'BURST TEST PASSED':'BURST TEST FAILED',x?'pass':'fail')});
+$('mixed').onclick=()=>run(async()=>{const x=await mixedTest();status(x?'MIXED TEST PASSED':'MIXED TEST FAILED',x?'pass':'fail')});
+$('clear').onclick=()=>{$('results').innerHTML='';$('log').innerHTML='';status('Ready.');progress(0);S.disc=null;S.times=[];S.requests=0;S.failures=0;['valid','assigned','unassigned','discErrors'].forEach(x=>$(x).textContent='—');metrics()};
+</script>
+</body>
+</html>
