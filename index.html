@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.1 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.2 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V1.1 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V1.2 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4011,7 +4011,7 @@ body.score-team-menu-open .score-fixed-top{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.1</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.2</button>
 
       <div class="splash-image-wrap">
 
@@ -4483,7 +4483,7 @@ body.score-team-menu-open .score-fixed-top{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.1
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.2
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5035,7 +5035,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V1.1 — QR AUTHORIZATION
+       SSHCP V1.2 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5110,21 +5110,70 @@ let scoreTimingDetail =
       }
       if (data.role === 'MASTER') localStorage.removeItem('rotbAuthorizedTeam');
     }
+    function showInvalidQrPasskey(){
+      closeModal();
+      els.modalTitle.textContent='INVALID QR PASSKEY';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent='';
+      els.modalInput.style.display='none';
+      const ok=makeModalButton('OK','',closeModal);
+      els.modalActions.className='modal-actions single';
+      els.modalActions.replaceChildren(ok);
+      els.modalOverlay.classList.add('open');
+    }
+    function showValidUnassignedQrPasskey(){
+      closeModal();
+      els.modalTitle.textContent='VALID QR PASSKEY';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent='Unassigned Team';
+      els.modalInput.style.display='none';
+      const ok=makeModalButton('OK','',closeModal);
+      els.modalActions.className='modal-actions single';
+      els.modalActions.replaceChildren(ok);
+      els.modalOverlay.classList.add('open');
+    }
     async function validateQrPasskey(passkey, showFailure=true){
       const clean=String(passkey||'').trim();
-      if(!clean) return false;
+      if(!clean){
+        clearQrAuthorization();
+        localStorage.removeItem('rotbAuthorizedTeam');
+        syncTestAuthorizationToggle();
+        updateHomeScorecardAccess();
+        if(showFailure) showInvalidQrPasskey();
+        return false;
+      }
       try{
         const response=await fetch(CLOUDFLARE_API_URL+'?action=qrAuth&passkey='+encodeURIComponent(clean)+'&refresh='+Date.now(),{cache:'no-store'});
         const data=await response.json();
-        if(!response.ok || !data || data.ok!==true || data.valid!==true || (data.role==='QR' && data.assigned!==true)){
-          throw new Error('NOT AUTHORIZED');
+
+        if(!response.ok || !data || data.ok!==true || data.valid!==true){
+          clearQrAuthorization();
+          localStorage.removeItem('rotbAuthorizedTeam');
+          syncTestAuthorizationToggle();
+          updateHomeScorecardAccess();
+          if(showFailure) showInvalidQrPasskey();
+          return false;
         }
+
+        if(data.role==='QR' && data.assigned!==true){
+          clearQrAuthorization();
+          localStorage.removeItem('rotbAuthorizedTeam');
+          syncTestAuthorizationToggle();
+          updateHomeScorecardAccess();
+          if(showFailure) showValidUnassignedQrPasskey();
+          return false;
+        }
+
         saveQrAuthorization(data,clean);
         syncTestAuthorizationToggle();
         updateHomeScorecardAccess();
         return true;
       }catch(_){
-        if(showFailure) showNotAuthorized();
+        clearQrAuthorization();
+        localStorage.removeItem('rotbAuthorizedTeam');
+        syncTestAuthorizationToggle();
+        updateHomeScorecardAccess();
+        if(showFailure) showInvalidQrPasskey();
         return false;
       }
     }
