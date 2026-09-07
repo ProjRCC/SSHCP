@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- ROTB 2026 — V15.4 -->
+  <!-- ROTB 2026 — V15.5 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3938,7 +3938,7 @@ body.score-team-menu-open .score-fixed-top{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">V15.4</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">V15.5</button>
 
       <div class="splash-image-wrap">
 
@@ -4400,7 +4400,7 @@ body.score-team-menu-open .score-fixed-top{
   <script>
 
     // ==========================================================
-    // ROTB 2026 — V15.4
+    // ROTB 2026 — V15.5
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -6115,9 +6115,22 @@ let scoreTimingDetail =
         button.className = 'home-team-option score-team-option';
         button.textContent = displayTeamName(team.name);
         button.setAttribute('role', 'option');
-        button.addEventListener('click', () => {
+        button.addEventListener('click', async () => {
           closeScoreTeamDropdown();
-          selectTeam(team.slot);
+
+          /*
+            V15.5 — changing teams from inside the scorecard is an
+            intentional navigation event, so refresh from Cloudflare
+            before showing the newly selected team's scores.
+            No scorecard polling is introduced.
+          */
+          rememberSelectedTeam(team.name);
+
+          if (!scorecardLoadInProgress) {
+            await loadScorecard();
+          }
+
+          restoreScorePosition();
           addTestLog('TEAM SELECT', 'OK', '—', team.name);
         });
         els.scoreTeamDropdown.appendChild(button);
