@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.8 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.9 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V1.8 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V1.9 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -3970,9 +3970,9 @@ body.score-team-menu-open .score-fixed-top{
 .test-score-action{min-height:38px!important;padding:2px 3px!important;font-size:10px!important;line-height:1.05!important}
 .test-log-reset{align-self:flex-start!important;width:auto!important;min-height:0!important;margin-top:5px!important;padding:1px 3px calc(1px + env(safe-area-inset-bottom))!important;border:0!important;background:transparent!important;color:#999!important;font-size:8px!important;font-weight:500!important}
 
-.test-log-footer-utils{flex:0 0 auto;display:flex;align-items:flex-start;justify-content:space-between;margin-top:5px}
-.test-log-footer-utils .test-log-reset,.test-delete-cache{width:auto!important;min-height:0!important;margin:0!important;padding:1px 3px calc(1px + env(safe-area-inset-bottom))!important;border:0!important;background:transparent!important;color:#999!important;font-size:8px!important;font-weight:500!important}
-.test-delete-cache{align-self:flex-end!important;cursor:pointer}
+.test-log-footer-utils{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.test-log-footer-utils .test-log-reset,.test-delete-cache{width:auto!important;min-height:34px!important;margin:0!important;padding:6px 10px!important;border:1px solid #999!important;border-radius:7px!important;background:#fafafa!important;color:#777!important;font-size:10px!important;font-weight:700!important;letter-spacing:.1px!important}
+.test-delete-cache{cursor:pointer}
 .modal-overlay.switch-authorization .modal-box{text-align:center;width:min(420px,calc(100% - 4px));overflow:visible!important}
 .modal-overlay.switch-authorization .modal-title{text-align:center;color:#000;font-size:23px}
 .switch-auth-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
@@ -4000,7 +4000,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V1.8 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V1.9 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4041,7 +4041,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.8</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.9</button>
 
       <div class="splash-image-wrap">
 
@@ -4360,7 +4360,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
           <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTHORIZATION</button>
           <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTHORIZATION</button>
         </div>
-        <button id="testValidQrListButton" class="test-valid-qr-list" type="button">VALID QR CODE LIST</button>
+        <button id="testValidQrListButton" class="test-valid-qr-list" type="button">LOAD ASSIGNED PASSKEYS</button>
       </div>
       <div class="test-score-controls">
         <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR CURRENT</button>
@@ -4517,7 +4517,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.8
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.9
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5075,7 +5075,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V1.8 — QR AUTHORIZATION
+       SSHCP V1.9 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5145,8 +5145,8 @@ let scoreTimingDetail =
       { qrId: '18B', passkey: 'qtdhEqjMRHjbmEZKfoRZjS2D' }
     ];
 
-    const SSHCP_TEST_QR_CACHE_KEY = 'sshcpTestQrDirectoryCacheV18';
-    const SSHCP_TEST_QR_CACHE_TIME_KEY = 'sshcpTestQrDirectoryCacheTimeV18';
+    const SSHCP_TEST_QR_CACHE_KEY = 'sshcpTestQrDirectoryCacheV19';
+    const SSHCP_TEST_QR_CACHE_TIME_KEY = 'sshcpTestQrDirectoryCacheTimeV19';
 
     let sshcpQrDirectoryCache = null;
     let sshcpQrDirectoryPromise = null;
@@ -5229,7 +5229,6 @@ let scoreTimingDetail =
       leaderboardHasLoaded = false;
       syncTestAuthorizationToggle();
       updateHomeScorecardAccess();
-      refreshTestQrDirectoryInBackground().catch(() => {});
     }
     function saveQrAuthorization(data, passkey){
       localStorage.setItem(SSHCP_QR_PASSKEY_KEY, passkey);
@@ -5264,6 +5263,24 @@ let scoreTimingDetail =
       const ok=makeModalButton('OK','',closeModal);
       els.modalActions.className='modal-actions single';
       els.modalActions.replaceChildren(ok);
+      els.modalOverlay.classList.add('open');
+    }
+    function showAuthorizationCheckFailed(passkey){
+      closeModal();
+      els.modalTitle.textContent='AUTHORIZATION CHECK FAILED';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent='The authorization request could not be confirmed. Try again.';
+      els.modalInput.style.display='none';
+      const cancel=makeModalButton('CANCEL','',closeModal);
+      const retry=makeModalButton('RETRY','primary',async()=>{
+        closeModal();
+        startLoadingLine();
+        const ok=await validateQrPasskey(passkey,true);
+        completeLoadingLine();
+        if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
+      });
+      els.modalActions.className='modal-actions';
+      els.modalActions.replaceChildren(cancel,retry);
       els.modalOverlay.classList.add('open');
     }
     async function validateQrPasskey(passkey, showFailure=true){
@@ -5303,11 +5320,7 @@ let scoreTimingDetail =
         updateHomeScorecardAccess();
         return true;
       }catch(_){
-        clearQrAuthorization();
-        localStorage.removeItem('rotbAuthorizedTeam');
-        syncTestAuthorizationToggle();
-        updateHomeScorecardAccess();
-        if(showFailure) showInvalidQrPasskey();
+        if(showFailure) showAuthorizationCheckFailed(clean);
         return false;
       }
     }
@@ -5343,100 +5356,136 @@ let scoreTimingDetail =
       if(isTeamQr()) return normalizeName(team.name)===normalizeName(getQrTeam());
       return true;
     }
-    async function refreshTestQrDirectoryInBackground() {
+    async function getExpectedActiveTeamCount() {
+      if (Array.isArray(teams) && teams.length) return teams.length;
+
+      try {
+        const response = await fetch(
+          CLOUDFLARE_API_URL + '?refresh=' + Date.now(),
+          { cache: 'no-store' }
+        );
+        if (!response.ok) return 0;
+        const data = await response.json();
+        if (!data || data.ok !== true || !Array.isArray(data.teams)) return 0;
+        return data.teams.filter(team => team && String(team.name || '').trim() !== '').length;
+      } catch (_) {
+        return 0;
+      }
+    }
+
+    async function loadAssignedPasskeys(forceRefresh = true) {
       if (sshcpQrDirectoryPromise) return sshcpQrDirectoryPromise;
 
-      const previous = readStoredTestQrDirectory() || [];
-      const previousByQr = new Map(previous.map(item => [String(item.qrId), item]));
+      if (!forceRefresh) {
+        const stored = readStoredTestQrDirectory();
+        if (stored) return stored;
+      }
+
+      const started = timerStart();
 
       sshcpQrDirectoryPromise = (async () => {
-        const results = new Array(SSHCP_TEST_QR_DIRECTORY.length);
+        const expectedTeams = await getExpectedActiveTeamCount();
+        const assigned = [];
         let nextIndex = 0;
 
         async function resolveEntry(entry) {
-          if (entry.qrId === 'MASTER') {
+          if (entry.qrId === 'MASTER') return null;
+
+          try {
+            const response = await fetch(
+              CLOUDFLARE_API_URL +
+              '?action=qrAuth&passkey=' + encodeURIComponent(entry.passkey) +
+              '&refresh=' + Date.now(),
+              { cache: 'no-store' }
+            );
+            if (!response.ok) return null;
+            const data = await response.json();
+            if (!data || data.ok !== true || data.valid !== true) return null;
+            if (data.role !== 'QR' || data.assigned !== true || !data.team) return null;
+
             return {
-              qrId: 'MASTER',
+              qrId: entry.qrId,
               passkey: entry.passkey,
-              role: 'MASTER',
+              role: 'QR',
               assigned: true,
-              team: 'MASTER'
+              team: String(data.team),
+              slot: data.slot ? Number(data.slot) : null
             };
+          } catch (_) {
+            return null;
           }
-
-          for (let attempt = 0; attempt < 2; attempt += 1) {
-            try {
-              const response = await fetch(
-                CLOUDFLARE_API_URL +
-                '?action=qrAuth&passkey=' + encodeURIComponent(entry.passkey) +
-                '&refresh=' + Date.now(),
-                { cache: 'no-store' }
-              );
-              const data = await response.json();
-
-              if (response.ok && data && data.ok === true && data.valid === true) {
-                return {
-                  qrId: entry.qrId,
-                  passkey: entry.passkey,
-                  role: data.role || 'QR',
-                  assigned: data.assigned === true,
-                  team: data.team ? String(data.team) : ''
-                };
-              }
-            } catch (_) {}
-          }
-
-          /* A transient Worker/network failure must never turn a previously
-             known assigned QR into UNASSIGNED. Keep the last saved snapshot
-             for that QR until a successful fresh response replaces it. */
-          return previousByQr.get(entry.qrId) || {
-            qrId: entry.qrId,
-            passkey: entry.passkey,
-            role: 'QR',
-            assigned: false,
-            team: ''
-          };
         }
 
-        /* Deliberately low concurrency: this TEST snapshot is background data,
-           not a speed-critical operation, and stability matters more than
-           firing 54 simultaneous authorization lookups. */
+        /* TEST convenience only: deliberately low concurrency. The resulting
+           snapshot is used by the TEST dropdown, never as authorization. */
         const workers = Array.from({ length: 2 }, async () => {
           while (true) {
             const index = nextIndex++;
             if (index >= SSHCP_TEST_QR_DIRECTORY.length) return;
-            results[index] = await resolveEntry(SSHCP_TEST_QR_DIRECTORY[index]);
+            const item = await resolveEntry(SSHCP_TEST_QR_DIRECTORY[index]);
+            if (item) assigned.push(item);
           }
         });
 
         await Promise.all(workers);
-        const directory = results.filter(Boolean);
-        saveStoredTestQrDirectory(directory);
+
+        const uniqueTeams = new Map();
+        assigned.forEach(item => {
+          uniqueTeams.set(normalizeName(item.team), item);
+        });
+
+        const assignedDirectory = [...uniqueTeams.values()].sort((a,b) => {
+          const as = Number(a.slot || ((String(a.team).match(/\d+/) || [999])[0]));
+          const bs = Number(b.slot || ((String(b.team).match(/\d+/) || [999])[0]));
+          return as - bs || String(a.team).localeCompare(String(b.team));
+        });
+
+        const complete = expectedTeams > 0 && assignedDirectory.length === expectedTeams;
+        const elapsed = timerSeconds(started) + 's';
+
+        if (complete) {
+          const snapshot = [
+            { qrId:'MASTER', passkey:SSHCP_MASTER_TEST_KEY, role:'MASTER', assigned:true, team:'MASTER', slot:null },
+            ...assignedDirectory
+          ];
+          saveStoredTestQrDirectory(snapshot);
+          addTestLog(
+            'QR PASSKEY LOAD',
+            'OK',
+            elapsed,
+            assignedDirectory.length + '/' + expectedTeams + ' ASSIGNED'
+          );
+          return snapshot;
+        }
+
+        addTestLog(
+          'QR PASSKEY LOAD',
+          'FAILED',
+          elapsed,
+          assignedDirectory.length + '/' + (expectedTeams || '?') + ' ASSIGNED — CACHE NOT REPLACED'
+        );
+
+        return readStoredTestQrDirectory() || [
+          { qrId:'MASTER', passkey:SSHCP_MASTER_TEST_KEY, role:'MASTER', assigned:true, team:'MASTER', slot:null }
+        ];
+      })().finally(() => {
         sshcpQrDirectoryPromise = null;
-        return directory;
-      })().catch(error => {
-        sshcpQrDirectoryPromise = null;
-        throw error;
       });
 
       return sshcpQrDirectoryPromise;
     }
 
     async function loadTestQrDirectory() {
-      const stored = readStoredTestQrDirectory();
-      if (stored) return stored;
-      if (sshcpQrDirectoryPromise) return sshcpQrDirectoryPromise;
-      return refreshTestQrDirectoryInBackground();
+      return readStoredTestQrDirectory() || [
+        { qrId:'MASTER', passkey:SSHCP_MASTER_TEST_KEY, role:'MASTER', assigned:true, team:'MASTER', slot:null }
+      ];
     }
 
-    function clearTestQrDirectoryCache(reload = false) {
+    function clearTestQrDirectoryCache() {
       sshcpQrDirectoryCache = null;
-      sshcpQrDirectoryPromise = null;
       localStorage.removeItem(SSHCP_TEST_QR_CACHE_KEY);
       localStorage.removeItem(SSHCP_TEST_QR_CACHE_TIME_KEY);
-      if (reload) {
-        setTimeout(() => refreshTestQrDirectoryInBackground().catch(() => {}), 0);
-      }
+      addTestLog('QR CACHE', 'OK', '—', 'LOCAL ASSIGNED PASSKEYS DELETED');
     }
 
     function populatePasskeyTeamSelect(menu, directory) {
@@ -5456,38 +5505,13 @@ let scoreTimingDetail =
         ).join('');
     }
 
-    async function showValidQrCodeList() {
-      closeModal();
-      els.modalOverlay.classList.add('switch-authorization');
-      els.modalTitle.textContent = 'VALID QR CODE LIST';
-      els.modalTitle.classList.remove('testing');
-      const cachedDirectory = readStoredTestQrDirectory();
-      els.modalBody.innerHTML = '<div id="qrListScroll" class="qr-list-scroll">' +
-        (cachedDirectory ? '' : '<div class="qr-list-loading">LOADING QR DATA...</div>') +
-        '</div>';
-      els.modalInput.style.display = 'none';
-      const close = makeModalButton('CLOSE', '', closeModal);
-      els.modalActions.className = 'modal-actions single';
-      els.modalActions.replaceChildren(close);
-      els.modalOverlay.classList.add('open');
-
-      const directory = cachedDirectory || await loadTestQrDirectory();
-      const target = document.getElementById('qrListScroll');
-      if (!target || !els.modalOverlay.classList.contains('open')) return;
-
-      target.innerHTML =
-        '<div class="qr-list-row header"><div>QR</div><div>TEAM</div><div>PASSKEY</div></div>' +
-        directory.map(item => {
-          const team = item.qrId === 'MASTER'
-            ? 'MASTER'
-            : (item.assigned && item.team ? item.team.toUpperCase() : 'UNASSIGNED');
-          const teamClass = team === 'UNASSIGNED' ? ' qr-list-unassigned' : '';
-          return '<div class="qr-list-row">' +
-            '<div>' + escapeHtml(item.qrId) + '</div>' +
-            '<div class="' + teamClass.trim() + '">' + escapeHtml(team) + '</div>' +
-            '<div class="qr-list-passkey">' + escapeHtml(item.passkey) + '</div>' +
-            '</div>';
-        }).join('');
+    async function runAssignedPasskeyLoad() {
+      startLoadingLine();
+      try {
+        await loadAssignedPasskeys(true);
+      } finally {
+        completeLoadingLine();
+      }
     }
 
     function showSwitchAuthorization(){
@@ -5542,7 +5566,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V1.8 — viewport-owned TEST dropdown.
+        /* SSHCP V1.9 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -5578,10 +5602,10 @@ let scoreTimingDetail =
         });
       }
 
-      loadTestQrDirectory().then(directory => {
-        const activeMenu = document.getElementById('passkeyTeamMenu');
-        populatePasskeyTeamSelect(activeMenu, directory);
-      });
+      const directory = readStoredTestQrDirectory() || [
+        { qrId:'MASTER', passkey:SSHCP_MASTER_TEST_KEY, role:'MASTER', assigned:true, team:'MASTER' }
+      ];
+      populatePasskeyTeamSelect(document.getElementById('passkeyTeamMenu'), directory);
 
     }
     async function decodeQrImage(file){
@@ -6043,7 +6067,6 @@ let scoreTimingDetail =
       /* Always refresh and replace the locally saved QR snapshot in the
          background whenever TEST PAGE opens. Existing saved data remains
          immediately usable until the fresh copy finishes. */
-      refreshTestQrDirectoryInBackground().catch(() => {});
       window.scrollTo(0, 0);
     }
 
@@ -6053,7 +6076,7 @@ let scoreTimingDetail =
     }
 
     function deleteTestQrCache() {
-      clearTestQrDirectoryCache(true);
+      clearTestQrDirectoryCache();
     }
 
 
@@ -10321,7 +10344,7 @@ let scoreTimingDetail =
     els.testLogCloseButton.addEventListener('click', showHome);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
-    if (els.testValidQrListButton) els.testValidQrListButton.addEventListener('click', showValidQrCodeList);
+    if (els.testValidQrListButton) els.testValidQrListButton.addEventListener('click', runAssignedPasskeyLoad);
     if (els.testDeleteCacheButton) els.testDeleteCacheButton.addEventListener('click', deleteTestQrCache);
     if (els.testRemoveAuthorizationButton) els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
     if (els.testTeamAuthorizationCheck) {
