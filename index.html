@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.0 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.1 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V1.0 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V1.1 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -3959,7 +3959,13 @@ body.score-team-menu-open .score-fixed-top{
 .test-auth-controls{flex:0 0 auto;display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}
 .test-team-auth-toggle{min-height:34px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #000;border-radius:8px;background:#fafafa;color:#000;font-size:12px;font-weight:700;letter-spacing:.2px}
 .test-team-auth-toggle input{width:18px;height:18px;accent-color:var(--gold)}
-.test-switch-auth{min-height:38px;border:2px solid var(--gold);border-radius:8px;background:#fafafa;color:var(--gold);font-size:13px;font-weight:800}
+.test-auth-button-row{display:grid;grid-template-columns:1fr;gap:7px}
+.test-auth-button-row.authorized{grid-template-columns:1fr 1fr}
+.test-switch-auth,.test-remove-auth{min-height:38px;border-radius:8px;font-size:13px;font-weight:800}
+.test-switch-auth{border:2px solid var(--gold);background:#fafafa;color:var(--gold)}
+.test-switch-auth.authorized{border-color:var(--gold);background:var(--gold);color:#000}
+.test-remove-auth{display:none;border:2px solid var(--red);background:var(--red);color:#fff}
+.test-auth-button-row.authorized .test-remove-auth{display:block}
 .test-score-controls{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;margin-top:7px!important}
 .test-score-action{min-height:38px!important;padding:2px 3px!important;font-size:10px!important;line-height:1.05!important}
 .test-log-reset{align-self:flex-start!important;width:auto!important;min-height:0!important;margin-top:5px!important;padding:1px 3px calc(1px + env(safe-area-inset-bottom))!important;border:0!important;background:transparent!important;color:#999!important;font-size:8px!important;font-weight:500!important}
@@ -4005,7 +4011,7 @@ body.score-team-menu-open .score-fixed-top{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.0</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.1</button>
 
       <div class="splash-image-wrap">
 
@@ -4320,7 +4326,10 @@ body.score-team-menu-open .score-fixed-top{
           <input id="testTeamAuthorizationCheck" type="checkbox">
           <span>TEAM AUTHORIZATION</span>
         </label>
-        <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">SWITCH AUTHORIZATION</button>
+        <div id="testAuthorizationButtonRow" class="test-auth-button-row">
+          <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTHORIZATION</button>
+          <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTHORIZATION</button>
+        </div>
       </div>
       <div class="test-score-controls">
         <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR CURRENT</button>
@@ -4474,7 +4483,7 @@ body.score-team-menu-open .score-fixed-top{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.0
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.1
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -4576,6 +4585,12 @@ body.score-team-menu-open .score-fixed-top{
 
       testTeamAuthorizationCheck:
         document.getElementById('testTeamAuthorizationCheck'),
+
+      testAuthorizationButtonRow:
+        document.getElementById('testAuthorizationButtonRow'),
+
+      testRemoveAuthorizationButton:
+        document.getElementById('testRemoveAuthorizationButton'),
 
       testSwitchAuthorizationButton:
         document.getElementById('testSwitchAuthorizationButton'),
@@ -5020,7 +5035,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V1.0 — QR AUTHORIZATION
+       SSHCP V1.1 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5039,13 +5054,32 @@ let scoreTimingDetail =
     function isTeamQr(){ return getQrRole() === 'QR'; }
     function isTeamAuthorizationEnabled(){ return localStorage.getItem(SSHCP_TEAM_AUTH_KEY) !== '0'; }
     function syncTestAuthorizationToggle(){
-      if (!els.testTeamAuthorizationCheck) return;
-      if (isTeamQr()) {
-        els.testTeamAuthorizationCheck.checked = true;
-        els.testTeamAuthorizationCheck.disabled = true;
-      } else {
-        els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
-        els.testTeamAuthorizationCheck.disabled = false;
+      if (els.testTeamAuthorizationCheck) {
+        if (isTeamQr()) {
+          els.testTeamAuthorizationCheck.checked = true;
+          els.testTeamAuthorizationCheck.disabled = true;
+        } else {
+          els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
+          els.testTeamAuthorizationCheck.disabled = false;
+        }
+      }
+
+      const authorized = isMasterQr() || isTeamQr();
+
+      if (els.testAuthorizationButtonRow) {
+        els.testAuthorizationButtonRow.classList.toggle('authorized', authorized);
+      }
+
+      if (els.testSwitchAuthorizationButton) {
+        els.testSwitchAuthorizationButton.classList.toggle('authorized', authorized);
+
+        if (isMasterQr()) {
+          els.testSwitchAuthorizationButton.textContent = 'MASTER AUTHORIZED';
+        } else if (isTeamQr() && getQrTeam()) {
+          els.testSwitchAuthorizationButton.textContent = getQrTeam().toUpperCase() + ' AUTHORIZED';
+        } else {
+          els.testSwitchAuthorizationButton.textContent = 'GAIN AUTHORIZATION';
+        }
       }
     }
     function setTeamAuthorizationEnabled(enabled){
@@ -5055,6 +5089,14 @@ let scoreTimingDetail =
     }
     function clearQrAuthorization(){
       [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
+    }
+    function removeQrAuthorization(){
+      clearQrAuthorization();
+      localStorage.removeItem('rotbAuthorizedTeam');
+      scorecardHasLoaded = false;
+      leaderboardHasLoaded = false;
+      syncTestAuthorizationToggle();
+      updateHomeScorecardAccess();
     }
     function saveQrAuthorization(data, passkey){
       localStorage.setItem(SSHCP_QR_PASSKEY_KEY, passkey);
@@ -5138,7 +5180,7 @@ let scoreTimingDetail =
       els.modalTitle.textContent='ENTER PASSKEY';
       els.modalBody.textContent='Enter the QR passkey.';
       els.modalInput.style.display='block';
-      els.modalInput.value='';
+      els.modalInput.value=SSHCP_MASTER_TEST_KEY;
       els.modalInput.placeholder='PASSKEY';
       const cancel=makeModalButton('CANCEL','',showSwitchAuthorization);
       const enter=makeModalButton('AUTHORIZE','primary',async()=>{
@@ -5151,7 +5193,7 @@ let scoreTimingDetail =
       els.modalActions.className='modal-actions';
       els.modalActions.replaceChildren(cancel,enter);
       els.modalOverlay.classList.add('open');
-      setTimeout(()=>els.modalInput.focus(),50);
+      setTimeout(()=>{ els.modalInput.focus(); els.modalInput.select(); },50);
     }
     async function decodeQrImage(file){
       if(!file) return;
@@ -9877,6 +9919,7 @@ let scoreTimingDetail =
     els.testLogCloseButton.addEventListener('click', showHome);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
+    if (els.testRemoveAuthorizationButton) els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
     if (els.testTeamAuthorizationCheck) {
       els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
       els.testTeamAuthorizationCheck.addEventListener('change', event => setTeamAuthorizationEnabled(event.target.checked));
