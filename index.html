@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.3 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.4 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V1.3 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V1.4 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -3975,8 +3975,8 @@ body.score-team-menu-open .score-fixed-top{
 .switch-auth-button{min-height:54px;border:2px solid var(--gold);border-radius:9px;background:#fafafa;color:#000;font-size:16px;font-weight:700}
 .test-valid-qr-list{min-height:36px;border:2px solid var(--gold);border-radius:8px;background:#fafafa;color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.2px}
 .passkey-team-select-wrap{position:relative;width:100%;margin:12px 0 0}
-.passkey-team-select{width:100%;height:46px;padding:0 42px 0 12px;border:2px solid var(--gold);border-radius:9px;background:#fff;color:#000;font-size:16px;font-weight:700;text-align:center;text-align-last:center;appearance:none;-webkit-appearance:none;outline:none}
-.passkey-team-select-wrap::after{content:"";position:absolute;right:16px;top:50%;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #000;transform:translateY(-30%);pointer-events:none}
+.passkey-team-select{width:100%;height:46px;padding:0 46px 0 18px;border:5px solid var(--gold);border-radius:9px;background:#fff;color:#000;font-size:17px;font-weight:700;text-align:center;text-align-last:center;appearance:none;-webkit-appearance:none;-moz-appearance:none;outline:none;box-sizing:border-box}
+.passkey-team-select-wrap::after{content:"";position:absolute;right:18px;top:50%;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #000;transform:translateY(-35%);pointer-events:none}
 .qr-list-scroll{max-height:min(58dvh,520px);overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border:1px solid rgba(0,0,0,.72);border-radius:9px;background:#fff}
 .qr-list-row{display:grid;grid-template-columns:18% 31% 51%;min-height:38px;border-bottom:1px solid #ccc;font-size:11px;line-height:1.15}
 .qr-list-row:last-child{border-bottom:0}
@@ -3990,6 +3990,14 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-separator{width:78%;height:1px;margin:10px auto;background:#b9b9b9}
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
+
+/* SSHCP V1.4 — assigned Team QR uses direct team access; MASTER unchanged. */
+body.team-qr-locked #homeTeamArrowButton{display:none!important}
+body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
+body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
+body.team-qr-locked #scoreTeamSelectButton::after{display:none!important}
+body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-right:18px!important;cursor:default!important}
+
 </style>
 </head>
 
@@ -4024,7 +4032,7 @@ body.score-team-menu-open .score-fixed-top{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.3</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.4</button>
 
       <div class="splash-image-wrap">
 
@@ -4497,7 +4505,7 @@ body.score-team-menu-open .score-fixed-top{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.3
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.4
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5052,7 +5060,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V1.3 — QR AUTHORIZATION
+       SSHCP V1.4 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5131,6 +5139,14 @@ let scoreTimingDetail =
     function isMasterQr(){ return getQrRole() === 'MASTER'; }
     function isTeamQr(){ return getQrRole() === 'QR'; }
     function isTeamAuthorizationEnabled(){ return localStorage.getItem(SSHCP_TEAM_AUTH_KEY) !== '0'; }
+    function syncTeamQrLockedUi(){
+      const locked = isTeamQr() && !!getQrTeam();
+      document.body.classList.toggle('team-qr-locked', locked);
+      if (locked) {
+        closeHomeTeamDropup();
+        closeScoreTeamDropdown();
+      }
+    }
     function syncTestAuthorizationToggle(){
       if (els.testTeamAuthorizationCheck) {
         if (isTeamQr()) {
@@ -5167,6 +5183,7 @@ let scoreTimingDetail =
     }
     function clearQrAuthorization(){
       [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
+      syncTeamQrLockedUi();
     }
     function removeQrAuthorization(){
       clearQrAuthorization();
@@ -5187,6 +5204,7 @@ let scoreTimingDetail =
         rememberSelectedTeam(data.team);
       }
       if (data.role === 'MASTER') localStorage.removeItem('rotbAuthorizedTeam');
+      syncTeamQrLockedUi();
     }
     function showInvalidQrPasskey(){
       closeModal();
@@ -6130,6 +6148,7 @@ let scoreTimingDetail =
     }
 
     function updateHomeScorecardAccess() {
+      syncTeamQrLockedUi();
       const authorized = getAuthorizedTeam();
       const rememberedForMaster = isMasterQr() ? getRememberedSelectedTeam() : '';
       const displayTeam = authorized || rememberedForMaster;
@@ -6201,6 +6220,7 @@ let scoreTimingDetail =
     }
 
     async function openHomeTeamDropup() {
+      if (isTeamQr() && getQrTeam()) return;
       if (!scorecardHasLoaded && !scorecardLoadInProgress) {
         await loadScorecard();
       }
@@ -6640,6 +6660,7 @@ let scoreTimingDetail =
     }
 
     function updateScoreTeamSelectButton() {
+      syncTeamQrLockedUi();
       if (!els.scoreTeamSelectButton) return;
       els.scoreTeamSelectButton.textContent = selectedTeam ? displayTeamName(selectedTeam.name) : 'SELECT TEAM';
       els.scoreTeamSelectButton.classList.toggle('has-team', !!selectedTeam);
@@ -6690,6 +6711,7 @@ let scoreTimingDetail =
     }
 
     function openScoreTeamDropdown() {
+      if (isTeamQr() && getQrTeam()) return;
       if (!els.scoreTeamDropdown || !els.scoreTeamSelectButton || !teams.length) return;
       renderScoreTeamDropdown();
       const buttonRect = els.scoreTeamSelectButton.getBoundingClientRect();
@@ -6705,6 +6727,7 @@ let scoreTimingDetail =
     }
 
     function toggleScoreTeamDropdown() {
+      if (isTeamQr() && getQrTeam()) return;
       if (els.scoreTeamDropdown.classList.contains('open')) closeScoreTeamDropdown();
       else openScoreTeamDropdown();
     }
@@ -10441,6 +10464,7 @@ let scoreTimingDetail =
     await initializeQrAuthorization();
     if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
     syncTestAuthorizationToggle();
+    syncTeamQrLockedUi();
     updateHomeScorecardAccess();
 
       const rememberedView =
