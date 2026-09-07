@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.4 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.5 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V1.4 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V1.5 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -3975,8 +3975,13 @@ body.score-team-menu-open .score-fixed-top{
 .switch-auth-button{min-height:54px;border:2px solid var(--gold);border-radius:9px;background:#fafafa;color:#000;font-size:16px;font-weight:700}
 .test-valid-qr-list{min-height:36px;border:2px solid var(--gold);border-radius:8px;background:#fafafa;color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.2px}
 .passkey-team-select-wrap{position:relative;width:100%;margin:12px 0 0}
-.passkey-team-select{width:100%;height:46px;padding:0 46px 0 18px;border:5px solid var(--gold);border-radius:9px;background:#fff;color:#000;font-size:17px;font-weight:700;text-align:center;text-align-last:center;appearance:none;-webkit-appearance:none;-moz-appearance:none;outline:none;box-sizing:border-box}
-.passkey-team-select-wrap::after{content:"";position:absolute;right:18px;top:50%;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #000;transform:translateY(-35%);pointer-events:none}
+.passkey-team-button{position:relative;width:100%;height:46px;padding:0 50px 0 18px;border:5px solid var(--gold);border-radius:9px;background:#fff;color:#000;font-size:17px;font-weight:700;text-align:center;outline:none;box-sizing:border-box;-webkit-appearance:none;appearance:none}
+.passkey-team-button::after{content:"";position:absolute;right:18px;top:50%;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #000;transform:translateY(-35%);pointer-events:none}
+.passkey-team-menu{display:none;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;max-height:min(42dvh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px;border:2px solid var(--gold);border-radius:9px;background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.16)}
+.passkey-team-menu.open{display:block}
+.passkey-team-option{display:block;width:100%;min-height:46px;padding:8px 12px;border:0;border-bottom:1px solid #ccc;background:#fff;color:#000;text-align:center;font-size:17px;font-weight:700;-webkit-appearance:none;appearance:none}
+.passkey-team-option:last-child{border-bottom:0}
+.passkey-team-option:active{background:var(--gold);color:#000}
 .qr-list-scroll{max-height:min(58dvh,520px);overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border:1px solid rgba(0,0,0,.72);border-radius:9px;background:#fff}
 .qr-list-row{display:grid;grid-template-columns:18% 31% 51%;min-height:38px;border-bottom:1px solid #ccc;font-size:11px;line-height:1.15}
 .qr-list-row:last-child{border-bottom:0}
@@ -3991,7 +3996,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V1.4 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V1.5 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4032,7 +4037,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.4</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.5</button>
 
       <div class="splash-image-wrap">
 
@@ -4505,7 +4510,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.4
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.5
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5060,7 +5065,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V1.4 — QR AUTHORIZATION
+       SSHCP V1.5 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5367,8 +5372,8 @@ let scoreTimingDetail =
       sshcpQrDirectoryPromise = null;
     }
 
-    function populatePasskeyTeamSelect(select, directory) {
-      if (!select) return;
+    function populatePasskeyTeamSelect(menu, directory) {
+      if (!menu) return;
       const assigned = (directory || [])
         .filter(item => item.qrId !== 'MASTER' && item.assigned && item.team)
         .sort((a, b) => {
@@ -5377,11 +5382,11 @@ let scoreTimingDetail =
           return as - bs || String(a.team).localeCompare(String(b.team));
         });
 
-      select.innerHTML = '<option value="">MASTER / SELECT ASSIGNED TEAM</option>' +
+      menu.innerHTML =
+        '<button type="button" class="passkey-team-option" data-passkey="' + escapeHtml(SSHCP_MASTER_TEST_KEY) + '" data-label="MASTER">MASTER</button>' +
         assigned.map(item =>
-          '<option value="' + escapeHtml(item.passkey) + '">' + escapeHtml(item.team.toUpperCase()) + '</option>'
+          '<button type="button" class="passkey-team-option" data-passkey="' + escapeHtml(item.passkey) + '" data-label="' + escapeHtml(item.team.toUpperCase()) + '">' + escapeHtml(item.team.toUpperCase()) + '</button>'
         ).join('');
-      select.disabled = false;
     }
 
     async function showValidQrCodeList() {
@@ -5437,9 +5442,8 @@ let scoreTimingDetail =
       els.modalBody.innerHTML=
         '<div>Enter the QR passkey.</div>' +
         '<div class="passkey-team-select-wrap">' +
-          '<select id="passkeyTeamSelect" class="passkey-team-select" disabled>' +
-            '<option value="">LOADING ASSIGNED TEAMS...</option>' +
-          '</select>' +
+          '<button id="passkeyTeamButton" class="passkey-team-button" type="button" aria-haspopup="listbox" aria-expanded="false">MASTER</button>' +
+          '<div id="passkeyTeamMenu" class="passkey-team-menu" role="listbox" aria-hidden="true"></div>' +
         '</div>';
       els.modalInput.style.display='block';
       els.modalInput.value=SSHCP_MASTER_TEST_KEY;
@@ -5456,22 +5460,43 @@ let scoreTimingDetail =
       els.modalActions.replaceChildren(cancel,enter);
       els.modalOverlay.classList.add('open');
 
-      const select = document.getElementById('passkeyTeamSelect');
-      if (select) {
-        select.addEventListener('change', () => {
-          if (select.value) {
-            els.modalInput.value = select.value;
-            els.modalInput.focus();
-            els.modalInput.select();
-          } else {
-            els.modalInput.value = SSHCP_MASTER_TEST_KEY;
-          }
+      const button = document.getElementById('passkeyTeamButton');
+      const menu = document.getElementById('passkeyTeamMenu');
+
+      const closeTeamMenu = () => {
+        if (!menu || !button) return;
+        menu.classList.remove('open');
+        menu.setAttribute('aria-hidden','true');
+        button.setAttribute('aria-expanded','false');
+      };
+
+      const openTeamMenu = () => {
+        if (!menu || !button) return;
+        menu.classList.add('open');
+        menu.setAttribute('aria-hidden','false');
+        button.setAttribute('aria-expanded','true');
+      };
+
+      if (button && menu) {
+        button.addEventListener('click', () => {
+          if (menu.classList.contains('open')) closeTeamMenu();
+          else openTeamMenu();
+        });
+
+        menu.addEventListener('click', event => {
+          const option = event.target.closest('.passkey-team-option');
+          if (!option) return;
+          button.textContent = option.dataset.label || 'MASTER';
+          els.modalInput.value = option.dataset.passkey || SSHCP_MASTER_TEST_KEY;
+          closeTeamMenu();
+          els.modalInput.focus();
+          els.modalInput.select();
         });
       }
 
       loadTestQrDirectory().then(directory => {
-        const activeSelect = document.getElementById('passkeyTeamSelect');
-        populatePasskeyTeamSelect(activeSelect, directory);
+        const activeMenu = document.getElementById('passkeyTeamMenu');
+        populatePasskeyTeamSelect(activeMenu, directory);
       });
 
       setTimeout(()=>{ els.modalInput.focus(); els.modalInput.select(); },50);
