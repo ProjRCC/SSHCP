@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- ROTB 2026 — V15.14 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V1.0 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3946,6 +3946,31 @@ body.score-team-menu-open .score-fixed-top{
   z-index: 1 !important;
 }
 
+
+/* =========================================================
+   SSHCP V1.0 — QR AUTHORIZATION / HOME / TEST PAGE
+   ========================================================= */
+.sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
+.sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
+.home-scorecard-main{padding-top:5px!important;padding-bottom:5px!important}
+.home-scorecard-action{font-size:20px!important}
+.home-scorecard-team{margin-top:2px!important;font-size:19.5px!important;line-height:1!important}
+.test-log-table{flex:0 1 75%!important}
+.test-auth-controls{flex:0 0 auto;display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}
+.test-team-auth-toggle{min-height:34px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #000;border-radius:8px;background:#fafafa;color:#000;font-size:12px;font-weight:700;letter-spacing:.2px}
+.test-team-auth-toggle input{width:18px;height:18px;accent-color:var(--gold)}
+.test-switch-auth{min-height:38px;border:2px solid var(--gold);border-radius:8px;background:#fafafa;color:var(--gold);font-size:13px;font-weight:800}
+.test-score-controls{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;margin-top:7px!important}
+.test-score-action{min-height:38px!important;padding:2px 3px!important;font-size:10px!important;line-height:1.05!important}
+.test-log-reset{align-self:flex-start!important;width:auto!important;min-height:0!important;margin-top:5px!important;padding:1px 3px calc(1px + env(safe-area-inset-bottom))!important;border:0!important;background:transparent!important;color:#999!important;font-size:8px!important;font-weight:500!important}
+.modal-overlay.switch-authorization .modal-box{text-align:center;width:min(420px,calc(100% - 4px))}
+.modal-overlay.switch-authorization .modal-title{text-align:center;color:#000;font-size:23px}
+.switch-auth-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.switch-auth-button{min-height:54px;border:2px solid var(--gold);border-radius:9px;background:#fafafa;color:#000;font-size:16px;font-weight:700}
+.switch-auth-key{margin-top:14px;color:#999;font-family:monospace;font-size:8px;line-height:1.2;word-break:break-all;user-select:all;-webkit-user-select:all}
+.quick-guide-separator{width:78%;height:1px;margin:10px auto;background:#b9b9b9}
+.quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
+@media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 </style>
 </head>
 
@@ -3980,7 +4005,7 @@ body.score-team-menu-open .score-fixed-top{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">V15.14</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V1.0</button>
 
       <div class="splash-image-wrap">
 
@@ -4026,8 +4051,7 @@ body.score-team-menu-open .score-fixed-top{
         </div>
 
 
-        <div class="home-utility-row">
-          <button id="resetUserButtonV2" class="reset-user-button" type="button">RESET AUTHORIZATION</button>
+        <div class="home-utility-row sshcp-home-guide-row">
           <button class="quick-guide-button" type="button" data-guide>QUICK GUIDE</button>
         </div>
 
@@ -4291,13 +4315,21 @@ body.score-team-menu-open .score-fixed-top{
         </div>
         <div id="testLogRows"></div>
       </div>
+      <div class="test-auth-controls">
+        <label class="test-team-auth-toggle">
+          <input id="testTeamAuthorizationCheck" type="checkbox">
+          <span>TEAM AUTHORIZATION</span>
+        </label>
+        <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">SWITCH AUTHORIZATION</button>
+      </div>
       <div class="test-score-controls">
         <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR CURRENT</button>
         <button id="testAddParAllButton" class="test-score-action add" type="button">ADD PAR ALL</button>
         <button id="testDeleteCurrentButton" class="test-score-action delete" type="button">DELETE CURRENT</button>
         <button id="testDeleteAllButton" class="test-score-action delete" type="button">DELETE ALL</button>
       </div>
-      <button id="testLogResetButton" class="test-log-reset" type="button">RESET TEST LOG</button>
+      <button id="testLogResetButton" class="test-log-reset" type="button">DELETE TEST DATA</button>
+      <input id="testQrCameraInput" type="file" accept="image/*" capture="environment" hidden>
     </div>
   </section>
 
@@ -4442,7 +4474,7 @@ body.score-team-menu-open .score-fixed-top{
   <script>
 
     // ==========================================================
-    // ROTB 2026 — V15.14
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V1.0
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -4541,6 +4573,15 @@ body.score-team-menu-open .score-fixed-top{
 
       resetUserButton:
         document.getElementById('resetUserButtonV2'),
+
+      testTeamAuthorizationCheck:
+        document.getElementById('testTeamAuthorizationCheck'),
+
+      testSwitchAuthorizationButton:
+        document.getElementById('testSwitchAuthorizationButton'),
+
+      testQrCameraInput:
+        document.getElementById('testQrCameraInput'),
 
       scoreHomeButton:
         document.getElementById('scoreHomeButton'),
@@ -4979,18 +5020,175 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
+       SSHCP V1.0 — QR AUTHORIZATION
+       Worker remains the final authority for every score write.
+       ========================================================= */
+
+    const SSHCP_QR_PASSKEY_KEY = 'sshcpQrPasskey';
+    const SSHCP_QR_ROLE_KEY = 'sshcpQrRole';
+    const SSHCP_QR_ID_KEY = 'sshcpQrId';
+    const SSHCP_QR_TEAM_KEY = 'sshcpQrTeam';
+    const SSHCP_QR_SLOT_KEY = 'sshcpQrSlot';
+    const SSHCP_TEAM_AUTH_KEY = 'sshcpTeamAuthorization';
+    const SSHCP_MASTER_TEST_KEY = 'glmNnV63TWS42fcRB8z2yldF';
+
+    function getQrPasskey(){ return localStorage.getItem(SSHCP_QR_PASSKEY_KEY) || ''; }
+    function getQrRole(){ return localStorage.getItem(SSHCP_QR_ROLE_KEY) || 'NONE'; }
+    function getQrTeam(){ return localStorage.getItem(SSHCP_QR_TEAM_KEY) || ''; }
+    function isMasterQr(){ return getQrRole() === 'MASTER'; }
+    function isTeamQr(){ return getQrRole() === 'QR'; }
+    function isTeamAuthorizationEnabled(){ return localStorage.getItem(SSHCP_TEAM_AUTH_KEY) !== '0'; }
+    function syncTestAuthorizationToggle(){
+      if (!els.testTeamAuthorizationCheck) return;
+      if (isTeamQr()) {
+        els.testTeamAuthorizationCheck.checked = true;
+        els.testTeamAuthorizationCheck.disabled = true;
+      } else {
+        els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
+        els.testTeamAuthorizationCheck.disabled = false;
+      }
+    }
+    function setTeamAuthorizationEnabled(enabled){
+      localStorage.setItem(SSHCP_TEAM_AUTH_KEY, enabled ? '1' : '0');
+      syncTestAuthorizationToggle();
+      updateHomeScorecardAccess();
+    }
+    function clearQrAuthorization(){
+      [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
+    }
+    function saveQrAuthorization(data, passkey){
+      localStorage.setItem(SSHCP_QR_PASSKEY_KEY, passkey);
+      localStorage.setItem(SSHCP_QR_ROLE_KEY, data.role || 'NONE');
+      localStorage.setItem(SSHCP_QR_ID_KEY, data.qrId || '');
+      localStorage.setItem(SSHCP_QR_TEAM_KEY, data.team || '');
+      localStorage.setItem(SSHCP_QR_SLOT_KEY, data.slot ? String(data.slot) : '');
+      if (data.role === 'QR' && data.team) {
+        localStorage.setItem('rotbAuthorizedTeam', data.team);
+        rememberSelectedTeam(data.team);
+      }
+      if (data.role === 'MASTER') localStorage.removeItem('rotbAuthorizedTeam');
+    }
+    async function validateQrPasskey(passkey, showFailure=true){
+      const clean=String(passkey||'').trim();
+      if(!clean) return false;
+      try{
+        const response=await fetch(CLOUDFLARE_API_URL+'?action=qrAuth&passkey='+encodeURIComponent(clean)+'&refresh='+Date.now(),{cache:'no-store'});
+        const data=await response.json();
+        if(!response.ok || !data || data.ok!==true || data.valid!==true || (data.role==='QR' && data.assigned!==true)){
+          throw new Error('NOT AUTHORIZED');
+        }
+        saveQrAuthorization(data,clean);
+        syncTestAuthorizationToggle();
+        updateHomeScorecardAccess();
+        return true;
+      }catch(_){
+        if(showFailure) showNotAuthorized();
+        return false;
+      }
+    }
+    async function initializeQrAuthorization(){
+      const params=new URLSearchParams(window.location.search);
+      const incoming=params.get('passkey') || params.get('key') || '';
+      if(incoming){
+        await validateQrPasskey(incoming,true);
+        params.delete('passkey'); params.delete('key');
+        const q=params.toString();
+        history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
+      }else if(getQrPasskey()){
+        const storedOk = await validateQrPasskey(getQrPasskey(),false);
+        if (!storedOk) {
+          clearQrAuthorization();
+          localStorage.removeItem('rotbAuthorizedTeam');
+        }
+      }
+    }
+    function showNotAuthorized(){
+      closeModal();
+      els.modalTitle.textContent='NOT AUTHORIZED';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent='This QR authorization cannot access that Team Scorecard.';
+      els.modalInput.style.display='none';
+      const ok=makeModalButton('OK','',closeModal);
+      els.modalActions.className='modal-actions single';
+      els.modalActions.replaceChildren(ok);
+      els.modalOverlay.classList.add('open');
+    }
+    function canNavigateToTeam(team){
+      if(!team) return false;
+      if(isTeamQr()) return normalizeName(team.name)===normalizeName(getQrTeam());
+      return true;
+    }
+    function showSwitchAuthorization(){
+      closeModal();
+      els.modalOverlay.classList.add('switch-authorization');
+      els.modalTitle.textContent='SWITCH AUTHORIZATION';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.innerHTML='<div class="switch-auth-buttons"><button id="switchScanQr" class="switch-auth-button" type="button">SCAN QR CODE</button><button id="switchEnterPasskey" class="switch-auth-button" type="button">ENTER PASSKEY</button></div><div class="switch-auth-key">'+SSHCP_MASTER_TEST_KEY+'</div>';
+      els.modalInput.style.display='none';
+      const close=makeModalButton('CLOSE','',closeModal);
+      els.modalActions.className='modal-actions single';
+      els.modalActions.replaceChildren(close);
+      els.modalOverlay.classList.add('open');
+      document.getElementById('switchEnterPasskey').addEventListener('click',showEnterPasskey);
+      document.getElementById('switchScanQr').addEventListener('click',()=>els.testQrCameraInput && els.testQrCameraInput.click());
+    }
+    function showEnterPasskey(){
+      closeModal();
+      els.modalOverlay.classList.add('switch-authorization');
+      els.modalTitle.textContent='ENTER PASSKEY';
+      els.modalBody.textContent='Enter the QR passkey.';
+      els.modalInput.style.display='block';
+      els.modalInput.value='';
+      els.modalInput.placeholder='PASSKEY';
+      const cancel=makeModalButton('CANCEL','',showSwitchAuthorization);
+      const enter=makeModalButton('AUTHORIZE','primary',async()=>{
+        const value=els.modalInput.value;
+        closeModal(); startLoadingLine();
+        const ok=await validateQrPasskey(value,true);
+        completeLoadingLine();
+        if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
+      });
+      els.modalActions.className='modal-actions';
+      els.modalActions.replaceChildren(cancel,enter);
+      els.modalOverlay.classList.add('open');
+      setTimeout(()=>els.modalInput.focus(),50);
+    }
+    async function decodeQrImage(file){
+      if(!file) return;
+      try{
+        if(!('BarcodeDetector' in window)) throw new Error('QR camera decoding is not available in this browser.');
+        const detector=new BarcodeDetector({formats:['qr_code']});
+        const bitmap=await createImageBitmap(file);
+        const codes=await detector.detect(bitmap);
+        if(!codes.length) throw new Error('No QR code found.');
+        const raw=String(codes[0].rawValue||'');
+        let passkey=raw;
+        try{ const u=new URL(raw,window.location.href); passkey=u.searchParams.get('passkey')||u.searchParams.get('key')||raw; }catch(_){}
+        startLoadingLine();
+        const ok=await validateQrPasskey(passkey,true);
+        completeLoadingLine();
+        if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
+      }catch(error){
+        closeModal();
+        els.modalTitle.textContent='QR SCAN';
+        els.modalBody.textContent=(error&&error.message)||'QR code could not be read. Use ENTER PASSKEY or scan the QR with the phone camera.';
+        els.modalInput.style.display='none';
+        const ok=makeModalButton('OK','',showSwitchAuthorization);
+        els.modalActions.className='modal-actions single';
+        els.modalActions.replaceChildren(ok);
+        els.modalOverlay.classList.add('open');
+      }finally{ if(els.testQrCameraInput) els.testQrCameraInput.value=''; }
+    }
+
+    /* =========================================================
        STORAGE
        ========================================================= */
 
 
     function getAuthorizedTeam() {
-
-      return (
-        localStorage.getItem(
-          'rotbAuthorizedTeam'
-        ) || ''
-      );
-
+      if (isTeamQr()) return getQrTeam();
+      if (isMasterQr() && !isTeamAuthorizationEnabled()) return '';
+      return localStorage.getItem('rotbAuthorizedTeam') || '';
     }
 
 
@@ -5410,6 +5608,7 @@ let scoreTimingDetail =
       closeScoreEntry(false);
       setActiveView('testlog');
       renderTestLog();
+      syncTestAuthorizationToggle();
       window.scrollTo(0, 0);
     }
 
@@ -5482,6 +5681,7 @@ let scoreTimingDetail =
             '?action=testScores' +
             '&mode=' + encodeURIComponent(mode) +
             '&scope=' + encodeURIComponent(scope) +
+            '&passkey=' + encodeURIComponent(isMasterQr() ? getQrPasskey() : '') +
             '&refresh=' + Date.now(),
           { cache: 'no-store' }
         );
@@ -5626,16 +5826,18 @@ let scoreTimingDetail =
 
     function updateHomeScorecardAccess() {
       const authorized = getAuthorizedTeam();
-      const secondLine = authorized ? displayTeamName(authorized).toUpperCase() : 'SELECT TEAM';
+      const rememberedForMaster = isMasterQr() ? getRememberedSelectedTeam() : '';
+      const displayTeam = authorized || rememberedForMaster;
+      const secondLine = displayTeam ? displayTeamName(displayTeam).toUpperCase() : 'SELECT TEAM';
       els.homeScorecardButton.innerHTML =
         '<span class="home-scorecard-action">ACCESS SCORECARD</span>' +
-        '<span class="home-scorecard-team' + (authorized ? '' : ' select-team') + '">' +
+        '<span class="home-scorecard-team' + (displayTeam ? '' : ' select-team') + '">' +
         escapeHtml(secondLine) +
         '</span>';
 
       const teamLine = els.homeScorecardButton.querySelector('.home-scorecard-team');
-      if (teamLine && authorized) {
-        let size = 18;
+      if (teamLine && displayTeam) {
+        let size = 19.5;
         teamLine.style.fontSize = size + 'px';
         while (teamLine.scrollWidth > teamLine.clientWidth && size > 12) {
           size -= 1;
@@ -5684,6 +5886,7 @@ let scoreTimingDetail =
         button.textContent = displayTeamName(team.name);
         button.addEventListener('click', async () => {
           closeHomeTeamDropup();
+          if (!canNavigateToTeam(team)) { showNotAuthorized(); return; }
           selectTeam(team.slot);
           addTestLog('TEAM SELECT', 'OK', '—', team.name);
           await showScorecard();
@@ -5710,14 +5913,15 @@ let scoreTimingDetail =
     async function homeScorecardAccess() {
       closeHomeTeamDropup();
       const authorized = getAuthorizedTeam();
-      if (!authorized) {
+      const targetTeamName = authorized || (isMasterQr() ? getRememberedSelectedTeam() : '');
+      if (!targetTeamName) {
         await openHomeTeamDropup();
         return;
       }
       if (!scorecardHasLoaded && !scorecardLoadInProgress) {
         await loadScorecard();
       }
-      const team = teams.find(item => normalizeName(item.name) === normalizeName(authorized));
+      const team = teams.find(item => normalizeName(item.name) === normalizeName(targetTeamName));
       if (team) selectTeam(team.slot, false);
       await showScorecard();
     }
@@ -6159,6 +6363,7 @@ let scoreTimingDetail =
         button.setAttribute('role', 'option');
         button.addEventListener('click', async () => {
           closeScoreTeamDropdown();
+          if (!canNavigateToTeam(team)) { showNotAuthorized(); return; }
 
           /*
             V15.5 — changing teams from inside the scorecard is an
@@ -6893,23 +7098,23 @@ let scoreTimingDetail =
       }
 
 
-      if (
-        isSelectedTeamAuthorized()
-      ) {
-
-        openScoreEntry(
-          index
-        );
-
-
+      if (isTeamQr()) {
+        if (normalizeName(selectedTeam.name) !== normalizeName(getQrTeam())) { showNotAuthorized(); return; }
+        openScoreEntry(index);
         return;
-
       }
 
+      if (isMasterQr() && !isTeamAuthorizationEnabled()) {
+        openScoreEntry(index);
+        return;
+      }
 
-      showAuthorizationModal(
-        index
-      );
+      if (isSelectedTeamAuthorized()) {
+        openScoreEntry(index);
+        return;
+      }
+
+      showAuthorizationModal(index);
 
     }
 
@@ -7366,6 +7571,8 @@ let scoreTimingDetail =
         ) +
         '&scores=' +
         encodedScores +
+        '&passkey=' +
+        encodeURIComponent(getQrPasskey()) +
         '&refresh=' +
         Date.now();
 
@@ -9440,35 +9647,24 @@ let scoreTimingDetail =
 
 
       els.modalBody.innerHTML =
-
         '<ol class="quick-list">' +
-
-          '<li>Select Team from Dropdown</li>' +
-
-          '<li>Tap a Score Box, check the authorization box, then tap <strong>AUTHORIZE</strong> (One Time)</li>' +
-
+          '<li>Tap <strong>ACCESS SCORECARD</strong> for your Team</li>' +
+          '<li>Tap a Score Box</li>' +
           '<li>Use <strong>− / +</strong> to set score, <strong>CLEAR</strong> to remove, then <strong>ENTER</strong></li>' +
-
           '<li>Gold = Successfully Submitted</li>' +
-
           '<li>Gray = Not Submitted - Refresh Page</li>' +
-
-          '<li>Tap LIVE LEADERBOARD for Current Standings</li>' +
-
-          '<li>Tap REFRESH for the Latest Standings</li>' +
-
+          '<li>Need to correct a score? Tap the score and reenter.</li>' +
         '</ol>' +
-
-        '<div class="quick-correction">' +
-
-          '<strong>Need to correct a score?</strong> ' +
-
-          'Tap the score and reenter.' +
-
-        '</div>' +
-        '<div class="quick-correction">' +
-          '<strong>Want to score for a new team?</strong> Reset Authorization on the Home page.' +
-        '</div>';
+        '<div class="quick-guide-separator"></div>' +
+        '<ol class="quick-list" start="7">' +
+          '<li>Tap <strong>LIVE LEADERBOARD</strong> for Current Standings</li>' +
+          '<li>Tap <strong>REFRESH</strong> for the Latest Standings (10s Auto Refresh)</li>' +
+        '</ol>' +
+        '<div class="quick-guide-separator"></div>' +
+        '<ol class="quick-list" start="9">' +
+          '<li>Tap <strong>ACCESS SCORECARD</strong> to go back to Team Scorecard</li>' +
+        '</ol>' +
+        '<div class="quick-guide-footnote">*Closing Browser/Site will NOT reset scores*</div>' 
 
 
       els.modalInput.style.display =
@@ -9510,6 +9706,7 @@ let scoreTimingDetail =
           'authorization',
           'reset-authorization',
           'quick-guide',
+          'switch-authorization',
           'tournament-result',
           'tournament-summary'
         );
@@ -9679,6 +9876,12 @@ let scoreTimingDetail =
     els.testLogHomeButton.addEventListener('click', showHome);
     els.testLogCloseButton.addEventListener('click', showHome);
     els.testLogResetButton.addEventListener('click', resetTestLog);
+    if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
+    if (els.testTeamAuthorizationCheck) {
+      els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
+      els.testTeamAuthorizationCheck.addEventListener('change', event => setTeamAuthorizationEnabled(event.target.checked));
+    }
+    if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
     els.testAddParCurrentButton.addEventListener('click', () => showTestScoreWarning('par', 'current'));
     els.testAddParAllButton.addEventListener('click', () => showTestScoreWarning('par', 'all'));
     els.testDeleteCurrentButton.addEventListener('click', () => showTestScoreWarning('clear', 'current'));
@@ -9692,11 +9895,9 @@ let scoreTimingDetail =
       );
 
 
-    els.resetUserButton
-      .addEventListener(
-        'click',
-        resetUser
-      );
+    if (els.resetUserButton) {
+      els.resetUserButton.addEventListener('click', resetUser);
+    }
 
 
     els.scoreHomeButton
@@ -9930,6 +10131,9 @@ let scoreTimingDetail =
     );
 
 
+    await initializeQrAuthorization();
+    if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
+    syncTestAuthorizationToggle();
     updateHomeScorecardAccess();
 
       const rememberedView =
@@ -10010,4 +10214,3 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
