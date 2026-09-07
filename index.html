@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- ROTB 2026 — V15.11 -->
+  <!-- ROTB 2026 — V15.12 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3953,7 +3953,7 @@ body.score-team-menu-open .score-fixed-top{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">V15.11</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">V15.12</button>
 
       <div class="splash-image-wrap">
 
@@ -4415,7 +4415,7 @@ body.score-team-menu-open .score-fixed-top{
   <script>
 
     // ==========================================================
-    // ROTB 2026 — V15.11
+    // ROTB 2026 — V15.12
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -9012,13 +9012,19 @@ let scoreTimingDetail =
             return;
           }
 
-          /* V15.11:
-             Keep the top eight places untouched. For an authorized team
-             below the initial eight visible rows, position that team with
-             exactly two teams visible beneath it whenever possible.
+          /* V15.12:
+             Keep the initial visible leaderboard untouched when the
+             authorized team is already on screen.
 
-             If the authorized team is second-to-last, one team remains
-             beneath it. If it is last, it settles naturally at the bottom. */
+             For an authorized team below that initial view, position by
+             current leaderboard place — never by hard-coded team number:
+               • last place:        0.0 rows visible below
+               • second-to-last:    1.0 row visible below
+               • third-to-last:     1.5 rows visible below
+               • fourth-to-last+:   2.5 rows visible below
+
+             This preserves a partial-row cue when more teams remain below,
+             while naturally tapering at the bottom of any leaderboard size. */
           const rowHeight =
             target.offsetHeight;
 
@@ -9044,11 +9050,17 @@ let scoreTimingDetail =
           const rowsBelow =
             totalRows - targetIndex - 1;
 
-          const desiredRowsBelow =
-            Math.min(
-              2,
-              rowsBelow
-            );
+          let desiredRowsBelow;
+
+          if (rowsBelow <= 0) {
+            desiredRowsBelow = 0;
+          } else if (rowsBelow === 1) {
+            desiredRowsBelow = 1;
+          } else if (rowsBelow === 2) {
+            desiredRowsBelow = 1.5;
+          } else {
+            desiredRowsBelow = 2.5;
+          }
 
           /*
             Eight rows are visible. To leave N rows beneath the authorized
