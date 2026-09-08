@@ -9,6 +9,13 @@
           document.documentElement.classList.add('sshcp-pre-' + rememberedView);
         }
 
+        if (
+          rememberedView === 'leaderboard' &&
+          sessionStorage.getItem('sshcpTournamentComplete') === '1'
+        ) {
+          document.documentElement.classList.add('sshcp-pre-complete');
+        }
+
         var role = localStorage.getItem('sshcpQrRole') || 'NONE';
         var qrTeam = localStorage.getItem('sshcpQrTeam') || '';
         var authorizedTeam = localStorage.getItem('rotbAuthorizedTeam') || '';
@@ -20,6 +27,9 @@
 
         window.__sshcpBootLocked =
           (role === 'QR' && !!qrTeam);
+
+        window.__sshcpBootTournamentComplete =
+          sessionStorage.getItem('sshcpTournamentComplete') === '1';
       } catch (e) {
         window.__sshcpBootTeam = '';
         window.__sshcpBootLocked = false;
@@ -37,7 +47,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V4.2 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V4.3 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3973,7 +3983,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V4.2 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V4.3 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4026,7 +4036,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V4.2 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V4.3 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4035,7 +4045,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — HOME VISUAL REFINEMENT
+   SSHCP V4.3 — HOME VISUAL REFINEMENT
    - Keep the 3-control group centered at ~80vh.
    - Equal vertical gaps between Leaderboard / Scorecard / Quick Guide.
    - Slimmer leaderboard button with unchanged text size.
@@ -4097,7 +4107,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — FINAL HOME SCORECARD REFINEMENT
+   SSHCP V4.3 — FINAL HOME SCORECARD REFINEMENT
    - Gold scorecard control gets a little more height.
    - Team name becomes the strongest text on HOME.
    - Tighten the gaps above and below the scorecard control.
@@ -4176,7 +4186,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
+   SSHCP V4.3 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
    Same structure / same row counts / same column widths.
    We use dead space more aggressively without changing the
    proven scorecard or leaderboard geometry.
@@ -4432,7 +4442,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — SIZE / PROPORTION PUSH
+   SSHCP V4.3 — SIZE / PROPORTION PUSH
    Build from the proven V2.8 visual baseline.
    RULE: fixed labels stay on ONE LINE; use the available box.
    No scorecard column-width changes. No 9-row geometry changes.
@@ -4626,7 +4636,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — TARGETED FINISHING PASS
+   SSHCP V4.3 — TARGETED FINISHING PASS
    ========================================================= */
 
 /* SCORE ENTRY:
@@ -4745,7 +4755,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — COMPLETED-STATE RESULT BUTTON POSITION FIX
+   SSHCP V4.3 — COMPLETED-STATE RESULT BUTTON POSITION FIX
    Leaderboard geometry/scrolling remains untouched.
    BREAK TIE / SCRAMBLE SUMMARY is centered in the free zone
    between leaderboard bottom and footer top.
@@ -4801,7 +4811,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — RESULT ACTION OVERLAY + CLEAR / - / +
+   SSHCP V4.3 — RESULT ACTION OVERLAY + CLEAR / - / +
    ========================================================= */
 
 /* Score popup: only reorder controls. Keep all V3.2 sizing/positioning. */
@@ -4853,7 +4863,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — FINAL TONIGHT: RESULT POSITION + FREE SCROLL
+   SSHCP V4.3 — FINAL TONIGHT: RESULT POSITION + FREE SCROLL
    ========================================================= */
 
 /* LEADERBOARD SCROLL:
@@ -4887,7 +4897,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — GEOMETRIC FINAL-ACTION PLACEMENT
+   SSHCP V4.3 — GEOMETRIC FINAL-ACTION PLACEMENT
    Do not guess from footer height.
    JS sets -- actual TOP from leaderboard bottom + 10px.
    ========================================================= */
@@ -4930,7 +4940,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — TRUE TWO-BOUNDARY RESULT BUTTON FIT
+   SSHCP V4.3 — TRUE TWO-BOUNDARY RESULT BUTTON FIT
    JS measures:
      1) actual leaderboard bottom
      2) actual footer top
@@ -4971,7 +4981,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — EXACT COMPLETED-RESULT BOUNDARIES
+   SSHCP V4.3 — EXACT COMPLETED-RESULT BOUNDARIES
 
    --leader-result-top:
       leaderboard bottom + actual computed footer top-padding
@@ -5035,7 +5045,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — SCORECARD + SCRAMBLE SUMMARY READABILITY
+   SSHCP V4.3 — SCORECARD + SCRAMBLE SUMMARY READABILITY
    No scorecard row-height or column-width changes.
    ========================================================= */
 
@@ -5111,7 +5121,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V4.2 — CLEAN REFRESH + RESPONSIVE SUMMARY
+   SSHCP V4.3 — CLEAN REFRESH + RESPONSIVE SUMMARY
    ========================================================= */
 
 /* Remembered view is visible immediately on manual refresh. */
@@ -5313,7 +5323,7 @@ html body.team-qr-locked #homeTeamArrowButton{
 
 
 /* =========================================================
-   SSHCP V4.2 — COMPLETED LEADERBOARD STAYS RESPONSIVE
+   SSHCP V4.3 — COMPLETED LEADERBOARD STAYS RESPONSIVE
    ========================================================= */
 
 /* Remove only live-only elements. */
@@ -5401,6 +5411,226 @@ html body.team-qr-locked #homeTeamArrowButton{
   text-overflow:clip!important;
 }
 
+
+/* =========================================================
+   SSHCP V4.3 — APP-WIDE STABLE REFRESH SHELL
+   ========================================================= */
+
+/* If a pull-refresh starts on a completed leaderboard, restore the completed
+   shell before the network response. Only table data is allowed to refresh. */
+html.sshcp-pre-complete #leaderboardView .leaderboard-screen{
+  /* class is also applied parse-time; this is a safety layer */
+}
+
+html.sshcp-pre-complete #leaderboardView .leader-title-bar,
+html.sshcp-pre-complete #leaderboardView .leader-refresh-progress,
+html.sshcp-pre-complete #leaderboardView .leader-update-note{
+  display:none!important;
+}
+
+html.sshcp-pre-complete #leaderboardView .access-scorecard{
+  background:#fff!important;
+  color:#000!important;
+  border:5px solid var(--gold)!important;
+  box-sizing:border-box!important;
+}
+
+html.sshcp-pre-complete #leaderboardView .leader-final-slot{
+  display:flex!important;
+}
+
+/* =========================================================
+   SSHCP V4.3 — COMPLETED RESULT ACTION
+   Protected control inside the responsive layout.
+   IMPORTANT: vertical padding is vh/px, NEVER percentage-of-width.
+   ========================================================= */
+
+.leaderboard-screen.tournament-complete .leader-final-slot{
+  display:flex!important;
+  position:relative!important;
+  inset:auto!important;
+
+  flex:0 0 clamp(66px, 8.6dvh, 88px)!important;
+  height:auto!important;
+  min-height:66px!important;
+  max-height:88px!important;
+
+  margin:0!important;
+  padding:
+    clamp(4px, .65dvh, 7px)
+    12px
+    clamp(4px, .65dvh, 7px)!important;
+
+  box-sizing:border-box!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  pointer-events:auto!important;
+}
+
+.leaderboard-screen.tournament-complete
+.leader-final-slot
+.leader-final-action{
+  display:flex!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+
+  width:92%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+
+  margin:0 auto!important;
+  padding:2px 10px!important;
+  box-sizing:border-box!important;
+
+  align-items:center!important;
+  justify-content:center!important;
+
+  font-size:clamp(24px, 5.8vw, 36px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+.leaderboard-screen.tournament-complete
+.leader-final-slot
+.leader-final-action.summary-label{
+  font-size:clamp(21px, 5.1vw, 32px)!important;
+}
+
+.leaderboard-screen.tournament-complete .leader-final-main{
+  display:block!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+/* Table remains the flexible item. Header/footer/result control are stable. */
+.leaderboard-screen.tournament-complete .leader-content{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+}
+
+.leaderboard-screen.tournament-complete .leader-bottom{
+  flex:0 0 auto!important;
+}
+
+/* =========================================================
+   SCRAMBLE SUMMARY — keep V4.2 behavior for tonight.
+   No additional redesign layered on here.
+   ========================================================= */
+
+
+/* =========================================================
+   SSHCP V4.3 — SCRAMBLE SUMMARY LIVE FRACTIONAL LAYOUT
+   Row geometry is CSS/fr based; no stored pixel row heights.
+   Dragging the viewport should visibly resize rows immediately.
+   ========================================================= */
+
+.modal-overlay.tournament-summary .modal-text{
+  display:grid!important;
+  grid-template-rows:
+    auto
+    minmax(0, 3.55fr)
+    auto
+    minmax(0, 6.45fr)!important;
+  gap:clamp(3px, .55dvh, 7px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+/* Top 3 section uses live fractional height. */
+.modal-overlay.tournament-summary .tournament-summary-grid{
+  min-height:0!important;
+  height:100%!important;
+  display:grid!important;
+  grid-template-rows:
+    .62fr
+    1.30fr
+    1.18fr
+    1.06fr!important;
+  overflow:hidden!important;
+}
+
+/* Stop old pixel heights from winning. */
+.modal-overlay.tournament-summary
+.tournament-summary-row.header,
+.modal-overlay.tournament-summary
+.tournament-summary-row.place-1,
+.modal-overlay.tournament-summary
+.tournament-summary-row.place-2,
+.modal-overlay.tournament-summary
+.tournament-summary-row.place-3{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+
+/* Lower 4–10 section owns the exact remaining table height. */
+.modal-overlay.tournament-summary .tournament-summary-remaining{
+  min-height:0!important;
+  height:100%!important;
+  max-height:none!important;
+
+  display:grid!important;
+  grid-template-columns:
+    9%
+    minmax(0,1fr)
+    31%
+    20%!important;
+
+  grid-template-rows:
+    repeat(
+      var(--ts-lower-count,7),
+      minmax(0,1fr)
+    )!important;
+
+  grid-auto-rows:unset!important;
+  overflow:hidden!important;
+}
+
+.modal-overlay.tournament-summary
+.tournament-summary-remaining-row{
+  display:contents!important;
+}
+
+/* Every cell is bounded by its live row/column. */
+.modal-overlay.tournament-summary
+.tournament-summary-cell,
+.modal-overlay.tournament-summary
+.tournament-summary-remaining-cell{
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:clip!important;
+  box-sizing:border-box!important;
+}
+
+/* Net strokes intentionally consistent all the way down. */
+.modal-overlay.tournament-summary
+.tournament-summary-strokes,
+.modal-overlay.tournament-summary
+.tournament-summary-remaining-cell.net-strokes{
+  font-size:var(--ts-live-strokes-font,15px)!important;
+}
+
+/* Tie explanation stays secondary and participates in height naturally. */
+.modal-overlay.tournament-summary
+.tournament-summary-note{
+  font-size:var(--ts-live-note-font,12px)!important;
+  line-height:1.08!important;
+}
+
+/* BACK stays outside the table budget in the fixed action area. */
+.modal-overlay.tournament-summary .modal-actions{
+  flex:0 0 auto!important;
+}
+
 </style>
 </head>
 
@@ -5435,7 +5665,7 @@ html body.team-qr-locked #homeTeamArrowButton{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V4.2</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V4.3</button>
 
       <div class="splash-image-wrap">
 
@@ -5569,6 +5799,18 @@ html body.team-qr-locked #homeTeamArrowButton{
         <div class="team-select-wrap score-team-select-wrap">
           <button id="scoreTeamSelectButton" class="top-team-select score-team-select-button" type="button" aria-haspopup="listbox" aria-expanded="false">SELECT TEAM</button>
           <div id="scoreTeamDropdown" class="score-team-dropdown" role="listbox" aria-hidden="true"></div>
+          <script>
+            (function () {
+              try {
+                var team = window.__sshcpBootTeam || '';
+                var btn = document.getElementById('scoreTeamSelectButton');
+                if (btn && team) {
+                  btn.textContent = team;
+                  btn.classList.add('has-team');
+                }
+              } catch (e) {}
+            })();
+          </script>
         </div>
 
 
@@ -5643,6 +5885,17 @@ html body.team-qr-locked #homeTeamArrowButton{
 
     <div class="leaderboard-screen">
 
+
+      <script>
+        (function () {
+          try {
+            if (window.__sshcpBootTournamentComplete) {
+              var screen = document.currentScript.parentElement;
+              if (screen) screen.classList.add('tournament-complete');
+            }
+          } catch (e) {}
+        })();
+      </script>
 
       <div class="leader-top">
 
@@ -5943,7 +6196,7 @@ html body.team-qr-locked #homeTeamArrowButton{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V4.2
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V4.3
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -6511,7 +6764,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V4.2 — QR AUTHORIZATION
+       SSHCP V4.3 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -7064,7 +7317,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V4.2 — viewport-owned TEST dropdown.
+        /* SSHCP V4.3 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -7291,7 +7544,7 @@ let scoreTimingDetail =
             () => {
 
               /*
-                SSHCP V4.2 progress positioning:
+                SSHCP V4.3 progress positioning:
                 normal page/load positioning uses verified GOLD scores.
                 Immediately after ENTER, useLocalProgress=true lets the
                 viewport follow the newly entered gray score without
@@ -7570,7 +7823,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V4.2 — no 20-entry truncation. History remains until the
+      /* SSHCP V4.3 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -7591,7 +7844,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V4.2 TEST LOG',
+        'SSHCP V4.3 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -7689,7 +7942,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V4.2 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V4.3 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -8145,7 +8398,7 @@ let scoreTimingDetail =
         return;
       }
 
-      /* SSHCP V4.2 — once every active team is THRU 18, this screen
+      /* SSHCP V4.3 — once every active team is THRU 18, this screen
          is a final-results screen. Stop the 10-second auto-refresh cycle.
          Manual REFRESH remains available. */
       if (tournamentIsComplete(lastLeaderboardRows)) {
@@ -8829,7 +9082,7 @@ let scoreTimingDetail =
 
 
       /*
-        SSHCP V4.2 — the gray current-hole indicator follows LOCAL entry
+        SSHCP V4.3 — the gray current-hole indicator follows LOCAL entry
         progress immediately. Gold still follows verified/savedScores.
         This lets ENTER mean "move on now" while verification finishes
         in the background.
@@ -9594,7 +9847,7 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V4.2 — ENTER advances immediately.
+          SSHCP V4.3 — ENTER advances immediately.
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
@@ -9927,7 +10180,8 @@ let scoreTimingDetail =
 
       stopLeaderboardRefreshCycle();
 
-      resetLeaderboardToTop();
+      /* V4.3 — refresh data without visually reverting the existing shell.
+         The current table/state stays in place until fresh rows are ready. */
 
       els.leaderRefreshButton.disabled =
         true;
@@ -10357,7 +10611,7 @@ let scoreTimingDetail =
       }
 
       /*
-        SSHCP V4.2:
+        SSHCP V4.3:
         Completed-state leaderboard uses the SAME live responsive table
         sizing as in-play. There is no stored/frozen table height.
 
@@ -10378,6 +10632,12 @@ let scoreTimingDetail =
       lastLeaderboardRows = Array.isArray(rows) ? rows.map(row => ({ ...row })) : [];
 
       const complete = tournamentIsComplete(lastLeaderboardRows);
+
+      sessionStorage.setItem(
+        'sshcpTournamentComplete',
+        complete ? '1' : '0'
+      );
+
       const screen = els.leaderboardView
         ? els.leaderboardView.querySelector('.leaderboard-screen')
         : null;
@@ -10675,28 +10935,20 @@ let scoreTimingDetail =
         return;
       }
 
-      const root = document.documentElement;
       const body = els.modalBody;
-      const box = els.modalBox;
-
-      const subtitle =
-        body.querySelector('.tournament-summary-subtitle');
+      if (!body) return;
 
       const topGrid =
         body.querySelector('.tournament-summary-grid');
 
-      const topHeader =
-        body.querySelector('.tournament-summary-row.header');
-
       const podiumRows =
-        [
-          body.querySelector('.tournament-summary-row.place-1'),
-          body.querySelector('.tournament-summary-row.place-2'),
-          body.querySelector('.tournament-summary-row.place-3')
-        ].filter(Boolean);
-
-      const notes =
-        body.querySelector('.tournament-summary-notes');
+        Array.from(
+          body.querySelectorAll(
+            '.tournament-summary-row.place-1,' +
+            '.tournament-summary-row.place-2,' +
+            '.tournament-summary-row.place-3'
+          )
+        );
 
       const remaining =
         body.querySelector('.tournament-summary-remaining');
@@ -10710,50 +10962,38 @@ let scoreTimingDetail =
             )
           : [];
 
-      root.style.setProperty('--ts-edge', '5%');
-      root.style.setProperty(
-        '--ts-lower-count',
-        String(lowerRows.length)
-      );
-
       if (
-        !box ||
-        !body ||
         !topGrid ||
-        !topHeader ||
-        podiumRows.length < 3 ||
-        !remaining
+        podiumRows.length !== 3 ||
+        !remaining ||
+        lowerRows.length === 0
       ) {
         return;
       }
 
-      const fitGroupFont = (
-        elements,
-        maximum,
-        minimum
+      document.documentElement.style.setProperty(
+        '--ts-lower-count',
+        String(lowerRows.length)
+      );
+
+      const fitSingleLine = (
+        el,
+        maxPx,
+        minPx
       ) => {
-        const list =
-          (elements || []).filter(Boolean);
+        if (!el) return minPx;
 
-        if (!list.length) {
-          return minimum;
-        }
+        let low = minPx;
+        let high = Math.max(minPx, maxPx);
+        let best = minPx;
 
-        let low = minimum;
-        let high = Math.max(minimum, maximum);
-        let best = minimum;
-
-        for (let i = 0; i < 11; i++) {
+        for (let i = 0; i < 10; i++) {
           const mid = (low + high) / 2;
+          el.style.fontSize = mid + 'px';
 
-          list.forEach(el => {
-            el.style.fontSize = mid + 'px';
-          });
-
-          const fits = list.every(el =>
+          const fits =
             el.scrollWidth <= el.clientWidth + 1 &&
-            el.scrollHeight <= el.clientHeight + 1
-          );
+            el.scrollHeight <= el.clientHeight + 1;
 
           if (fits) {
             best = mid;
@@ -10763,401 +11003,192 @@ let scoreTimingDetail =
           }
         }
 
-        list.forEach(el => {
-          el.style.fontSize = best + 'px';
-        });
-
+        el.style.fontSize = best + 'px';
         return best;
       };
 
-      requestAnimationFrame(() => {
-        if (!box.isConnected || !body.isConnected) {
-          return;
+      const fitGroup = (
+        list,
+        maxPx,
+        minPx
+      ) => {
+        const items = list.filter(Boolean);
+        if (!items.length) return minPx;
+
+        let size = maxPx;
+
+        for (const el of items) {
+          size = Math.min(
+            size,
+            fitSingleLine(
+              el,
+              size,
+              minPx
+            )
+          );
         }
 
-        const bodyHeight =
-          body.getBoundingClientRect().height;
+        items.forEach(el => {
+          el.style.fontSize = size + 'px';
+        });
 
-        const subtitleHeight =
-          subtitle
-            ? subtitle.getBoundingClientRect().height
-            : 0;
+        return size;
+      };
 
-        /*
-          Keep the tiebreak explanation visually secondary.
-          Measure its natural two-line height using a restrained starter size.
-        */
-        const initialNoteFont =
+      /*
+        V4.3 SUMMARY RULE:
+        CSS owns ALL row heights using fractions of the live available
+        modal body. JS owns only typography fitting.
+
+        Because row heights are no longer written in pixels by JS,
+        dragging the browser visibly resizes the table continuously.
+      */
+      const bodyRect =
+        body.getBoundingClientRect();
+
+      const bodyH =
+        bodyRect.height;
+
+      const bodyW =
+        bodyRect.width;
+
+      const base =
+        Math.max(
+          12,
           Math.min(
-            18,
-            Math.max(
-              13,
-              bodyHeight * 0.022
+            bodyH * 0.031,
+            bodyW * 0.045
+          )
+        );
+
+      const lowerTeams =
+        Array.from(
+          remaining.querySelectorAll(
+            '.tournament-summary-remaining-cell.team'
+          )
+        );
+
+      const lowerScores =
+        Array.from(
+          remaining.querySelectorAll(
+            '.tournament-summary-remaining-cell.net-score'
+          )
+        );
+
+      const allStrokes =
+        [
+          ...Array.from(
+            topGrid.querySelectorAll(
+              '.tournament-summary-strokes'
             )
-          );
-
-        if (notes) {
-          notes.querySelectorAll('.tournament-summary-note')
-            .forEach(el => {
-              el.style.fontSize =
-                initialNoteFont + 'px';
-            });
-        }
-
-        const notesHeight =
-          notes
-            ? notes.getBoundingClientRect().height
-            : 0;
-
-        const gap =
-          Math.max(
-            4,
-            bodyHeight * 0.008
-          );
-
-        root.style.setProperty(
-          '--ts-section-gap',
-          gap + 'px'
-        );
-
-        const lowerCount =
-          Math.max(
-            1,
-            lowerRows.length
-          );
-
-        /*
-          Row-height hierarchy:
-          1st > 2nd > 3rd >= rows 4–10.
-          Header is compact.
-          Everything is solved from ACTUAL modal-body height.
-        */
-        const units =
-          0.72 +
-          1.24 +
-          1.14 +
-          1.06 +
-          lowerCount;
-
-        const sectionCount =
-          notes ? 3 : 2;
-
-        const availableRowsHeight =
-          Math.max(
-            180,
-            bodyHeight -
-            subtitleHeight -
-            notesHeight -
-            (gap * sectionCount)
-          );
-
-        const unit =
-          availableRowsHeight /
-          Math.max(1, units);
-
-        const headerH =
-          unit * 0.72;
-
-        const firstH =
-          unit * 1.24;
-
-        const secondH =
-          unit * 1.14;
-
-        const thirdH =
-          unit * 1.06;
-
-        const lowerH =
-          unit;
-
-        root.style.setProperty(
-          '--ts-header-row',
-          headerH + 'px'
-        );
-        root.style.setProperty(
-          '--ts-row-1',
-          firstH + 'px'
-        );
-        root.style.setProperty(
-          '--ts-row-2',
-          secondH + 'px'
-        );
-        root.style.setProperty(
-          '--ts-row-3',
-          thirdH + 'px'
-        );
-        root.style.setProperty(
-          '--ts-lower-row',
-          lowerH + 'px'
-        );
-
-        /*
-          NET STROKES is intentionally one consistent size
-          all the way down the table.
-        */
-        const allStrokeCells =
-          [
-            ...Array.from(
-              topGrid.querySelectorAll(
-                '.tournament-summary-strokes'
-              )
-            ),
-            ...Array.from(
-              remaining.querySelectorAll(
-                '.tournament-summary-remaining-cell.net-strokes'
-              )
-            )
-          ];
-
-        const strokeFont =
-          fitGroupFont(
-            allStrokeCells,
-            Math.min(
-              lowerH * 0.46,
-              bodyHeight * 0.034
-            ),
-            12
-          );
-
-        root.style.setProperty(
-          '--ts-strokes-font',
-          strokeFont + 'px'
-        );
-
-        /*
-          Team names fit HORIZONTALLY first.
-          Podium hierarchy is maintained, but the name always yields
-          before crossing its column boundary.
-        */
-        const team1 =
-          podiumRows[0].querySelector(
-            '.tournament-summary-team'
-          );
-
-        const team2 =
-          podiumRows[1].querySelector(
-            '.tournament-summary-team'
-          );
-
-        const team3 =
-          podiumRows[2].querySelector(
-            '.tournament-summary-team'
-          );
-
-        const lowerTeamCells =
-          Array.from(
-            remaining.querySelectorAll(
-              '.tournament-summary-remaining-cell.team'
-            )
-          );
-
-        const lowerTeamFont =
-          fitGroupFont(
-            lowerTeamCells,
-            Math.min(
-              lowerH * 0.46,
-              bodyHeight * 0.034
-            ),
-            12
-          );
-
-        const thirdTeamFont =
-          Math.max(
-            lowerTeamFont,
-            fitGroupFont(
-              [team3],
-              Math.min(
-                thirdH * 0.48,
-                bodyHeight * 0.038
-              ),
-              lowerTeamFont
-            )
-          );
-
-        const secondTeamFont =
-          Math.max(
-            thirdTeamFont,
-            fitGroupFont(
-              [team2],
-              Math.min(
-                secondH * 0.49,
-                bodyHeight * 0.041
-              ),
-              thirdTeamFont
-            )
-          );
-
-        const firstTeamFont =
-          Math.max(
-            secondTeamFont,
-            fitGroupFont(
-              [team1],
-              Math.min(
-                firstH * 0.50,
-                bodyHeight * 0.045
-              ),
-              secondTeamFont
-            )
-          );
-
-        root.style.setProperty(
-          '--ts-team-1',
-          firstTeamFont + 'px'
-        );
-        root.style.setProperty(
-          '--ts-team-2',
-          secondTeamFont + 'px'
-        );
-        root.style.setProperty(
-          '--ts-team-3',
-          thirdTeamFont + 'px'
-        );
-        root.style.setProperty(
-          '--ts-team-lower',
-          lowerTeamFont + 'px'
-        );
-
-        /*
-          NET SCORE is the visual priority.
-          It gets the strongest podium hierarchy because values are short.
-        */
-        const net1 =
-          podiumRows[0].querySelector(
-            '.tournament-summary-net'
-          );
-
-        const net2 =
-          podiumRows[1].querySelector(
-            '.tournament-summary-net'
-          );
-
-        const net3 =
-          podiumRows[2].querySelector(
-            '.tournament-summary-net'
-          );
-
-        const lowerNetCells =
-          Array.from(
-            remaining.querySelectorAll(
-              '.tournament-summary-remaining-cell.net-score'
-            )
-          );
-
-        const lowerNetFont =
-          fitGroupFont(
-            lowerNetCells,
-            Math.min(
-              lowerH * 0.58,
-              bodyHeight * 0.041
-            ),
-            14
-          );
-
-        const thirdNetFont =
-          fitGroupFont(
-            [net3],
-            Math.min(
-              thirdH * 0.60,
-              bodyHeight * 0.047
-            ),
-            lowerNetFont
-          );
-
-        const secondNetFont =
-          fitGroupFont(
-            [net2],
-            Math.min(
-              secondH * 0.63,
-              bodyHeight * 0.052
-            ),
-            Math.max(
-              lowerNetFont,
-              thirdNetFont
-            )
-          );
-
-        const firstNetFont =
-          fitGroupFont(
-            [net1],
-            Math.min(
-              firstH * 0.66,
-              bodyHeight * 0.058
-            ),
-            Math.max(
-              secondNetFont,
-              thirdNetFont
-            )
-          );
-
-        root.style.setProperty(
-          '--ts-net-1',
-          firstNetFont + 'px'
-        );
-        root.style.setProperty(
-          '--ts-net-2',
-          secondNetFont + 'px'
-        );
-        root.style.setProperty(
-          '--ts-net-3',
-          thirdNetFont + 'px'
-        );
-        root.style.setProperty(
-          '--ts-net-lower',
-          lowerNetFont + 'px'
-        );
-
-        /*
-          Place column: readable, but never allowed to dominate TEAM/SCORE.
-        */
-        const lowerPlaceCells =
-          Array.from(
-            remaining.querySelectorAll(
-              '.tournament-summary-remaining-cell.place'
-            )
-          );
-
-        const podiumPlaceCells =
-          podiumRows.map(row =>
-            row.querySelector(
-              '.tournament-summary-place'
-            )
-          );
-
-        fitGroupFont(
-          lowerPlaceCells,
-          Math.min(
-            lowerH * 0.46,
-            lowerTeamFont
           ),
+          ...Array.from(
+            remaining.querySelectorAll(
+              '.tournament-summary-remaining-cell.net-strokes'
+            )
+          )
+        ];
+
+      const podiumTeams =
+        podiumRows.map(row =>
+          row.querySelector('.tournament-summary-team')
+        );
+
+      const podiumScores =
+        podiumRows.map(row =>
+          row.querySelector('.tournament-summary-net')
+        );
+
+      const lowerTeamSize =
+        fitGroup(
+          lowerTeams,
+          base * 1.00,
+          11
+        );
+
+      const lowerScoreSize =
+        fitGroup(
+          lowerScores,
+          base * 1.18,
           12
         );
 
-        fitGroupFont(
-          podiumPlaceCells,
-          Math.min(
-            thirdH * 0.48,
-            thirdTeamFont
-          ),
-          13
+      const strokeSize =
+        fitGroup(
+          allStrokes,
+          base * 0.92,
+          11
         );
 
-        /*
-          Tiebreak text remains secondary to rows 4–10.
-        */
-        const finalNoteFont =
-          Math.max(
-            12,
-            Math.min(
-              lowerTeamFont * 0.78,
-              initialNoteFont
-            )
-          );
+      fitSingleLine(
+        podiumTeams[2],
+        Math.max(
+          lowerTeamSize,
+          base * 1.08
+        ),
+        lowerTeamSize
+      );
 
-        root.style.setProperty(
-          '--ts-note-font',
-          finalNoteFont + 'px'
+      fitSingleLine(
+        podiumTeams[1],
+        Math.max(
+          lowerTeamSize,
+          base * 1.18
+        ),
+        lowerTeamSize
+      );
+
+      fitSingleLine(
+        podiumTeams[0],
+        Math.max(
+          lowerTeamSize,
+          base * 1.30
+        ),
+        lowerTeamSize
+      );
+
+      fitSingleLine(
+        podiumScores[2],
+        Math.max(
+          lowerScoreSize,
+          base * 1.28
+        ),
+        lowerScoreSize
+      );
+
+      fitSingleLine(
+        podiumScores[1],
+        Math.max(
+          lowerScoreSize,
+          base * 1.42
+        ),
+        lowerScoreSize
+      );
+
+      fitSingleLine(
+        podiumScores[0],
+        Math.max(
+          lowerScoreSize,
+          base * 1.58
+        ),
+        lowerScoreSize
+      );
+
+      document.documentElement.style.setProperty(
+        '--ts-live-strokes-font',
+        strokeSize + 'px'
+      );
+
+      const noteSize =
+        Math.max(
+          11,
+          lowerTeamSize * 0.76
         );
-      });
+
+      document.documentElement.style.setProperty(
+        '--ts-live-note-font',
+        noteSize + 'px'
+      );
     }
 
     function showTournamentSummary() {
@@ -11312,7 +11343,7 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* SSHCP V4.2 — Once the tournament is complete, the normal leaderboard
+      /* SSHCP V4.3 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
          that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
@@ -11970,7 +12001,7 @@ let scoreTimingDetail =
       }
 
       /*
-        SSHCP V4.2 — size from the ACTUAL usable scroll viewport.
+        SSHCP V4.3 — size from the ACTUAL usable scroll viewport.
         leader-content has vertical padding and leader-table has top/bottom
         borders. Those pixels must be removed before dividing by 8, otherwise
         the scroll range lands between row boundaries and leaves a small
@@ -13059,7 +13090,8 @@ let scoreTimingDetail =
       .finally(() => {
         document.documentElement.classList.remove(
           'sshcp-pre-scorecard',
-          'sshcp-pre-leaderboard'
+          'sshcp-pre-leaderboard',
+          'sshcp-pre-complete'
         );
       });
     /* =========================================================
