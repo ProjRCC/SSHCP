@@ -36,7 +36,34 @@
           sessionStorage.getItem('sshcpFinalActionMode') || '';
 
         window.__sshcpBootFinalActionLabel =
-          sessionStorage.getItem('sshcpFinalActionLabel') || '';
+          (sessionStorage.getItem('sshcpFinalActionLabel') || '').replace(/\*+$/, '');
+
+        /* V5.3 refresh continuity: data snapshots are read before paint so a
+           pull-to-refresh can show the last-known scorecard/leaderboard immediately. */
+        try {
+          window.__sshcpBootScorecardSnapshot = JSON.parse(
+            sessionStorage.getItem('sshcpScorecardSnapshotV53') || 'null'
+          );
+        } catch (_) {
+          window.__sshcpBootScorecardSnapshot = null;
+        }
+
+        try {
+          window.__sshcpBootLeaderboardSnapshot = JSON.parse(
+            sessionStorage.getItem('sshcpLeaderboardSnapshotV53') || 'null'
+          );
+          if (
+            window.__sshcpBootLeaderboardSnapshot &&
+            Number(window.__sshcpBootLeaderboardSnapshot.finalSlotHeight) > 0
+          ) {
+            document.documentElement.style.setProperty(
+              '--v53-final-slot-h',
+              Number(window.__sshcpBootLeaderboardSnapshot.finalSlotHeight) + 'px'
+            );
+          }
+        } catch (_) {
+          window.__sshcpBootLeaderboardSnapshot = null;
+        }
 
         /*
           V5.2 — preserve the last-known RESPONSIVE geometry during a
@@ -95,7 +122,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.2 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.3 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -292,50 +319,6 @@
       height: auto;
 
       margin: 0 auto;
-    }
-
-    .reset-user-float {
-      position: relative;
-
-      width: 100%;
-      height: 0;
-
-      z-index: 10;
-    }
-
-    .reset-user-button {
-      position: absolute;
-
-      left: 50%;
-      bottom: 13px;
-
-      transform:
-        translateX(-50%);
-
-      width:
-        min(
-          52%,
-          215px
-        );
-
-      min-height: 39px;
-
-      border:
-        1px solid
-        var(--test-blue);
-
-      border-radius: 8px;
-
-      background:
-        rgba(255,255,255,.82);
-
-      color:
-        var(--test-blue);
-
-      font-size: 15px;
-      font-weight: 600;
-
-      letter-spacing: .4px;
     }
 
     .home-actions {
@@ -1457,12 +1440,6 @@
       margin-bottom: 8px;
     }
 
-    .quick-correction {
-      margin-top: 17px;
-
-      color: #000;
-    }
-
     .score-entry-overlay {
       align-items:
         flex-start;
@@ -1742,9 +1719,8 @@
 
     }
 
-.reset-user-float{display:none!important}
 .home-utility-row{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:0 13px;margin-top:7px}
-.home-utility-row .reset-user-button,.home-utility-row .quick-guide-button{position:static;transform:none;width:100%;min-height:44px;margin:0;border:1px solid #000;border-radius:8px;background:rgba(255,255,255,.78);color:#000;font-size:16px;font-weight:600;letter-spacing:.3px}
+.home-utility-row .quick-guide-button{position:static;transform:none;width:100%;min-height:44px;margin:0;border:1px solid #000;border-radius:8px;background:rgba(255,255,255,.78);color:#000;font-size:16px;font-weight:600;letter-spacing:.3px}
 .home-main-button{background:var(--gold);color:#eee;border-color:var(--gold)}
 .home-main-button:active{background:var(--gold);color:#eee}
 #homeLeaderboardButton{width:80%;align-self:center;background:var(--gold);color:#eee;border:2px solid var(--gold)}
@@ -1826,7 +1802,6 @@
 .test-log-fail{color:var(--red)}
 .test-log-empty{padding:24px 10px;color:#666;text-align:center;font-size:13px}
 .test-log-reset{position:sticky;bottom:0;flex:0 0 auto;width:100%;min-height:46px;margin-top:10px;padding-bottom:env(safe-area-inset-bottom);border:1px solid var(--red);border-radius:8px;background:#fafafa;color:var(--red);font-size:15px;font-weight:700;z-index:5}
-.test-clear-scores{flex:0 0 auto;width:100%;min-height:46px;margin-top:10px;border:2px solid var(--red);border-radius:8px;background:#fafafa;color:var(--red);font-size:15px;font-weight:800;letter-spacing:.2px}
 .test-score-controls{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
 .test-score-action{min-height:42px;border-radius:8px;background:#fafafa;font-size:13px;font-weight:800;letter-spacing:.1px}
 .test-score-action.add{border:2px solid var(--gold);color:var(--gold)}
@@ -1858,7 +1833,6 @@
 .home-team-option{display:block;width:100%;min-height:48px;padding:9px 12px;border:0;border-bottom:1px solid #ccc;background:#fafafa;color:#000;text-align:center;font-size:18px;font-weight:600}
 .home-team-option:last-child{border-bottom:0}
 .home-team-option:active{background:var(--gold);color:#eee}
-.home-utility-row .reset-user-button{font-size:12px;letter-spacing:.15px}
 .modal-overlay.reset-authorization{align-items:flex-end;justify-content:center;padding:20px 20px max(calc(env(safe-area-inset-bottom) + 20px),calc(33dvh - 55px))}
 .modal-overlay.reset-authorization .modal-box{text-align:center}
 .modal-overlay.reset-authorization .modal-title,.modal-overlay.reset-authorization .modal-text{text-align:center}
@@ -1932,17 +1906,8 @@ body.score-team-menu-open .score-fixed-top{
       color: #000;
     }
 
-    .home-leaderboard-button,
-    .submit-button.active,
-    .score-cell.saved,
-    .modal-button.primary:not(:disabled) {
-      color: #000;
-    }
-
-    .home-leaderboard-button,
     .home-scorecard-main,
     .home-scorecard-arrow,
-    .submit-button.active,
     .score-button.saved,
     .score-entry-enter,
     .modal-btn.primary:not(:disabled) {
@@ -2002,7 +1967,7 @@ body.score-team-menu-open .score-fixed-top{
     }
 
     .score-entry-clear {
-      
+
       border: 1px solid rgba(0,0,0,.72);
       background: #f6f6f6;
       color: #000;
@@ -2897,34 +2862,12 @@ body.score-team-menu-open .score-fixed-top{
   font-size: 17px !important;
 }
 
-.leader-refresh-progress {
-  width: 58%;
-  max-width: 430px;
-  height: 5px;
-  margin: 5px auto 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #b5b5b5;
-}
-
-.leader-refresh-progress-fill {
-  width: 0%;
-  height: 100%;
-  border-radius: inherit;
-  background: #cfcfcf;
-}
-
 .leader-update-note {
   display: none !important;
 }
 
 .leader-title-bar {
   transform: translateY(-6px);
-}
-
-.leader-refresh-progress {
-  margin-top: -3px !important;
-  margin-bottom: 8px !important;
 }
 
 .score-row {
@@ -3173,13 +3116,6 @@ body.score-team-menu-open .score-fixed-top{
 .leader-final-action.summary-label {
   font-size: clamp(17px, 5vw, 24px);
 }
-.leader-final-sub {
-  display: block;
-  margin-top: 2px;
-  font-size: .62em;
-  line-height: 1;
-  white-space: nowrap;
-}
 .leader-final-action.break-tie {
   display: block;
   background: var(--red);
@@ -3191,7 +3127,6 @@ body.score-team-menu-open .score-fixed-top{
   color: #000;
 }
 .leader-top.final-action-active .leader-title { visibility: hidden; }
-.leader-top.final-action-active .leader-refresh-progress { visibility: hidden; }
 
 /* Tiebreak result: center the card around 65% of viewport height. */
 .modal-overlay.tournament-result {
@@ -3388,15 +3323,6 @@ body.score-team-menu-open .score-fixed-top{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.tournament-summary-remaining-row .bullet-place {
-  display: inline-block;
-  min-width: 28px;
-  font-weight: 800;
-}
-.tournament-summary-remaining-row .remaining-team,
-.tournament-summary-remaining-row .remaining-readout {
-  font-weight: 700;
 }
 .modal-overlay.tournament-summary .modal-actions {
   flex: 0 0 auto;
@@ -4061,7 +3987,6 @@ body.score-team-menu-open .score-fixed-top{
 .modal-overlay.switch-authorization .modal-title{text-align:center;color:#000;font-size:23px}
 .switch-auth-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
 .switch-auth-button{min-height:54px;border:2px solid var(--gold);border-radius:9px;background:#fafafa;color:#000;font-size:16px;font-weight:700}
-.test-valid-qr-list{min-height:36px;border:2px solid var(--gold);border-radius:8px;background:#fafafa;color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.2px}
 .passkey-team-select-wrap{position:relative;width:100%;margin:12px 0 0}
 .passkey-team-button{position:relative;width:100%;height:46px;padding:0 50px 0 18px;border:5px solid var(--gold);border-radius:9px;background:#fff;color:#000;font-size:17px;font-weight:700;text-align:center;outline:none;box-sizing:border-box;-webkit-appearance:none;appearance:none}
 .passkey-team-button::after{content:"";position:absolute;right:18px;top:50%;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #000;transform:translateY(-35%);pointer-events:none}
@@ -4070,15 +3995,6 @@ body.score-team-menu-open .score-fixed-top{
 .passkey-team-option{display:block;width:100%;min-height:46px;padding:8px 12px;border:0;border-bottom:1px solid #ccc;background:#fff;color:#000;text-align:center;font-size:17px;font-weight:700;-webkit-appearance:none;appearance:none}
 .passkey-team-option:last-child{border-bottom:0}
 .passkey-team-option:active{background:var(--gold);color:#000}
-.qr-list-scroll{max-height:min(58dvh,520px);overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border:1px solid rgba(0,0,0,.72);border-radius:9px;background:#fff}
-.qr-list-row{display:grid;grid-template-columns:18% 31% 51%;min-height:38px;border-bottom:1px solid #ccc;font-size:11px;line-height:1.15}
-.qr-list-row:last-child{border-bottom:0}
-.qr-list-row.header{position:sticky;top:0;z-index:2;background:#f2f2f2;font-weight:800}
-.qr-list-row>div{min-width:0;display:flex;align-items:center;justify-content:center;padding:6px 5px;border-right:1px solid #ccc;text-align:center}
-.qr-list-row>div:last-child{border-right:0}
-.qr-list-passkey{font-family:monospace;font-size:9px;word-break:break-all;user-select:all;-webkit-user-select:all}
-.qr-list-unassigned{color:#888;font-style:italic}
-.qr-list-loading{padding:24px 10px;text-align:center;color:#666;font-size:14px;font-weight:600}
 .switch-auth-key{margin-top:14px;color:#999;font-family:monospace;font-size:8px;line-height:1.2;word-break:break-all;user-select:all;-webkit-user-select:all}
 .quick-guide-separator{width:78%;height:1px;margin:10px auto;background:#b9b9b9}
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
@@ -4101,14 +4017,14 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
    - Event line remains in the lower breathing space.
    ========================================================= */
 #homeView .home-actions{
-  top:-2.5vh!important;            /* previous visual center ~79vh -> ~80vh */
-  gap:13px!important;              /* same spacing between all 3 controls */
+  top:-2.5vh!important; /* previous visual center ~79vh -> ~80vh */
+  gap:13px!important; /* same spacing between all 3 controls */
 }
 
 #homeView #homeLeaderboardButton{
-  min-height:49px!important;       /* ~85% of prior 58px height */
+  min-height:49px!important; /* ~85% of prior 58px height */
   padding:8px 14px!important;
-  font-size:21px!important;        /* keep current text size */
+  font-size:21px!important; /* keep current text size */
   border-width:1.5px!important;
 }
 
@@ -4123,20 +4039,20 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 }
 
 #homeView .home-scorecard-action{
-  font-size:20px!important;        /* ACCESS SCORECARD stays the same */
+  font-size:20px!important; /* ACCESS SCORECARD stays the same */
   line-height:1!important;
 }
 
 #homeView .home-scorecard-team{
   margin-top:3px!important;
-  font-size:26px!important;        /* authorized Team is now the focal text */
+  font-size:26px!important; /* authorized Team is now the focal text */
   font-weight:800!important;
   line-height:.96!important;
   letter-spacing:.1px!important;
 }
 
 #homeView .home-scorecard-team.select-team{
-  font-size:20px!important;        /* do not blow up SELECT TEAM placeholder */
+  font-size:20px!important; /* do not blow up SELECT TEAM placeholder */
   font-weight:600!important;
 }
 
@@ -4206,24 +4122,8 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   line-height:1!important;
 }
 
-/* Any drop-up/menu panel tied to the scorecard control should meet the
-   gold button cleanly without protruding through rounded corners. */
-#homeView .home-scorecard-menu,
-#homeView .home-team-menu,
-#homeView .scorecard-team-menu,
-#homeView .team-menu{
-  overflow:hidden!important;
-  border-radius:14px!important;
-  background-clip:padding-box!important;
-}
-
-/* Keep leaderboard + quick guide visually close to the larger center control. */
 #homeView #homeLeaderboardButton{
   margin-bottom:0!important;
-}
-
-#homeView #homeQuickGuideButton{
-  margin-top:0!important;
 }
 
 @media(max-width:420px){
@@ -4241,10 +4141,10 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
    ========================================================= */
 
 /* ---------- VISUAL LANGUAGE ----------
-   Gold fill     = primary action
-   Gold outline  = secondary action (same 5px weight as CLEAR)
+   Gold fill = primary action
+   Gold outline = secondary action (same 5px weight as CLEAR)
    Black outline = utility action, 50% stronger than before
-   Light gray    = information / current context
+   Light gray = information / current context
    ----------------------------------- */
 
 /* Utility black-outline controls: HOME / INFO / QUICK GUIDE. */
@@ -4425,8 +4325,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   margin: 0 auto !important;
 }
 
-.leaderboard-screen.tournament-complete .leader-title-bar,
-.leaderboard-screen.tournament-complete .leader-refresh-progress {
+.leaderboard-screen.tournament-complete .leader-title-bar {
   display: none !important;
 }
 
@@ -5375,8 +5274,7 @@ html body.team-qr-locked #homeTeamArrowButton{
    ========================================================= */
 
 /* Remove only live-only elements. */
-.leaderboard-screen.tournament-complete .leader-title-bar,
-.leaderboard-screen.tournament-complete .leader-refresh-progress{
+.leaderboard-screen.tournament-complete .leader-title-bar{
   display:none!important;
 }
 
@@ -5471,7 +5369,6 @@ html.sshcp-pre-complete #leaderboardView .leaderboard-screen{
 }
 
 html.sshcp-pre-complete #leaderboardView .leader-title-bar,
-html.sshcp-pre-complete #leaderboardView .leader-refresh-progress,
 html.sshcp-pre-complete #leaderboardView .leader-update-note{
   display:none!important;
 }
@@ -5647,8 +5544,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 }
 
 /* Every cell is bounded by its live row/column. */
-.modal-overlay.tournament-summary
-.tournament-summary-cell,
 .modal-overlay.tournament-summary
 .tournament-summary-remaining-cell{
   min-width:0!important;
@@ -5952,7 +5847,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 }
 
 #leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar,
-#leaderboardView .leaderboard-screen.tournament-complete .leader-refresh-progress,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-update-note{
   display:none!important;
 }
@@ -6308,6 +6202,252 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   }
 }
 
+
+/* =========================================================
+   SSHCP V5.3 — LOCKED RESPONSIVE / TEST-PAGE DELTAS
+   ========================================================= */
+
+/* Shared Scorecard / Leaderboard navigation controls. */
+#scorecardView .nav-button,
+#leaderboardView .nav-button{
+  width:74px!important;
+  height:40px!important;
+  font-size:20px!important;
+  line-height:1!important;
+}
+
+@media(max-width:420px){
+  #scorecardView .nav-button,
+  #leaderboardView .nav-button{
+    width:72px!important;
+    height:40px!important;
+    font-size:20px!important;
+  }
+}
+
+/* Score entry locked typography. */
+.score-entry-hole{
+  font-size:clamp(22px,3.8dvh,28px)!important;
+}
+.score-entry-enter{
+  font-size:clamp(21px,4.5dvh,33px)!important;
+}
+
+/* Authorization geometry stays unchanged; this is the agreed 27px trial. */
+.modal-overlay.authorization .modal-btn{
+  font-size:27px!important;
+  line-height:1!important;
+}
+
+/* True three-line STATUS stack: score / THRU / hole number. */
+#leaderboardView .leader-through-cell{
+  display:grid!important;
+  grid-template-rows:10% 30% 20% 30% 10%!important;
+  grid-template-columns:100%!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:0!important;
+  padding:0 2%!important;
+}
+#leaderboardView .leader-through-score{
+  grid-row:2!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+}
+#leaderboardView .leader-through-label{
+  display:contents!important;
+}
+#leaderboardView .leader-through-word{
+  grid-row:3!important;
+}
+#leaderboardView .leader-through-value{
+  grid-row:4!important;
+}
+#leaderboardView .leader-through-word,
+#leaderboardView .leader-through-value{
+  min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+
+/* Team names stay mathematically centered; podium markers are annotations. */
+#leaderboardView .leader-team-cell{
+  position:relative!important;
+}
+#leaderboardView .leader-team-anchor{
+  position:relative!important;
+  display:inline-block!important;
+  max-width:calc(100% - 14px)!important;
+  margin:auto!important;
+  line-height:1!important;
+}
+#leaderboardView .leader-team-name{
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:100%!important;
+  margin:0!important;
+  text-align:center!important;
+}
+#leaderboardView .leader-team-name.two-line{
+  white-space:normal!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+#leaderboardView .leader-team-marker{
+  position:absolute!important;
+  left:calc(100% + 2px)!important;
+  top:50%!important;
+  transform:translateY(-58%)!important;
+  font-size:.55em!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  pointer-events:none!important;
+}
+
+/* Completed leaderboard uses the same table engine; live-only title is removed. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
+  display:none!important;
+}
+
+/* Tie Break Result: 32/68 BACK/SUMMARY and non-breaking hole label. */
+.modal-overlay.tournament-result .modal-actions{
+  grid-template-columns:32fr 68fr!important;
+}
+.tiebreak-hole-nowrap{
+  white-space:nowrap!important;
+}
+
+/* Scramble Summary markers never participate in team centering. */
+.modal-overlay.tournament-summary .summary-team-anchor{
+  position:relative!important;
+  display:inline-block!important;
+  max-width:calc(100% - 14px)!important;
+  line-height:1!important;
+}
+.modal-overlay.tournament-summary .summary-team-text{
+  display:block!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  line-height:1!important;
+}
+.modal-overlay.tournament-summary .summary-team-marker{
+  position:absolute!important;
+  left:calc(100% + 2px)!important;
+  top:50%!important;
+  transform:translateY(-58%)!important;
+  font-size:.55em!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  pointer-events:none!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-strokes,
+.modal-overlay.tournament-summary .tournament-summary-remaining-cell.net-strokes{
+  padding-left:1px!important;
+  padding-right:1px!important;
+  white-space:nowrap!important;
+}
+/* Top-three NET STROKES may use two lines: value at 40% row height,
+   compact handicap readout at 30%. This avoids width-driven microscopic type. */
+.modal-overlay.tournament-summary .tournament-summary-row > .top-three-strokes{
+  display:grid!important;
+  grid-template-rows:15% 40% 30% 15%!important;
+  grid-template-columns:100%!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:0!important;
+  padding:0 1px!important;
+  white-space:normal!important;
+}
+.modal-overlay.tournament-summary .top-three-strokes-value{
+  grid-row:2!important;
+}
+.modal-overlay.tournament-summary .top-three-strokes-hcp{
+  grid-row:3!important;
+}
+.modal-overlay.tournament-summary .top-three-strokes-value,
+.modal-overlay.tournament-summary .top-three-strokes-hcp{
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-note{
+  font-size:13px!important;
+}
+
+/* TEST page only: one score-action row, larger readable controls, HOME centered. */
+#testLogView .test-log-table{
+  flex:1 1 auto!important;
+  min-height:0!important;
+}
+#testLogView .test-score-controls{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:5px!important;
+  margin-top:7px!important;
+}
+#testLogView .test-score-action{
+  height:50px!important;
+  min-height:50px!important;
+  padding:2px!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+}
+#testLogView .test-switch-auth,
+#testLogView .test-remove-auth{
+  height:46px!important;
+  min-height:46px!important;
+  padding:2px 4px!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+}
+#testLogView .test-log-footer-utils .test-log-reset,
+#testLogView .test-log-footer-utils .test-copy-log,
+#testLogView .test-log-footer-utils .test-log-home{
+  height:42px!important;
+  min-height:42px!important;
+  padding:2px 4px!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+}
+#testLogView .test-log-home{
+  border-color:var(--gold)!important;
+  background:var(--gold)!important;
+  color:#000!important;
+  font-weight:800!important;
+}
+
+#leaderboardView .leaderboard-screen.tournament-complete{
+  grid-template-rows:auto var(--v5-leader-head-h,52px) minmax(0,1fr) var(--v53-final-slot-h,72px) auto auto!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  height:var(--v53-final-slot-h,72px)!important;
+  min-height:0!important;
+  max-height:none!important;
+  flex-basis:var(--v53-final-slot-h,72px)!important;
+}
+
 </style>
 </head>
 
@@ -6342,7 +6482,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.2</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.3</button>
 
       <div class="splash-image-wrap">
 
@@ -6351,19 +6491,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
           class="splash-image"
           alt="Running of the Bulls 2026"
         >
-
-      </div>
-
-
-      <div class="reset-user-float">
-
-        <button
-          id="resetUserButton"
-          class="reset-user-button"
-          type="button"
-        >
-          RESET USER
-        </button>
 
       </div>
 
@@ -6516,6 +6643,37 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
       >
 
         <div id="scoreRows"></div>
+        <script>
+          (function () {
+            try {
+              var snap = window.__sshcpBootScorecardSnapshot;
+              var rows = document.getElementById('scoreRows');
+              var gross = document.getElementById('scoreRunningGross');
+              var net = document.getElementById('scoreRunningNet');
+              var scroll = document.getElementById('scoreScroll');
+
+              if (!snap || !rows || !snap.rowsHtml) return;
+
+              rows.innerHTML = snap.rowsHtml;
+
+              if (gross && snap.runningGross) {
+                gross.textContent = snap.runningGross.text || '(E)';
+                gross.className = snap.runningGross.className || 'score-running-gross';
+              }
+
+              if (net && snap.runningNet) {
+                net.textContent = snap.runningNet.text || '(E)';
+                net.className = snap.runningNet.className || 'score-running-net';
+              }
+
+              if (scroll && Number.isFinite(Number(snap.scrollTop))) {
+                requestAnimationFrame(function () {
+                  scroll.scrollTop = Math.max(0, Number(snap.scrollTop) || 0);
+                });
+              }
+            } catch (_) {}
+          })();
+        </script>
 
       </div>
 
@@ -6610,18 +6768,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
             LIVE LEADERBOARD
           </div>
 
-          <button
-            id="leaderRefreshButtonTop"
-            class="leader-refresh-button"
-            type="button"
-          >
-            REFRESH
-          </button>
-
-        </div>
-
-        <div id="leaderRefreshProgress" class="leader-refresh-progress" aria-hidden="true">
-          <div id="leaderRefreshProgressFill" class="leader-refresh-progress-fill"></div>
         </div>
 
       </div>
@@ -6647,13 +6793,31 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
         <div class="leader-table">
 
           <div id="leaderRows"></div>
+          <script>
+            (function () {
+              try {
+                var snap = window.__sshcpBootLeaderboardSnapshot;
+                var rows = document.getElementById('leaderRows');
+                var content = document.querySelector('#leaderboardView .leader-content');
+                if (!snap || !rows || !snap.rowsHtml) return;
+
+                rows.innerHTML = snap.rowsHtml;
+
+                if (content && Number.isFinite(Number(snap.scrollTop))) {
+                  requestAnimationFrame(function () {
+                    content.scrollTop = Math.max(0, Number(snap.scrollTop) || 0);
+                  });
+                }
+              } catch (_) {}
+            })();
+          </script>
 
         </div>
 
       </div>
 
 
-      <div id="leaderFinalSlot" class="leader-final-slot">
+      <div class="leader-final-slot">
         <button
           id="leaderFinalActionButton"
           class="leader-final-action"
@@ -6738,18 +6902,17 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
           <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTHORIZATION</button>
           <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTHORIZATION</button>
         </div>
-        <button id="testValidQrListButton" class="test-valid-qr-list" type="button">LOAD ASSIGNED PASSKEYS</button>
       </div>
       <div class="test-score-controls">
-        <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR CURRENT</button>
-        <button id="testAddRandomCurrentButton" class="test-score-action add" type="button">ADD RANDOM CURRENT</button>
-        <button id="testDeleteCurrentButton" class="test-score-action delete" type="button">DELETE CURRENT</button>
+        <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR</button>
+        <button id="testAddRandomCurrentButton" class="test-score-action add" type="button">ADD RANDOM</button>
+        <button id="testAddRandom2CurrentButton" class="test-score-action add" type="button">ADD RANDOM 2</button>
         <button id="testDeleteAllButton" class="test-score-action delete" type="button">DELETE ALL</button>
       </div>
       <div class="test-log-footer-utils">
         <button id="testLogResetButton" class="test-log-reset" type="button">DELETE TEST DATA</button>
-        <button id="testCopyLogButton" class="test-copy-log" type="button">COPY LOG</button>
         <button id="testLogHomeButton" class="test-log-home" type="button">HOME</button>
+        <button id="testCopyLogButton" class="test-copy-log" type="button">COPY LOG</button>
       </div>
       <input id="testQrCameraInput" type="file" accept="image/*" capture="environment" hidden>
     </div>
@@ -6896,40 +7059,40 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.2
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.3
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
     // FRONTEND:
-    //   GitHub Pages
+    // GitHub Pages
     //
     // APP-FACING BACKEND:
-    //   CLOUDFLARE WORKER
-    //   https://rotbtest.projrcc.workers.dev
+    // CLOUDFLARE WORKER
+    // https://rotbtest.projrcc.workers.dev
     //
     // DATA PATH:
-    //   GitHub ROTB -> Cloudflare Worker -> Google Sheets API
-    //   -> ROTB Google Sheet
+    // GitHub ROTB -> Cloudflare Worker -> Google Sheets API
+    // -> ROTB Google Sheet
     //
     // IMPORTANT — AUDIT RULE:
-    //   GOOGLE APPS SCRIPT IS NOT USED BY V7-CF.
-    //   There must be NO Google Apps Script endpoint in this file.
-    //   There must be NO Apps Script fallback in this file.
-    //   Search "Cloudflare", "rotbtest", or "Google Apps Script"
-    //   and this architecture should be immediately obvious.
+    // GOOGLE APPS SCRIPT IS NOT USED BY THIS BUILD.
+    // There must be NO Google Apps Script endpoint in this file.
+    // There must be NO Apps Script fallback in this file.
+    // Search "Cloudflare", "rotbtest", or "Google Apps Script"
+    // and this architecture should be immediately obvious.
     //
     // SCORECARD READ:
-    //   One fresh Cloudflare read.
+    // One fresh Cloudflare read.
     //
     // SCORE SAVE:
-    //   One Cloudflare save request. The Worker writes to Sheets,
-    //   reads the values back, verifies the exact scores, and only
-    //   then returns verified:true. Scores turn gold only after that.
-    //   There is NO automatic second write and NO artificial wait.
+    // One Cloudflare save request. The Worker writes to Sheets,
+    // reads the values back, verifies the exact scores, and only
+    // then returns verified:true. Scores turn gold only after that.
+    // There is NO automatic second write and NO artificial wait.
     //
     // LEADERBOARD:
-    //   Fresh Cloudflare read every time LIVE LEADERBOARD is opened.
-    //   No polling.
+    // Fresh Cloudflare read every time LIVE LEADERBOARD is opened.
+    // No polling.
     // ==========================================================
 
 
@@ -6978,8 +7141,8 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
       testAddRandomCurrentButton:
         document.getElementById('testAddRandomCurrentButton'),
 
-      testDeleteCurrentButton:
-        document.getElementById('testDeleteCurrentButton'),
+      testAddRandom2CurrentButton:
+        document.getElementById('testAddRandom2CurrentButton'),
 
       testDeleteAllButton:
         document.getElementById('testDeleteAllButton'),
@@ -6996,9 +7159,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
       homeTeamDropup:
         document.getElementById('homeTeamDropup'),
 
-      resetUserButton:
-        document.getElementById('resetUserButtonV2'),
-
       testTeamAuthorizationCheck:
         document.getElementById('testTeamAuthorizationCheck'),
 
@@ -7010,12 +7170,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
       testSwitchAuthorizationButton:
         document.getElementById('testSwitchAuthorizationButton'),
-
-      testValidQrListButton:
-        document.getElementById('testValidQrListButton'),
-
-      testDeleteCacheButton:
-        null,
 
       testQrCameraInput:
         document.getElementById('testQrCameraInput'),
@@ -7034,12 +7188,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
       leaderContent:
         document.querySelector('.leader-content'),
-
-      leaderFinalSlot:
-        document.getElementById('leaderFinalSlot'),
-
-      leaderBottom:
-        document.querySelector('#leaderboardView .leader-bottom'),
 
       scoreRows:
         document.getElementById('scoreRows'),
@@ -7067,12 +7215,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
       leaderUpdateNote:
         document.getElementById('leaderUpdateNote'),
-
-      leaderRefreshProgress:
-        document.getElementById('leaderRefreshProgress'),
-
-      leaderRefreshProgressFill:
-        document.getElementById('leaderRefreshProgressFill'),
 
       leaderFinalActionButton:
         document.getElementById('leaderFinalActionButton'),
@@ -7190,24 +7332,8 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
       false;
 
 
-    let leaderboardAutoScrollPending =
-      false;
-
-
     let leaderboardAutoScrollTimer =
       null;
-
-
-    let leaderboardRefreshCycleTimer =
-      null;
-
-
-    let leaderboardRefreshCycleFrame =
-      null;
-
-
-    let leaderboardRefreshCycleStartedAt =
-      0;
 
 
     let saveInProgress =
@@ -7234,10 +7360,13 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
       null;
 
 
-    
+
 
     let lastLeaderboardRows = [];
     let tournamentSummaryResizeObserver = null;
+
+    let scorecardHydratedFromSnapshotV53 = false;
+    let scorecardHydratedScrollTopV53 = 0;
 let scoreTimingDetail =
       '';
 
@@ -7404,70 +7533,6 @@ let scoreTimingDetail =
       els.leaderTiming.textContent = 'RUNNING OF THE BULLS 2026';
     }
 
-
-    function fitTimingText(element) {
-      if (!element) return;
-
-      const nav =
-        element.closest('.score-nav, .leader-nav');
-
-      const referenceButton =
-        nav
-          ? nav.querySelector('.nav-button')
-          : null;
-
-      if (!referenceButton) return;
-
-      const buttonStyle =
-        getComputedStyle(referenceButton);
-
-      /*
-        V7-CF.1 TIMING TEXT:
-        - May use one or two lines.
-        - Never extends lower than HOME / INFO.
-        - HOME / INFO button height is the absolute vertical limit.
-        - Font shrinks only as needed to keep all timing visible
-          inside that same height.
-      */
-      const maxHeight =
-        referenceButton.clientHeight;
-
-      const maxSize = 15;
-      const minSize = 8;
-
-      element.style.fontFamily =
-        buttonStyle.fontFamily;
-
-      element.style.fontWeight =
-        buttonStyle.fontWeight;
-
-      element.style.letterSpacing =
-        buttonStyle.letterSpacing;
-
-      element.style.lineHeight = '1.05';
-      element.style.whiteSpace = 'normal';
-      element.style.textAlign = 'center';
-      element.style.justifyContent = 'center';
-      element.style.alignItems = 'center';
-      element.style.height = maxHeight + 'px';
-      element.style.maxHeight = maxHeight + 'px';
-      element.style.overflow = 'hidden';
-
-      let size = maxSize;
-
-      element.style.fontSize =
-        size + 'px';
-
-      while (
-        size > minSize &&
-        element.scrollHeight > maxHeight
-      ) {
-        size -= .25;
-        element.style.fontSize =
-          size + 'px';
-      }
-    }
-
     /* =========================================================
        SSHCP V5.2 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
@@ -7550,6 +7615,8 @@ let scoreTimingDetail =
           els.testSwitchAuthorizationButton.textContent = 'GAIN AUTHORIZATION';
         }
       }
+    
+      requestAnimationFrame(fitTestPageButtonText);
     }
     function setTeamAuthorizationEnabled(enabled){
       localStorage.setItem(SSHCP_TEAM_AUTH_KEY, enabled ? '1' : '0');
@@ -7924,26 +7991,6 @@ let scoreTimingDetail =
       return sshcpQrDirectoryPromise;
     }
 
-    async function loadTestQrDirectory() {
-      return readStoredTestQrDirectory() || [
-        {
-          qrId: 'MASTER',
-          passkey: SSHCP_MASTER_TEST_KEY,
-          role: 'MASTER',
-          assigned: true,
-          team: 'MASTER',
-          status: 'MASTER'
-        }
-      ];
-    }
-
-    function clearTestQrDirectoryCache() {
-      sshcpQrDirectoryCache = null;
-      localStorage.removeItem(SSHCP_TEST_QR_CACHE_KEY);
-      localStorage.removeItem(SSHCP_TEST_QR_CACHE_TIME_KEY);
-      addTestLog('QR CACHE', 'OK', '—', 'LOCAL QR DIRECTORY DELETED');
-    }
-
     function populatePasskeyTeamSelect(menu, directory) {
       if (!menu) return;
       const assigned = (directory || [])
@@ -8175,59 +8222,11 @@ let scoreTimingDetail =
         )
       );
 
-    }
-
-
-    function getRememberedScorePosition() {
-
-      if (
-        !selectedTeam
-      ) {
-
-        return 0;
-
-      }
-
-
-      const value =
-        Number(
-          localStorage.getItem(
-            scorePositionKey(
-              selectedTeam.name
-            )
-          )
-        );
-
-
-      return Number.isFinite(
-        value
-      )
-        ? Math.max(
-            0,
-            value
-          )
-        : 0;
+      saveScorecardSnapshotV53();
 
     }
 
 
-    function getFirstEmptyScoreIndex() {
-
-      if (
-        !selectedTeam
-      ) {
-
-        return -1;
-
-      }
-
-
-      return localScores.findIndex(
-        score =>
-          score === null
-      );
-
-    }
 
 
     function restoreScorePosition(useLocalProgress = false) {
@@ -8257,12 +8256,12 @@ let scoreTimingDetail =
 
                 The score viewport is exactly nine holes tall.
 
-                Through Hole 5  -> show 1-9
-                Through Hole 6  -> show 2-10
-                Through Hole 7  -> show 3-11
+                Through Hole 5 -> show 1-9
+                Through Hole 6 -> show 2-10
+                Through Hole 7 -> show 3-11
                 ...
                 Through Hole 14 -> show 10-18
-                Hole 15+        -> remain at 10-18
+                Hole 15+ -> remain at 10-18
               */
               let lastCompletedIndex =
                 -1;
@@ -8463,44 +8462,6 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       RESET USER
-       TESTING ONLY
-       ========================================================= */
-
-
-    function performAuthorizationReset() {
-      localStorage.removeItem('rotbAuthorizedTeam');
-      localStorage.removeItem('rotbSelectedTeam');
-      Object.keys(localStorage).forEach(key => {
-        if (key.indexOf('rotbScoreScroll:') === 0) localStorage.removeItem(key);
-      });
-      sessionStorage.removeItem('rotbCurrentView');
-      selectedTeam = null;
-      localScores = Array(18).fill(null);
-      savedScores = Array(18).fill(null);
-      closeScoreTeamDropdown();
-      updateScoreTeamSelectButton();
-      closeModal();
-      updateHomeScorecardAccess();
-      showHome();
-    }
-
-    function resetUser() {
-      closeModal();
-      closeHomeTeamDropup();
-      els.modalOverlay.classList.add('reset-authorization');
-      els.modalTitle.textContent = 'RESET AUTHORIZATION';
-      els.modalTitle.classList.remove('testing');
-      els.modalBody.innerHTML = 'This removes all devices scoring authentication/team selection.<br>No scores will be changed.';
-      els.modalInput.style.display = 'none';
-      const cancel = makeModalButton('CANCEL', '', closeModal);
-      const reset = makeModalButton('RESET', 'reset-danger', performAuthorizationReset);
-      els.modalActions.className = 'modal-actions';
-      els.modalActions.replaceChildren(cancel, reset);
-      els.modalOverlay.classList.add('open');
-    }
-
-    /* =========================================================
        TEST LOG — FULL LOCAL HISTORY
        ========================================================= */
 
@@ -8549,7 +8510,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.2 TEST LOG',
+        'SSHCP V5.3 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -8647,10 +8608,10 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V5.2 — TEST PAGE opening performs the same single CF V1.3
-         qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
-         remains immediately usable until the fresh result succeeds. */
+      /* TEST PAGE opening refreshes the CF QR directory once. Existing cached
+         data remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
+      requestAnimationFrame(fitTestPageButtonText);
       window.scrollTo(0, 0);
     }
 
@@ -8659,44 +8620,201 @@ let scoreTimingDetail =
       renderTestLog();
     }
 
-    function deleteTestQrCache() {
-      clearTestQrDirectoryCache();
-    }
-
-
     /* =========================================================
        TEST PAGE — BULK SCORE CONTROLS
-       Every action requires an explicit YES confirmation.
-       ADD RANDOM CURRENT uses CF V1.4's realistic random score mode.
-       CURRENT = teams that currently exist in the Sheet.
-       ALL = all 36 score slots (DELETE ALL only in the UI).
+       ADD PAR / ADD RANDOM affect current teams. DELETE ALL clears all slots.
+       ADD RANDOM 2 uses the existing verified saveScores path to create a
+       stronger 68–74 round with 3–7 birdies, 3–7 bogeys and 0–2 eagles.
        ========================================================= */
+
+    function randomIntInclusive(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffledIndexes(values) {
+      const copy = [...values];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function generateRandom2Round(courseHoles) {
+      const usable = Array.isArray(courseHoles) ? courseHoles.slice(0, 18) : [];
+      if (usable.length !== 18) {
+        throw new Error('ADD RANDOM 2 requires 18 course holes.');
+      }
+
+      const pars = usable.map(hole => Number(hole.par));
+      if (pars.some(par => !Number.isFinite(par) || par <= 0)) {
+        throw new Error('ADD RANDOM 2 could not read the course pars.');
+      }
+
+      const parTotal = pars.reduce((sum, par) => sum + par, 0);
+      const eagleEligible = usable
+        .map((hole, index) => Number(hole.par) >= 4 ? index : -1)
+        .filter(index => index >= 0);
+
+      const combinations = [];
+      for (let eagles = 0; eagles <= 2; eagles++) {
+        if (eagles > eagleEligible.length) continue;
+        for (let birdies = 3; birdies <= 7; birdies++) {
+          for (let bogeys = 3; bogeys <= 7; bogeys++) {
+            if (eagles + birdies + bogeys > 18) continue;
+            const total = parTotal - (2 * eagles) - birdies + bogeys;
+            if (total >= 68 && total <= 74) {
+              combinations.push({ eagles, birdies, bogeys, total });
+            }
+          }
+        }
+      }
+
+      if (!combinations.length) {
+        throw new Error('No 68–74 RANDOM 2 combination fits this course par.');
+      }
+
+      const combo = combinations[randomIntInclusive(0, combinations.length - 1)];
+      const scores = [...pars];
+      const used = new Set();
+
+      shuffledIndexes(eagleEligible)
+        .slice(0, combo.eagles)
+        .forEach(index => {
+          scores[index] = pars[index] - 2;
+          used.add(index);
+        });
+
+      const birdiePool = shuffledIndexes(
+        usable.map((_, index) => index).filter(index => !used.has(index))
+      );
+      birdiePool.slice(0, combo.birdies).forEach(index => {
+        scores[index] = pars[index] - 1;
+        used.add(index);
+      });
+
+      const bogeyPool = shuffledIndexes(
+        usable.map((_, index) => index).filter(index => !used.has(index))
+      );
+      bogeyPool.slice(0, combo.bogeys).forEach(index => {
+        scores[index] = pars[index] + 1;
+        used.add(index);
+      });
+
+      return { scores, ...combo };
+    }
+
+    async function loadFreshTestScoreSource() {
+      const response = await fetch(
+        CLOUDFLARE_API_URL + '?refresh=' + Date.now() + '-random2',
+        { cache: 'no-store' }
+      );
+
+      if (!response.ok) {
+        throw new Error('ADD RANDOM 2 could not load current teams.');
+      }
+
+      const data = await response.json();
+      if (!data || data.ok !== true) {
+        throw new Error((data && data.error) || 'ADD RANDOM 2 data unavailable.');
+      }
+
+      const freshHoles = Array.isArray(data.course && data.course.holes)
+        ? data.course.holes.slice(0, 18)
+        : [];
+      const freshTeams = Array.isArray(data.teams)
+        ? data.teams.filter(team => team && String(team.name || '').trim() !== '')
+        : [];
+
+      if (freshHoles.length !== 18 || !freshTeams.length) {
+        throw new Error('ADD RANDOM 2 needs 18 holes and at least one current team.');
+      }
+
+      holes = freshHoles;
+      teams = freshTeams;
+      return { freshHoles, freshTeams };
+    }
+
+    async function runRandom2Current() {
+      const { freshHoles, freshTeams } = await loadFreshTestScoreSource();
+      const passkey = isMasterQr() && getQrPasskey()
+        ? getQrPasskey()
+        : SSHCP_MASTER_TEST_KEY;
+
+      const generated = [];
+
+      /* Sequential verified writes avoid concurrent Google Sheets test writes. */
+      for (const team of freshTeams) {
+        const round = generateRandom2Round(freshHoles);
+        const response = await fetch(
+          CLOUDFLARE_API_URL +
+            '?action=saveScores' +
+            '&slot=' + encodeURIComponent(Number(team.slot)) +
+            '&scores=' + encodeURIComponent(JSON.stringify(round.scores)) +
+            '&passkey=' + encodeURIComponent(passkey) +
+            '&refresh=' + Date.now(),
+          { cache: 'no-store' }
+        );
+
+        if (!response.ok) {
+          throw new Error('ADD RANDOM 2 failed for ' + String(team.name || 'a team') + '.');
+        }
+
+        const data = await response.json();
+        if (
+          !data ||
+          data.ok !== true ||
+          data.verified !== true ||
+          !scoresEqual(data.verifiedScores, round.scores)
+        ) {
+          throw new Error('ADD RANDOM 2 was not verified for ' + String(team.name || 'a team') + '.');
+        }
+
+        generated.push(round);
+      }
+
+      const totals = generated.map(round => round.total);
+      const birdies = generated.map(round => round.birdies);
+      const bogeys = generated.map(round => round.bogeys);
+      const eagles = generated.map(round => round.eagles);
+
+      return {
+        ok: true,
+        verified: true,
+        affectedTeams: generated.length,
+        random2Summary:
+          Math.min(...totals) + '–' + Math.max(...totals) + ' TOTAL • ' +
+          Math.min(...birdies) + '–' + Math.max(...birdies) + ' BIRDIES • ' +
+          Math.min(...bogeys) + '–' + Math.max(...bogeys) + ' BOGEYS • ' +
+          Math.min(...eagles) + '–' + Math.max(...eagles) + ' EAGLES'
+      };
+    }
 
     function showTestScoreWarning(mode, scope) {
       closeModal();
 
       const isPar = mode === 'par';
       const isRandom = mode === 'random';
-      const isAdd = isPar || isRandom;
-      const isAll = scope === 'all';
+      const isRandom2 = mode === 'random2';
+      const isAdd = isPar || isRandom || isRandom2;
 
       const title =
-        isRandom
-          ? 'ADD RANDOM CURRENT?'
-          : isPar
-            ? (isAll ? 'ADD PAR ALL?' : 'ADD PAR CURRENT?')
-            : (isAll ? 'DELETE ALL?' : 'DELETE CURRENT?');
+        isRandom2
+          ? 'ADD RANDOM 2?'
+          : isRandom
+            ? 'ADD RANDOM?'
+            : isPar
+              ? 'ADD PAR?'
+              : 'DELETE ALL?';
 
       const question =
-        isRandom
-          ? 'Add a realistic random mix of birdies, pars, and bogeys to every current team?'
-          : isPar
-            ? (isAll
-                ? 'Add par scores to all 36 team slots?'
-                : 'Add par scores to every current team?')
-            : (isAll
-                ? 'Delete all scores from all 36 team slots?'
-                : 'Delete all scores from every current team?');
+        isRandom2
+          ? 'Add a stronger random round to every current team? Each round finishes 68–74 with 3–7 birdies, 3–7 bogeys and 0–2 eagles.'
+          : isRandom
+            ? 'Add a realistic random mix of birdies, pars, and bogeys to every current team?'
+            : isPar
+              ? 'Add par scores to every current team?'
+              : 'Delete all scores from all 36 team slots?';
 
       els.modalOverlay.classList.add('reset-authorization');
       els.modalTitle.textContent = title;
@@ -8716,7 +8834,6 @@ let scoreTimingDetail =
       els.modalOverlay.classList.add('open');
     }
 
-
     async function runTestScoreAction(mode, scope) {
       closeModal();
       startLoadingLine();
@@ -8724,32 +8841,39 @@ let scoreTimingDetail =
       const started = timerStart();
       const isPar = mode === 'par';
       const isRandom = mode === 'random';
-      const isAdd = isPar || isRandom;
-      const isAll = scope === 'all';
+      const isRandom2 = mode === 'random2';
 
       const actionLabel =
-        isRandom
-          ? 'ADD RANDOM CURRENT'
-          : isPar
-            ? (isAll ? 'ADD PAR ALL' : 'ADD PAR CURRENT')
-            : (isAll ? 'DELETE ALL' : 'DELETE CURRENT');
+        isRandom2
+          ? 'ADD RANDOM 2'
+          : isRandom
+            ? 'ADD RANDOM'
+            : isPar
+              ? 'ADD PAR'
+              : 'DELETE ALL';
 
       try {
-        const response = await fetch(
-          CLOUDFLARE_API_URL +
-            '?action=testScores' +
-            '&mode=' + encodeURIComponent(mode) +
-            '&scope=' + encodeURIComponent(scope) +
-            '&passkey=' + encodeURIComponent(isMasterQr() ? getQrPasskey() : '') +
-            '&refresh=' + Date.now(),
-          { cache: 'no-store' }
-        );
+        let data;
 
-        if (!response.ok) {
-          throw new Error(actionLabel + ' failed.');
+        if (isRandom2) {
+          data = await runRandom2Current();
+        } else {
+          const response = await fetch(
+            CLOUDFLARE_API_URL +
+              '?action=testScores' +
+              '&mode=' + encodeURIComponent(mode) +
+              '&scope=' + encodeURIComponent(scope) +
+              '&passkey=' + encodeURIComponent(isMasterQr() ? getQrPasskey() : '') +
+              '&refresh=' + Date.now(),
+            { cache: 'no-store' }
+          );
+
+          if (!response.ok) {
+            throw new Error(actionLabel + ' failed.');
+          }
+
+          data = await response.json();
         }
-
-        const data = await response.json();
 
         if (!data || data.ok !== true || data.verified !== true) {
           throw new Error(
@@ -8758,14 +8882,14 @@ let scoreTimingDetail =
           );
         }
 
-        /* Never let this device re-send stale pending scores after a bulk
-           TEST action changed the Sheet. */
         teams.forEach(team => {
           localStorage.removeItem(pendingScoresKey(team));
         });
 
         scorecardHasLoaded = false;
         leaderboardHasLoaded = false;
+        sessionStorage.removeItem('sshcpScorecardSnapshotV53');
+        sessionStorage.removeItem('sshcpLeaderboardSnapshotV53');
 
         const testDetailParts = [
           data.affectedTeams + ' team slot' +
@@ -8780,6 +8904,10 @@ let scoreTimingDetail =
           );
         }
 
+        if (isRandom2 && data.random2Summary) {
+          testDetailParts.push(data.random2Summary);
+        }
+
         addTestLog(
           actionLabel,
           'VERIFIED',
@@ -8789,6 +8917,7 @@ let scoreTimingDetail =
 
         completeLoadingLine();
         renderTestLog();
+        requestAnimationFrame(fitTestPageButtonText);
 
         els.modalOverlay.classList.add('reset-authorization');
         els.modalTitle.textContent = actionLabel + ' COMPLETE';
@@ -8816,6 +8945,7 @@ let scoreTimingDetail =
         );
 
         renderTestLog();
+        requestAnimationFrame(fitTestPageButtonText);
 
         closeModal();
         els.modalOverlay.classList.add('reset-authorization');
@@ -8880,10 +9010,6 @@ let scoreTimingDetail =
         view
       );
 
-      if (view !== 'leaderboard') {
-        stopLeaderboardRefreshCycle();
-        resetLeaderboardRefreshProgress();
-      }
 
     }
 
@@ -9035,7 +9161,9 @@ let scoreTimingDetail =
 
     async function showScorecard() {
 
-      leaderboardAutoScrollPending = false;
+      const preserveHydratedPosition = scorecardHydratedFromSnapshotV53;
+      const hydratedScrollTop = scorecardHydratedScrollTopV53;
+
       if (leaderboardAutoScrollTimer) {
         clearTimeout(leaderboardAutoScrollTimer);
         leaderboardAutoScrollTimer = null;
@@ -9061,101 +9189,22 @@ let scoreTimingDetail =
         await loadScorecard();
       }
 
-
-      restoreScorePosition();
-
-    }
-
-
-    function stopLeaderboardRefreshCycle() {
-
-      if (leaderboardRefreshCycleTimer) {
-        clearTimeout(leaderboardRefreshCycleTimer);
-        leaderboardRefreshCycleTimer = null;
-      }
-
-      if (leaderboardRefreshCycleFrame) {
-        cancelAnimationFrame(leaderboardRefreshCycleFrame);
-        leaderboardRefreshCycleFrame = null;
+      if (preserveHydratedPosition) {
+        scorecardHydratedFromSnapshotV53 = false;
+        requestAnimationFrame(() => {
+          if (!els.scoreScroll) return;
+          const maxScroll = Math.max(0, els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight);
+          els.scoreScroll.scrollTop = Math.min(
+            Math.max(0, hydratedScrollTop),
+            maxScroll
+          );
+          rememberScorePosition();
+        });
+      } else {
+        restoreScorePosition();
       }
 
     }
-
-
-    function resetLeaderboardRefreshProgress() {
-
-      if (els.leaderRefreshProgressFill) {
-        els.leaderRefreshProgressFill.style.width = '0%';
-      }
-
-    }
-
-
-    function startLeaderboardRefreshCycle() {
-
-      stopLeaderboardRefreshCycle();
-      resetLeaderboardRefreshProgress();
-
-      if (
-        currentView !== 'leaderboard' ||
-        !leaderboardHasLoaded
-      ) {
-        return;
-      }
-
-      /* SSHCP V5.2 — once every active team is THRU 18, this screen
-         is a final-results screen. Stop the 10-second auto-refresh cycle.
-         Manual REFRESH remains available. */
-      if (tournamentIsComplete(lastLeaderboardRows)) {
-        resetLeaderboardRefreshProgress();
-        return;
-      }
-
-      leaderboardRefreshCycleStartedAt = performance.now();
-      const duration = 10000;
-
-      const draw = now => {
-
-        if (
-          currentView !== 'leaderboard' ||
-          leaderboardLoadInProgress
-        ) {
-          return;
-        }
-
-        const percent = Math.min(
-          100,
-          ((now - leaderboardRefreshCycleStartedAt) / duration) * 100
-        );
-
-        if (els.leaderRefreshProgressFill) {
-          els.leaderRefreshProgressFill.style.width = Math.max(0, percent) + '%';
-        }
-
-        if (percent < 100) {
-          leaderboardRefreshCycleFrame = requestAnimationFrame(draw);
-        }
-
-      };
-
-      leaderboardRefreshCycleFrame = requestAnimationFrame(draw);
-
-      leaderboardRefreshCycleTimer = setTimeout(
-        async () => {
-          leaderboardRefreshCycleTimer = null;
-
-          if (
-            currentView === 'leaderboard' &&
-            !leaderboardLoadInProgress
-          ) {
-            await loadLeaderboard(false);
-          }
-        },
-        duration
-      );
-
-    }
-
 
     async function showLeaderboard() {
 
@@ -9209,6 +9258,11 @@ let scoreTimingDetail =
       ) {
         return;
       }
+
+      const hadExistingScorecard =
+        scorecardHasLoaded &&
+        els.scoreRows &&
+        els.scoreRows.children.length > 0;
 
       scorecardLoadInProgress =
         true;
@@ -9343,16 +9397,18 @@ let scoreTimingDetail =
         addTestLog('SCORECARD LOAD', 'FAILED', scorecardLoadSeconds + 's', 'Request failed');
         stopLoadingLine();
 
-        showLoadError(
-          'Scorecard Could Not Load',
-          'The ROTB scorecard could not be loaded.',
-          async () => {
-            closeModal();
-            scorecardHasLoaded =
-              false;
-            await loadScorecard();
-          }
-        );
+        if (!hadExistingScorecard) {
+          showLoadError(
+            'Scorecard Could Not Load',
+            'The ROTB scorecard could not be loaded.',
+            async () => {
+              closeModal();
+              scorecardHasLoaded =
+                false;
+              await loadScorecard();
+            }
+          );
+        }
 
       }
       finally {
@@ -9774,6 +9830,156 @@ let scoreTimingDetail =
     }
 
 
+    const SSHCP_SCORECARD_SNAPSHOT_KEY = 'sshcpScorecardSnapshotV53';
+    const SSHCP_LEADERBOARD_SNAPSHOT_KEY = 'sshcpLeaderboardSnapshotV53';
+
+    function saveScorecardSnapshotV53() {
+      if (!els.scoreRows || !els.scoreScroll || !selectedTeam || !holes.length) return;
+      try {
+        const snapshot = {
+          holes,
+          teams,
+          selectedSlot: Number(selectedTeam.slot),
+          selectedName: selectedTeam.name || '',
+          localScores: normalizeScores(localScores),
+          savedScores: normalizeScores(savedScores),
+          rowsHtml: els.scoreRows.innerHTML,
+          scrollTop: els.scoreScroll.scrollTop || 0,
+          runningGross: {
+            text: els.scoreRunningGross ? els.scoreRunningGross.textContent : '(E)',
+            className: els.scoreRunningGross ? els.scoreRunningGross.className : 'score-running-gross'
+          },
+          runningNet: {
+            text: els.scoreRunningNet ? els.scoreRunningNet.textContent : '(E)',
+            className: els.scoreRunningNet ? els.scoreRunningNet.className : 'score-running-net'
+          }
+        };
+        sessionStorage.setItem(SSHCP_SCORECARD_SNAPSHOT_KEY, JSON.stringify(snapshot));
+        window.__sshcpBootScorecardSnapshot = snapshot;
+      } catch (_) {}
+    }
+
+    function hydrateScorecardSnapshotV53() {
+      let snapshot = window.__sshcpBootScorecardSnapshot || null;
+      if (!snapshot) {
+        try {
+          snapshot = JSON.parse(sessionStorage.getItem(SSHCP_SCORECARD_SNAPSHOT_KEY) || 'null');
+        } catch (_) {
+          snapshot = null;
+        }
+      }
+
+      if (!snapshot || !Array.isArray(snapshot.holes) || !Array.isArray(snapshot.teams)) {
+        return false;
+      }
+
+      holes = snapshot.holes;
+      teams = snapshot.teams;
+      selectedTeam = teams.find(team => Number(team.slot) === Number(snapshot.selectedSlot)) ||
+        teams.find(team => normalizeName(team.name) === normalizeName(snapshot.selectedName)) || null;
+
+      if (!selectedTeam) return false;
+
+      localScores = normalizeScores(snapshot.localScores);
+      savedScores = normalizeScores(snapshot.savedScores);
+      scorecardHasLoaded = true;
+      scorecardHydratedFromSnapshotV53 = true;
+      scorecardHydratedScrollTopV53 = Math.max(0, Number(snapshot.scrollTop) || 0);
+      buildTeamSelect();
+      renderScorecard();
+
+      requestAnimationFrame(() => {
+        if (els.scoreScroll) {
+          const maxScroll = Math.max(0, els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight);
+          els.scoreScroll.scrollTop = Math.min(
+            scorecardHydratedScrollTopV53,
+            maxScroll
+          );
+          saveScorecardSnapshotV53();
+        }
+      });
+
+      return true;
+    }
+
+    function saveLeaderboardSnapshotV53() {
+      if (!els.leaderRows || !els.leaderContent || !lastLeaderboardRows.length) return;
+      try {
+        const finalSlot = els.leaderFinalActionButton
+          ? els.leaderFinalActionButton.closest('.leader-final-slot')
+          : null;
+        const finalSlotHeight = finalSlot && getComputedStyle(finalSlot).display !== 'none'
+          ? finalSlot.getBoundingClientRect().height
+          : 0;
+
+        const snapshot = {
+          rows: lastLeaderboardRows,
+          teams,
+          rowsHtml: els.leaderRows.innerHTML,
+          scrollTop: els.leaderContent.scrollTop || 0,
+          complete: tournamentIsComplete(lastLeaderboardRows),
+          finalSlotHeight
+        };
+        sessionStorage.setItem(SSHCP_LEADERBOARD_SNAPSHOT_KEY, JSON.stringify(snapshot));
+        window.__sshcpBootLeaderboardSnapshot = snapshot;
+      } catch (_) {}
+    }
+
+    function hydrateLeaderboardSnapshotV53() {
+      let snapshot = window.__sshcpBootLeaderboardSnapshot || null;
+      if (!snapshot) {
+        try {
+          snapshot = JSON.parse(sessionStorage.getItem(SSHCP_LEADERBOARD_SNAPSHOT_KEY) || 'null');
+        } catch (_) {
+          snapshot = null;
+        }
+      }
+
+      if (!snapshot || !Array.isArray(snapshot.rows) || !snapshot.rows.length) {
+        return false;
+      }
+
+      if (Array.isArray(snapshot.teams) && snapshot.teams.length) {
+        teams = snapshot.teams;
+      }
+
+      lastLeaderboardRows = snapshot.rows.map(row => ({ ...row }));
+      leaderboardHasLoaded = true;
+      renderLeaderboard(lastLeaderboardRows, false);
+      updateTournamentFinishState(lastLeaderboardRows);
+
+      requestAnimationFrame(() => {
+        if (els.leaderContent) {
+          const maxScroll = Math.max(0, els.leaderContent.scrollHeight - els.leaderContent.clientHeight);
+          els.leaderContent.scrollTop = Math.min(
+            Math.max(0, Number(snapshot.scrollTop) || 0),
+            maxScroll
+          );
+        }
+      });
+
+      return true;
+    }
+
+    function fitTestPageButtonText() {
+      if (!els.testLogView || currentView !== 'testlog') return;
+      els.testLogView.querySelectorAll('button').forEach(button => {
+        if (button.clientHeight <= 0 || button.clientWidth <= 0) return;
+        fitTextToBoxV5(
+          button,
+          button,
+          button.clientHeight * 0.80,
+          11,
+          {
+            horizontalPad: 4,
+            verticalPad: 2,
+            wrap: true,
+            lineHeight: 0.90
+          }
+        );
+      });
+    }
+
     function rememberResponsiveGeometryV5(patch = {}) {
       try {
         const previous = JSON.parse(
@@ -9830,15 +10036,14 @@ let scoreTimingDetail =
         Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
 
       const tableBudget =
-        Math.max(120, screenHeight - fixedShellWithoutHeader);
+        Math.max(1, screenHeight - fixedShellWithoutHeader);
 
       const divider =
         Math.max(2, Math.min(4, tableBudget * 0.004));
 
-      const headerRatio = 0.72;
-      const rowHeight =
-        Math.max(1, (tableBudget - divider) / (9 + headerRatio));
-      const headerHeight = rowHeight * headerRatio;
+      const scoreTableBudget = Math.max(1, tableBudget - divider);
+      const headerHeight = (scoreTableBudget / 10) * 0.85;
+      const rowHeight = Math.max(1, (scoreTableBudget - headerHeight) / 9);
 
       els.scorecardView.style.setProperty('--v5-score-row-h', rowHeight + 'px');
       els.scorecardView.style.setProperty('--v5-score-head-h', headerHeight + 'px');
@@ -9847,8 +10052,8 @@ let scoreTimingDetail =
       const scoreBox = Math.max(
         28,
         Math.min(
-          rowHeight * 0.80,
-          els.scoreScroll.clientWidth * 0.145
+          rowHeight * 0.84,
+          els.scoreScroll.clientWidth * 0.15225
         )
       );
       els.scorecardView.style.setProperty('--v5-score-box', scoreBox + 'px');
@@ -9863,7 +10068,7 @@ let scoreTimingDetail =
       /* Header content fits its CURRENT hard cells. */
       Array.from(header.children).forEach((cell, index) => {
         if (index < 3) {
-          fitTextToBoxV5(cell, cell, Math.min(28, headerHeight * 0.43), 12, {
+          fitTextToBoxV5(cell, cell, Math.min(28, headerHeight * 0.375), 12, {
             horizontalPad: 8,
             verticalPad: 4
           });
@@ -9873,9 +10078,9 @@ let scoreTimingDetail =
       const running = header.querySelector('.score-running-header');
       if (running) {
         const parts = Array.from(running.children);
-        if (parts[0]) fitTextToBoxV5(parts[0], parts[0], Math.min(19, headerHeight * 0.31), 8, {horizontalPad:2});
-        if (parts[1]) fitTextToBoxV5(parts[1], parts[1], Math.min(28, headerHeight * 0.40), 12, {horizontalPad:4});
-        if (parts[2]) fitTextToBoxV5(parts[2], parts[2], Math.min(19, headerHeight * 0.31), 8, {horizontalPad:2});
+        if (parts[0]) fitTextToBoxV5(parts[0], parts[0], Math.min(22, headerHeight * 0.40), 8, {horizontalPad:2});
+        if (parts[1]) fitTextToBoxV5(parts[1], parts[1], Math.min(28, headerHeight * 0.375), 12, {horizontalPad:4});
+        if (parts[2]) fitTextToBoxV5(parts[2], parts[2], Math.min(22, headerHeight * 0.40), 8, {horizontalPad:2});
       }
 
       els.scoreRows.querySelectorAll('.score-row').forEach(row => {
@@ -9886,13 +10091,13 @@ let scoreTimingDetail =
         const button = row.querySelector('.score-button');
 
         if (holeCell && hole) {
-          fitTextToBoxV5(holeCell, hole, Math.min(31, rowHeight * 0.48), 13, {horizontalPad:8,verticalPad:6});
+          fitTextToBoxV5(holeCell, hole, Math.min(34, rowHeight * 0.50), 13, {horizontalPad:8,verticalPad:6});
         }
         if (par) {
-          fitTextToBoxV5(par, par, Math.min(27, rowHeight * 0.39), 12, {horizontalPad:8,verticalPad:6});
+          fitTextToBoxV5(par, par, Math.min(29, rowHeight * 0.40), 12, {horizontalPad:8,verticalPad:6});
         }
         if (yards) {
-          fitTextToBoxV5(yards, yards, Math.min(24, rowHeight * 0.34), 11, {horizontalPad:8,verticalPad:6});
+          fitTextToBoxV5(yards, yards, Math.min(27, rowHeight * 0.40), 11, {horizontalPad:8,verticalPad:6});
         }
         if (button) {
           fitTextToBoxV5(button, button, scoreBox * 0.56, 13, {horizontalPad:6,verticalPad:6});
@@ -10200,6 +10405,7 @@ let scoreTimingDetail =
 
       updateSubmitButtonState();
       updateScorecardRunningScores();
+      saveScorecardSnapshotV53();
 
 
       requestAnimationFrame(
@@ -10342,7 +10548,7 @@ let scoreTimingDetail =
         '<div class="auth-team-name">' + escapeHtml(displayTeamName(selectedTeam.name)) + '</div>' +
         '<label class="auth-captcha">' +
           '<input id="authConfirmCheck" type="checkbox" aria-label="Confirm scoring authorization">' +
-          '<span class="auth-check-box">✓</span>' +
+          '<span class="auth-check-box"> ✓ </span>' +
           '<span class="auth-check-text">CHECK TO CONFIRM</span>' +
         '</label>';
       els.modalInput.style.display = 'none';
@@ -11008,8 +11214,6 @@ let scoreTimingDetail =
       leaderboardLoadInProgress =
         true;
 
-      stopLeaderboardRefreshCycle();
-
       /* V4.3 — refresh data without visually reverting the existing shell.
          The current table/state stays in place until fresh rows are ready. */
 
@@ -11131,11 +11335,13 @@ let scoreTimingDetail =
         }
 
         renderLeaderboard(
-          rows
+          rows,
+          !wasAlreadyLoaded
         );
         updateTournamentFinishState(
           rows
         );
+        saveLeaderboardSnapshotV53();
 
         const renderedAt =
           timerStart();
@@ -11177,9 +11383,6 @@ let scoreTimingDetail =
 
         completeLoadingLine();
 
-        if (currentView === 'leaderboard') {
-          startLeaderboardRefreshCycle();
-        }
 
       }
       catch (error) {
@@ -11212,10 +11415,6 @@ let scoreTimingDetail =
         ) {
           els.leaderUpdateNote.textContent =
             'Refresh failed • standings unchanged';
-
-          if (currentView === 'leaderboard') {
-            startLeaderboardRefreshCycle();
-          }
 
           return;
         }
@@ -11283,34 +11482,6 @@ let scoreTimingDetail =
 
       if (raw === '' || raw === null || raw === undefined) return '';
       return String(raw).trim();
-    }
-
-    function compareTiebreakRows(a, b) {
-      const aScores = Array.isArray(a?.tiebreakScores) ? a.tiebreakScores : [];
-      const bScores = Array.isArray(b?.tiebreakScores) ? b.tiebreakScores : [];
-      const holeCount = Math.max(aScores.length, bScores.length);
-
-      for (let index = 0; index < holeCount; index++) {
-        const aScore = tiebreakValue(a, index);
-        const bScore = tiebreakValue(b, index);
-        if (!Number.isFinite(aScore) || !Number.isFinite(bScore)) return 0;
-        if (aScore !== bScore) {
-          return {
-            order: aScore - bScore,
-            decidingIndex: index
-          };
-        }
-      }
-      return { order: 0, decidingIndex: null };
-    }
-
-    function resolveTieGroup(rows) {
-      const original = [...rows];
-      const sorted = [...rows].sort((a, b) => {
-        const result = compareTiebreakRows(a, b);
-        return result && typeof result === 'object' ? result.order : 0;
-      });
-      return { original, sorted };
     }
 
     function resolveTieContenders(tied) {
@@ -11419,14 +11590,8 @@ let scoreTimingDetail =
         button.innerHTML = '<span class="leader-final-main">BREAK TIE</span>';
         button.classList.add('break-tie');
       } else {
-        const tied = firstPlaceTiedRows(lastLeaderboardRows);
-        if (tied.length >= 2 && hasViewedTournamentTieBreak()) {
-          button.innerHTML =
-            '<span class="leader-final-main">SCRAMBLE SUMMARY*</span>';
-        } else {
-          button.innerHTML =
-            '<span class="leader-final-main">SCRAMBLE SUMMARY</span>';
-        }
+        button.innerHTML =
+          '<span class="leader-final-main">SCRAMBLE SUMMARY</span>';
         button.classList.add('tournament-summary', 'summary-label');
       }
 
@@ -11437,6 +11602,27 @@ let scoreTimingDetail =
           button.textContent.trim()
         );
       } catch (e) {}
+    }
+
+    function measureCompletedActionSpaceV53() {
+      const screen = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leaderboard-screen')
+        : null;
+      const titleBar = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-title-bar')
+        : null;
+      if (!screen) return;
+
+      let freed = 0;
+      if (titleBar && getComputedStyle(titleBar).display !== 'none') {
+        const style = getComputedStyle(titleBar);
+        freed += titleBar.getBoundingClientRect().height +
+          (parseFloat(style.marginTop) || 0) +
+          (parseFloat(style.marginBottom) || 0);
+      }
+      if (freed > 0) {
+        screen.style.setProperty('--v53-final-slot-h', freed + 'px');
+      }
     }
 
     function positionCompletedFinalAction() {
@@ -11484,6 +11670,10 @@ let scoreTimingDetail =
         ? els.leaderboardView.querySelector('.leaderboard-screen')
         : null;
 
+      if (complete && screen && !screen.classList.contains('tournament-complete')) {
+        measureCompletedActionSpaceV53();
+      }
+
       if (screen) {
         screen.classList.toggle(
           'tournament-complete',
@@ -11497,10 +11687,7 @@ let scoreTimingDetail =
         return;
       }
 
-      /* Final-results mode is stable; no more automatic 10-second polling. */
-      stopLeaderboardRefreshCycle();
-      resetLeaderboardRefreshProgress();
-
+      /* Final-results mode is stable; manual REFRESH only. */
       const tied = firstPlaceTiedRows(lastLeaderboardRows);
       if (tied.length < 2) {
         setLeaderboardFinalAction('tournament-summary');
@@ -11520,8 +11707,10 @@ let scoreTimingDetail =
       );
     }
 
-    function joinTeamNames(rows) {
-      const names = rows.map(row => displayTeamName(row.team || ''));
+    function joinTeamNamesHtml(rows) {
+      const names = rows.map(row =>
+        '<strong>' + escapeHtml(displayTeamName(row.team || '')) + '</strong>'
+      );
       if (names.length <= 1) return names[0] || '';
       if (names.length === 2) return names[0] + ' and ' + names[1];
       return names.slice(0, -1).join(', ') + ', and ' + names[names.length - 1];
@@ -11539,7 +11728,7 @@ let scoreTimingDetail =
 
       /* Re-render immediately so the resolved winner moves to #1 and
          receives the single asterisk on the normal leaderboard. */
-      renderLeaderboard(lastLeaderboardRows);
+      renderLeaderboard(lastLeaderboardRows, false);
 
       closeModal();
       els.modalOverlay.classList.add('tournament-result');
@@ -11559,7 +11748,7 @@ let scoreTimingDetail =
           resolution.decidingIndex
         );
         const actualHoleText = actualHole
-          ? ' (Hole ' + actualHole + ')'
+          ? '<span class="tiebreak-hole-nowrap">(Hole&nbsp;' + escapeHtml(actualHole) + ')</span>'
           : '';
         const priorCount = resolution.decidingIndex;
         const priorText = priorCount === 0 ? '' :
@@ -11580,14 +11769,12 @@ let scoreTimingDetail =
           escapeHtml(displayTeamName(resolution.winner.team || '').toUpperCase()) +
           ' WINS</div>' +
           '<div class="tiebreak-explanation">' +
-          escapeHtml(joinTeamNames(resolution.tied)) +
-          ' finished tied at <strong>' + escapeHtml(tiedNet) + '</strong>.<br><br>' +
+          joinTeamNamesHtml(resolution.tied) +
+          ' finished tied at ' + escapeHtml(tiedNet) + '.<br><br>' +
           priorText +
-          escapeHtml(displayTeamName(resolution.winner.team || '')) +
-          ' won on the <strong>' + escapeHtml(holeLabel) + '</strong>' +
-          (actualHoleText
-            ? ' <strong>' + escapeHtml(actualHoleText) + '</strong>'
-            : '') +
+          '<strong>' + escapeHtml(displayTeamName(resolution.winner.team || '')) + '</strong>' +
+          ' won on the ' + escapeHtml(holeLabel) +
+          (actualHoleText ? ' ' + actualHoleText : '') +
           escapeHtml(scoreText) + '.</div>';
       }
 
@@ -11600,6 +11787,12 @@ let scoreTimingDetail =
       els.modalActions.className = 'modal-actions';
       els.modalActions.replaceChildren(back, summary);
       els.modalOverlay.classList.add('open');
+      requestAnimationFrame(() => {
+        fitTextToBoxV5(summary, summary, summary.clientHeight * 0.50, 14, {
+          horizontalPad: 12,
+          verticalPad: 6
+        });
+      });
     }
 
     function getSummaryHandicap(row) {
@@ -11695,7 +11888,7 @@ let scoreTimingDetail =
               note:
                 '* Won on ' +
                 ordinalHandicapHole(resolution.decidingIndex) +
-                (actualHole ? ' (Hole ' + actualHole + ')' : '')
+                (actualHole ? ' (Hole\u00A0' + actualHole + ')' : '')
             });
           }
           else {
@@ -11744,33 +11937,6 @@ let scoreTimingDetail =
       return 'th';
     }
 
-    function tournamentSummaryRows(rows, resolution) {
-      return buildTournamentPodium(rows).ordered;
-    }
-
-    function competitionPlaces(rows) {
-      const places = [];
-      let previousNet = null;
-      let previousPlace = 0;
-
-      rows.forEach((row, index) => {
-        const currentNet = Number(row.net);
-        if (
-          index > 0 &&
-          Number.isFinite(currentNet) &&
-          Number.isFinite(previousNet) &&
-          currentNet === previousNet
-        ) {
-          places.push(previousPlace);
-        } else {
-          previousPlace = index + 1;
-          places.push(previousPlace);
-        }
-        previousNet = currentNet;
-      });
-
-      return places;
-    }
 
     function fitTournamentSummaryRemaining() {
       if (!els.modalOverlay.classList.contains('tournament-summary')) return;
@@ -11812,7 +11978,7 @@ let scoreTimingDetail =
       if (header) {
         Array.from(header.children).forEach((cell, index) => {
           const mayWrap = index === 2 || index === 3;
-          fitTextToBoxV5(cell, cell, cell.clientHeight * (mayWrap ? 0.36 : 0.40), 10, {
+          fitTextToBoxV5(cell, cell, cell.clientHeight * 0.50, 10, {
             horizontalPad: 6,
             verticalPad: 4,
             wrap: mayWrap,
@@ -11826,12 +11992,20 @@ let scoreTimingDetail =
         if (!row) return;
         const placeCell = row.querySelector('.tournament-summary-place');
         const team = row.querySelector('.tournament-summary-team');
+        const teamText = row.querySelector('.summary-team-text') || team;
         const strokes = row.querySelector('.tournament-summary-strokes');
+        const strokesValue = row.querySelector('.top-three-strokes-value');
+        const strokesHcp = row.querySelector('.top-three-strokes-hcp');
         const net = row.querySelector('.tournament-summary-net');
 
         if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 11, {horizontalPad:4,verticalPad:5});
-        if (team) fitTextToBoxV5(team, team, Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])), 13, {horizontalPad:10,verticalPad:5});
-        if (strokes) fitTextToBoxV5(strokes, strokes, Math.min(19, row.clientHeight * 0.32), 11, {horizontalPad:8,verticalPad:5});
+        if (team && teamText) fitTextToBoxV5(team, teamText, Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])), 13, {horizontalPad:10,verticalPad:5});
+        if (strokes && strokesValue) {
+          fitTextToBoxV5(strokes, strokesValue, Math.min(30, row.clientHeight * 0.40), 12, {horizontalPad:2,verticalPad:1});
+        }
+        if (strokes && strokesHcp) {
+          fitTextToBoxV5(strokes, strokesHcp, Math.min(24, row.clientHeight * 0.30), 10, {horizontalPad:2,verticalPad:1});
+        }
         if (net) fitTextToBoxV5(net, net, Math.min(46, row.clientHeight * ([0.60,0.55,0.50][index])), 15, {horizontalPad:6,verticalPad:5});
       });
 
@@ -11858,33 +12032,12 @@ let scoreTimingDetail =
       fitUniform(lowerTeam, 0.40, 13, 10);
       fitUniform(lowerNet, 0.48, 15, 6);
 
-      const allStrokes = [
-        ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
-        ...lowerStrokes
-      ];
-      fitUniform(allStrokes, 0.32, 11, 8);
+      /* Lower standings keep the approved V5.2 NET STROKES sizing.
+         Only the top three use the 40% / 30% two-line split above. */
+      fitUniform(lowerStrokes, 0.32, 11, 8);
 
-      if (notes.length) {
-        const lowerTeamSample = lowerTeam[0];
-        const lowerTeamSize = lowerTeamSample
-          ? parseFloat(getComputedStyle(lowerTeamSample).fontSize) || 13
-          : 13;
-
-        const noteTarget = Math.max(
-          11,
-          Math.min(16, lowerTeamSize * 0.78)
-        );
-
-        document.documentElement.style.setProperty(
-          '--v5-summary-note-font',
-          noteTarget + 'px'
-        );
-      } else {
-        document.documentElement.style.setProperty(
-          '--v5-summary-note-font',
-          '11px'
-        );
-      }
+      /* V5.3: fixed full-S25 explanation size across phone/tablet heights. */
+      document.documentElement.style.setProperty('--v5-summary-note-font', '13px');
     }
 
 
@@ -11896,7 +12049,6 @@ let scoreTimingDetail =
 
       const podium = buildTournamentPodium(lastLeaderboardRows);
       const rows = podium.ordered.slice(0, 10);
-      const places = competitionPlaces(rows);
 
       function summaryPlaceLabel(rowIndex) {
         if (rowIndex < 3) return String(rowIndex + 1);
@@ -11942,19 +12094,21 @@ let scoreTimingDetail =
       rows.slice(0, 3).forEach((row, index) => {
         const annotation = podium.annotations.get(row);
         const marks = annotation ? annotation.marks : '';
-        const leftMarks = marks ? marks + ' ' : '';
-        const rightMarks = marks ? ' ' + marks : '';
         const hcp = getSummaryHandicap(row);
-        const strokesText =
-          String(row.totalStrokes ?? '') +
-          (hcp === null ? '' : ' (HCP ' + hcp + ')');
+        const strokesValue = String(row.totalStrokes ?? '');
+        const hcpValue = hcp === null ? '' : '(' + hcp + 'HCP)';
 
         html +=
           '<div class="tournament-summary-row place-' + (index + 1) + '">' +
           '<div class="tournament-summary-place">' + escapeHtml(String(index + 1)) + '</div>' +
-          '<div class="tournament-summary-team">' +
-          escapeHtml(displayTeamName(row.team || '')) + '</div>' +
-          '<div class="tournament-summary-strokes">' + escapeHtml(strokesText) + '</div>' +
+          '<div class="tournament-summary-team"><span class="summary-team-anchor">' +
+          '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
+          (marks ? '<span class="summary-team-marker" aria-hidden="true">' + escapeHtml(marks) + '</span>' : '') +
+          '</span></div>' +
+          '<div class="tournament-summary-strokes top-three-strokes">' +
+          '<span class="top-three-strokes-value">' + escapeHtml(strokesValue) + '</span>' +
+          (hcpValue ? '<span class="top-three-strokes-hcp">' + escapeHtml(hcpValue) + '</span>' : '') +
+          '</div>' +
           '<div class="tournament-summary-net ' + scoreClass(row.net) + '">' +
           escapeHtml(formatGolfScore(row.net)) + '</div>' +
           '</div>';
@@ -12036,8 +12190,13 @@ let scoreTimingDetail =
 
 
     function renderLeaderboard(
-      rows
+      rows,
+      allowAutoScroll = true
     ) {
+
+      const priorLeaderboardScroll = els.leaderContent
+        ? els.leaderContent.scrollTop
+        : 0;
 
       /* SSHCP V5.2 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
@@ -12144,20 +12303,23 @@ let scoreTimingDetail =
             'leader-team-name';
 
 
-          const completedTieResolution =
-            tournamentIsComplete(rows) &&
-            hasViewedTournamentTieBreak()
-              ? resolveFirstPlaceTie(rows)
-              : null;
+          teamName.textContent = displayTeamName(row.team || '');
 
-          teamName.textContent =
-            displayTeamName(row.team || '') +
-            (
-              completedTieResolution &&
-              completedTieResolution.winner === row
-                ? '*'
-                : ''
-            );
+          const teamAnchor = document.createElement('span');
+          teamAnchor.className = 'leader-team-anchor';
+          teamAnchor.appendChild(teamName);
+
+          if (tournamentIsComplete(rows) && hasViewedTournamentTieBreak()) {
+            const podiumForMarkers = buildTournamentPodium(rows);
+            const annotation = podiumForMarkers.annotations.get(row);
+            if (annotation && annotation.marks) {
+              const marker = document.createElement('span');
+              marker.className = 'leader-team-marker';
+              marker.setAttribute('aria-hidden', 'true');
+              marker.textContent = annotation.marks;
+              teamAnchor.appendChild(marker);
+            }
+          }
 
 
           const hcpCell =
@@ -12274,7 +12436,7 @@ let scoreTimingDetail =
 
 
           teamCell.append(
-            teamName
+            teamAnchor
           );
 
 
@@ -12412,27 +12574,21 @@ let scoreTimingDetail =
             line
           );
 
-
-          /*
-            V7-CF.12: Normal one-line team names are about 20% larger.
-            If that larger size would not fit, fall back to the prior
-            mobile size rather than wrapping onto a second line.
-          */
-          if (
-            teamName.scrollWidth >
-            teamName.clientWidth
-          ) {
-
-            teamName.style.fontSize =
-              '17px';
-
-          }
-
         }
       );
 
       sizeLeaderboardRows();
-      scheduleLeaderboardAutoScroll();
+      requestAnimationFrame(() => {
+        if (!els.leaderContent) return;
+        const maxScroll = Math.max(0, els.leaderContent.scrollHeight - els.leaderContent.clientHeight);
+        els.leaderContent.scrollTop = Math.min(Math.max(0, priorLeaderboardScroll), maxScroll);
+        saveLeaderboardSnapshotV53();
+      });
+      if (allowAutoScroll) {
+        scheduleLeaderboardAutoScroll();
+      } else {
+        cancelLeaderboardAutoScroll();
+      }
 
     }
 
@@ -12461,41 +12617,102 @@ let scoreTimingDetail =
 
       const rowHeight = firstRow.getBoundingClientRect().height;
       const headerHeight = header.getBoundingClientRect().height;
-
       if (rowHeight <= 0 || headerHeight <= 0) return;
 
-      /* Header uses the same geometry every time, independent of data. */
-      Array.from(header.children).forEach((cell, index) => {
+      Array.from(header.children).forEach(cell => {
         const target = cell.querySelector('span') || cell;
         fitTextToBoxV5(
           cell,
           target,
-          index === 2 ? Math.min(18, headerHeight * 0.30) : Math.min(27, headerHeight * 0.42),
-          index === 2 ? 10 : 13,
-          { horizontalPad: 8, verticalPad: 5 }
+          Math.min(28, headerHeight * 0.375),
+          10,
+          { horizontalPad: 6, verticalPad: 4 }
         );
       });
 
       els.leaderRows.querySelectorAll('.leader-row').forEach(row => {
         const place = row.querySelector('.leader-place-cell');
         const teamCell = row.querySelector('.leader-team-cell');
+        const teamAnchor = row.querySelector('.leader-team-anchor');
         const team = row.querySelector('.leader-team-name');
         const hcp = row.querySelector('.leader-hcp-cell');
-        const status = row.querySelector('.leader-through-cell');
         const score = row.querySelector('.leader-through-score');
-        const thru = row.querySelector('.leader-through-label');
+        const thruWord = row.querySelector('.leader-through-word');
+        const thruValue = row.querySelector('.leader-through-value');
         const total = row.querySelector('.leader-total');
 
-        if (place) fitTextToBoxV5(place, place, Math.min(24, rowHeight * 0.34), 13, {horizontalPad:6,verticalPad:6});
-        if (teamCell && team) fitTextToBoxV5(teamCell, team, Math.min(29, rowHeight * 0.40), 14, {horizontalPad:12,verticalPad:6});
-        if (hcp) fitTextToBoxV5(hcp, hcp, Math.min(18, rowHeight * 0.24), 11, {horizontalPad:4,verticalPad:6});
-        if (total) fitTextToBoxV5(total, total, Math.min(38, rowHeight * 0.54), 17, {horizontalPad:8,verticalPad:6});
+        if (place) {
+          fitTextToBoxV5(place, place, Math.min(24, rowHeight * 0.34), 13, {
+            horizontalPad: 6,
+            verticalPad: 6
+          });
+        }
 
-        if (status && score && thru) {
-          const scoreBox = status.querySelector('.leader-through-score');
-          const thruBox = status.querySelector('.leader-through-label');
-          fitTextToBoxV5(scoreBox, score, Math.min(30, rowHeight * 0.34), 13, {horizontalPad:4,verticalPad:3});
-          fitTextToBoxV5(thruBox, thru, Math.min(18, rowHeight * 0.23), 11, {horizontalPad:4,verticalPad:3});
+        if (hcp) {
+          fitTextToBoxV5(hcp, hcp, Math.min(18, rowHeight * 0.24), 11, {
+            horizontalPad: 4,
+            verticalPad: 6
+          });
+        }
+
+        if (teamCell && team) {
+          const oneLineTarget = Math.min(36, rowHeight * 0.50);
+          team.classList.remove('two-line');
+          team.style.setProperty('font-size', oneLineTarget + 'px', 'important');
+          team.style.setProperty('line-height', '1', 'important');
+          team.style.setProperty('white-space', 'nowrap', 'important');
+          team.style.setProperty('max-height', 'none', 'important');
+          if (teamAnchor) teamAnchor.style.width = 'auto';
+
+          const fitsOneLine =
+            team.scrollWidth <= Math.max(1, teamCell.clientWidth - 14) &&
+            team.scrollHeight <= Math.max(1, rowHeight * 0.56);
+
+          if (!fitsOneLine) {
+            team.classList.add('two-line');
+            if (teamAnchor) teamAnchor.style.width = 'calc(100% - 14px)';
+            fitTextToBoxV5(
+              teamCell,
+              team,
+              Math.min(32, rowHeight * 0.35),
+              12,
+              {
+                horizontalPad: 14,
+                verticalPad: rowHeight * 0.30,
+                wrap: true,
+                lineHeight: 0.95
+              }
+            );
+            team.style.setProperty('max-height', (rowHeight * 0.70) + 'px', 'important');
+          }
+        }
+
+        if (total) {
+          fitTextToBoxV5(total, total, Math.min(48, rowHeight * 0.70), 17, {
+            horizontalPad: 6,
+            verticalPad: 4
+          });
+        }
+
+        if (score) {
+          fitTextToBoxV5(score, score, Math.min(32, rowHeight * 0.30), 11, {
+            horizontalPad: 4,
+            verticalPad: 2
+          });
+        }
+
+        if (thruWord) {
+          fitTextToBoxV5(thruWord, thruWord, Math.min(22, rowHeight * 0.20), 9, {
+            horizontalPad: 4,
+            verticalPad: 2
+          });
+        }
+
+        if (thruValue) {
+          fitTextToBoxV5(thruValue, thruValue, Math.min(32, rowHeight * 0.30), 11, {
+            horizontalPad: 4,
+            verticalPad: 2
+          });
         }
       });
     }
@@ -12522,7 +12739,6 @@ let scoreTimingDetail =
       if (!screen || !top || !header || !bottom || !els.leaderContent) return;
 
       const screenHeight = screen.clientHeight;
-      const headerNow = header.getBoundingClientRect().height;
       const topHeight = top.getBoundingClientRect().height;
       const bottomHeight = bottom.getBoundingClientRect().height;
       const finalHeight = finalSlot && getComputedStyle(finalSlot).display !== 'none'
@@ -12542,10 +12758,9 @@ let scoreTimingDetail =
       */
       const fixedWithoutHeader =
         Math.max(0, topHeight) + bottomHeight + finalHeight + noteHeight;
-      const tableBudget = Math.max(120, screenHeight - fixedWithoutHeader);
-      const headerRatio = 0.70;
-      const rowHeight = Math.max(1, tableBudget / (8 + headerRatio));
-      const headerHeight = rowHeight * headerRatio;
+      const tableBudget = Math.max(1, screenHeight - fixedWithoutHeader);
+      const headerHeight = (tableBudget / 9) * 0.85;
+      const rowHeight = Math.max(1, (tableBudget - headerHeight) / 8);
 
       els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
       els.leaderContent.style.setProperty('--leader-row-height', rowHeight + 'px');
@@ -12572,16 +12787,6 @@ let scoreTimingDetail =
         clearTimeout(leaderboardAutoScrollTimer);
         leaderboardAutoScrollTimer = null;
       }
-    }
-
-    function resetLeaderboardToTop() {
-      cancelLeaderboardAutoScroll();
-
-      if (els.leaderContent) {
-        els.leaderContent.scrollTop = 0;
-      }
-
-      window.scrollTo(0, 0);
     }
 
     function scheduleLeaderboardAutoScroll() {
@@ -12640,10 +12845,10 @@ let scoreTimingDetail =
 
              For an authorized team below that initial view, position by
              current leaderboard place — never by hard-coded team number:
-               • last place:        0.0 rows visible below
-               • second-to-last:    1.0 row visible below
-               • third-to-last:     1.5 rows visible below
-               • fourth-to-last+:   2.5 rows visible below
+               • last place: 0.0 rows visible below
+               • second-to-last: 1.0 row visible below
+               • third-to-last: 1.5 rows visible below
+               • fourth-to-last+: 2.5 rows visible below
 
              This preserves a partial-row cue when more teams remain below,
              while naturally tapering at the bottom of any leaderboard size. */
@@ -12876,66 +13081,6 @@ let scoreTimingDetail =
 
     }
 
-
-    function showTestingMessage(
-      title,
-      message
-    ) {
-
-      closeModal();
-
-
-      els.modalTitle.textContent =
-        title;
-
-
-      els.modalTitle
-        .classList
-        .add(
-          'testing'
-        );
-
-
-      els.modalBody.textContent =
-        message;
-
-
-      els.modalInput.style.display =
-        'none';
-
-
-      const close =
-        makeModalButton(
-          'CLOSE',
-          'testing',
-          () => {
-
-            closeModal();
-
-            showHome();
-
-          }
-        );
-
-
-      els.modalActions.className =
-        'modal-actions single';
-
-
-      els.modalActions.replaceChildren(
-        close
-      );
-
-
-      els.modalOverlay
-        .classList
-        .add(
-          'open'
-        );
-
-    }
-
-
     function showLoadError(
       title,
       message,
@@ -13031,13 +13176,13 @@ let scoreTimingDetail =
         '<div class="quick-guide-separator"></div>' +
         '<ol class="quick-list" start="7">' +
           '<li>Tap <strong>LIVE LEADERBOARD</strong> for Current Standings</li>' +
-          '<li>Tap <strong>REFRESH</strong> for the Latest Standings (10s Auto Refresh)</li>' +
+          '<li>Tap <strong>REFRESH</strong> for the Latest Standings</li>' +
         '</ol>' +
         '<div class="quick-guide-separator"></div>' +
         '<ol class="quick-list" start="9">' +
           '<li>Tap <strong>ACCESS SCORECARD</strong> to go back to Team Scorecard</li>' +
         '</ol>' +
-        '<div class="quick-guide-footnote">*Closing Browser/Site will NOT reset scores*</div>' 
+        '<div class="quick-guide-footnote">*Closing Browser/Site will NOT reset scores*</div>'
 
 
       els.modalInput.style.display =
@@ -13257,8 +13402,6 @@ let scoreTimingDetail =
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
-    if (els.testValidQrListButton) els.testValidQrListButton.addEventListener('click', runAssignedPasskeyLoad);
-    if (els.testDeleteCacheButton) els.testDeleteCacheButton.addEventListener('click', deleteTestQrCache);
     if (els.testRemoveAuthorizationButton) els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
     if (els.testTeamAuthorizationCheck) {
       els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
@@ -13267,7 +13410,7 @@ let scoreTimingDetail =
     if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
     els.testAddParCurrentButton.addEventListener('click', () => showTestScoreWarning('par', 'current'));
     els.testAddRandomCurrentButton.addEventListener('click', () => showTestScoreWarning('random', 'current'));
-    els.testDeleteCurrentButton.addEventListener('click', () => showTestScoreWarning('clear', 'current'));
+    els.testAddRandom2CurrentButton.addEventListener('click', () => showTestScoreWarning('random2', 'current'));
     els.testDeleteAllButton.addEventListener('click', () => showTestScoreWarning('clear', 'all'));
 
 
@@ -13276,11 +13419,6 @@ let scoreTimingDetail =
         'click',
         showLeaderboard
       );
-
-
-    if (els.resetUserButton) {
-      els.resetUserButton.addEventListener('click', resetUser);
-    }
 
 
     els.scoreHomeButton
@@ -13363,6 +13501,14 @@ let scoreTimingDetail =
           passive:
             true
         }
+      );
+
+
+    els.leaderContent
+      .addEventListener(
+        'scroll',
+        saveLeaderboardSnapshotV53,
+        { passive: true }
       );
 
 
@@ -13494,7 +13640,7 @@ let scoreTimingDetail =
 
     async function initialize() {
 
-  
+
     window.addEventListener(
       'resize',
       () => {
@@ -13529,15 +13675,27 @@ let scoreTimingDetail =
     );
 
 
-    await initializeQrAuthorization();
-    if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
-    syncTestAuthorizationToggle();
-    syncTeamQrLockedUi();
-    updateHomeScorecardAccess();
-
       const rememberedView =
         getRememberedView();
 
+      if (
+        rememberedView ===
+        'scorecard'
+      ) {
+        hydrateScorecardSnapshotV53();
+      }
+      else if (
+        rememberedView ===
+        'leaderboard'
+      ) {
+        hydrateLeaderboardSnapshotV53();
+      }
+
+      await initializeQrAuthorization();
+      if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
+      syncTestAuthorizationToggle();
+      syncTeamQrLockedUi();
+      updateHomeScorecardAccess();
 
       if (
         rememberedView ===
@@ -13674,37 +13832,6 @@ let scoreTimingDetail =
           'sshcp-pre-complete'
         );
       });
-    /* =========================================================
-       V12.14 — LEADERBOARD IDLE REFRESH
-       Any interaction while the leaderboard is open resets the
-       progress bar and requires 10 full idle seconds before refresh.
-       ========================================================= */
-    let leaderboardInteractionResetFrame = null;
-
-    function resetLeaderboardRefreshFromInteraction() {
-      if (currentView !== 'leaderboard' || !leaderboardHasLoaded || leaderboardLoadInProgress) {
-        return;
-      }
-
-      if (leaderboardInteractionResetFrame) {
-        cancelAnimationFrame(leaderboardInteractionResetFrame);
-      }
-
-      leaderboardInteractionResetFrame = requestAnimationFrame(() => {
-        leaderboardInteractionResetFrame = null;
-        startLeaderboardRefreshCycle();
-      });
-    }
-
-    document.addEventListener('pointerdown', resetLeaderboardRefreshFromInteraction, { passive: true });
-    document.addEventListener('pointermove', event => {
-      if (event.pointerType === 'touch' && event.buttons !== 0) {
-        resetLeaderboardRefreshFromInteraction();
-      }
-    }, { passive: true });
-    document.addEventListener('touchmove', resetLeaderboardRefreshFromInteraction, { passive: true });
-    document.addEventListener('scroll', resetLeaderboardRefreshFromInteraction, { passive: true, capture: true });
-
 
     window.addEventListener('resize', () => {
       if (els.modalOverlay.classList.contains('tournament-summary')) {
@@ -13716,4 +13843,5 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
 
