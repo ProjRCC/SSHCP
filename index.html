@@ -26,6 +26,14 @@
           (role === 'QR' && qrTeam) ? qrTeam :
           (authorizedTeam || rememberedTeam || '');
 
+        /* V5.7: the same 25-character display rule is available before first
+           paint so pull-refresh never flashes a full name and then cuts it. */
+        window.__sshcpBootDisplayTeamName = function (name) {
+          var fullName = String(name || '').trim();
+          if (fullName.length <= 25) return fullName;
+          return fullName.slice(0, 25).replace(/\s+$/, '') + '|';
+        };
+
         window.__sshcpBootLocked =
           (role === 'QR' && !!qrTeam);
 
@@ -122,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.6 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.7 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6506,7 +6514,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 
 /* =========================================================
-   SSHCP V5.6 — CONSOLIDATED RESPONSIVE CORRECTIONS
+   SSHCP V5.7 — CONSOLIDATED RESPONSIVE CORRECTIONS
    ========================================================= */
 
 /* SCORECARD gold tile: exact 1:1.5 height-to-width ratio. The height remains
@@ -6691,9 +6699,9 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   overflow:visible!important;
 }
 
-/* LIVE leaderboard progress pulse. It uses the already-locked 4s across /
-   1s return cycle, adds no layout height, disappears with completed-state
-   LIVE LEADERBOARD, and returns automatically if the event becomes live again. */
+/* V5.7 LIVE leaderboard refresh bar: the current gold line is now tied to
+   the real 5-second idle refresh timer. Touch/pointer interaction restarts it.
+   Completion hides it; returning to live play restores it. */
 #leaderboardView .leader-title-bar::after{
   content:"";
   position:absolute;
@@ -6705,12 +6713,14 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   background:var(--gold);
   opacity:1;
   pointer-events:none;
-  animation:sshcpLeaderLiveProgress 5s linear infinite;
+  animation:none;
 }
-@keyframes sshcpLeaderLiveProgress{
-  0%{width:0;}
-  80%{width:100%;}
-  100%{width:0;}
+#leaderboardView.leader-auto-refresh-active .leader-title-bar::after{
+  animation:sshcpLeaderLiveProgressV57 5s linear forwards;
+}
+@keyframes sshcpLeaderLiveProgressV57{
+  from{width:0;}
+  to{width:100%;}
 }
 #leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar::after{
   display:none!important;
@@ -6764,6 +6774,23 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   display:flex!important;
   grid-template-rows:none!important;
   white-space:nowrap!important;
+}
+
+/* V5.7 summary team fitting mirrors leaderboard TEAM logic:
+   target on one line -> two lines -> shrink only if the two-line block
+   cannot stay within 80% of the actual row height. */
+.modal-overlay.tournament-summary .summary-team-text.two-line{
+  white-space:normal!important;
+  overflow:visible!important;
+  line-height:1.02!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-row.place-1 > div,
+.modal-overlay.tournament-summary .tournament-summary-row.place-2 > div,
+.modal-overlay.tournament-summary .tournament-summary-row.place-3 > div{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-content:center!important;
 }
 
 /* Summary markers also sit BEFORE the already-centered name. */
@@ -6855,7 +6882,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.6</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.7</button>
 
       <div class="splash-image-wrap">
 
@@ -6905,7 +6932,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
                 btn.innerHTML =
                   '<span class="home-scorecard-action">ACCESS SCORECARD</span>' +
                   '<span class="home-scorecard-team">' +
-                  String(team).toUpperCase().replace(/[&<>"']/g, function (c) {
+                  window.__sshcpBootDisplayTeamName(team).toUpperCase().replace(/[&<>"']/g, function (c) {
                     return {
                       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
                     }[c];
@@ -6982,7 +7009,9 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
                 var team = window.__sshcpBootTeam || '';
                 var btn = document.getElementById('scoreTeamSelectButton');
                 if (btn && team) {
-                  btn.textContent = team;
+                  btn.textContent = window.__sshcpBootDisplayTeamName
+                    ? window.__sshcpBootDisplayTeamName(team)
+                    : team;
                   btn.classList.add('has-team');
                 }
               } catch (e) {}
@@ -7176,14 +7205,22 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
                 rows.innerHTML = snap.rowsHtml;
 
-                /* V5.4 compatibility: old V5.3 snapshot markup is reused for
-                   instant pull-refresh continuity, but its visible STATUS/team
-                   treatment is normalized before the first paint. */
+                /* V5.7 refresh continuity: keep the stored two-line/fitted team
+                   state intact. Normalize only the current STATUS label and the
+                   25-character display rule before first paint. */
                 rows.querySelectorAll('.leader-through-word').forEach(function (el) {
                   el.textContent = 'H';
                 });
-                rows.querySelectorAll('.leader-team-name.two-line').forEach(function (el) {
-                  el.classList.remove('two-line');
+                rows.querySelectorAll('.leader-team-name').forEach(function (el) {
+                  var raw = String(el.textContent || '');
+                  var hadCutoff = /\|$/.test(raw);
+                  var base = hadCutoff ? raw.slice(0, -1) : raw;
+                  if (hadCutoff || base.length > 25) {
+                    var cut = base.slice(0, 25).replace(/\s+$/, '');
+                    if (el.childNodes.length === 1 || !el.querySelector('br')) {
+                      el.textContent = cut + '|';
+                    }
+                  }
                 });
 
                 if (content && Number.isFinite(Number(snap.scrollTop))) {
@@ -7441,7 +7478,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.6
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.7
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -7712,6 +7749,9 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 
     let leaderboardAutoScrollTimer =
+      null;
+
+    let leaderboardRefreshTimerV57 =
       null;
 
 
@@ -8889,7 +8929,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.6 TEST LOG',
+        'SSHCP V5.7 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -9431,18 +9471,21 @@ let scoreTimingDetail =
         view
       );
 
+      if (view !== 'leaderboard') {
+        stopLeaderboardRefreshCycleV57();
+      }
+
 
     }
 
 
     function displayTeamName(name) {
-      const fullName = String(name || '');
-      /* Event rule: team names display at most the first 25 name characters.
-         A cutoff bar is appended only when source text exceeds that limit.
-         Width fitting still starts from the approved target size afterward. */
-      return fullName.length > 25
-        ? fullName.slice(0, 25) + '|'
-        : fullName;
+      const fullName = String(name || '').trim();
+      /* V5.7 event rule: at most 25 source characters are displayed. If a
+         cutoff is required, trailing whitespace at the cut is removed before
+         the marker so the bar sits directly after the last visible letter. */
+      if (fullName.length <= 25) return fullName;
+      return fullName.slice(0, 25).replace(/\s+$/, '') + '|';
     }
 
     function fitHomeScorecardTeamNameV55() {
@@ -10394,7 +10437,7 @@ let scoreTimingDetail =
           button.classList.contains('test-remove-auth');
         const isHome = button.classList.contains('test-log-home');
 
-        /* V5.6 TEST typography: deliberately small/technical.
+        /* V5.7 TEST typography: deliberately small/technical.
            Authorization keeps its prior target. HOME is larger, but restrained.
            Every label is one line and shrinks only when its real Oswald width
            cannot fit the existing button. */
@@ -11640,8 +11683,67 @@ let scoreTimingDetail =
     /* =========================================================
        CLOUDFLARE: LEADERBOARD READ
        Google Apps Script is NOT used.
-       Fresh read every time LIVE LEADERBOARD is opened + manual REFRESH. No polling.
+       Fresh read every time LIVE LEADERBOARD is opened + manual REFRESH.
+       V5.7 also runs a 5-second idle refresh cycle while the tournament is live.
+       Any leaderboard interaction resets that cycle.
        ========================================================= */
+
+
+    function leaderboardRefreshIsLiveV57() {
+      const screen = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leaderboard-screen')
+        : null;
+
+      return (
+        currentView === 'leaderboard' &&
+        !!screen &&
+        !screen.classList.contains('tournament-complete')
+      );
+    }
+
+    function stopLeaderboardRefreshCycleV57() {
+      if (leaderboardRefreshTimerV57) {
+        clearTimeout(leaderboardRefreshTimerV57);
+        leaderboardRefreshTimerV57 = null;
+      }
+
+      if (els.leaderboardView) {
+        els.leaderboardView.classList.remove('leader-auto-refresh-active');
+      }
+    }
+
+    function restartLeaderboardRefreshCycleV57() {
+      stopLeaderboardRefreshCycleV57();
+
+      if (!leaderboardRefreshIsLiveV57() || leaderboardLoadInProgress) {
+        return;
+      }
+
+      const titleBar = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-title-bar')
+        : null;
+
+      if (els.leaderboardView) {
+        /* Force the same current gold bar to restart from zero. */
+        if (titleBar) void titleBar.offsetWidth;
+        els.leaderboardView.classList.add('leader-auto-refresh-active');
+      }
+
+      leaderboardRefreshTimerV57 = setTimeout(async () => {
+        leaderboardRefreshTimerV57 = null;
+
+        if (!leaderboardRefreshIsLiveV57()) {
+          stopLeaderboardRefreshCycleV57();
+          return;
+        }
+
+        if (els.leaderboardView) {
+          els.leaderboardView.classList.remove('leader-auto-refresh-active');
+        }
+
+        await loadLeaderboard(false);
+      }, 5000);
+    }
 
 
     async function loadLeaderboard(
@@ -11656,6 +11758,8 @@ let scoreTimingDetail =
 
       leaderboardLoadInProgress =
         true;
+
+      stopLeaderboardRefreshCycleV57();
 
       /* V4.3 — refresh data without visually reverting the existing shell.
          The current table/state stays in place until fresh rows are ready. */
@@ -11888,6 +11992,12 @@ let scoreTimingDetail =
 
         els.leaderRefreshButton.disabled =
           false;
+
+        if (leaderboardRefreshIsLiveV57()) {
+          restartLeaderboardRefreshCycleV57();
+        } else {
+          stopLeaderboardRefreshCycleV57();
+        }
 
       }
 
@@ -12127,10 +12237,16 @@ let scoreTimingDetail =
       if (!complete) {
         resetTournamentTieBreakViewed();
         setLeaderboardFinalAction(null);
+
+        if (currentView === 'leaderboard' && !leaderboardLoadInProgress) {
+          requestAnimationFrame(restartLeaderboardRefreshCycleV57);
+        }
         return;
       }
 
-      /* Final-results mode is stable; manual REFRESH only. */
+      stopLeaderboardRefreshCycleV57();
+
+      /* Final-results mode: idle auto-refresh is off until play resumes. */
       const tied = firstPlaceTiedRows(lastLeaderboardRows);
       if (tied.length < 2) {
         setLeaderboardFinalAction('tournament-summary');
@@ -12426,11 +12542,22 @@ let scoreTimingDetail =
         if (!row) return;
         const placeCell = row.querySelector('.tournament-summary-place');
         const team = row.querySelector('.tournament-summary-team');
+        const teamAnchor = row.querySelector('.summary-team-anchor');
         const teamText = row.querySelector('.summary-team-text') || team;
         const net = row.querySelector('.tournament-summary-net');
 
         if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 9, {horizontalPad:4,verticalPad:5});
-        if (team && teamText) fitTextToBoxV5(team, teamText, Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])), 10, {horizontalPad:22,verticalPad:5,wrap:false,lineHeight:1});
+        if (team && teamText) {
+          fitTwoLineTeamTextV57(
+            team,
+            teamAnchor,
+            teamText,
+            row.clientHeight,
+            Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])),
+            10,
+            22
+          );
+        }
         if (net) fitTextToBoxV5(net, net, Math.min(46, row.clientHeight * ([0.60,0.55,0.50][index])), 12, {horizontalPad:6,verticalPad:5});
       });
 
@@ -12453,10 +12580,27 @@ let scoreTimingDetail =
       };
 
       fitUniform(lowerPlace, 0.34, 9, 4);
-      fitUniform(lowerTeam, 0.40, 10, 10);
+
+      lowerTeam.forEach(teamCell => {
+        const anchor = teamCell.querySelector('.summary-team-anchor');
+        const teamText = teamCell.querySelector('.summary-team-text');
+        if (!teamText) return;
+
+        const rowHeight = teamCell.clientHeight;
+        fitTwoLineTeamTextV57(
+          teamCell,
+          anchor,
+          teamText,
+          rowHeight,
+          Math.min(28, rowHeight * 0.40),
+          9,
+          10
+        );
+      });
+
       fitUniform(lowerNet, 0.48, 12, 6);
 
-      /* V5.6: every NET STROKES cell, 1st through 10th, uses the exact
+      /* V5.7: every NET STROKES cell, 1st through 10th, uses the exact
          same one-line notation and one common fitted size. Start at the
          approved 17px target; if any row cannot meet it, all ten settle at
          the smallest size needed so the column stays visually consistent. */
@@ -12582,7 +12726,9 @@ let scoreTimingDetail =
           html +=
             '<div class="tournament-summary-remaining-row">' +
             '<div class="tournament-summary-remaining-cell place">' + escapeHtml(String(place)) + '</div>' +
-            '<div class="tournament-summary-remaining-cell team">' + escapeHtml(displayTeamName(row.team || '')) + '</div>' +
+            '<div class="tournament-summary-remaining-cell team"><span class="summary-team-anchor">' +
+            '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
+            '</span></div>' +
             '<div class="tournament-summary-remaining-cell net-strokes">' + escapeHtml(strokesText) + '</div>' +
             '<div class="tournament-summary-remaining-cell net-score ' + scoreClass(row.net) + '">' +
             escapeHtml(formatGolfScore(row.net)) + '</div>' +
@@ -13066,62 +13212,82 @@ let scoreTimingDetail =
       return [value.slice(0, cut), value.slice(cut)];
     }
 
-    function fitLeaderboardTeamV55(teamCell, teamAnchor, team, rowHeight) {
-      if (!teamCell || !team) return;
+    function fitTwoLineTeamTextV57(container, anchor, textEl, rowHeight, targetSize, minSize, horizontalPad) {
+      if (!container || !textEl) return;
 
-      const original = String(team.dataset.v55Name || team.textContent || '').trim();
-      team.dataset.v55Name = original;
-      team.classList.remove('two-line');
-      team.textContent = original;
-      team.style.removeProperty('font-size');
+      const original = String(textEl.dataset.v57Name || textEl.textContent || '').trim();
+      textEl.dataset.v57Name = original;
+      textEl.classList.remove('two-line');
+      textEl.textContent = original;
+      textEl.style.removeProperty('font-size');
 
-      if (teamAnchor) {
-        teamAnchor.style.setProperty('width', 'auto', 'important');
-        teamAnchor.style.setProperty('max-width', 'calc(100% - 14px)', 'important');
+      if (anchor) {
+        anchor.style.setProperty('width', 'auto', 'important');
+        anchor.style.setProperty('max-width', 'calc(100% - 14px)', 'important');
       }
 
-      const targetSize = Math.min(36, rowHeight * 0.50);
-      const minSize = 8;
+      const availableWidth = Math.max(
+        1,
+        container.clientWidth - Math.max(0, Number(horizontalPad) || 0)
+      );
+      const availableTwoLineHeight = Math.max(1, rowHeight * 0.80);
 
-      /* First attempt: approved target on ONE line. */
-      team.style.setProperty('font-size', targetSize + 'px', 'important');
-      team.style.setProperty('line-height', '1.08', 'important');
-      team.style.setProperty('white-space', 'nowrap', 'important');
-      team.style.setProperty('overflow', 'visible', 'important');
+      /* Target size is always attempted on one line first. */
+      textEl.style.setProperty('font-size', targetSize + 'px', 'important');
+      textEl.style.setProperty('line-height', '1.04', 'important');
+      textEl.style.setProperty('white-space', 'nowrap', 'important');
+      textEl.style.setProperty('overflow', 'visible', 'important');
 
-      const availableWidth = Math.max(1, teamCell.clientWidth - 14);
-      const oneLineFits = team.scrollWidth <= availableWidth + 0.75;
-      if (oneLineFits) return;
+      if (
+        textEl.scrollWidth <= availableWidth + 0.75 &&
+        textEl.scrollHeight <= availableTwoLineHeight + 0.75
+      ) {
+        return targetSize;
+      }
 
-      /* First fallback is TWO LINES at the target concept — not immediate
-         one-line shrink. Force a balanced break, then shrink only if those
-         two lines cannot fit the actual cell width/height. */
+      /* First fallback is two lines at the SAME target size. Only when the
+         two-line block exceeds width or 80% of row height do we shrink. */
       const [line1, line2] = splitLeaderboardTeamTwoLinesV55(original);
-      team.replaceChildren(
+      textEl.replaceChildren(
         document.createTextNode(line1),
         document.createElement('br'),
         document.createTextNode(line2)
       );
-      team.classList.add('two-line');
+      textEl.classList.add('two-line');
 
-      const availableTwoLineHeight = Math.max(1, rowHeight * 0.78);
-      let twoLineSize = targetSize;
-      team.style.setProperty('font-size', twoLineSize + 'px', 'important');
-      team.style.setProperty('line-height', '1.02', 'important');
-      team.style.setProperty('white-space', 'normal', 'important');
-      team.style.setProperty('overflow', 'visible', 'important');
+      let size = targetSize;
+      textEl.style.setProperty('font-size', size + 'px', 'important');
+      textEl.style.setProperty('line-height', '1.02', 'important');
+      textEl.style.setProperty('white-space', 'normal', 'important');
+      textEl.style.setProperty('overflow', 'visible', 'important');
 
       while (
-        twoLineSize > minSize &&
+        size > minSize &&
         (
-          team.scrollWidth > availableWidth + 0.75 ||
-          team.scrollHeight > availableTwoLineHeight + 0.75
+          textEl.scrollWidth > availableWidth + 0.75 ||
+          textEl.scrollHeight > availableTwoLineHeight + 0.75
         )
       ) {
-        twoLineSize -= 0.5;
-        team.style.setProperty('font-size', twoLineSize + 'px', 'important');
+        size -= 0.5;
+        textEl.style.setProperty('font-size', size + 'px', 'important');
       }
-      team.style.setProperty('overflow', 'visible', 'important');
+
+      return size;
+    }
+
+    function fitLeaderboardTeamV55(teamCell, teamAnchor, team, rowHeight) {
+      if (!teamCell || !team) return;
+
+      const targetSize = Math.min(36, rowHeight * 0.50);
+      fitTwoLineTeamTextV57(
+        teamCell,
+        teamAnchor,
+        team,
+        rowHeight,
+        targetSize,
+        8,
+        14
+      );
     }
 
     function fitLeaderboardTypography() {
@@ -13224,7 +13390,7 @@ let scoreTimingDetail =
       const tableBudget = contentRect.bottom - headerRect.top;
       if (!Number.isFinite(tableBudget) || tableBudget <= 0) return;
 
-      /* V5.6: LIVE and COMPLETE are solved independently from THEIR OWN
+      /* V5.7: LIVE and COMPLETE are solved independently from THEIR OWN
          rendered table boundaries. No screen-height subtraction model and
          no shared/frozen row height between the two boards. */
       const headerHeight = (tableBudget / 9) * 0.85;
@@ -13934,6 +14100,20 @@ let scoreTimingDetail =
       );
 
 
+    /* V5.7: any leaderboard touch/pointer interaction restarts the 5-second
+       idle countdown. It does not itself refresh. */
+    els.leaderboardView
+      .addEventListener(
+        'pointerdown',
+        () => {
+          if (leaderboardRefreshIsLiveV57()) {
+            restartLeaderboardRefreshCycleV57();
+          }
+        },
+        { passive: true, capture: true }
+      );
+
+
 
     els.leaderFinalActionButton
       .addEventListener(
@@ -14313,7 +14493,7 @@ let scoreTimingDetail =
       sizeLeaderboardRows();
     }
 
-    /* V5.6 Oswald determinism: initial fallback-font measurements are allowed
+    /* V5.7 Oswald determinism: initial fallback-font measurements are allowed
        for instant paint, but every width-sensitive element is remeasured once
        the actual webfont is ready. This keeps S25/iPad fitting consistent. */
     if (document.fonts && document.fonts.ready) {
