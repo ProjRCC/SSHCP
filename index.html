@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.7 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.8 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V2.7 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V2.8 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4001,7 +4001,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V2.7 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V2.8 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4010,7 +4010,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V2.7 — HOME VISUAL REFINEMENT
+   SSHCP V2.8 — HOME VISUAL REFINEMENT
    - Keep the 3-control group centered at ~80vh.
    - Equal vertical gaps between Leaderboard / Scorecard / Quick Guide.
    - Slimmer leaderboard button with unchanged text size.
@@ -4072,7 +4072,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V2.7 — FINAL HOME SCORECARD REFINEMENT
+   SSHCP V2.8 — FINAL HOME SCORECARD REFINEMENT
    - Gold scorecard control gets a little more height.
    - Team name becomes the strongest text on HOME.
    - Tighten the gaps above and below the scorecard control.
@@ -4149,6 +4149,262 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   }
 }
 
+
+/* =========================================================
+   SSHCP V2.8 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
+   Same structure / same row counts / same column widths.
+   We use dead space more aggressively without changing the
+   proven scorecard or leaderboard geometry.
+   ========================================================= */
+
+/* ---------- VISUAL LANGUAGE ----------
+   Gold fill     = primary action
+   Gold outline  = secondary action (same 5px weight as CLEAR)
+   Black outline = utility action, 50% stronger than before
+   Light gray    = information / current context
+   ----------------------------------- */
+
+/* Utility black-outline controls: HOME / INFO / QUICK GUIDE. */
+#scorecardView .nav-button,
+#leaderboardView .nav-button,
+#homeView .quick-guide-button {
+  border-width: 1.5px !important;
+  border-color: #000 !important;
+}
+
+/* HOME: keep geometry, make secondary leaderboard treatment consistent. */
+#homeView #homeLeaderboardButton,
+#homeView #homeLeaderboardButton:active {
+  border: 5px solid var(--gold) !important;
+  background: #fff !important;
+  color: #000 !important;
+  font-size: 22px !important;
+}
+
+/* Slightly less dead space inside the established HOME action group. */
+#homeView .home-actions {
+  gap: 8px !important;
+}
+
+/* HOME event line: just a touch easier to read. */
+#homeView .home-event-info {
+  font-size: 13.5px !important;
+}
+
+/* Scorecard/leaderboard event name: bigger, always one line. */
+#scorecardView .header-brand,
+#leaderboardView .header-brand {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+}
+
+/* Scorecard current-team box is primarily information for normal golfers. */
+#scorecardView .score-team-select-button,
+#scorecardView .score-team-select-button.has-team,
+#scorecardView .score-team-select-button:focus {
+  background: var(--light-gray) !important;
+  color: #000 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* MASTER can still use the hidden dropdown affordance, but it does not
+   need a gold action treatment. */
+#scorecardView .score-team-select-button::after {
+  border-top-color: #000 !important;
+}
+
+/* ---------- SCORECARD READABILITY ----------
+   Keep nine visible rows and every column width exactly as-is. */
+#scorecardView .score-table-head {
+  font-size: 17.5px !important;
+  font-weight: 700 !important;
+}
+
+#scorecardView .hole-cell {
+  font-size: 27px !important;
+  font-weight: 800 !important;
+}
+
+#scorecardView .par-cell {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+}
+
+#scorecardView .yardage-cell {
+  font-size: 19px !important;
+  font-weight: 600 !important;
+}
+
+/* Score stays governed by the existing row/container math; it is already
+   essentially at its safe maximum. */
+
+/* Push scorecard footer actions toward the available edges while preserving
+   the approved footer height. */
+#scorecardView .score-fixed-bottom {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+#scorecardView .score-bottom-actions {
+  gap: 8px !important;
+}
+
+#scorecardView .bottom-action {
+  min-height: 57px !important;
+  font-size: 19px !important;
+}
+
+/* ---------- SCORE ENTRY THUMB ZONE ----------
+   Same popup position. Larger useful content / controls. */
+.score-entry-input {
+  width: min(158px, 48%) !important;
+  height: clamp(46px, 10.5dvh, 78px) !important;
+  font-size: clamp(30px, 6.1dvh, 44px) !important;
+}
+
+.score-entry-control,
+.score-entry-actions {
+  width: min(346px, 96%) !important;
+}
+
+.score-step-button {
+  font-size: clamp(34px, 6.8dvh, 50px) !important;
+  font-weight: 800 !important;
+}
+
+.score-entry-clear {
+  border: 5px solid var(--gold) !important;
+  background: #fff !important;
+  color: #000 !important;
+  font-size: clamp(15px, 2.8dvh, 21px) !important;
+  font-weight: 800 !important;
+}
+
+.score-entry-enter {
+  font-size: clamp(17px, 3.15dvh, 23px) !important;
+  font-weight: 800 !important;
+}
+
+/* ---------- LEADERBOARD READABILITY ---------- */
+#leaderboardView #leaderRows .leader-team-name {
+  font-size: var(--leader-team-font, 21.5px) !important;
+}
+
+#leaderboardView #leaderRows .leader-hcp-cell {
+  font-size: 17px !important;
+}
+
+#leaderboardView #leaderRows .leader-through-score {
+  font-size: 24px !important;
+}
+
+#leaderboardView #leaderRows .leader-total {
+  font-size: 32px !important;
+}
+
+/* Footer actions can use more of the same existing footer width. */
+#leaderboardView .leader-bottom {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  gap: 8px !important;
+}
+
+#leaderboardView .leader-bottom .access-scorecard,
+#leaderboardView .leader-bottom .leader-refresh-button {
+  min-height: 56px !important;
+}
+
+/* ---------- COMPLETED TOURNAMENT ----------
+   The leaderboard does NOT resize. It simply moves upward after
+   LIVE LEADERBOARD + progress disappear. The exact measured content
+   height from the live state is locked by JS. */
+.leader-final-slot {
+  display: none;
+  flex: 0 0 auto;
+  margin: 12px 14px 0;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+}
+
+.leader-final-slot .leader-final-action {
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+  width: min(62%, 390px) !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  margin: 0 auto !important;
+}
+
+.leaderboard-screen.tournament-complete .leader-title-bar,
+.leaderboard-screen.tournament-complete .leader-refresh-progress {
+  display: none !important;
+}
+
+/* Preserve the proven leaderboard viewport / row math exactly. */
+.leaderboard-screen.tournament-complete .leader-content {
+  flex: 0 0 var(--leader-final-content-height) !important;
+  height: var(--leader-final-content-height) !important;
+  max-height: var(--leader-final-content-height) !important;
+}
+
+/* Keep the table header exactly the same dimensions and let the whole
+   scoreboard naturally occupy the freed LIVE LEADERBOARD space. */
+.leaderboard-screen.tournament-complete .leader-table-head {
+  flex: 0 0 auto !important;
+}
+
+/* Result action now lives beneath the intact scoreboard. */
+.leaderboard-screen.tournament-complete .leader-final-slot {
+  display: flex !important;
+}
+
+/* Once scoring is finished, ACCESS SCORECARD becomes secondary. */
+.leaderboard-screen.tournament-complete .access-scorecard {
+  background: #fff !important;
+  color: #000 !important;
+  border: 5px solid var(--gold) !important;
+  box-sizing: border-box !important;
+}
+
+/* REFRESH remains available but visually utility-level. */
+.leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1.5px solid #000 !important;
+}
+
+/* The completed result action is the focus, while maintaining a clean
+   buffer before the footer buttons. */
+.leaderboard-screen.tournament-complete .leader-bottom {
+  padding-top: 12px !important;
+}
+
+@media (max-width: 420px) {
+  #scorecardView .hole-cell {
+    font-size: 26px !important;
+  }
+
+  #scorecardView .par-cell {
+    font-size: 21px !important;
+  }
+
+  #scorecardView .yardage-cell {
+    font-size: 18.5px !important;
+  }
+
+  #scorecardView .header-brand,
+  #leaderboardView .header-brand {
+    font-size: 14.5px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -4183,7 +4439,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.7</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.8</button>
 
       <div class="splash-image-wrap">
 
@@ -4400,14 +4656,6 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
           </div>
 
           <button
-            id="leaderFinalActionButton"
-            class="leader-final-action"
-            type="button"
-            aria-hidden="true"
-          ></button>
-
-
-          <button
             id="leaderRefreshButtonTop"
             class="leader-refresh-button"
             type="button"
@@ -4447,6 +4695,16 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
         </div>
 
+      </div>
+
+
+      <div id="leaderFinalSlot" class="leader-final-slot">
+        <button
+          id="leaderFinalActionButton"
+          class="leader-final-action"
+          type="button"
+          aria-hidden="true"
+        ></button>
       </div>
 
 
@@ -4660,7 +4918,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.7
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.8
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -4798,6 +5056,9 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
       leaderContent:
         document.querySelector('.leader-content'),
+
+      leaderFinalSlot:
+        document.getElementById('leaderFinalSlot'),
 
       scoreRows:
         document.getElementById('scoreRows'),
@@ -5221,7 +5482,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V2.7 — QR AUTHORIZATION
+       SSHCP V2.8 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5774,7 +6035,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V2.7 — viewport-owned TEST dropdown.
+        /* SSHCP V2.8 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -6001,7 +6262,7 @@ let scoreTimingDetail =
             () => {
 
               /*
-                SSHCP V2.7 progress positioning:
+                SSHCP V2.8 progress positioning:
                 normal page/load positioning uses verified GOLD scores.
                 Immediately after ENTER, useLocalProgress=true lets the
                 viewport follow the newly entered gray score without
@@ -6256,7 +6517,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V2.7 — no 20-entry truncation. History remains until the
+      /* SSHCP V2.8 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -6277,7 +6538,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V2.7 TEST LOG',
+        'SSHCP V2.8 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -6375,7 +6636,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V2.7 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V2.8 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -7507,7 +7768,7 @@ let scoreTimingDetail =
 
 
       /*
-        SSHCP V2.7 — the gray current-hole indicator follows LOCAL entry
+        SSHCP V2.8 — the gray current-hole indicator follows LOCAL entry
         progress immediately. Gold still follows verified/savedScores.
         This lets ENTER mean "move on now" while verification finishes
         in the background.
@@ -8272,7 +8533,7 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V2.7 — ENTER advances immediately.
+          SSHCP V2.8 — ENTER advances immediately.
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
@@ -9024,7 +9285,33 @@ let scoreTimingDetail =
     function updateTournamentFinishState(rows) {
       lastLeaderboardRows = Array.isArray(rows) ? rows.map(row => ({ ...row })) : [];
 
-      if (!tournamentIsComplete(lastLeaderboardRows)) {
+      const complete = tournamentIsComplete(lastLeaderboardRows);
+      const screen = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leaderboard-screen')
+        : null;
+
+      if (screen) {
+        if (complete && els.leaderContent) {
+          /* Preserve the proven leaderboard viewport height exactly.
+             Only its vertical position changes in final-results mode. */
+          const contentHeight =
+            els.leaderContent.getBoundingClientRect().height;
+
+          if (contentHeight > 0) {
+            screen.style.setProperty(
+              '--leader-final-content-height',
+              contentHeight + 'px'
+            );
+          }
+        }
+
+        screen.classList.toggle(
+          'tournament-complete',
+          complete
+        );
+      }
+
+      if (!complete) {
         resetTournamentTieBreakViewed();
         setLeaderboardFinalAction(null);
         return;
@@ -9483,7 +9770,7 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* SSHCP V2.7 — Once the tournament is complete, the normal leaderboard
+      /* SSHCP V2.8 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
          that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
@@ -11175,3 +11462,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
