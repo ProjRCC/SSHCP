@@ -122,7 +122,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.5 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.6 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6506,7 +6506,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 
 /* =========================================================
-   SSHCP V5.5 — CONSOLIDATED RESPONSIVE CORRECTIONS
+   SSHCP V5.6 — CONSOLIDATED RESPONSIVE CORRECTIONS
    ========================================================= */
 
 /* SCORECARD gold tile: exact 1:1.5 height-to-width ratio. The height remains
@@ -6522,7 +6522,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   min-width:0!important;
   min-height:0!important;
   max-width:none!important;
-  max-height:94%!important;
+  max-height:98%!important;
   aspect-ratio:1.5 / 1!important;
   margin:auto!important;
   box-sizing:border-box!important;
@@ -6610,10 +6610,11 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   pointer-events:none!important;
 }
 
-/* STATUS = SCORE / fixed divider / H18. Score and hole each target 35% of the
-   actual row height. Divider width is identical on every row and independent
-   of score-string width. */
+/* STATUS keeps the locked gray hole-progress fill. Text is a simple compact
+   two-line stack: score target 30% of row height, Hxx target 40%. No divider. */
 #leaderboardView .leader-through-cell{
+  position:relative!important;
+  isolation:isolate!important;
   display:flex!important;
   flex-direction:column!important;
   align-items:center!important;
@@ -6622,12 +6623,24 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   padding:0 2%!important;
   overflow:hidden!important;
 }
+#leaderboardView .leader-through-cell::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0 auto 0 0!important;
+  width:var(--thru-progress,0%)!important;
+  height:100%!important;
+  margin:0!important;
+  border:0!important;
+  background:#e6e6e6!important;
+  z-index:0!important;
+  pointer-events:none!important;
+}
 #leaderboardView .leader-through-score{
   order:1!important;
-  flex:0 0 35%!important;
+  flex:0 0 30%!important;
   width:100%!important;
   min-width:0!important;
-  height:35%!important;
+  height:30%!important;
   min-height:0!important;
   margin:0!important;
   padding:0!important;
@@ -6637,24 +6650,16 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   border:0!important;
   overflow:hidden!important;
   white-space:nowrap!important;
-  line-height:.90!important;
-}
-#leaderboardView .leader-through-cell::before{
-  content:""!important;
-  order:2!important;
-  flex:0 0 0!important;
-  width:46%!important;
-  height:0!important;
-  margin:calc(var(--leader-row-height,64px) * .012) 0!important;
-  border-top:1.5px solid #000!important;
-  box-sizing:border-box!important;
+  line-height:.92!important;
+  position:relative!important;
+  z-index:1!important;
 }
 #leaderboardView .leader-through-label{
-  order:3!important;
-  flex:0 0 35%!important;
+  order:2!important;
+  flex:0 0 40%!important;
   width:100%!important;
   min-width:0!important;
-  height:35%!important;
+  height:40%!important;
   min-height:0!important;
   margin:0!important;
   padding:0!important;
@@ -6664,7 +6669,9 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   gap:0!important;
   overflow:hidden!important;
   white-space:nowrap!important;
-  line-height:.90!important;
+  line-height:.92!important;
+  position:relative!important;
+  z-index:1!important;
 }
 #leaderboardView .leader-through-word,
 #leaderboardView .leader-through-value,
@@ -6676,11 +6683,38 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   min-height:0!important;
   margin:0!important;
   padding:0!important;
+  background:transparent!important;
   font-size:inherit!important;
   font-weight:800!important;
   line-height:inherit!important;
   white-space:nowrap!important;
   overflow:visible!important;
+}
+
+/* LIVE leaderboard progress pulse. It uses the already-locked 4s across /
+   1s return cycle, adds no layout height, disappears with completed-state
+   LIVE LEADERBOARD, and returns automatically if the event becomes live again. */
+#leaderboardView .leader-title-bar::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:0;
+  height:3px;
+  border-radius:999px;
+  background:var(--gold);
+  opacity:1;
+  pointer-events:none;
+  animation:sshcpLeaderLiveProgress 5s linear infinite;
+}
+@keyframes sshcpLeaderLiveProgress{
+  0%{width:0;}
+  80%{width:100%;}
+  100%{width:0;}
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar::after{
+  display:none!important;
+  animation:none!important;
 }
 
 /* Exactly equal leaderboard row boxes, including first and last. */
@@ -6821,7 +6855,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.5</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.6</button>
 
       <div class="splash-image-wrap">
 
@@ -7407,7 +7441,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.5
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.6
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -8855,7 +8889,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.5 TEST LOG',
+        'SSHCP V5.6 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -9403,8 +9437,11 @@ let scoreTimingDetail =
 
     function displayTeamName(name) {
       const fullName = String(name || '');
-      return fullName.length > 20
-        ? fullName.slice(0, 20) + '..'
+      /* Event rule: team names display at most the first 25 name characters.
+         A cutoff bar is appended only when source text exceeds that limit.
+         Width fitting still starts from the approved target size afterward. */
+      return fullName.length > 25
+        ? fullName.slice(0, 25) + '|'
         : fullName;
     }
 
@@ -10357,7 +10394,7 @@ let scoreTimingDetail =
           button.classList.contains('test-remove-auth');
         const isHome = button.classList.contains('test-log-home');
 
-        /* V5.5 TEST typography: deliberately small/technical.
+        /* V5.6 TEST typography: deliberately small/technical.
            Authorization keeps its prior target. HOME is larger, but restrained.
            Every label is one line and shrinks only when its real Oswald width
            cannot fit the existing button. */
@@ -10458,8 +10495,8 @@ let scoreTimingDetail =
       const scoreBox = Math.max(
         18,
         Math.min(
-          rowHeight * 0.94,
-          (scoreCellWidth * 0.94) / 1.5
+          rowHeight * 0.98,
+          (scoreCellWidth * 0.98) / 1.5
         )
       );
       els.scorecardView.style.setProperty('--v5-score-box', scoreBox + 'px');
@@ -12393,7 +12430,7 @@ let scoreTimingDetail =
         const net = row.querySelector('.tournament-summary-net');
 
         if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 9, {horizontalPad:4,verticalPad:5});
-        if (team && teamText) fitTextToBoxV5(team, teamText, Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])), 10, {horizontalPad:10,verticalPad:5});
+        if (team && teamText) fitTextToBoxV5(team, teamText, Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])), 10, {horizontalPad:22,verticalPad:5,wrap:false,lineHeight:1});
         if (net) fitTextToBoxV5(net, net, Math.min(46, row.clientHeight * ([0.60,0.55,0.50][index])), 12, {horizontalPad:6,verticalPad:5});
       });
 
@@ -12419,7 +12456,7 @@ let scoreTimingDetail =
       fitUniform(lowerTeam, 0.40, 10, 10);
       fitUniform(lowerNet, 0.48, 12, 6);
 
-      /* V5.5: every NET STROKES cell, 1st through 10th, uses the exact
+      /* V5.6: every NET STROKES cell, 1st through 10th, uses the exact
          same one-line notation and one common fitted size. Start at the
          approved 17px target; if any row cannot meet it, all ten settle at
          the smallest size needed so the column stays visually consistent. */
@@ -13148,10 +13185,10 @@ let scoreTimingDetail =
         }
 
         if (score) {
-          fitTextToBoxV5(score, score, rowHeight * 0.35, 8, {
+          fitTextToBoxV5(score, score, rowHeight * 0.30, 8, {
             horizontalPad: 4,
             verticalPad: 1,
-            lineHeight: 0.90
+            lineHeight: 0.92
           });
         }
 
@@ -13159,13 +13196,13 @@ let scoreTimingDetail =
           fitTextToBoxV5(
             statusLabel,
             statusLabel,
-            rowHeight * 0.35,
+            rowHeight * 0.40,
             8,
             {
               horizontalPad: 4,
               verticalPad: 1,
               wrap: false,
-              lineHeight: 0.90
+              lineHeight: 0.92
             }
           );
         }
@@ -13187,7 +13224,7 @@ let scoreTimingDetail =
       const tableBudget = contentRect.bottom - headerRect.top;
       if (!Number.isFinite(tableBudget) || tableBudget <= 0) return;
 
-      /* V5.5: LIVE and COMPLETE are solved independently from THEIR OWN
+      /* V5.6: LIVE and COMPLETE are solved independently from THEIR OWN
          rendered table boundaries. No screen-height subtraction model and
          no shared/frozen row height between the two boards. */
       const headerHeight = (tableBudget / 9) * 0.85;
@@ -14276,7 +14313,7 @@ let scoreTimingDetail =
       sizeLeaderboardRows();
     }
 
-    /* V5.5 Oswald determinism: initial fallback-font measurements are allowed
+    /* V5.6 Oswald determinism: initial fallback-font measurements are allowed
        for instant paint, but every width-sensitive element is remeasured once
        the actual webfont is ready. This keeps S25/iPad fitting consistent. */
     if (document.fonts && document.fonts.ready) {
