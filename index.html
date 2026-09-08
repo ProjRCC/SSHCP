@@ -5,6 +5,7 @@
     (function () {
       try {
         var rememberedView = sessionStorage.getItem('rotbCurrentView') || 'home';
+        window.__sshcpBootView = rememberedView;
         if (rememberedView === 'scorecard' || rememberedView === 'leaderboard') {
           document.documentElement.classList.add('sshcp-pre-' + rememberedView);
         }
@@ -30,6 +31,53 @@
 
         window.__sshcpBootTournamentComplete =
           sessionStorage.getItem('sshcpTournamentComplete') === '1';
+
+        window.__sshcpBootFinalActionMode =
+          sessionStorage.getItem('sshcpFinalActionMode') || '';
+
+        window.__sshcpBootFinalActionLabel =
+          sessionStorage.getItem('sshcpFinalActionLabel') || '';
+
+        /*
+          V5.2 — preserve the last-known RESPONSIVE geometry during a
+          browser pull-to-refresh. This is shell state, not tournament data.
+          Restore only when the viewport is effectively the same size.
+        */
+        try {
+          var savedGeometry = JSON.parse(
+            sessionStorage.getItem('sshcpResponsiveGeometryV5') || 'null'
+          );
+
+          if (savedGeometry) {
+            var nowW = window.innerWidth || 0;
+            var nowH = window.innerHeight || 0;
+            var closeW = Math.abs((savedGeometry.w || 0) - nowW) <= 8;
+            var closeH = Math.abs((savedGeometry.h || 0) - nowH) <= 12;
+
+            if (closeW && closeH) {
+              var rootStyle = document.documentElement.style;
+
+              if (savedGeometry.scoreHead) {
+                rootStyle.setProperty('--v5-score-head-h', savedGeometry.scoreHead + 'px');
+              }
+              if (savedGeometry.scoreRow) {
+                rootStyle.setProperty('--v5-score-row-h', savedGeometry.scoreRow + 'px');
+              }
+              if (savedGeometry.scoreBox) {
+                rootStyle.setProperty('--v5-score-box', savedGeometry.scoreBox + 'px');
+              }
+              if (savedGeometry.scoreDivider) {
+                rootStyle.setProperty('--v5-nine-break-h', savedGeometry.scoreDivider + 'px');
+              }
+              if (savedGeometry.leaderHead) {
+                rootStyle.setProperty('--v5-leader-head-h', savedGeometry.leaderHead + 'px');
+              }
+              if (savedGeometry.leaderRow) {
+                rootStyle.setProperty('--leader-row-height', savedGeometry.leaderRow + 'px');
+              }
+            }
+          }
+        } catch (e) {}
       } catch (e) {
         window.__sshcpBootTeam = '';
         window.__sshcpBootLocked = false;
@@ -47,7 +95,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.0 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.2 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3983,7 +4031,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V5.0 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V5.2 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4036,7 +4084,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V5.0 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V5.2 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4045,7 +4093,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — HOME VISUAL REFINEMENT
+   SSHCP V5.2 — HOME VISUAL REFINEMENT
    - Keep the 3-control group centered at ~80vh.
    - Equal vertical gaps between Leaderboard / Scorecard / Quick Guide.
    - Slimmer leaderboard button with unchanged text size.
@@ -4107,7 +4155,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — FINAL HOME SCORECARD REFINEMENT
+   SSHCP V5.2 — FINAL HOME SCORECARD REFINEMENT
    - Gold scorecard control gets a little more height.
    - Team name becomes the strongest text on HOME.
    - Tighten the gaps above and below the scorecard control.
@@ -4186,7 +4234,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
+   SSHCP V5.2 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
    Same structure / same row counts / same column widths.
    We use dead space more aggressively without changing the
    proven scorecard or leaderboard geometry.
@@ -4442,7 +4490,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — SIZE / PROPORTION PUSH
+   SSHCP V5.2 — SIZE / PROPORTION PUSH
    Build from the proven V2.8 visual baseline.
    RULE: fixed labels stay on ONE LINE; use the available box.
    No scorecard column-width changes. No 9-row geometry changes.
@@ -4636,7 +4684,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — TARGETED FINISHING PASS
+   SSHCP V5.2 — TARGETED FINISHING PASS
    ========================================================= */
 
 /* SCORE ENTRY:
@@ -4755,7 +4803,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — COMPLETED-STATE RESULT BUTTON POSITION FIX
+   SSHCP V5.2 — COMPLETED-STATE RESULT BUTTON POSITION FIX
    Leaderboard geometry/scrolling remains untouched.
    BREAK TIE / SCRAMBLE SUMMARY is centered in the free zone
    between leaderboard bottom and footer top.
@@ -4811,7 +4859,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — RESULT ACTION OVERLAY + CLEAR / - / +
+   SSHCP V5.2 — RESULT ACTION OVERLAY + CLEAR / - / +
    ========================================================= */
 
 /* Score popup: only reorder controls. Keep all V3.2 sizing/positioning. */
@@ -4863,7 +4911,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — FINAL TONIGHT: RESULT POSITION + FREE SCROLL
+   SSHCP V5.2 — FINAL TONIGHT: RESULT POSITION + FREE SCROLL
    ========================================================= */
 
 /* LEADERBOARD SCROLL:
@@ -4897,7 +4945,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — GEOMETRIC FINAL-ACTION PLACEMENT
+   SSHCP V5.2 — GEOMETRIC FINAL-ACTION PLACEMENT
    Do not guess from footer height.
    JS sets -- actual TOP from leaderboard bottom + 10px.
    ========================================================= */
@@ -4940,7 +4988,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — TRUE TWO-BOUNDARY RESULT BUTTON FIT
+   SSHCP V5.2 — TRUE TWO-BOUNDARY RESULT BUTTON FIT
    JS measures:
      1) actual leaderboard bottom
      2) actual footer top
@@ -4981,7 +5029,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — EXACT COMPLETED-RESULT BOUNDARIES
+   SSHCP V5.2 — EXACT COMPLETED-RESULT BOUNDARIES
 
    --leader-result-top:
       leaderboard bottom + actual computed footer top-padding
@@ -5045,7 +5093,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — SCORECARD + SCRAMBLE SUMMARY READABILITY
+   SSHCP V5.2 — SCORECARD + SCRAMBLE SUMMARY READABILITY
    No scorecard row-height or column-width changes.
    ========================================================= */
 
@@ -5121,7 +5169,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V5.0 — CLEAN REFRESH + RESPONSIVE SUMMARY
+   SSHCP V5.2 — CLEAN REFRESH + RESPONSIVE SUMMARY
    ========================================================= */
 
 /* Remembered view is visible immediately on manual refresh. */
@@ -5323,7 +5371,7 @@ html body.team-qr-locked #homeTeamArrowButton{
 
 
 /* =========================================================
-   SSHCP V5.0 — COMPLETED LEADERBOARD STAYS RESPONSIVE
+   SSHCP V5.2 — COMPLETED LEADERBOARD STAYS RESPONSIVE
    ========================================================= */
 
 /* Remove only live-only elements. */
@@ -5413,7 +5461,7 @@ html body.team-qr-locked #homeTeamArrowButton{
 
 
 /* =========================================================
-   SSHCP V5.0 — APP-WIDE STABLE REFRESH SHELL
+   SSHCP V5.2 — APP-WIDE STABLE REFRESH SHELL
    ========================================================= */
 
 /* If a pull-refresh starts on a completed leaderboard, restore the completed
@@ -5440,7 +5488,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 }
 
 /* =========================================================
-   SSHCP V5.0 — COMPLETED RESULT ACTION
+   SSHCP V5.2 — COMPLETED RESULT ACTION
    Protected control inside the responsive layout.
    IMPORTANT: vertical padding is vh/px, NEVER percentage-of-width.
    ========================================================= */
@@ -5526,7 +5574,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 
 /* =========================================================
-   SSHCP V5.0 — SCRAMBLE SUMMARY LIVE FRACTIONAL LAYOUT
+   SSHCP V5.2 — SCRAMBLE SUMMARY LIVE FRACTIONAL LAYOUT
    Row geometry is CSS/fr based; no stored pixel row heights.
    Dragging the viewport should visibly resize rows immediately.
    ========================================================= */
@@ -5633,151 +5681,135 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 
 /* =======================================================================
-   SSHCP V5.0 — CLEAN RESPONSIVE VISUAL ENGINE
+   SSHCP V5.2 — RESPONSIVE GEOMETRY SYSTEM
    -----------------------------------------------------------------------
-   ONE RULE:
-     AVAILABLE SPACE -> CELL/ROW BOX -> CONTENT FITS INSIDE THAT BOX
+   HOME, TEST, and SCORE ENTRY are deliberately NOT restyled here.
 
-   A table cell is a hard boundary.
-   Text can shrink; the cell does not grow because of text.
+   Priority rule for short portrait screens:
+     protected shell (navigation/context/actions) keeps its readable size;
+     table area absorbs the height change first.
+
+   Within a table:
+     CURRENT TABLE BUDGET -> HEADER + ROW BOXES -> CONTENT FITS BOXES
    ======================================================================= */
 
-html,
-body{
-  width:100%;
-  min-height:100%;
-}
+*{box-sizing:border-box;}
 
-*{
-  box-sizing:border-box;
-}
-
-/* ---------- shared table invariants ---------- */
-
-#scorecardView .score-table-head > div,
-#scorecardView .score-row > div,
-#leaderboardView .leader-table-head > div,
-#leaderboardView .leader-row > div,
-.modal-overlay.tournament-summary .tournament-summary-row > div,
-.modal-overlay.tournament-summary .tournament-summary-remaining-cell{
-  min-width:0!important;
+/* ---------------- SCORECARD ---------------- */
+#scorecardView,
+#scorecardView .scorecard-screen{
+  height:100dvh!important;
   min-height:0!important;
   overflow:hidden!important;
-  box-sizing:border-box!important;
+}
+
+#scorecardView .scorecard-screen{
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+}
+
+#scorecardView .score-fixed-top{
+  min-height:0!important;
+  display:block!important;
+}
+
+#scorecardView .score-table-head{
+  height:var(--v5-score-head-h,58px)!important;
+  min-height:var(--v5-score-head-h,58px)!important;
+  max-height:var(--v5-score-head-h,58px)!important;
+  display:grid!important;
+  grid-template-columns:20% 15% 30% 35%!important;
+  overflow:hidden!important;
 }
 
 #scorecardView .score-table-head > div,
-#scorecardView .score-row > div,
-#leaderboardView .leader-table-head > div,
-#leaderboardView .leader-row > div,
-.modal-overlay.tournament-summary .tournament-summary-row > div,
-.modal-overlay.tournament-summary .tournament-summary-remaining-cell{
+#scorecardView .score-row > div{
+  min-width:0!important;
+  min-height:0!important;
+  height:100%!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   text-align:center!important;
-}
-
-/* =======================================================================
-   SCORECARD
-   ======================================================================= */
-
-#scorecardView .scorecard-screen{
-  height:100dvh!important;
-  min-height:0!important;
-  display:grid!important;
-  grid-template-rows:
-    auto
-    minmax(0,1fr)
-    auto!important;
   overflow:hidden!important;
-}
-
-/* Break the old fixed-top wrapper into the main grid. */
-#scorecardView .score-fixed-top{
-  display:grid!important;
-  grid-template-rows:
-    auto
-    auto
-    var(--v5-score-head-h,64px)!important;
-  min-height:0!important;
-}
-
-#scorecardView .score-nav,
-#scorecardView .score-team-select-wrap{
-  flex:0 0 auto!important;
-}
-
-/* Header is now part of the same responsive table system. */
-#scorecardView .score-table-head{
-  height:var(--v5-score-head-h,64px)!important;
-  min-height:0!important;
-  max-height:none!important;
-  display:grid!important;
-  grid-template-columns:
-    20%
-    15%
-    30%
-    35%!important;
-  overflow:hidden!important;
-}
-
-#scorecardView .score-table-head > div{
-  height:100%!important;
-  padding:
-    2%
-    3%!important;
   line-height:1!important;
-  white-space:nowrap!important;
 }
 
-#scorecardView .score-running-header{
+#scorecardView .score-table-head > .score-running-header{
+  display:grid!important;
+  grid-template-columns:18% minmax(0,64%) 18%!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:0!important;
+}
+
+#scorecardView .score-table-head > .score-running-header > span{
+  min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
   display:flex!important;
-  flex-direction:row!important;
   align-items:center!important;
   justify-content:center!important;
-  gap:3%!important;
-  white-space:nowrap!important;
-}
-
-#scorecardView .score-running-header span{
-  min-width:0!important;
-  max-width:100%!important;
-  display:block!important;
   overflow:hidden!important;
   white-space:nowrap!important;
   line-height:1!important;
 }
 
-/* Exactly nine live rows fill the remaining score viewport. */
 #scorecardView .score-scroll{
   min-height:0!important;
   height:100%!important;
   overflow-y:auto!important;
   overflow-x:hidden!important;
-  overscroll-behavior:contain!important;
+  overscroll-behavior-y:contain!important;
+  -webkit-overflow-scrolling:touch!important;
 }
 
-#scorecardView #scoreRows{
-  min-height:0!important;
-}
+#scorecardView #scoreRows{min-height:0!important;}
 
 #scorecardView .score-row{
-  height:var(--v5-score-row-h,70px)!important;
-  min-height:var(--v5-score-row-h,70px)!important;
-  max-height:var(--v5-score-row-h,70px)!important;
-
+  height:var(--v5-score-row-h,66px)!important;
+  min-height:var(--v5-score-row-h,66px)!important;
+  max-height:var(--v5-score-row-h,66px)!important;
   display:grid!important;
-  grid-template-columns:
-    20%
-    15%
-    30%
-    35%!important;
+  grid-template-columns:20% 15% 30% 35%!important;
+  overflow:hidden!important;
 }
 
-#scorecardView .score-row > div{
-  height:100%!important;
-  padding:2%!important;
+#scorecardView .score-row > div{padding:2% 2.5%!important;}
+
+#scorecardView .hole-number,
+#scorecardView .par-cell,
+#scorecardView .yardage-cell,
+#scorecardView .yardage-cell span{
+  min-width:0!important;
+  max-width:100%!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+#scorecardView .yardage-cell{gap:3%!important;}
+
+#scorecardView .score-button{
+  width:var(--v5-score-box,58px)!important;
+  height:var(--v5-score-box,58px)!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:90%!important;
+  max-height:90%!important;
+  margin:auto!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+
+#scorecardView .score-button > *{
+  max-width:100%!important;
+  max-height:100%!important;
   line-height:1!important;
 }
 
@@ -5789,109 +5821,53 @@ body{
   padding:0!important;
 }
 
-/* Every scorecard text element is vertically centered by its cell. */
-#scorecardView .hole-number,
-#scorecardView .par-cell,
-#scorecardView .yardage-cell,
-#scorecardView .yardage-cell span{
-  line-height:1!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-}
-
-#scorecardView .yardage-cell{
-  gap:3%!important;
-}
-
-/* Score box itself scales with row geometry. */
-#scorecardView .score-button{
-  width:var(--v5-score-box,64px)!important;
-  height:var(--v5-score-box,64px)!important;
-  min-width:0!important;
-  min-height:0!important;
-  max-width:90%!important;
-  max-height:90%!important;
-
-  margin:auto!important;
-  padding:0!important;
-
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-
-  line-height:1!important;
-  overflow:hidden!important;
-}
-
-#scorecardView .score-button .score-mark,
-#scorecardView .score-button .score-mark-number{
-  max-width:100%!important;
-  max-height:100%!important;
-  line-height:1!important;
-}
-
-/* Footer stays stable; the table absorbs height changes. */
 #scorecardView .score-fixed-bottom{
-  min-height:0!important;
   flex:0 0 auto!important;
+  min-height:0!important;
 }
 
-/* =======================================================================
-   LEADERBOARD
-   ======================================================================= */
-
+/* ---------------- LEADERBOARD ---------------- */
+#leaderboardView,
 #leaderboardView .leaderboard-screen{
   height:100dvh!important;
   min-height:0!important;
-
-  display:grid!important;
-  grid-template-rows:
-    auto
-    var(--v5-leader-head-h,56px)
-    minmax(0,1fr)
-    auto
-    auto
-    auto!important;
-
   overflow:hidden!important;
 }
 
-/* Existing top area stays one logical block. */
-#leaderboardView .leader-top{
+#leaderboardView .leaderboard-screen{
+  display:grid!important;
+  grid-template-rows:auto var(--v5-leader-head-h,52px) minmax(0,1fr) auto auto auto!important;
+}
+
+#leaderboardView .leader-top,
+#leaderboardView .leader-bottom,
+#leaderboardView .leader-update-note{
   min-height:0!important;
 }
 
-/* Header is no longer fixed-size independently of rows. */
 #leaderboardView .leader-table-head{
-  height:var(--v5-leader-head-h,56px)!important;
-  min-height:0!important;
-  max-height:none!important;
-
+  height:var(--v5-leader-head-h,52px)!important;
+  min-height:var(--v5-leader-head-h,52px)!important;
+  max-height:var(--v5-leader-head-h,52px)!important;
   display:grid!important;
-  grid-template-columns:
-    9%
-    40%
-    9%
-    20%
-    22%!important;
-
+  grid-template-columns:9% 40% 9% 20% 22%!important;
   overflow:hidden!important;
 }
 
-#leaderboardView .leader-table-head > div{
+#leaderboardView .leader-table-head > div,
+#leaderboardView .leader-row > div{
+  min-width:0!important;
+  min-height:0!important;
   height:100%!important;
-  padding:2% 3%!important;
-  line-height:1!important;
-  white-space:nowrap!important;
-}
-
-#leaderboardView .leader-table-head .leader-hcp-header span{
-  display:block!important;
-  max-width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
   overflow:hidden!important;
   line-height:1!important;
-  white-space:nowrap!important;
 }
+
+#leaderboardView .leader-table-head > div{padding:2% 3%!important;}
 
 #leaderboardView .leader-content{
   min-height:0!important;
@@ -5900,118 +5876,94 @@ body{
   overflow-y:auto!important;
   overflow-x:hidden!important;
   padding:0!important;
-}
-
-#leaderboardView .leader-table{
-  min-height:0!important;
-  height:auto!important;
+  -webkit-overflow-scrolling:touch!important;
 }
 
 #leaderboardView #leaderRows > .leader-row{
-  height:var(--leader-row-height,70px)!important;
-  min-height:var(--leader-row-height,70px)!important;
-  max-height:var(--leader-row-height,70px)!important;
-
+  height:var(--leader-row-height,64px)!important;
+  min-height:var(--leader-row-height,64px)!important;
+  max-height:var(--leader-row-height,64px)!important;
   display:grid!important;
-  grid-template-columns:
-    9%
-    40%
-    9%
-    20%
-    22%!important;
-
+  grid-template-columns:9% 40% 9% 20% 22%!important;
   overflow:hidden!important;
 }
 
-#leaderboardView .leader-row > div{
-  height:100%!important;
-  padding:2% 3%!important;
-  line-height:1!important;
-  overflow:hidden!important;
-}
+#leaderboardView .leader-row > div{padding:2% 3%!important;}
 
+#leaderboardView .leader-team-name,
+#leaderboardView .leader-total,
 #leaderboardView .leader-place-cell,
-#leaderboardView .leader-hcp-cell,
-#leaderboardView .leader-total-cell,
-#leaderboardView .leader-team-cell,
-#leaderboardView .leader-status-cell{
+#leaderboardView .leader-hcp-cell{
+  min-width:0!important;
+  max-width:100%!important;
+  height:100%!important;
+  display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  text-align:center!important;
-}
-
-#leaderboardView .leader-team-name{
-  width:100%!important;
-  max-width:100%!important;
-  line-height:1!important;
   white-space:nowrap!important;
   overflow:hidden!important;
-  text-overflow:clip!important;
-  text-align:center!important;
+  line-height:1!important;
+  margin:0!important;
 }
 
-#leaderboardView .leader-status-cell{
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:2%!important;
+#leaderboardView .leader-through-cell{
+  min-width:0!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-rows:56% 44%!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:0!important;
+  padding:0 2%!important;
 }
 
 #leaderboardView .leader-through-score,
 #leaderboardView .leader-through-label{
-  width:100%!important;
-  max-width:100%!important;
+  min-width:0!important;
   min-height:0!important;
+  width:100%!important;
+  height:100%!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  line-height:1!important;
   white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+#leaderboardView .leader-through-label{gap:2px!important;}
+
+/* In-play has no final-action row at all. */
+#leaderboardView .leader-final-slot{
+  display:none!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:0!important;
+  margin:0!important;
+  padding:0!important;
   overflow:hidden!important;
 }
 
-#leaderboardView .leader-total-cell{
-  line-height:1!important;
-  white-space:nowrap!important;
-}
-
-/* In-play title/progress remain exactly a state above the responsive table. */
-#leaderboardView .leader-title-bar,
-#leaderboardView .leader-refresh-progress{
-  flex:0 0 auto!important;
-}
-
-/* Completed state: same table engine, just fewer top rows and one action row. */
+/* Completed state: same table engine; table gives up room to protect action. */
 #leaderboardView .leaderboard-screen.tournament-complete{
-  grid-template-rows:
-    auto
-    var(--v5-leader-head-h,56px)
-    minmax(0,1fr)
-    clamp(64px,9dvh,94px)
-    auto
-    auto!important;
+  grid-template-rows:auto var(--v5-leader-head-h,52px) minmax(0,1fr) clamp(64px,9dvh,90px) auto auto!important;
 }
 
-#leaderboardView .leaderboard-screen.tournament-complete
-.leader-title-bar,
-#leaderboardView .leaderboard-screen.tournament-complete
-.leader-refresh-progress,
-#leaderboardView .leaderboard-screen.tournament-complete
-.leader-update-note{
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-refresh-progress,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-update-note{
   display:none!important;
 }
 
-#leaderboardView .leader-final-slot{
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  display:flex!important;
+  height:100%!important;
   min-height:0!important;
   max-height:none!important;
-  height:100%!important;
   margin:0!important;
-  padding:
-    clamp(4px,.6dvh,7px)
-    2%!important;
-
-  display:flex!important;
+  padding:clamp(4px,.55dvh,7px) 2%!important;
   align-items:center!important;
   justify-content:center!important;
   overflow:hidden!important;
@@ -6022,252 +5974,337 @@ body{
 #leaderboardView .leader-final-action{
   width:92%!important;
   height:100%!important;
-  max-height:78px!important;
   min-height:0!important;
+  max-height:78px!important;
   margin:auto!important;
   padding:0 3%!important;
-
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-
-  line-height:1!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-
-  font-size:clamp(22px,5.8vw,36px)!important;
   position:static!important;
   inset:auto!important;
   transform:none!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+  font-size:clamp(23px,5.6vw,36px)!important;
 }
 
-/* =======================================================================
-   SCRAMBLE SUMMARY — rebuilt as one constrained report grid
-   ======================================================================= */
+#leaderboardView .leader-final-main{
+  max-width:100%!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+}
 
-.modal-overlay.tournament-summary{
+/* ---------------- RESULT / DECISION POPUP ---------------- */
+.modal-overlay.tournament-result{
+  position:fixed!important;
+  inset:0!important;
+  display:none!important;
   align-items:center!important;
   justify-content:center!important;
+  padding:clamp(12px,2.5dvh,24px) clamp(12px,4vw,24px)!important;
+}
+.modal-overlay.tournament-result.open{display:flex!important;}
+.modal-overlay.tournament-result .modal-box{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:min(92vw,650px)!important;
+  max-height:88dvh!important;
+  margin:auto!important;
+  overflow-y:auto!important;
+  padding:clamp(20px,4vw,30px)!important;
+}
+.modal-overlay.tournament-result .modal-title{
+  font-size:clamp(28px,7.5vw,42px)!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.modal-overlay.tournament-result .tiebreak-winner{
+  font-size:clamp(27px,7vw,40px)!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.modal-overlay.tournament-result .tiebreak-explanation{
+  font-size:clamp(16px,4.3vw,22px)!important;
+  line-height:1.22!important;
+  text-align:center!important;
+}
+.modal-overlay.tournament-result .modal-actions{
+  margin-top:clamp(12px,2dvh,20px)!important;
 }
 
+/* ---------------- SCRAMBLE SUMMARY VIEWER ---------------- */
+.modal-overlay.tournament-summary{
+  position:fixed!important;
+  inset:0!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:clamp(8px,1.4dvh,14px) clamp(8px,2.6vw,18px)!important;
+  overflow:hidden!important;
+}
+.modal-overlay.tournament-summary.open{display:flex!important;}
+
 .modal-overlay.tournament-summary .modal-box{
-  width:92%!important;
-  max-width:760px!important;
-  height:90dvh!important;
-  max-height:90dvh!important;
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  margin:auto!important;
+  width:min(94vw,760px)!important;
+  height:min(92dvh,920px)!important;
+  max-width:calc(100vw - 16px)!important;
+  max-height:calc(100dvh - 16px)!important;
   min-height:0!important;
-
-  top:auto!important;
-  bottom:auto!important;
-  left:auto!important;
-  right:auto!important;
-
+  padding:clamp(10px,2vw,18px)!important;
   display:grid!important;
-  grid-template-rows:
-    auto
-    minmax(0,1fr)
-    auto!important;
-
+  grid-template-rows:auto minmax(0,1fr) auto!important;
   overflow:hidden!important;
 }
 
 .modal-overlay.tournament-summary .modal-title{
-  min-height:0!important;
-  line-height:1!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0 0 clamp(2px,.4dvh,5px)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
   white-space:nowrap!important;
   overflow:hidden!important;
+  line-height:1!important;
 }
 
 .modal-overlay.tournament-summary .modal-text{
   min-height:0!important;
   height:100%!important;
-
   display:grid!important;
-  grid-template-rows:
-    auto
-    minmax(0,3.7fr)
-    auto
-    minmax(0,6.3fr)!important;
-
-  gap:clamp(2px,.45dvh,6px)!important;
+  grid-template-rows:auto minmax(0,3.8fr) auto minmax(0,6.2fr)!important;
+  gap:clamp(2px,.45dvh,5px)!important;
   overflow:hidden!important;
 }
 
-/* Subtitle owns only what it needs. */
-.modal-overlay.tournament-summary
-.tournament-summary-subtitle{
+.modal-overlay.tournament-summary .tournament-summary-subtitle{
+  min-height:0!important;
   margin:0!important;
   padding:0!important;
-  line-height:1!important;
-}
-
-/* Top table: header + 1st + 2nd + 3rd are one constrained grid. */
-.modal-overlay.tournament-summary
-.tournament-summary-grid{
-  min-height:0!important;
-  height:100%!important;
-  margin:0!important;
-
-  display:grid!important;
-  grid-template-rows:
-    .62fr
-    1.26fr
-    1.13fr
-    1.02fr!important;
-
-  overflow:hidden!important;
-}
-
-.modal-overlay.tournament-summary
-.tournament-summary-row{
-  min-height:0!important;
-  height:auto!important;
-  max-height:none!important;
-
-  display:grid!important;
-  grid-template-columns:
-    8%
-    39%
-    33%
-    20%!important;
-
-  overflow:hidden!important;
-}
-
-.modal-overlay.tournament-summary
-.tournament-summary-row > div{
-  height:100%!important;
-  width:100%!important;
-  padding:1% 2%!important;
-
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-
-  line-height:1!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
   text-align:center!important;
+  line-height:1!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
 }
 
-/* Tiebreak band has explicit ownership and cannot invade a row. */
-.modal-overlay.tournament-summary
-.tournament-summary-notes{
+.modal-overlay.tournament-summary .tournament-summary-grid{
+  min-height:0!important;
+  height:100%!important;
+  margin:0!important;
+  display:grid!important;
+  grid-template-rows:.62fr 1.28fr 1.16fr 1.06fr!important;
+  overflow:hidden!important;
+}
+
+.modal-overlay.tournament-summary .tournament-summary-row{
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  display:grid!important;
+  grid-template-columns:8% 39% 33% 20%!important;
+  overflow:hidden!important;
+}
+
+.modal-overlay.tournament-summary .tournament-summary-row > div,
+.modal-overlay.tournament-summary .tournament-summary-remaining-cell{
+  min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
+  padding:1% 2%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  vertical-align:middle!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+}
+
+.modal-overlay.tournament-summary .tournament-summary-row.header > div:last-child{
+  white-space:normal!important;
+  line-height:.92!important;
+}
+
+.modal-overlay.tournament-summary .tournament-summary-notes{
   min-height:0!important;
   max-height:100%!important;
   margin:0!important;
   padding:0!important;
-
   display:flex!important;
   flex-direction:column!important;
-  justify-content:center!important;
-
-  overflow:hidden!important;
-}
-
-.modal-overlay.tournament-summary
-.tournament-summary-note{
-  min-height:0!important;
-  width:100%!important;
-  margin:0!important;
-  padding:0 1%!important;
-
-  display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-
-  line-height:1!important;
-  white-space:nowrap!important;
   overflow:hidden!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-note{
+  min-width:0!important;
+  width:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:1px 2%!important;
+  display:block!important;
   text-align:center!important;
+  white-space:normal!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  overflow:hidden!important;
+  font-size:var(--v5-summary-note-font,12px)!important;
+  line-height:1.08!important;
 }
 
-/* Lower table is EXACTLY N equal rows in the remaining live height. */
-.modal-overlay.tournament-summary
-.tournament-summary-remaining{
+.modal-overlay.tournament-summary .tournament-summary-remaining{
   min-height:0!important;
   height:100%!important;
   max-height:none!important;
   margin:0!important;
-
   display:grid!important;
-  grid-template-columns:
-    8%
-    39%
-    33%
-    20%!important;
-
-  grid-template-rows:
-    repeat(
-      var(--v5-summary-lower-count,7),
-      minmax(0,1fr)
-    )!important;
-
+  grid-template-columns:8% 39% 33% 20%!important;
+  grid-template-rows:repeat(var(--v5-summary-lower-count,7),minmax(0,1fr))!important;
   grid-auto-rows:unset!important;
   align-content:stretch!important;
-
   overflow:hidden!important;
 }
+.modal-overlay.tournament-summary .tournament-summary-remaining-row{display:contents!important;}
 
-.modal-overlay.tournament-summary
-.tournament-summary-remaining-row{
-  display:contents!important;
-}
-
-.modal-overlay.tournament-summary
-.tournament-summary-remaining-cell{
-  width:100%!important;
-  height:100%!important;
-  min-width:0!important;
+.modal-overlay.tournament-summary .modal-actions{
   min-height:0!important;
-
-  padding:1% 2%!important;
-
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-
-  line-height:1!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-align:center!important;
-}
-
-/* BACK is outside the report height budget. */
-.modal-overlay.tournament-summary
-.modal-actions{
-  min-height:0!important;
-  flex:0 0 auto!important;
   margin:0!important;
-  padding:
-    clamp(5px,.8dvh,10px)
-    0!important;
+  padding:clamp(5px,.75dvh,9px) 0 0!important;
+  flex:0 0 auto!important;
+}
+.modal-overlay.tournament-summary .modal-actions.single .modal-btn{
+  width:min(48%,240px)!important;
+  min-height:clamp(46px,6.5dvh,62px)!important;
+  margin:0 auto!important;
+  font-size:clamp(18px,4.8vw,26px)!important;
 }
 
-/* =======================================================================
-   EXTREME-SMALL PORTRAIT SAFETY
-   No special device model. This is purely available-height based.
-   ======================================================================= */
-
-@media (max-height:720px){
+/* Extremely short portrait: protected shell stays readable; tables compress. */
+@media (max-height:700px){
   #scorecardView .score-nav,
   #leaderboardView .leader-nav{
+    padding-top:2px!important;
+    padding-bottom:2px!important;
+  }
+  #scorecardView .team-select-wrap{
     padding-top:3px!important;
     padding-bottom:3px!important;
   }
-
-  #scorecardView .score-team-select-wrap{
-    margin-top:3px!important;
-    margin-bottom:3px!important;
-  }
-
-  #leaderboardView .leader-title{
-    line-height:1!important;
-  }
-
   .modal-overlay.tournament-summary .modal-box{
-    height:94dvh!important;
-    max-height:94dvh!important;
+    height:96dvh!important;
+    max-height:calc(100dvh - 8px)!important;
+  }
+  .modal-overlay.tournament-summary .modal-text{
+    grid-template-rows:auto minmax(0,3.7fr) auto minmax(0,6.3fr)!important;
+  }
+}
+
+
+/* V5.2 score mark geometry follows the score button, never a fixed pixel mark. */
+#scorecardView .score-button .score-mark:not(.par-mark){
+  width:calc(var(--v5-score-box,58px) * .66)!important;
+  height:calc(var(--v5-score-box,58px) * .66)!important;
+  min-width:0!important;
+  min-height:0!important;
+  font-size:calc(var(--v5-score-box,58px) * .46)!important;
+}
+#scorecardView .score-button .score-mark.par-mark,
+#scorecardView .score-button .score-mark-number{
+  font-size:calc(var(--v5-score-box,58px) * .50)!important;
+  line-height:1!important;
+}
+#scorecardView .score-button .score-mark.single-circle,
+#scorecardView .score-button .score-mark.double-circle,
+#scorecardView .score-button .score-mark.single-square,
+#scorecardView .score-button .score-mark.double-square{
+  border-width:clamp(1.5px,calc(var(--v5-score-box,58px) * .045),3px)!important;
+}
+#scorecardView .score-button .score-mark.bold-square{
+  border-width:clamp(2.5px,calc(var(--v5-score-box,58px) * .07),4px)!important;
+}
+
+.modal-overlay.tournament-summary .modal-title{
+  height:clamp(42px,6.5dvh,62px)!important;
+  min-height:clamp(42px,6.5dvh,62px)!important;
+  max-height:clamp(42px,6.5dvh,62px)!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-subtitle{
+  height:clamp(26px,4dvh,38px)!important;
+  min-height:clamp(26px,4dvh,38px)!important;
+  max-height:clamp(26px,4dvh,38px)!important;
+  grid-row:1!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-grid{
+  grid-row:2!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-notes{
+  grid-row:3!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-remaining{
+  grid-row:4!important;
+}
+.modal-overlay.tournament-summary .modal-text{
+  grid-template-rows:
+    clamp(26px,4dvh,38px)
+    minmax(0,4fr)
+    auto
+    minmax(0,6fr)!important;
+}
+
+
+
+/* V5.2 final pressure-release rules: wrap before clipping or microscopic text. */
+.modal-overlay.tournament-result .modal-actions .modal-btn{
+  min-width:0!important;
+  min-height:clamp(48px,7dvh,64px)!important;
+  padding:7px 10px!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  text-align:center!important;
+  line-height:1.04!important;
+  font-size:clamp(16px,4.3vw,24px)!important;
+}
+
+/* Keep the summary header readable on very narrow portrait screens. */
+.modal-overlay.tournament-summary .tournament-summary-row.header > div:nth-child(3),
+.modal-overlay.tournament-summary .tournament-summary-row.header > div:nth-child(4){
+  white-space:normal!important;
+  line-height:.94!important;
+}
+
+
+
+/* Final extreme-width safeguards: wrap/shrink before clipping. */
+.modal-overlay.tournament-summary .modal-title{
+  white-space:normal!important;
+  line-height:.92!important;
+}
+
+@media (max-width:340px){
+  #scorecardView .header-brand,
+  #leaderboardView .header-brand{
+    font-size:11px!important;
+    white-space:normal!important;
+    line-height:1!important;
+    max-height:2em!important;
+    overflow:hidden!important;
   }
 }
 
@@ -6305,7 +6342,7 @@ body{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.0</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.2</button>
 
       <div class="splash-image-wrap">
 
@@ -6625,6 +6662,29 @@ body{
         ></button>
       </div>
 
+      <script>
+        (function () {
+          try {
+            if (!window.__sshcpBootTournamentComplete) return;
+            var mode = window.__sshcpBootFinalActionMode || '';
+            var label = window.__sshcpBootFinalActionLabel || '';
+            var button = document.getElementById('leaderFinalActionButton');
+            if (!button || !mode) return;
+
+            button.setAttribute('aria-hidden', 'false');
+            button.classList.remove('break-tie', 'tournament-summary', 'summary-label');
+            button.classList.add(mode === 'break-tie' ? 'break-tie' : 'tournament-summary');
+            if (mode !== 'break-tie') button.classList.add('summary-label');
+            button.innerHTML = '<span class="leader-final-main">' +
+              String(label || (mode === 'break-tie' ? 'BREAK TIE' : 'SCRAMBLE SUMMARY'))
+                .replace(/[&<>"']/g, function (c) {
+                  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+                }) +
+              '</span>';
+          } catch (e) {}
+        })();
+      </script>
+
 
       <div
         id="leaderUpdateNote"
@@ -6836,7 +6896,7 @@ body{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.0
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.2
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -7034,6 +7094,9 @@ body{
       modalOverlay:
         document.getElementById('modalOverlay'),
 
+      modalBox:
+        document.querySelector('#modalOverlay .modal-box'),
+
       modalCloseX:
         document.getElementById('modalCloseX'),
 
@@ -7106,7 +7169,9 @@ body{
 
 
     let currentView =
-      'home';
+      (window.__sshcpBootView === 'scorecard' || window.__sshcpBootView === 'leaderboard')
+        ? window.__sshcpBootView
+        : 'home';
 
 
     let scorecardHasLoaded =
@@ -7404,7 +7469,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V5.0 — QR AUTHORIZATION
+       SSHCP V5.2 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -7957,7 +8022,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V5.0 — viewport-owned TEST dropdown.
+        /* SSHCP V5.2 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -8184,7 +8249,7 @@ let scoreTimingDetail =
             () => {
 
               /*
-                SSHCP V5.0 progress positioning:
+                SSHCP V5.2 progress positioning:
                 normal page/load positioning uses verified GOLD scores.
                 Immediately after ENTER, useLocalProgress=true lets the
                 viewport follow the newly entered gray score without
@@ -8463,7 +8528,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V5.0 — no 20-entry truncation. History remains until the
+      /* SSHCP V5.2 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -8484,7 +8549,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.0 TEST LOG',
+        'SSHCP V5.2 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -8582,7 +8647,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V5.0 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V5.2 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -9038,7 +9103,7 @@ let scoreTimingDetail =
         return;
       }
 
-      /* SSHCP V5.0 — once every active team is THRU 18, this screen
+      /* SSHCP V5.2 — once every active team is THRU 18, this screen
          is a final-results screen. Stop the 10-second auto-refresh cycle.
          Manual REFRESH remains available. */
       if (tournamentIsComplete(lastLeaderboardRows)) {
@@ -9631,39 +9696,65 @@ let scoreTimingDetail =
        ========================================================= */
 
 
-    function fitTextInsideBoxV5(
-      element,
+    let v5MeasureProbe = null;
+
+    function fitTextToBoxV5(
+      box,
+      target,
       maxPx,
-      minPx = 6
+      minPx = 8,
+      options = {}
     ) {
-      if (!element) return minPx;
+      if (!box || !target) return minPx;
 
-      const width = element.clientWidth;
-      const height = element.clientHeight;
+      const boxWidth = box.clientWidth;
+      const boxHeight = box.clientHeight;
+      if (boxWidth <= 0 || boxHeight <= 0) return minPx;
 
-      if (width <= 0 || height <= 0) {
-        return minPx;
+      const horizontalPad = Number(options.horizontalPad || 0);
+      const verticalPad = Number(options.verticalPad || 0);
+      const availableWidth = Math.max(1, boxWidth - horizontalPad);
+      const availableHeight = Math.max(1, boxHeight - verticalPad);
+
+      if (!v5MeasureProbe) {
+        v5MeasureProbe = document.createElement('span');
+        v5MeasureProbe.setAttribute('aria-hidden', 'true');
+        Object.assign(v5MeasureProbe.style, {
+          position: 'fixed',
+          left: '-10000px',
+          top: '-10000px',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          zIndex: '-1'
+        });
+        document.body.appendChild(v5MeasureProbe);
       }
 
-      let low = Math.max(4, minPx);
+      const computed = getComputedStyle(target);
+      const text = String(target.textContent || '').replace(/\s+/g, ' ').trim();
+
+      v5MeasureProbe.textContent = text;
+      v5MeasureProbe.style.fontFamily = computed.fontFamily;
+      v5MeasureProbe.style.fontWeight = computed.fontWeight;
+      v5MeasureProbe.style.fontStyle = computed.fontStyle;
+      v5MeasureProbe.style.letterSpacing = computed.letterSpacing;
+      v5MeasureProbe.style.textTransform = computed.textTransform;
+      v5MeasureProbe.style.whiteSpace = options.wrap ? 'normal' : 'nowrap';
+      v5MeasureProbe.style.width = options.wrap ? availableWidth + 'px' : 'auto';
+      v5MeasureProbe.style.lineHeight = String(options.lineHeight || 1);
+
+      let low = Math.max(5, minPx);
       let high = Math.max(low, maxPx);
       let best = low;
 
-      element.style.whiteSpace = 'nowrap';
-      element.style.overflow = 'hidden';
-
-      for (let i = 0; i < 11; i++) {
+      for (let i = 0; i < 12; i++) {
         const mid = (low + high) / 2;
-
-        element.style.setProperty(
-          'font-size',
-          mid + 'px',
-          'important'
-        );
+        v5MeasureProbe.style.fontSize = mid + 'px';
+        const rect = v5MeasureProbe.getBoundingClientRect();
 
         const fits =
-          element.scrollWidth <= width + 0.5 &&
-          element.scrollHeight <= height + 0.5;
+          rect.width <= availableWidth + 0.75 &&
+          rect.height <= availableHeight + 0.75;
 
         if (fits) {
           best = mid;
@@ -9673,178 +9764,140 @@ let scoreTimingDetail =
         }
       }
 
-      element.style.setProperty(
-        'font-size',
-        best + 'px',
-        'important'
-      );
+      target.style.setProperty('font-size', best + 'px', 'important');
+      target.style.setProperty('line-height', String(options.lineHeight || 1), 'important');
+      target.style.setProperty('white-space', options.wrap ? 'normal' : 'nowrap', 'important');
+      target.style.setProperty('overflow', 'hidden', 'important');
+      target.style.setProperty('text-align', 'center', 'important');
 
       return best;
     }
 
 
+    function rememberResponsiveGeometryV5(patch = {}) {
+      try {
+        const previous = JSON.parse(
+          sessionStorage.getItem('sshcpResponsiveGeometryV5') || '{}'
+        ) || {};
+
+        const next = {
+          ...previous,
+          ...patch,
+          w: window.innerWidth || 0,
+          h: window.innerHeight || 0
+        };
+
+        sessionStorage.setItem(
+          'sshcpResponsiveGeometryV5',
+          JSON.stringify(next)
+        );
+      } catch (e) {}
+    }
+
+
     function sizeScorecardV5() {
-      if (
-        !els.scoreScroll ||
-        !els.scoreRows
-      ) {
+      const screen = els.scorecardView
+        ? els.scorecardView.querySelector('.scorecard-screen')
+        : null;
+      const top = els.scorecardView
+        ? els.scorecardView.querySelector('.score-fixed-top')
+        : null;
+      const header = els.scorecardView
+        ? els.scorecardView.querySelector('.score-table-head')
+        : null;
+      const bottom = els.scorecardView
+        ? els.scorecardView.querySelector('.score-fixed-bottom')
+        : null;
+
+      if (!screen || !top || !header || !bottom || !els.scoreScroll) {
         return;
       }
 
-      const viewportHeight =
-        els.scoreScroll.clientHeight;
+      const screenHeight = screen.clientHeight;
+      const topHeight = top.getBoundingClientRect().height;
+      const oldHeaderHeight = header.getBoundingClientRect().height;
+      const bottomHeight = bottom.getBoundingClientRect().height;
 
-      const viewportWidth =
-        els.scoreScroll.clientWidth;
-
-      if (
-        viewportHeight <= 0 ||
-        viewportWidth <= 0
-      ) {
-        return;
-      }
+      if (!Number.isFinite(screenHeight) || screenHeight <= 0) return;
 
       /*
-        Exactly nine score rows own the visible score viewport.
-        The nine-hole divider is deliberately tiny and is removed
-        from the nine-row height budget.
+        V5.2 fixed-point geometry.
+        HEADER + 9 ROWS + divider share ONE current table-height budget.
+        Because the header is removed from the measured fixed shell before
+        solving, rerendering data cannot change the result.
       */
+      const fixedShellWithoutHeader =
+        Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
+
+      const tableBudget =
+        Math.max(120, screenHeight - fixedShellWithoutHeader);
+
       const divider =
-        Math.max(
-          2,
-          Math.min(
-            4,
-            viewportHeight * 0.004
-          )
-        );
+        Math.max(2, Math.min(4, tableBudget * 0.004));
 
+      const headerRatio = 0.72;
       const rowHeight =
-        Math.max(
-          1,
-          (viewportHeight - divider) / 9
-        );
+        Math.max(1, (tableBudget - divider) / (9 + headerRatio));
+      const headerHeight = rowHeight * headerRatio;
 
-      const headerHeight =
-        rowHeight * 0.70;
+      els.scorecardView.style.setProperty('--v5-score-row-h', rowHeight + 'px');
+      els.scorecardView.style.setProperty('--v5-score-head-h', headerHeight + 'px');
+      els.scorecardView.style.setProperty('--v5-nine-break-h', divider + 'px');
 
-      const root =
-        els.scorecardView;
-
-      root.style.setProperty(
-        '--v5-score-row-h',
-        rowHeight + 'px'
+      const scoreBox = Math.max(
+        28,
+        Math.min(
+          rowHeight * 0.80,
+          els.scoreScroll.clientWidth * 0.145
+        )
       );
+      els.scorecardView.style.setProperty('--v5-score-box', scoreBox + 'px');
 
-      root.style.setProperty(
-        '--v5-score-head-h',
-        headerHeight + 'px'
-      );
+      rememberResponsiveGeometryV5({
+        scoreHead: headerHeight,
+        scoreRow: rowHeight,
+        scoreBox: scoreBox,
+        scoreDivider: divider
+      });
 
-      root.style.setProperty(
-        '--v5-nine-break-h',
-        divider + 'px'
-      );
-
-      /*
-        Content starts from row height, then individual elements are
-        constrained by their actual cell width/height.
-      */
-      const scoreMax =
-        rowHeight * 0.58;
-
-      const holeMax =
-        rowHeight * 0.48;
-
-      const parMax =
-        rowHeight * 0.39;
-
-      const yardsMax =
-        rowHeight * 0.34;
-
-      els.scoreRows
-        .querySelectorAll('.score-button')
-        .forEach(button => {
-          fitTextInsideBoxV5(
-            button,
-            scoreMax,
-            7
-          );
-        });
-
-      els.scoreRows
-        .querySelectorAll('.hole-number')
-        .forEach(el => {
-          fitTextInsideBoxV5(
-            el,
-            holeMax,
-            7
-          );
-        });
-
-      els.scoreRows
-        .querySelectorAll('.par-cell')
-        .forEach(el => {
-          fitTextInsideBoxV5(
-            el,
-            parMax,
-            7
-          );
-        });
-
-      els.scoreRows
-        .querySelectorAll('.yardage-cell')
-        .forEach(el => {
-          fitTextInsideBoxV5(
-            el,
-            yardsMax,
-            7
-          );
-        });
-
-      const head =
-        root.querySelector('.score-table-head');
-
-      if (head) {
-        const cells =
-          Array.from(head.children);
-
-        cells.forEach((cell, index) => {
-          if (index === 3) return;
-
-          fitTextInsideBoxV5(
-            cell,
-            headerHeight * 0.43,
-            7
-          );
-        });
-
-        const running =
-          head.querySelector('.score-running-header');
-
-        if (running) {
-          running
-            .querySelectorAll('span')
-            .forEach(span => {
-              fitTextInsideBoxV5(
-                span,
-                headerHeight * 0.41,
-                7
-              );
-            });
+      /* Header content fits its CURRENT hard cells. */
+      Array.from(header.children).forEach((cell, index) => {
+        if (index < 3) {
+          fitTextToBoxV5(cell, cell, Math.min(28, headerHeight * 0.43), 12, {
+            horizontalPad: 8,
+            verticalPad: 4
+          });
         }
+      });
+
+      const running = header.querySelector('.score-running-header');
+      if (running) {
+        const parts = Array.from(running.children);
+        if (parts[0]) fitTextToBoxV5(parts[0], parts[0], Math.min(19, headerHeight * 0.31), 8, {horizontalPad:2});
+        if (parts[1]) fitTextToBoxV5(parts[1], parts[1], Math.min(28, headerHeight * 0.40), 12, {horizontalPad:4});
+        if (parts[2]) fitTextToBoxV5(parts[2], parts[2], Math.min(19, headerHeight * 0.31), 8, {horizontalPad:2});
       }
 
-      /*
-        Score marks are geometry, not typography.
-        Their entire box scales from the row height.
-      */
-      root.style.setProperty(
-        '--v5-score-box',
-        Math.min(
-          rowHeight * 0.82,
-          viewportWidth * 0.155
-        ) + 'px'
-      );
+      els.scoreRows.querySelectorAll('.score-row').forEach(row => {
+        const holeCell = row.querySelector('.hole-cell');
+        const hole = row.querySelector('.hole-number');
+        const par = row.querySelector('.par-cell');
+        const yards = row.querySelector('.yardage-cell');
+        const button = row.querySelector('.score-button');
+
+        if (holeCell && hole) {
+          fitTextToBoxV5(holeCell, hole, Math.min(31, rowHeight * 0.48), 13, {horizontalPad:8,verticalPad:6});
+        }
+        if (par) {
+          fitTextToBoxV5(par, par, Math.min(27, rowHeight * 0.39), 12, {horizontalPad:8,verticalPad:6});
+        }
+        if (yards) {
+          fitTextToBoxV5(yards, yards, Math.min(24, rowHeight * 0.34), 11, {horizontalPad:8,verticalPad:6});
+        }
+        if (button) {
+          fitTextToBoxV5(button, button, scoreBox * 0.56, 13, {horizontalPad:6,verticalPad:6});
+        }
+      });
     }
 
 
@@ -9859,7 +9912,7 @@ let scoreTimingDetail =
 
 
       /*
-        SSHCP V5.0 — the gray current-hole indicator follows LOCAL entry
+        SSHCP V5.2 — the gray current-hole indicator follows LOCAL entry
         progress immediately. Gold still follows verified/savedScores.
         This lets ENTER mean "move on now" while verification finishes
         in the background.
@@ -10624,7 +10677,7 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V5.0 — ENTER advances immediately.
+          SSHCP V5.2 — ENTER advances immediately.
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
@@ -11352,6 +11405,10 @@ let scoreTimingDetail =
         button.textContent = '';
         button.setAttribute('aria-hidden', 'true');
         els.leaderTop.classList.remove('final-action-active');
+        try {
+          sessionStorage.removeItem('sshcpFinalActionMode');
+          sessionStorage.removeItem('sshcpFinalActionLabel');
+        } catch (e) {}
         return;
       }
 
@@ -11372,6 +11429,14 @@ let scoreTimingDetail =
         }
         button.classList.add('tournament-summary', 'summary-label');
       }
+
+      try {
+        sessionStorage.setItem('sshcpFinalActionMode', mode);
+        sessionStorage.setItem(
+          'sshcpFinalActionLabel',
+          button.textContent.trim()
+        );
+      } catch (e) {}
     }
 
     function positionCompletedFinalAction() {
@@ -11388,7 +11453,7 @@ let scoreTimingDetail =
       }
 
       /*
-        SSHCP V5.0:
+        SSHCP V5.2:
         Completed-state leaderboard uses the SAME live responsive table
         sizing as in-play. There is no stored/frozen table height.
 
@@ -11708,328 +11773,120 @@ let scoreTimingDetail =
     }
 
     function fitTournamentSummaryRemaining() {
-      if (
-        !els.modalOverlay.classList.contains(
-          'tournament-summary'
-        )
-      ) {
-        return;
-      }
+      if (!els.modalOverlay.classList.contains('tournament-summary')) return;
+      if (!els.modalBox || !els.modalBody) return;
 
-      const body =
-        els.modalBody;
+      const body = els.modalBody;
+      const topGrid = body.querySelector('.tournament-summary-grid');
+      const lower = body.querySelector('.tournament-summary-remaining');
+      if (!topGrid || !lower) return;
 
-      if (!body) return;
+      const lowerRows = Array.from(lower.querySelectorAll('.tournament-summary-remaining-row'));
+      document.documentElement.style.setProperty('--v5-summary-lower-count', String(Math.max(1, lowerRows.length)));
 
-      const topGrid =
-        body.querySelector(
-          '.tournament-summary-grid'
-        );
-
-      const lower =
-        body.querySelector(
-          '.tournament-summary-remaining'
-        );
-
-      if (
-        !topGrid ||
-        !lower
-      ) {
-        return;
-      }
-
-      const lowerRows =
-        Array.from(
-          lower.querySelectorAll(
-            '.tournament-summary-remaining-row'
-          )
-        );
-
-      document.documentElement
-        .style
-        .setProperty(
-          '--v5-summary-lower-count',
-          String(
-            Math.max(
-              1,
-              lowerRows.length
-            )
-          )
-        );
-
-      const topRows =
-        Array.from(
-          topGrid.querySelectorAll(
-            '.tournament-summary-row'
-          )
-        );
+      const notes = Array.from(body.querySelectorAll('.tournament-summary-note'));
 
       /*
-        Fit one element against its ACTUAL current box.
-        No text is allowed to enlarge its row or cross a border.
+        Notes are secondary, but they must remain readable. Their grid row
+        is AUTO-sized so wrapping consumes a little table height instead of
+        forcing the note font into unreadable territory.
       */
-      const fit =
-        (
-          element,
-          ratio,
-          minimum = 5
-        ) => {
-          if (!element) return minimum;
 
-          const h =
-            element.clientHeight;
+      /* Title/subtitle are viewer chrome; fit but never drive the table. */
+      fitTextToBoxV5(els.modalTitle, els.modalTitle, Math.min(52, els.modalBox.clientWidth * 0.115), 20, {
+        horizontalPad: 12,
+        verticalPad: 2,
+        wrap: true,
+        lineHeight: 0.92
+      });
 
-          const w =
-            element.clientWidth;
+      const subtitle = body.querySelector('.tournament-summary-subtitle');
+      if (subtitle) {
+        fitTextToBoxV5(subtitle, subtitle, Math.min(34, subtitle.clientHeight * 0.72), 18, {
+          horizontalPad: 8,
+          verticalPad: 2
+        });
+      }
 
-          if (
-            h <= 0 ||
-            w <= 0
-          ) {
-            return minimum;
-          }
-
-          return fitTextInsideBoxV5(
-            element,
-            h * ratio,
-            minimum
-          );
-        };
-
-      /*
-        Header cells.
-      */
-      const header =
-        topGrid.querySelector(
-          '.tournament-summary-row.header'
-        );
-
+      const header = topGrid.querySelector('.tournament-summary-row.header');
       if (header) {
-        Array.from(header.children)
-          .forEach(cell => {
-            fit(
-              cell,
-              0.46,
-              6
-            );
+        Array.from(header.children).forEach((cell, index) => {
+          const mayWrap = index === 2 || index === 3;
+          fitTextToBoxV5(cell, cell, cell.clientHeight * (mayWrap ? 0.36 : 0.40), 10, {
+            horizontalPad: 6,
+            verticalPad: 4,
+            wrap: mayWrap,
+            lineHeight: mayWrap ? 0.94 : 1
           });
+        });
       }
 
-      /*
-        Podium rows.
-        TEAM + NET SCORE get hierarchy from their own row heights.
-        NET STROKES stays restrained.
-      */
-      const podiumRatios = [
-        {
-          team: 0.47,
-          strokes: 0.32,
-          net: 0.58,
-          place: 0.34
-        },
-        {
-          team: 0.43,
-          strokes: 0.32,
-          net: 0.53,
-          place: 0.32
-        },
-        {
-          team: 0.40,
-          strokes: 0.32,
-          net: 0.49,
-          place: 0.30
-        }
-      ];
-
-      [1, 2, 3].forEach((place, index) => {
-        const row =
-          topGrid.querySelector(
-            '.tournament-summary-row.place-' +
-            place
-          );
-
+      [1,2,3].forEach((place, index) => {
+        const row = topGrid.querySelector('.tournament-summary-row.place-' + place);
         if (!row) return;
+        const placeCell = row.querySelector('.tournament-summary-place');
+        const team = row.querySelector('.tournament-summary-team');
+        const strokes = row.querySelector('.tournament-summary-strokes');
+        const net = row.querySelector('.tournament-summary-net');
 
-        const r =
-          podiumRatios[index];
-
-        fit(
-          row.querySelector(
-            '.tournament-summary-place'
-          ),
-          r.place,
-          6
-        );
-
-        fit(
-          row.querySelector(
-            '.tournament-summary-team'
-          ),
-          r.team,
-          6
-        );
-
-        fit(
-          row.querySelector(
-            '.tournament-summary-strokes'
-          ),
-          r.strokes,
-          6
-        );
-
-        fit(
-          row.querySelector(
-            '.tournament-summary-net'
-          ),
-          r.net,
-          7
-        );
+        if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 11, {horizontalPad:4,verticalPad:5});
+        if (team) fitTextToBoxV5(team, team, Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])), 13, {horizontalPad:10,verticalPad:5});
+        if (strokes) fitTextToBoxV5(strokes, strokes, Math.min(19, row.clientHeight * 0.32), 11, {horizontalPad:8,verticalPad:5});
+        if (net) fitTextToBoxV5(net, net, Math.min(46, row.clientHeight * ([0.60,0.55,0.50][index])), 15, {horizontalPad:6,verticalPad:5});
       });
 
-      /*
-        Lower rows 4–10:
-        same type size relationship for every row.
-      */
-      const lowerTeamCells =
-        Array.from(
-          lower.querySelectorAll(
-            '.tournament-summary-remaining-cell.team'
-          )
-        );
+      const lowerPlace = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.place'));
+      const lowerTeam = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.team'));
+      const lowerStrokes = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-strokes'));
+      const lowerNet = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-score'));
 
-      const lowerStrokeCells =
-        Array.from(
-          lower.querySelectorAll(
-            '.tournament-summary-remaining-cell.net-strokes'
-          )
-        );
+      const fitUniform = (cells, ratio, minimum, pad=6) => {
+        let chosen = Infinity;
+        cells.forEach(cell => {
+          chosen = Math.min(chosen, fitTextToBoxV5(cell, cell, cell.clientHeight * ratio, minimum, {
+            horizontalPad: pad,
+            verticalPad: 5
+          }));
+        });
+        if (Number.isFinite(chosen)) {
+          cells.forEach(cell => cell.style.setProperty('font-size', chosen + 'px', 'important'));
+        }
+        return chosen;
+      };
 
-      const lowerNetCells =
-        Array.from(
-          lower.querySelectorAll(
-            '.tournament-summary-remaining-cell.net-score'
-          )
-        );
+      fitUniform(lowerPlace, 0.34, 11, 4);
+      fitUniform(lowerTeam, 0.40, 13, 10);
+      fitUniform(lowerNet, 0.48, 15, 6);
 
-      const lowerPlaceCells =
-        Array.from(
-          lower.querySelectorAll(
-            '.tournament-summary-remaining-cell.place'
-          )
-        );
-
-      const fitUniform =
-        (
-          list,
-          ratio,
-          minimum
-        ) => {
-          let chosen = Infinity;
-
-          list.forEach(el => {
-            chosen =
-              Math.min(
-                chosen,
-                fit(
-                  el,
-                  ratio,
-                  minimum
-                )
-              );
-          });
-
-          if (
-            !Number.isFinite(chosen)
-          ) {
-            return;
-          }
-
-          list.forEach(el => {
-            el.style.setProperty(
-              'font-size',
-              chosen + 'px',
-              'important'
-            );
-          });
-        };
-
-      fitUniform(
-        lowerPlaceCells,
-        0.34,
-        6
-      );
-
-      fitUniform(
-        lowerTeamCells,
-        0.40,
-        6
-      );
-
-      fitUniform(
-        lowerStrokeCells,
-        0.32,
-        6
-      );
-
-      fitUniform(
-        lowerNetCells,
-        0.46,
-        7
-      );
-
-      /*
-        NET STROKES is intentionally identical across ALL 10 rows.
-      */
-      const allStrokeCells = [
-        ...Array.from(
-          topGrid.querySelectorAll(
-            '.tournament-summary-strokes'
-          )
-        ),
-        ...lowerStrokeCells
+      const allStrokes = [
+        ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
+        ...lowerStrokes
       ];
+      fitUniform(allStrokes, 0.32, 11, 8);
 
-      let strokeSize = Infinity;
+      if (notes.length) {
+        const lowerTeamSample = lowerTeam[0];
+        const lowerTeamSize = lowerTeamSample
+          ? parseFloat(getComputedStyle(lowerTeamSample).fontSize) || 13
+          : 13;
 
-      allStrokeCells.forEach(el => {
-        strokeSize =
-          Math.min(
-            strokeSize,
-            fit(
-              el,
-              0.32,
-              6
-            )
-          );
-      });
+        const noteTarget = Math.max(
+          11,
+          Math.min(16, lowerTeamSize * 0.78)
+        );
 
-      if (
-        Number.isFinite(strokeSize)
-      ) {
-        allStrokeCells.forEach(el => {
-          el.style.setProperty(
-            'font-size',
-            strokeSize + 'px',
-            'important'
-          );
-        });
+        document.documentElement.style.setProperty(
+          '--v5-summary-note-font',
+          noteTarget + 'px'
+        );
+      } else {
+        document.documentElement.style.setProperty(
+          '--v5-summary-note-font',
+          '11px'
+        );
       }
-
-      /*
-        Tiebreak notes are secondary and must stay inside their own band.
-      */
-      body
-        .querySelectorAll(
-          '.tournament-summary-note'
-        )
-        .forEach(note => {
-          fit(
-            note,
-            0.70,
-            6
-          );
-        });
     }
+
 
     function showTournamentSummary() {
       if (!tournamentIsComplete(lastLeaderboardRows)) {
@@ -12159,7 +12016,6 @@ let scoreTimingDetail =
         });
 
       tournamentSummaryResizeObserver.observe(els.modalBox);
-      tournamentSummaryResizeObserver.observe(els.modalBody);
 
       requestAnimationFrame(fitTournamentSummaryRemaining);
     }
@@ -12183,7 +12039,7 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* SSHCP V5.0 — Once the tournament is complete, the normal leaderboard
+      /* SSHCP V5.2 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
          that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
@@ -12594,220 +12450,118 @@ let scoreTimingDetail =
        ========================================================= */
 
     function fitLeaderboardTypography() {
-      if (
-        !els.leaderRows ||
-        !els.leaderContent
-      ) {
-        return;
-      }
+      const header = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-table-head')
+        : null;
+      const firstRow = els.leaderRows
+        ? els.leaderRows.querySelector('.leader-row')
+        : null;
 
-      const row =
-        els.leaderRows.querySelector('.leader-row');
+      if (!header || !firstRow) return;
 
-      if (!row) {
-        return;
-      }
+      const rowHeight = firstRow.getBoundingClientRect().height;
+      const headerHeight = header.getBoundingClientRect().height;
 
-      const rowHeight =
-        row.getBoundingClientRect().height;
+      if (rowHeight <= 0 || headerHeight <= 0) return;
 
-      if (
-        !Number.isFinite(rowHeight) ||
-        rowHeight <= 0
-      ) {
-        return;
-      }
+      /* Header uses the same geometry every time, independent of data. */
+      Array.from(header.children).forEach((cell, index) => {
+        const target = cell.querySelector('span') || cell;
+        fitTextToBoxV5(
+          cell,
+          target,
+          index === 2 ? Math.min(18, headerHeight * 0.30) : Math.min(27, headerHeight * 0.42),
+          index === 2 ? 10 : 13,
+          { horizontalPad: 8, verticalPad: 5 }
+        );
+      });
 
-      const view =
-        els.leaderboardView;
+      els.leaderRows.querySelectorAll('.leader-row').forEach(row => {
+        const place = row.querySelector('.leader-place-cell');
+        const teamCell = row.querySelector('.leader-team-cell');
+        const team = row.querySelector('.leader-team-name');
+        const hcp = row.querySelector('.leader-hcp-cell');
+        const status = row.querySelector('.leader-through-cell');
+        const score = row.querySelector('.leader-through-score');
+        const thru = row.querySelector('.leader-through-label');
+        const total = row.querySelector('.leader-total');
 
-      const header =
-        view.querySelector('.leader-table-head');
+        if (place) fitTextToBoxV5(place, place, Math.min(24, rowHeight * 0.34), 13, {horizontalPad:6,verticalPad:6});
+        if (teamCell && team) fitTextToBoxV5(teamCell, team, Math.min(29, rowHeight * 0.40), 14, {horizontalPad:12,verticalPad:6});
+        if (hcp) fitTextToBoxV5(hcp, hcp, Math.min(18, rowHeight * 0.24), 11, {horizontalPad:4,verticalPad:6});
+        if (total) fitTextToBoxV5(total, total, Math.min(38, rowHeight * 0.54), 17, {horizontalPad:8,verticalPad:6});
 
-      const headerHeight =
-        rowHeight * 0.70;
-
-      view.style.setProperty(
-        '--v5-leader-head-h',
-        headerHeight + 'px'
-      );
-
-      /*
-        Every leaderboard cell is a hard box.
-        Text size comes from row height, then gets reduced to fit width.
-      */
-      const fitGroupUniform = (
-        elements,
-        maxPx,
-        minPx
-      ) => {
-        const list =
-          Array.from(elements).filter(Boolean);
-
-        if (!list.length) return minPx;
-
-        let chosen = maxPx;
-
-        list.forEach(el => {
-          const fitted =
-            fitTextInsideBoxV5(
-              el,
-              chosen,
-              minPx
-            );
-
-          chosen =
-            Math.min(
-              chosen,
-              fitted
-            );
-        });
-
-        list.forEach(el => {
-          el.style.setProperty(
-            'font-size',
-            chosen + 'px',
-            'important'
-          );
-        });
-
-        return chosen;
-      };
-
-      fitGroupUniform(
-        els.leaderRows.querySelectorAll(
-          '.leader-place-cell'
-        ),
-        rowHeight * 0.34,
-        6
-      );
-
-      fitGroupUniform(
-        els.leaderRows.querySelectorAll(
-          '.leader-hcp-cell'
-        ),
-        rowHeight * 0.23,
-        6
-      );
-
-      fitGroupUniform(
-        els.leaderRows.querySelectorAll(
-          '.leader-total-cell'
-        ),
-        rowHeight * 0.55,
-        7
-      );
-
-      fitGroupUniform(
-        els.leaderRows.querySelectorAll(
-          '.leader-through-score'
-        ),
-        rowHeight * 0.34,
-        7
-      );
-
-      fitGroupUniform(
-        els.leaderRows.querySelectorAll(
-          '.leader-through-label'
-        ),
-        rowHeight * 0.25,
-        6
-      );
-
-      /*
-        TEAM names fit independently because actual names vary.
-        They remain one line and centered.
-      */
-      els.leaderRows
-        .querySelectorAll('.leader-team-name')
-        .forEach(el => {
-          fitTextInsideBoxV5(
-            el,
-            rowHeight * 0.39,
-            7
-          );
-        });
-
-      /*
-        Header is not special anymore.
-        It scales from the same row geometry and every label fits
-        inside its own header cell.
-      */
-      if (header) {
-        Array.from(header.children)
-          .forEach(cell => {
-            const target =
-              cell.querySelector('span') || cell;
-
-            fitTextInsideBoxV5(
-              target,
-              headerHeight * 0.42,
-              7
-            );
-          });
-      }
+        if (status && score && thru) {
+          const scoreBox = status.querySelector('.leader-through-score');
+          const thruBox = status.querySelector('.leader-through-label');
+          fitTextToBoxV5(scoreBox, score, Math.min(30, rowHeight * 0.34), 13, {horizontalPad:4,verticalPad:3});
+          fitTextToBoxV5(thruBox, thru, Math.min(18, rowHeight * 0.23), 11, {horizontalPad:4,verticalPad:3});
+        }
+      });
     }
 
+
     function sizeLeaderboardRows() {
-      if (!els.leaderContent) {
-        return;
-      }
+      const screen = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leaderboard-screen')
+        : null;
+      const top = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-top')
+        : null;
+      const header = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-table-head')
+        : null;
+      const finalSlot = els.leaderFinalActionButton
+        ? els.leaderFinalActionButton.closest('.leader-final-slot')
+        : null;
+      const updateNote = els.leaderUpdateNote;
+      const bottom = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-bottom')
+        : null;
 
-      const bodyHeight = els.leaderContent.clientHeight;
+      if (!screen || !top || !header || !bottom || !els.leaderContent) return;
 
-      if (!Number.isFinite(bodyHeight) || bodyHeight <= 0) {
-        return;
-      }
+      const screenHeight = screen.clientHeight;
+      const headerNow = header.getBoundingClientRect().height;
+      const topHeight = top.getBoundingClientRect().height;
+      const bottomHeight = bottom.getBoundingClientRect().height;
+      const finalHeight = finalSlot && getComputedStyle(finalSlot).display !== 'none'
+        ? finalSlot.getBoundingClientRect().height
+        : 0;
+      const noteHeight = updateNote && getComputedStyle(updateNote).display !== 'none'
+        ? updateNote.getBoundingClientRect().height
+        : 0;
+
+      if (screenHeight <= 0) return;
 
       /*
-        SSHCP V5.0 — size from the ACTUAL usable scroll viewport.
-        leader-content has vertical padding and leader-table has top/bottom
-        borders. Those pixels must be removed before dividing by 8, otherwise
-        the scroll range lands between row boundaries and leaves a small
-        partial-row sliver at the top/bottom.
+        V5.2 fixed-point leaderboard geometry.
+        TABLE HEADER + 8 visible rows share one current table budget.
+        The result button/footer/top shell are protected. The table is the
+        part allowed to compress first on a short viewport.
       */
-      const contentStyle = getComputedStyle(els.leaderContent);
-      const padTop = parseFloat(contentStyle.paddingTop) || 0;
-      const padBottom = parseFloat(contentStyle.paddingBottom) || 0;
+      const fixedWithoutHeader =
+        Math.max(0, topHeight) + bottomHeight + finalHeight + noteHeight;
+      const tableBudget = Math.max(120, screenHeight - fixedWithoutHeader);
+      const headerRatio = 0.70;
+      const rowHeight = Math.max(1, tableBudget / (8 + headerRatio));
+      const headerHeight = rowHeight * headerRatio;
 
-      const table = els.leaderContent.querySelector('.leader-table');
-      let tableBorders = 0;
+      els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
+      els.leaderContent.style.setProperty('--leader-row-height', rowHeight + 'px');
 
-      if (table) {
-        const tableStyle = getComputedStyle(table);
-        tableBorders =
-          (parseFloat(tableStyle.borderTopWidth) || 0) +
-          (parseFloat(tableStyle.borderBottomWidth) || 0);
-      }
+      rememberResponsiveGeometryV5({
+        leaderHead: headerHeight,
+        leaderRow: rowHeight
+      });
 
-      const usableHeight = Math.max(
-        0,
-        bodyHeight - padTop - padBottom - tableBorders
-      );
-
-      const rowHeight = usableHeight / 8;
-
-      els.leaderContent.style.setProperty(
-        '--leader-row-height',
-        rowHeight + 'px'
-      );
-
-      /* Snap any existing position back onto an exact row boundary after
-         the measured row height is updated. */
       requestAnimationFrame(() => {
         const current = els.leaderContent.scrollTop;
         if (rowHeight > 0 && current > 0) {
           const snapped = Math.round(current / rowHeight) * rowHeight;
-          const maxScroll = Math.max(
-            0,
-            els.leaderContent.scrollHeight -
-            els.leaderContent.clientHeight
-          );
-
-          els.leaderContent.scrollTop =
-            Math.min(Math.max(0, snapped), maxScroll);
+          const maxScroll = Math.max(0, els.leaderContent.scrollHeight - els.leaderContent.clientHeight);
+          els.leaderContent.scrollTop = Math.min(Math.max(0, snapped), maxScroll);
         }
-
         fitLeaderboardTypography();
       });
     }
@@ -13886,8 +13640,7 @@ let scoreTimingDetail =
       document.querySelector(
         '.leaderboard-screen'
       ),
-      els.modalBox,
-      els.modalBody
+      els.modalBox
     ]
       .filter(Boolean)
       .forEach(element => {
@@ -13903,6 +13656,12 @@ let scoreTimingDetail =
         passive: true
       }
     );
+
+    if (currentView === 'scorecard') {
+      sizeScorecardV5();
+    } else if (currentView === 'leaderboard') {
+      sizeLeaderboardRows();
+    }
 
     initialize()
       .catch(error => {
