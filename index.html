@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.0 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.1 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V2.0 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V2.1 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4001,7 +4001,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V2.0 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V2.1 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4042,7 +4042,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.0</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.1</button>
 
       <div class="splash-image-wrap">
 
@@ -4365,7 +4365,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
       </div>
       <div class="test-score-controls">
         <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR CURRENT</button>
-        <button id="testAddParAllButton" class="test-score-action add" type="button">ADD PAR ALL</button>
+        <button id="testAddRandomCurrentButton" class="test-score-action add" type="button">ADD RANDOM CURRENT</button>
         <button id="testDeleteCurrentButton" class="test-score-action delete" type="button">DELETE CURRENT</button>
         <button id="testDeleteAllButton" class="test-score-action delete" type="button">DELETE ALL</button>
       </div>
@@ -4519,7 +4519,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.0
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.1
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -4598,8 +4598,8 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
       testAddParCurrentButton:
         document.getElementById('testAddParCurrentButton'),
 
-      testAddParAllButton:
-        document.getElementById('testAddParAllButton'),
+      testAddRandomCurrentButton:
+        document.getElementById('testAddRandomCurrentButton'),
 
       testDeleteCurrentButton:
         document.getElementById('testDeleteCurrentButton'),
@@ -5080,7 +5080,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V2.0 — QR AUTHORIZATION
+       SSHCP V2.1 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5633,7 +5633,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V2.0 — viewport-owned TEST dropdown.
+        /* SSHCP V2.1 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -6107,7 +6107,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V2.0 — no 20-entry truncation. History remains until the
+      /* SSHCP V2.1 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -6128,7 +6128,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V2.0 TEST LOG',
+        'SSHCP V2.1 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -6226,7 +6226,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V2.0 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V2.1 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -6246,28 +6246,36 @@ let scoreTimingDetail =
     /* =========================================================
        TEST PAGE — BULK SCORE CONTROLS
        Every action requires an explicit YES confirmation.
+       ADD RANDOM CURRENT uses CF V1.4's realistic random score mode.
        CURRENT = teams that currently exist in the Sheet.
-       ALL = all 36 score slots.
+       ALL = all 36 score slots (DELETE ALL only in the UI).
        ========================================================= */
 
     function showTestScoreWarning(mode, scope) {
       closeModal();
 
-      const isAdd = mode === 'par';
+      const isPar = mode === 'par';
+      const isRandom = mode === 'random';
+      const isAdd = isPar || isRandom;
       const isAll = scope === 'all';
+
       const title =
-        isAdd
-          ? (isAll ? 'ADD PAR ALL?' : 'ADD PAR CURRENT?')
-          : (isAll ? 'DELETE ALL?' : 'DELETE CURRENT?');
+        isRandom
+          ? 'ADD RANDOM CURRENT?'
+          : isPar
+            ? (isAll ? 'ADD PAR ALL?' : 'ADD PAR CURRENT?')
+            : (isAll ? 'DELETE ALL?' : 'DELETE CURRENT?');
 
       const question =
-        isAdd
-          ? (isAll
-              ? 'Add par scores to all 36 team slots?'
-              : 'Add par scores to every current team?')
-          : (isAll
-              ? 'Delete all scores from all 36 team slots?'
-              : 'Delete all scores from every current team?');
+        isRandom
+          ? 'Add a realistic random mix of birdies, pars, and bogeys to every current team?'
+          : isPar
+            ? (isAll
+                ? 'Add par scores to all 36 team slots?'
+                : 'Add par scores to every current team?')
+            : (isAll
+                ? 'Delete all scores from all 36 team slots?'
+                : 'Delete all scores from every current team?');
 
       els.modalOverlay.classList.add('reset-authorization');
       els.modalTitle.textContent = title;
@@ -6293,12 +6301,17 @@ let scoreTimingDetail =
       startLoadingLine();
 
       const started = timerStart();
-      const isAdd = mode === 'par';
+      const isPar = mode === 'par';
+      const isRandom = mode === 'random';
+      const isAdd = isPar || isRandom;
       const isAll = scope === 'all';
+
       const actionLabel =
-        isAdd
-          ? (isAll ? 'ADD PAR ALL' : 'ADD PAR CURRENT')
-          : (isAll ? 'DELETE ALL' : 'DELETE CURRENT');
+        isRandom
+          ? 'ADD RANDOM CURRENT'
+          : isPar
+            ? (isAll ? 'ADD PAR ALL' : 'ADD PAR CURRENT')
+            : (isAll ? 'DELETE ALL' : 'DELETE CURRENT');
 
       try {
         const response = await fetch(
@@ -6333,12 +6346,24 @@ let scoreTimingDetail =
         scorecardHasLoaded = false;
         leaderboardHasLoaded = false;
 
+        const testDetailParts = [
+          data.affectedTeams + ' team slot' +
+            (Number(data.affectedTeams) === 1 ? '' : 's')
+        ];
+
+        if (mode === 'random' && data.randomMix) {
+          testDetailParts.push(
+            data.randomMix.birdiesPerTeam + ' BIRDIES / ' +
+            data.randomMix.parsPerTeam + ' PARS / ' +
+            data.randomMix.bogeysPerTeam + ' BOGEYS EACH'
+          );
+        }
+
         addTestLog(
           actionLabel,
           'VERIFIED',
           timerSeconds(started) + 's',
-          data.affectedTeams + ' team slot' +
-            (Number(data.affectedTeams) === 1 ? '' : 's')
+          testDetailParts.join(' • ')
         );
 
         completeLoadingLine();
@@ -10517,7 +10542,7 @@ let scoreTimingDetail =
     }
     if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
     els.testAddParCurrentButton.addEventListener('click', () => showTestScoreWarning('par', 'current'));
-    els.testAddParAllButton.addEventListener('click', () => showTestScoreWarning('par', 'all'));
+    els.testAddRandomCurrentButton.addEventListener('click', () => showTestScoreWarning('random', 'current'));
     els.testDeleteCurrentButton.addEventListener('click', () => showTestScoreWarning('clear', 'current'));
     els.testDeleteAllButton.addEventListener('click', () => showTestScoreWarning('clear', 'all'));
 
