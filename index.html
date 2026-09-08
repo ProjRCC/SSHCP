@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.1 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.2 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V2.1 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V2.2 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -3971,9 +3971,9 @@ body.score-team-menu-open .score-fixed-top{
 .test-log-reset{align-self:flex-start!important;width:auto!important;min-height:0!important;margin-top:5px!important;padding:1px 3px calc(1px + env(safe-area-inset-bottom))!important;border:0!important;background:transparent!important;color:#999!important;font-size:8px!important;font-weight:500!important}
 
 .test-log-footer-utils{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;gap:7px;margin-top:8px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
-.test-log-footer-utils .test-log-reset,.test-copy-log,.test-delete-cache{width:100%!important;min-height:34px!important;margin:0!important;padding:6px 5px!important;border:1px solid #999!important;border-radius:7px!important;background:#fafafa!important;color:#777!important;font-size:10px!important;font-weight:700!important;letter-spacing:.1px!important}
+.test-log-footer-utils .test-log-reset,.test-copy-log,.test-log-home{width:100%!important;min-height:34px!important;margin:0!important;padding:6px 5px!important;border:1px solid #999!important;border-radius:7px!important;background:#fafafa!important;color:#777!important;font-size:10px!important;font-weight:700!important;letter-spacing:.1px!important}
 .test-copy-log{border-color:#000!important;color:#000!important;cursor:pointer}
-.test-delete-cache{cursor:pointer}
+.test-log-home{border-color:#000!important;color:#000!important;cursor:pointer}
 .modal-overlay.switch-authorization .modal-box{text-align:center;width:min(420px,calc(100% - 4px));overflow:visible!important}
 .modal-overlay.switch-authorization .modal-title{text-align:center;color:#000;font-size:23px}
 .switch-auth-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
@@ -4001,7 +4001,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V2.1 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V2.2 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4042,7 +4042,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.1</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.2</button>
 
       <div class="splash-image-wrap">
 
@@ -4342,7 +4342,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <section id="testLogView" class="view">
     <div class="test-log-screen">
       <div class="test-log-header">
-        <button id="testLogHomeButton" class="nav-button" type="button">HOME</button>
+        <div aria-hidden="true"></div>
         <div class="test-log-title">TEST LOG</div>
         <button id="testLogCloseButton" class="nav-button" type="button">CLOSE</button>
       </div>
@@ -4372,7 +4372,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
       <div class="test-log-footer-utils">
         <button id="testLogResetButton" class="test-log-reset" type="button">DELETE TEST DATA</button>
         <button id="testCopyLogButton" class="test-copy-log" type="button">COPY LOG</button>
-        <button id="testDeleteCacheButton" class="test-delete-cache" type="button">DELETE CACHE</button>
+        <button id="testLogHomeButton" class="test-log-home" type="button">HOME</button>
       </div>
       <input id="testQrCameraInput" type="file" accept="image/*" capture="environment" hidden>
     </div>
@@ -4519,7 +4519,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.1
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.2
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -4638,7 +4638,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
         document.getElementById('testValidQrListButton'),
 
       testDeleteCacheButton:
-        document.getElementById('testDeleteCacheButton'),
+        null,
 
       testQrCameraInput:
         document.getElementById('testQrCameraInput'),
@@ -5080,7 +5080,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V2.1 — QR AUTHORIZATION
+       SSHCP V2.2 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5633,7 +5633,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V2.1 — viewport-owned TEST dropdown.
+        /* SSHCP V2.2 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -6107,7 +6107,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V2.1 — no 20-entry truncation. History remains until the
+      /* SSHCP V2.2 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -6128,7 +6128,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V2.1 TEST LOG',
+        'SSHCP V2.2 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -6226,7 +6226,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V2.1 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V2.2 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -8728,37 +8728,59 @@ let scoreTimingDetail =
       return { original, sorted };
     }
 
-    function resolveFirstPlaceTie(rows) {
-      const tied = firstPlaceTiedRows(rows);
-      if (tied.length < 2) return null;
+    function resolveTieContenders(tied) {
+      if (!Array.isArray(tied) || tied.length < 2) return null;
 
       let contenders = [...tied];
 
       for (let index = 0; index < 5; index++) {
-        const scored = contenders.map(row => ({
+        const enteringHole = [...contenders];
+
+        const scored = enteringHole.map(row => ({
           row,
           score: tiebreakValue(row, index)
         }));
 
         if (scored.some(item => !Number.isFinite(item.score))) {
-          return { tied, winner: null, decidingIndex: null, unresolved: true };
+          return {
+            tied: [...tied],
+            winner: null,
+            decidingIndex: null,
+            unresolved: true,
+            decidingContenders: enteringHole
+          };
         }
 
         const bestScore = Math.min(...scored.map(item => item.score));
-        contenders = scored.filter(item => item.score === bestScore).map(item => item.row);
+        contenders = scored
+          .filter(item => item.score === bestScore)
+          .map(item => item.row);
 
         if (contenders.length === 1) {
           return {
-            tied,
+            tied: [...tied],
             winner: contenders[0],
             decidingIndex: index,
             winningScore: bestScore,
-            unresolved: false
+            unresolved: false,
+            decidingContenders: enteringHole
           };
         }
       }
 
-      return { tied, winner: null, decidingIndex: null, unresolved: true };
+      return {
+        tied: [...tied],
+        winner: null,
+        decidingIndex: null,
+        unresolved: true,
+        decidingContenders: [...contenders]
+      };
+    }
+
+    function resolveFirstPlaceTie(rows) {
+      const tied = firstPlaceTiedRows(rows);
+      if (tied.length < 2) return null;
+      return resolveTieContenders(tied);
     }
 
     function ordinalHandicapHole(index) {
@@ -8861,9 +8883,10 @@ let scoreTimingDetail =
           (priorCount === 1 ? 'They remained tied on the 1st Handicap Hole.<br><br>' :
           'They remained tied through the first ' + priorCount + ' Handicap Holes.<br><br>');
 
-        const losingScores = resolution.tied
+        const losingScores = (resolution.decidingContenders || resolution.tied)
           .filter(row => row !== resolution.winner)
-          .map(row => tiebreakValue(row, resolution.decidingIndex));
+          .map(row => tiebreakValue(row, resolution.decidingIndex))
+          .filter(score => Number.isFinite(score));
         const nextBest = losingScores.length ? Math.min(...losingScores) : null;
         const scoreText = Number.isFinite(nextBest)
           ? ', ' + resolution.winningScore + ' to ' + nextBest
@@ -8918,72 +8941,108 @@ let scoreTimingDetail =
     }
 
     function buildTournamentPodium(rows) {
-      const source = rows.slice(0, 10);
-      const indexed = source.map((row, index) => ({ row, index }));
-      indexed.sort((a, b) => {
-        const aNet = Number(a.row.net);
-        const bNet = Number(b.row.net);
-        if (Number.isFinite(aNet) && Number.isFinite(bNet) && aNet !== bNet) {
-          return aNet - bNet;
+      const source = Array.isArray(rows)
+        ? rows.filter(row => row && Number.isFinite(Number(row.net)))
+        : [];
+
+      /* Base tournament order is net score, then stable team slot order.
+         Slot order is the clean fallback for any places we do NOT explicitly
+         resolve by tiebreak. */
+      const base = [...source].sort((a, b) => {
+        const aNet = Number(a.net);
+        const bNet = Number(b.net);
+
+        if (aNet !== bNet) return aNet - bNet;
+
+        const aSlot = Number(a.slot);
+        const bSlot = Number(b.slot);
+
+        if (Number.isFinite(aSlot) && Number.isFinite(bSlot)) {
+          return aSlot - bSlot;
         }
-        return a.index - b.index;
+
+        return String(a.team || '').localeCompare(String(b.team || ''));
       });
 
-      const ordered = [];
-      let cursor = 0;
-      while (cursor < indexed.length) {
-        const net = Number(indexed[cursor].row.net);
-        let end = cursor + 1;
-        while (
-          end < indexed.length &&
-          Number(indexed[end].row.net) === net
-        ) end++;
-
-        const group = indexed.slice(cursor, end).map(item => item.row);
-        const startsAtPlace = ordered.length + 1;
-        const touchesPodium = startsAtPlace <= 3;
-
-        if (group.length > 1 && touchesPodium) {
-          const resolved = resolveTieGroup(group);
-          ordered.push(...resolved.sorted);
-        } else {
-          ordered.push(...group);
-        }
-        cursor = end;
-      }
-
       const annotations = new Map();
-      const firstTie = firstPlaceTiedRows(source);
-      const firstResolution = resolveFirstPlaceTie(source);
+      const podiumRows = [];
+      const remaining = [...base];
 
-      if (firstResolution && firstResolution.winner && firstResolution.decidingIndex !== null) {
-        annotations.set(firstResolution.winner, {
-          marks: '*',
-          note: '* Won on ' + ordinalHandicapHole(firstResolution.decidingIndex)
-        });
-      }
+      /* Resolve ONLY podium places. For each place, find everyone tied on the
+         best remaining NET score, resolve that tie through handicap holes,
+         remove the winner, then repeat for the next podium place. */
+      for (let place = 1; place <= 3 && remaining.length; place++) {
+        const bestNet = Number(remaining[0].net);
+        const tiedGroup = remaining.filter(
+          row => Number(row.net) === bestNet
+        );
 
-      /* Only podium positions 2 and 3 receive secondary playoff treatment.
-         Fourth place and below retain ordinary leaderboard order. */
-      for (const placeIndex of [1, 2]) {
-        const row = ordered[placeIndex];
-        const next = ordered[placeIndex + 1];
-        if (!row || !next) continue;
-        if (Number(row.net) !== Number(next.net)) continue;
+        let winner = tiedGroup[0];
+        let resolution = null;
 
-        const comparison = compareTiebreakRows(row, next);
-        if (!comparison || comparison.order >= 0 || comparison.decidingIndex === null) continue;
+        if (tiedGroup.length > 1) {
+          resolution = resolveTieContenders(tiedGroup);
 
-        if (!annotations.has(row)) {
-          annotations.set(row, {
-            marks: '**',
-            note: '** Won ' + (placeIndex + 1) + ordinalSuffix(placeIndex + 1) +
-              '-place tiebreak on ' + ordinalHandicapHole(comparison.decidingIndex)
-          });
+          if (resolution && resolution.winner) {
+            winner = resolution.winner;
+          }
+        }
+
+        podiumRows.push(winner);
+
+        const removeIndex = remaining.indexOf(winner);
+        if (removeIndex >= 0) remaining.splice(removeIndex, 1);
+
+        if (
+          resolution &&
+          resolution.winner &&
+          resolution.decidingIndex !== null
+        ) {
+          if (place === 1) {
+            annotations.set(winner, {
+              marks: '*',
+              note:
+                '* Won on ' +
+                ordinalHandicapHole(resolution.decidingIndex)
+            });
+          }
+          else {
+            annotations.set(winner, {
+              marks: '**',
+              note:
+                '** Won ' +
+                place +
+                ordinalSuffix(place) +
+                '-place tiebreak on ' +
+                ordinalHandicapHole(resolution.decidingIndex)
+            });
+          }
         }
       }
 
-      return { ordered, annotations, firstTie };
+      /* Everything after 3rd is intentionally NOT further tiebroken.
+         Preserve clean NET grouping and team/slot order inside each tie. */
+      remaining.sort((a, b) => {
+        const aNet = Number(a.net);
+        const bNet = Number(b.net);
+
+        if (aNet !== bNet) return aNet - bNet;
+
+        const aSlot = Number(a.slot);
+        const bSlot = Number(b.slot);
+
+        if (Number.isFinite(aSlot) && Number.isFinite(bSlot)) {
+          return aSlot - bSlot;
+        }
+
+        return String(a.team || '').localeCompare(String(b.team || ''));
+      });
+
+      return {
+        ordered: [...podiumRows, ...remaining],
+        annotations,
+        firstTie: firstPlaceTiedRows(source)
+      };
     }
 
     function ordinalSuffix(number) {
@@ -9082,6 +9141,34 @@ let scoreTimingDetail =
       const rows = podium.ordered.slice(0, 10);
       const places = competitionPlaces(rows);
 
+      function summaryPlaceLabel(rowIndex) {
+        if (rowIndex < 3) return String(rowIndex + 1);
+
+        const row = rows[rowIndex];
+        if (!row) return '';
+
+        const currentNet = Number(row.net);
+        const priorSameNet = rows
+          .slice(3, rowIndex)
+          .some(item => Number(item.net) === currentNet);
+
+        const laterSameNet = rows
+          .slice(rowIndex + 1)
+          .some(item => Number(item.net) === currentNet);
+
+        /* Podium has already been explicitly resolved. The first unresolved
+           row starts at place 4. Any tied NET group from there is shown as
+           T4 / T5 / etc rather than pretending additional places were won. */
+        let unresolvedPlace = 4;
+        for (let i = 3; i < rowIndex; i++) {
+          if (Number(rows[i].net) < currentNet) unresolvedPlace++;
+        }
+
+        return (priorSameNet || laterSameNet)
+          ? 'T' + unresolvedPlace
+          : String(unresolvedPlace);
+      }
+
       closeModal();
       els.modalOverlay.classList.add('tournament-summary');
       els.modalTitle.textContent = 'SCRAMBLE SUMMARY';
@@ -9138,7 +9225,7 @@ let scoreTimingDetail =
         html += '<div class="tournament-summary-remaining">';
         rows.slice(3).forEach((row, index) => {
           const rowIndex = index + 3;
-          const place = places[rowIndex];
+          const place = summaryPlaceLabel(rowIndex);
           const hcp = getSummaryHandicap(row);
           const strokesText =
             String(row.totalStrokes ?? '') +
@@ -9183,8 +9270,9 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* V14.17 — Once the tournament is complete, the normal leaderboard
-         uses the same podium tiebreak ordering as Scramble Summary.
+      /* SSHCP V2.2 — Once the tournament is complete, the normal leaderboard
+         keeps the existing resolved podium ordering. Scramble Summary uses
+         that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
       if (tournamentIsComplete(rows)) {
         const firstTie = firstPlaceTiedRows(rows);
