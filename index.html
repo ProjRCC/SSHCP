@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V3.4 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V3.5 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V3.4 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V3.5 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4001,7 +4001,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V3.4 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V3.5 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4010,7 +4010,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — HOME VISUAL REFINEMENT
+   SSHCP V3.5 — HOME VISUAL REFINEMENT
    - Keep the 3-control group centered at ~80vh.
    - Equal vertical gaps between Leaderboard / Scorecard / Quick Guide.
    - Slimmer leaderboard button with unchanged text size.
@@ -4072,7 +4072,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — FINAL HOME SCORECARD REFINEMENT
+   SSHCP V3.5 — FINAL HOME SCORECARD REFINEMENT
    - Gold scorecard control gets a little more height.
    - Team name becomes the strongest text on HOME.
    - Tighten the gaps above and below the scorecard control.
@@ -4151,7 +4151,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
+   SSHCP V3.5 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
    Same structure / same row counts / same column widths.
    We use dead space more aggressively without changing the
    proven scorecard or leaderboard geometry.
@@ -4407,7 +4407,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — SIZE / PROPORTION PUSH
+   SSHCP V3.5 — SIZE / PROPORTION PUSH
    Build from the proven V2.8 visual baseline.
    RULE: fixed labels stay on ONE LINE; use the available box.
    No scorecard column-width changes. No 9-row geometry changes.
@@ -4601,7 +4601,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — TARGETED FINISHING PASS
+   SSHCP V3.5 — TARGETED FINISHING PASS
    ========================================================= */
 
 /* SCORE ENTRY:
@@ -4720,7 +4720,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — COMPLETED-STATE RESULT BUTTON POSITION FIX
+   SSHCP V3.5 — COMPLETED-STATE RESULT BUTTON POSITION FIX
    Leaderboard geometry/scrolling remains untouched.
    BREAK TIE / SCRAMBLE SUMMARY is centered in the free zone
    between leaderboard bottom and footer top.
@@ -4776,7 +4776,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — RESULT ACTION OVERLAY + CLEAR / - / +
+   SSHCP V3.5 — RESULT ACTION OVERLAY + CLEAR / - / +
    ========================================================= */
 
 /* Score popup: only reorder controls. Keep all V3.2 sizing/positioning. */
@@ -4828,7 +4828,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — FINAL TONIGHT: RESULT POSITION + FREE SCROLL
+   SSHCP V3.5 — FINAL TONIGHT: RESULT POSITION + FREE SCROLL
    ========================================================= */
 
 /* LEADERBOARD SCROLL:
@@ -4862,7 +4862,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.4 — GEOMETRIC FINAL-ACTION PLACEMENT
+   SSHCP V3.5 — GEOMETRIC FINAL-ACTION PLACEMENT
    Do not guess from footer height.
    JS sets -- actual TOP from leaderboard bottom + 10px.
    ========================================================= */
@@ -4903,6 +4903,47 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   z-index:10!important;
 }
 
+
+/* =========================================================
+   SSHCP V3.5 — TRUE TWO-BOUNDARY RESULT BUTTON FIT
+   JS measures:
+     1) actual leaderboard bottom
+     2) actual footer top
+   The result button occupies the measured space between them.
+   ========================================================= */
+
+.leaderboard-screen.tournament-complete .leader-final-slot{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  margin:0!important;
+  padding:0!important;
+  z-index:40!important;
+  pointer-events:none!important;
+  overflow:visible!important;
+}
+
+.leaderboard-screen.tournament-complete
+.leader-final-slot
+.leader-final-action{
+  position:absolute!important;
+  left:7%!important;
+  right:7%!important;
+  width:auto!important;
+  margin:0!important;
+  padding:4px 10px!important;
+  transform:none!important;
+  z-index:41!important;
+  pointer-events:auto!important;
+  box-sizing:border-box!important;
+}
+
+/* Footer and leaderboard geometry remain untouched. */
+.leaderboard-screen.tournament-complete .leader-bottom{
+  position:relative!important;
+  z-index:10!important;
+}
+
 </style>
 </head>
 
@@ -4937,7 +4978,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V3.4</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V3.5</button>
 
       <div class="splash-image-wrap">
 
@@ -5416,7 +5457,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V3.4
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V3.5
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5557,6 +5598,9 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
       leaderFinalSlot:
         document.getElementById('leaderFinalSlot'),
+
+      leaderBottom:
+        document.querySelector('#leaderboardView .leader-bottom'),
 
       scoreRows:
         document.getElementById('scoreRows'),
@@ -5980,7 +6024,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V3.4 — QR AUTHORIZATION
+       SSHCP V3.5 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -6533,7 +6577,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V3.4 — viewport-owned TEST dropdown.
+        /* SSHCP V3.5 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -6760,7 +6804,7 @@ let scoreTimingDetail =
             () => {
 
               /*
-                SSHCP V3.4 progress positioning:
+                SSHCP V3.5 progress positioning:
                 normal page/load positioning uses verified GOLD scores.
                 Immediately after ENTER, useLocalProgress=true lets the
                 viewport follow the newly entered gray score without
@@ -7015,7 +7059,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V3.4 — no 20-entry truncation. History remains until the
+      /* SSHCP V3.5 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -7036,7 +7080,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V3.4 TEST LOG',
+        'SSHCP V3.5 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -7134,7 +7178,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V3.4 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V3.5 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -7590,7 +7634,7 @@ let scoreTimingDetail =
         return;
       }
 
-      /* SSHCP V3.4 — once every active team is THRU 18, this screen
+      /* SSHCP V3.5 — once every active team is THRU 18, this screen
          is a final-results screen. Stop the 10-second auto-refresh cycle.
          Manual REFRESH remains available. */
       if (tournamentIsComplete(lastLeaderboardRows)) {
@@ -8274,7 +8318,7 @@ let scoreTimingDetail =
 
 
       /*
-        SSHCP V3.4 — the gray current-hole indicator follows LOCAL entry
+        SSHCP V3.5 — the gray current-hole indicator follows LOCAL entry
         progress immediately. Gold still follows verified/savedScores.
         This lets ENTER mean "move on now" while verification finishes
         in the background.
@@ -9039,7 +9083,7 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V3.4 — ENTER advances immediately.
+          SSHCP V3.5 — ENTER advances immediately.
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
@@ -9797,35 +9841,81 @@ let scoreTimingDetail =
         !screen ||
         !screen.classList.contains('tournament-complete') ||
         !els.leaderContent ||
-        !els.leaderFinalSlot
+        !els.leaderFinalSlot ||
+        !els.leaderBottom
       ) {
         return;
       }
 
       /*
-        SSHCP V3.4 — position from real rendered geometry, not guessed pixels.
+        SSHCP V3.5 — NO GUESSED POSITIONING.
 
-        Rule:
-        - Find the true bottom of the leaderboard viewport.
-        - Put the result action BELOW it with a visible safety buffer.
-        - Keep the action on the top layer, so its lower portion may use
-          the footer buffer instead of shrinking.
+        Measure the two real rendered boundaries:
+          A = bottom of leaderboard
+          B = top of SCORECARD / REFRESH footer
+
+        The result button is fitted INSIDE A..B.
+        The safety gap is derived from the actual available zone,
+        capped at 8px so it never wastes meaningful space.
       */
-      const screenRect = screen.getBoundingClientRect();
-      const leaderboardRect = els.leaderContent.getBoundingClientRect();
+      const screenRect =
+        screen.getBoundingClientRect();
 
-      const safeGap = 10;
-      const topInsideScreen =
+      const leaderboardRect =
+        els.leaderContent.getBoundingClientRect();
+
+      const footerRect =
+        els.leaderBottom.getBoundingClientRect();
+
+      const zoneTop =
+        leaderboardRect.bottom - screenRect.top;
+
+      const zoneBottom =
+        footerRect.top - screenRect.top;
+
+      const zoneHeight =
+        Math.max(0, zoneBottom - zoneTop);
+
+      if (zoneHeight <= 0) {
+        return;
+      }
+
+      const safetyGap =
+        Math.min(
+          8,
+          Math.max(2, zoneHeight * 0.08)
+        );
+
+      const buttonTop =
+        zoneTop + safetyGap;
+
+      const buttonHeight =
         Math.max(
           0,
-          leaderboardRect.bottom - screenRect.top + safeGap
+          zoneHeight - (safetyGap * 2)
         );
 
       els.leaderFinalSlot.style.top =
-        topInsideScreen + 'px';
+        buttonTop + 'px';
 
       els.leaderFinalSlot.style.bottom =
         'auto';
+
+      els.leaderFinalSlot.style.height =
+        buttonHeight + 'px';
+
+      if (els.leaderFinalActionButton) {
+        els.leaderFinalActionButton.style.top = '0px';
+        els.leaderFinalActionButton.style.bottom = 'auto';
+        els.leaderFinalActionButton.style.height =
+          buttonHeight + 'px';
+        els.leaderFinalActionButton.style.minHeight =
+          buttonHeight + 'px';
+        els.leaderFinalActionButton.style.maxHeight =
+          buttonHeight + 'px';
+        els.leaderFinalActionButton.style.transform =
+          'none';
+      }
     }
 
 
@@ -10329,7 +10419,7 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* SSHCP V3.4 — Once the tournament is complete, the normal leaderboard
+      /* SSHCP V3.5 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
          that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
@@ -10987,7 +11077,7 @@ let scoreTimingDetail =
       }
 
       /*
-        SSHCP V3.4 — size from the ACTUAL usable scroll viewport.
+        SSHCP V3.5 — size from the ACTUAL usable scroll viewport.
         leader-content has vertical padding and leader-table has top/bottom
         borders. Those pixels must be removed before dividing by 8, otherwise
         the scroll range lands between row boundaries and leaves a small
