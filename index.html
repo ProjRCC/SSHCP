@@ -122,7 +122,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.3 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.4a -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6438,6 +6438,17 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   font-weight:800!important;
 }
 
+/* V5.3 TEST buttons: labels may use one or two lines only. JS reduces
+   the font until the complete label fits inside its existing button. */
+#testLogView button{
+  white-space:normal!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  line-height:.90!important;
+  text-align:center!important;
+}
+
 #leaderboardView .leaderboard-screen.tournament-complete{
   grid-template-rows:auto var(--v5-leader-head-h,52px) minmax(0,1fr) var(--v53-final-slot-h,72px) auto auto!important;
 }
@@ -6446,6 +6457,173 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   min-height:0!important;
   max-height:none!important;
   flex-basis:var(--v53-final-slot-h,72px)!important;
+}
+
+/* V5.3 SCORECARD CORRECTION — honor the locked score hierarchy.
+   Gold nearly fills row height, while width stays slightly tighter.
+   Score numerals are intentionally larger than HOLE/PAR/YARDS. */
+#scorecardView .score-button,
+#scorecardView .score-button.empty,
+#scorecardView .score-button.unsaved,
+#scorecardView .score-button.saved{
+  height:var(--v5-score-box,58px)!important;
+  width:calc(var(--v5-score-box,58px) * .88)!important;
+  min-height:0!important;
+  max-height:94%!important;
+  max-width:90%!important;
+  aspect-ratio:auto!important;
+  margin:auto!important;
+}
+
+#scorecardView .score-button .score-mark.par-mark,
+#scorecardView .score-button .score-mark-number{
+  font-size:calc(var(--v5-score-box,58px) * .68)!important;
+  line-height:1!important;
+}
+
+#scorecardView .score-button .score-mark:not(.par-mark){
+  width:calc(var(--v5-score-box,58px) * .82)!important;
+  height:calc(var(--v5-score-box,58px) * .82)!important;
+  font-size:calc(var(--v5-score-box,58px) * .68)!important;
+}
+
+#scorecardView .score-button .score-mark.double-circle::after,
+#scorecardView .score-button .score-mark.double-square::after{
+  inset:-.08em!important;
+}
+
+/* Running gross / SCORE / running net are 40% / 37.5% / 40% of
+   the actual header height. The running values are centered in the REAL
+   open space between SCORE and the left/right edges of the SCORE cell. */
+#scorecardView .score-table-head > .score-running-header{
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+}
+#scorecardView .score-table-head > .score-running-header > span:nth-child(2){
+  width:auto!important;
+  padding-left:4px!important;
+  padding-right:4px!important;
+}
+
+
+/* =========================================================
+   SSHCP V5.4a — CONSOLIDATED LEADERBOARD / SUMMARY CORRECTIONS
+   ========================================================= */
+
+/* TEAM is always a single centered line. Width pressure shrinks only the
+   affected name in JS. Never wrap or crop descenders. */
+#leaderboardView .leader-team-anchor{
+  width:auto!important;
+  max-width:100%!important;
+  line-height:1.10!important;
+  overflow:visible!important;
+}
+#leaderboardView .leader-team-name,
+#leaderboardView .leader-team-name.two-line{
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0 0 .08em!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-overflow:clip!important;
+  line-height:1.10!important;
+  text-align:center!important;
+}
+
+/* STATUS is SCORE / tight divider / H18. The content block is centered
+   inside the cell with protected top and bottom breathing room. */
+#leaderboardView .leader-through-cell{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  padding-top:calc(var(--leader-row-height,64px) * .12)!important;
+  padding-bottom:calc(var(--leader-row-height,64px) * .12)!important;
+  padding-left:2%!important;
+  padding-right:2%!important;
+}
+#leaderboardView .leader-through-score{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:38%!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0 4px 1px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+  line-height:.92!important;
+  border-bottom:1.5px solid #000!important;
+}
+#leaderboardView .leader-through-label{
+  flex:0 0 auto!important;
+  width:auto!important;
+  height:auto!important;
+  margin:1px 0 0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+  line-height:.92!important;
+}
+#leaderboardView .leader-through-word,
+#leaderboardView .leader-through-value,
+#leaderboardView .leader-through-value.has-progress{
+  display:inline!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:inherit!important;
+  font-weight:800!important;
+  line-height:inherit!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+}
+
+/* Every leaderboard data row has exactly the same box height. */
+#leaderboardView #leaderRows > .leader-row,
+#leaderboardView #leaderRows > .leader-row:first-child,
+#leaderboardView #leaderRows > .leader-row:last-child{
+  box-sizing:border-box!important;
+  height:var(--leader-row-height,64px)!important;
+  min-height:var(--leader-row-height,64px)!important;
+  max-height:var(--leader-row-height,64px)!important;
+  margin:0!important;
+  flex:none!important;
+}
+
+/* Completed result action uses the full available result zone DOWN to the
+   footer boundary. The footer's own top padding is the only lower buffer. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  padding-top:clamp(4px,.55dvh,7px)!important;
+  padding-bottom:0!important;
+  padding-left:2%!important;
+  padding-right:2%!important;
+  align-items:stretch!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action{
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0 auto!important;
+  border-width:3px!important;
+  border-style:solid!important;
+  border-color:#000!important;
+  box-sizing:border-box!important;
 }
 
 </style>
@@ -6482,7 +6660,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.3</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.4a</button>
 
       <div class="splash-image-wrap">
 
@@ -6803,6 +6981,16 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
                 rows.innerHTML = snap.rowsHtml;
 
+                /* V5.4 compatibility: old V5.3 snapshot markup is reused for
+                   instant pull-refresh continuity, but its visible STATUS/team
+                   treatment is normalized before the first paint. */
+                rows.querySelectorAll('.leader-through-word').forEach(function (el) {
+                  el.textContent = 'H';
+                });
+                rows.querySelectorAll('.leader-team-name.two-line').forEach(function (el) {
+                  el.classList.remove('two-line');
+                });
+
                 if (content && Number.isFinite(Number(snap.scrollTop))) {
                   requestAnimationFrame(function () {
                     content.scrollTop = Math.max(0, Number(snap.scrollTop) || 0);
@@ -6885,7 +7073,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
       <div class="test-log-header">
         <div aria-hidden="true"></div>
         <div class="test-log-title">TEST LOG</div>
-        <button id="testLogCloseButton" class="nav-button" type="button">CLOSE</button>
       </div>
       <div class="test-log-table">
         <div class="test-log-row header">
@@ -7059,7 +7246,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.3
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.4a
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -7125,9 +7312,6 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
       testLogHomeButton:
         document.getElementById('testLogHomeButton'),
-
-      testLogCloseButton:
-        document.getElementById('testLogCloseButton'),
 
       testLogResetButton:
         document.getElementById('testLogResetButton'),
@@ -8510,7 +8694,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.3 TEST LOG',
+        'SSHCP V5.4a TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -8619,6 +8803,12 @@ let scoreTimingDetail =
       localStorage.removeItem(TEST_LOG_KEY);
       renderTestLog();
     }
+
+    /* =========================================================
+       SSHCP V5.3 QUICK TEST-WRITE PATCH
+       - One retry for transient RANDOM 2 team writes.
+       - HTTP status + Worker reason logged for bulk test failures.
+       ========================================================= */
 
     /* =========================================================
        TEST PAGE — BULK SCORE CONTROLS
@@ -8743,31 +8933,61 @@ let scoreTimingDetail =
 
       const generated = [];
 
-      /* Sequential verified writes avoid concurrent Google Sheets test writes. */
+      /* Sequential verified writes avoid concurrent Google Sheets test writes.
+         A single transient Worker/Sheets failure gets one immediate retry. */
       for (const team of freshTeams) {
         const round = generateRandom2Round(freshHoles);
-        const response = await fetch(
-          CLOUDFLARE_API_URL +
-            '?action=saveScores' +
-            '&slot=' + encodeURIComponent(Number(team.slot)) +
-            '&scores=' + encodeURIComponent(JSON.stringify(round.scores)) +
-            '&passkey=' + encodeURIComponent(passkey) +
-            '&refresh=' + Date.now(),
-          { cache: 'no-store' }
-        );
+        let lastError = null;
+        let verified = false;
 
-        if (!response.ok) {
-          throw new Error('ADD RANDOM 2 failed for ' + String(team.name || 'a team') + '.');
+        for (let attempt = 1; attempt <= 2 && !verified; attempt++) {
+          try {
+            const response = await fetch(
+              CLOUDFLARE_API_URL +
+                '?action=saveScores' +
+                '&slot=' + encodeURIComponent(Number(team.slot)) +
+                '&scores=' + encodeURIComponent(JSON.stringify(round.scores)) +
+                '&passkey=' + encodeURIComponent(passkey) +
+                '&refresh=' + Date.now() + '-' + attempt,
+              { cache: 'no-store' }
+            );
+
+            let data = null;
+            try { data = await response.json(); } catch (_) {}
+
+            if (!response.ok) {
+              const reason = data && (data.reason || data.error)
+                ? String(data.reason || data.error)
+                : 'request failed';
+              throw new Error('HTTP ' + response.status + ' • ' + reason);
+            }
+
+            if (
+              !data ||
+              data.ok !== true ||
+              data.verified !== true ||
+              !scoresEqual(data.verifiedScores, round.scores)
+            ) {
+              const reason = data && (data.reason || data.error)
+                ? String(data.reason || data.error)
+                : 'verification failed';
+              throw new Error('HTTP ' + response.status + ' • ' + reason);
+            }
+
+            verified = true;
+          } catch (error) {
+            lastError = error;
+            if (attempt === 1) {
+              await new Promise(resolve => setTimeout(resolve, 450));
+            }
+          }
         }
 
-        const data = await response.json();
-        if (
-          !data ||
-          data.ok !== true ||
-          data.verified !== true ||
-          !scoresEqual(data.verifiedScores, round.scores)
-        ) {
-          throw new Error('ADD RANDOM 2 was not verified for ' + String(team.name || 'a team') + '.');
+        if (!verified) {
+          throw new Error(
+            'ADD RANDOM 2 failed for ' + String(team.name || 'a team') +
+            (lastError && lastError.message ? ' • ' + lastError.message : '')
+          );
         }
 
         generated.push(round);
@@ -8868,11 +9088,17 @@ let scoreTimingDetail =
             { cache: 'no-store' }
           );
 
+          let parsed = null;
+          try { parsed = await response.json(); } catch (_) {}
+
           if (!response.ok) {
-            throw new Error(actionLabel + ' failed.');
+            const reason = parsed && (parsed.reason || parsed.error)
+              ? String(parsed.reason || parsed.error)
+              : 'request failed';
+            throw new Error(actionLabel + ' failed • HTTP ' + response.status + ' • ' + reason);
           }
 
-          data = await response.json();
+          data = parsed;
         }
 
         if (!data || data.ok !== true || data.verified !== true) {
@@ -9961,22 +10187,78 @@ let scoreTimingDetail =
       return true;
     }
 
+    let testButtonMeasureProbe = null;
+
     function fitTestPageButtonText() {
       if (!els.testLogView || currentView !== 'testlog') return;
+
+      if (!testButtonMeasureProbe) {
+        testButtonMeasureProbe = document.createElement('div');
+        testButtonMeasureProbe.setAttribute('aria-hidden', 'true');
+        Object.assign(testButtonMeasureProbe.style, {
+          position: 'fixed',
+          left: '-10000px',
+          top: '-10000px',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          zIndex: '-1',
+          boxSizing: 'border-box',
+          margin: '0',
+          padding: '0',
+          whiteSpace: 'normal',
+          overflowWrap: 'normal',
+          wordBreak: 'normal',
+          textAlign: 'center'
+        });
+        document.body.appendChild(testButtonMeasureProbe);
+      }
+
       els.testLogView.querySelectorAll('button').forEach(button => {
         if (button.clientHeight <= 0 || button.clientWidth <= 0) return;
-        fitTextToBoxV5(
-          button,
-          button,
-          button.clientHeight * 0.80,
-          11,
-          {
-            horizontalPad: 4,
-            verticalPad: 2,
-            wrap: true,
-            lineHeight: 0.90
+
+        const computed = getComputedStyle(button);
+        const padX =
+          (parseFloat(computed.paddingLeft) || 0) +
+          (parseFloat(computed.paddingRight) || 0);
+        const padY =
+          (parseFloat(computed.paddingTop) || 0) +
+          (parseFloat(computed.paddingBottom) || 0);
+
+        const availableWidth = Math.max(1, button.clientWidth - padX - 2);
+        const availableHeight = Math.max(1, button.clientHeight - padY - 2);
+        const lineHeight = 0.90;
+        const maxSize = button.clientHeight * 0.80;
+        const minSize = 8;
+
+        testButtonMeasureProbe.textContent = String(button.textContent || '').trim();
+        testButtonMeasureProbe.style.width = availableWidth + 'px';
+        testButtonMeasureProbe.style.fontFamily = computed.fontFamily;
+        testButtonMeasureProbe.style.fontWeight = computed.fontWeight;
+        testButtonMeasureProbe.style.fontStyle = computed.fontStyle;
+        testButtonMeasureProbe.style.letterSpacing = computed.letterSpacing;
+        testButtonMeasureProbe.style.textTransform = computed.textTransform;
+        testButtonMeasureProbe.style.lineHeight = String(lineHeight);
+
+        let chosen = minSize;
+
+        for (let size = maxSize; size >= minSize; size -= 0.5) {
+          testButtonMeasureProbe.style.fontSize = size + 'px';
+          const measuredHeight = testButtonMeasureProbe.getBoundingClientRect().height;
+          const twoLineHeight = size * lineHeight * 2 + 1;
+
+          if (
+            measuredHeight <= availableHeight + 0.75 &&
+            measuredHeight <= twoLineHeight + 0.75
+          ) {
+            chosen = size;
+            break;
           }
-        );
+        }
+
+        button.style.setProperty('font-size', chosen + 'px', 'important');
+        button.style.setProperty('line-height', String(lineHeight), 'important');
+        button.style.setProperty('white-space', 'normal', 'important');
+        button.style.setProperty('overflow', 'hidden', 'important');
       });
     }
 
@@ -10052,8 +10334,8 @@ let scoreTimingDetail =
       const scoreBox = Math.max(
         28,
         Math.min(
-          rowHeight * 0.84,
-          els.scoreScroll.clientWidth * 0.15225
+          rowHeight * 0.94,
+          els.scoreScroll.clientWidth * 0.17
         )
       );
       els.scorecardView.style.setProperty('--v5-score-box', scoreBox + 'px');
@@ -10068,7 +10350,7 @@ let scoreTimingDetail =
       /* Header content fits its CURRENT hard cells. */
       Array.from(header.children).forEach((cell, index) => {
         if (index < 3) {
-          fitTextToBoxV5(cell, cell, Math.min(28, headerHeight * 0.375), 12, {
+          fitTextToBoxV5(cell, cell, headerHeight * 0.375, 12, {
             horizontalPad: 8,
             verticalPad: 4
           });
@@ -10078,9 +10360,9 @@ let scoreTimingDetail =
       const running = header.querySelector('.score-running-header');
       if (running) {
         const parts = Array.from(running.children);
-        if (parts[0]) fitTextToBoxV5(parts[0], parts[0], Math.min(22, headerHeight * 0.40), 8, {horizontalPad:2});
-        if (parts[1]) fitTextToBoxV5(parts[1], parts[1], Math.min(28, headerHeight * 0.375), 12, {horizontalPad:4});
-        if (parts[2]) fitTextToBoxV5(parts[2], parts[2], Math.min(22, headerHeight * 0.40), 8, {horizontalPad:2});
+        if (parts[0]) fitTextToBoxV5(parts[0], parts[0], headerHeight * 0.40, 8, {horizontalPad:2});
+        if (parts[1]) fitTextToBoxV5(parts[1], parts[1], headerHeight * 0.375, 12, {horizontalPad:4});
+        if (parts[2]) fitTextToBoxV5(parts[2], parts[2], headerHeight * 0.40, 8, {horizontalPad:2});
       }
 
       els.scoreRows.querySelectorAll('.score-row').forEach(row => {
@@ -10091,16 +10373,16 @@ let scoreTimingDetail =
         const button = row.querySelector('.score-button');
 
         if (holeCell && hole) {
-          fitTextToBoxV5(holeCell, hole, Math.min(34, rowHeight * 0.50), 13, {horizontalPad:8,verticalPad:6});
+          fitTextToBoxV5(holeCell, hole, rowHeight * 0.50, 13, {horizontalPad:8,verticalPad:6});
         }
         if (par) {
-          fitTextToBoxV5(par, par, Math.min(29, rowHeight * 0.40), 12, {horizontalPad:8,verticalPad:6});
+          fitTextToBoxV5(par, par, rowHeight * 0.40, 12, {horizontalPad:8,verticalPad:6});
         }
         if (yards) {
-          fitTextToBoxV5(yards, yards, Math.min(27, rowHeight * 0.40), 11, {horizontalPad:8,verticalPad:6});
+          fitTextToBoxV5(yards, yards, rowHeight * 0.40, 11, {horizontalPad:8,verticalPad:6});
         }
         if (button) {
-          fitTextToBoxV5(button, button, scoreBox * 0.56, 13, {horizontalPad:6,verticalPad:6});
+          fitTextToBoxV5(button, button, scoreBox * 0.68, 13, {horizontalPad:4,verticalPad:4});
         }
       });
     }
@@ -12088,7 +12370,7 @@ let scoreTimingDetail =
         '<div class="tournament-summary-subtitle">' + (lastLeaderboardRows.length >= 10 ? 'TOP 10' : 'RESULTS') + '</div>' +
         '<div class="tournament-summary-grid">' +
         '<div class="tournament-summary-row header">' +
-        '<div>#</div><div>TEAM</div><div>NET STROKES</div><div>NET SCORE</div>' +
+        '<div>#</div><div>TEAM</div><div>NET STROKES</div><div>NET +/-</div>' +
         '</div>';
 
       rows.slice(0, 3).forEach((row, index) => {
@@ -12508,7 +12790,7 @@ let scoreTimingDetail =
 
 
           throughWord.textContent =
-            'THRU ';
+            'H';
 
 
           const throughValue =
@@ -12637,8 +12919,7 @@ let scoreTimingDetail =
         const team = row.querySelector('.leader-team-name');
         const hcp = row.querySelector('.leader-hcp-cell');
         const score = row.querySelector('.leader-through-score');
-        const thruWord = row.querySelector('.leader-through-word');
-        const thruValue = row.querySelector('.leader-through-value');
+        const statusLabel = row.querySelector('.leader-through-label');
         const total = row.querySelector('.leader-total');
 
         if (place) {
@@ -12655,36 +12936,28 @@ let scoreTimingDetail =
           });
         }
 
+        /* V5.4 TEAM rule: one line only. Start at 50% of row height and
+           shrink ONLY this team's text until the actual cell width fits.
+           A slightly relaxed line-height preserves descenders (g/y/p/q/j). */
         if (teamCell && team) {
-          const oneLineTarget = Math.min(36, rowHeight * 0.50);
           team.classList.remove('two-line');
-          team.style.setProperty('font-size', oneLineTarget + 'px', 'important');
-          team.style.setProperty('line-height', '1', 'important');
-          team.style.setProperty('white-space', 'nowrap', 'important');
-          team.style.setProperty('max-height', 'none', 'important');
-          if (teamAnchor) teamAnchor.style.width = 'auto';
-
-          const fitsOneLine =
-            team.scrollWidth <= Math.max(1, teamCell.clientWidth - 14) &&
-            team.scrollHeight <= Math.max(1, rowHeight * 0.56);
-
-          if (!fitsOneLine) {
-            team.classList.add('two-line');
-            if (teamAnchor) teamAnchor.style.width = 'calc(100% - 14px)';
-            fitTextToBoxV5(
-              teamCell,
-              team,
-              Math.min(32, rowHeight * 0.35),
-              12,
-              {
-                horizontalPad: 14,
-                verticalPad: rowHeight * 0.30,
-                wrap: true,
-                lineHeight: 0.95
-              }
-            );
-            team.style.setProperty('max-height', (rowHeight * 0.70) + 'px', 'important');
+          if (teamAnchor) {
+            teamAnchor.style.setProperty('width', 'auto', 'important');
+            teamAnchor.style.setProperty('max-width', '100%', 'important');
           }
+
+          fitTextToBoxV5(
+            teamCell,
+            team,
+            Math.min(36, rowHeight * 0.50),
+            8,
+            {
+              horizontalPad: 14,
+              verticalPad: rowHeight * 0.20,
+              wrap: false,
+              lineHeight: 1.10
+            }
+          );
         }
 
         if (total) {
@@ -12694,25 +12967,29 @@ let scoreTimingDetail =
           });
         }
 
+        /* V5.4 STATUS: compact SCORE / divider / H18 block. The entire
+           group stays centered with explicit top/bottom breathing room. */
         if (score) {
-          fitTextToBoxV5(score, score, Math.min(32, rowHeight * 0.30), 11, {
+          fitTextToBoxV5(score, score, Math.min(34, rowHeight * 0.30), 11, {
             horizontalPad: 4,
-            verticalPad: 2
+            verticalPad: 1,
+            lineHeight: 0.92
           });
         }
 
-        if (thruWord) {
-          fitTextToBoxV5(thruWord, thruWord, Math.min(22, rowHeight * 0.20), 9, {
-            horizontalPad: 4,
-            verticalPad: 2
-          });
-        }
-
-        if (thruValue) {
-          fitTextToBoxV5(thruValue, thruValue, Math.min(32, rowHeight * 0.30), 11, {
-            horizontalPad: 4,
-            verticalPad: 2
-          });
+        if (statusLabel) {
+          fitTextToBoxV5(
+            statusLabel,
+            statusLabel,
+            Math.min(34, rowHeight * 0.30),
+            11,
+            {
+              horizontalPad: 4,
+              verticalPad: 1,
+              wrap: false,
+              lineHeight: 0.92
+            }
+          );
         }
       });
     }
@@ -13398,7 +13675,6 @@ let scoreTimingDetail =
 
     els.testLogHotspot.addEventListener('click', showTestLog);
     els.testLogHomeButton.addEventListener('click', showHome);
-    els.testLogCloseButton.addEventListener('click', showHome);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
