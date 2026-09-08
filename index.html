@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.4 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.5 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V2.4 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V2.5 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4001,12 +4001,74 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V2.4 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V2.5 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
 body.team-qr-locked #scoreTeamSelectButton::after{display:none!important}
 body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-right:18px!important;cursor:default!important}
+
+
+/* =========================================================
+   SSHCP V2.5 — HOME VISUAL REFINEMENT
+   - Keep the 3-control group centered at ~80vh.
+   - Equal vertical gaps between Leaderboard / Scorecard / Quick Guide.
+   - Slimmer leaderboard button with unchanged text size.
+   - Slimmer scorecard frame with a much stronger Team name.
+   - Event line remains in the lower breathing space.
+   ========================================================= */
+#homeView .home-actions{
+  top:-2.5vh!important;            /* previous visual center ~79vh -> ~80vh */
+  gap:13px!important;              /* same spacing between all 3 controls */
+}
+
+#homeView #homeLeaderboardButton{
+  min-height:49px!important;       /* ~85% of prior 58px height */
+  padding:8px 14px!important;
+  font-size:21px!important;        /* keep current text size */
+  border-width:1.5px!important;
+}
+
+#homeView .home-scorecard-split{
+  min-height:62px!important;
+  border-width:1.5px!important;
+}
+
+#homeView .home-scorecard-main{
+  padding-top:4px!important;
+  padding-bottom:4px!important;
+}
+
+#homeView .home-scorecard-action{
+  font-size:20px!important;        /* ACCESS SCORECARD stays the same */
+  line-height:1!important;
+}
+
+#homeView .home-scorecard-team{
+  margin-top:3px!important;
+  font-size:26px!important;        /* authorized Team is now the focal text */
+  font-weight:800!important;
+  line-height:.96!important;
+  letter-spacing:.1px!important;
+}
+
+#homeView .home-scorecard-team.select-team{
+  font-size:20px!important;        /* do not blow up SELECT TEAM placeholder */
+  font-weight:600!important;
+}
+
+#homeView .home-event-info{
+  bottom:calc(env(safe-area-inset-bottom) + 10px)!important;
+}
+
+@media(max-width:420px){
+  #homeView .home-scorecard-team{
+    font-size:25px!important;
+  }
+  #homeView .home-scorecard-team.select-team{
+    font-size:19px!important;
+  }
+}
 
 </style>
 </head>
@@ -4042,7 +4104,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.4</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.5</button>
 
       <div class="splash-image-wrap">
 
@@ -4519,7 +4581,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.4
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.5
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5080,7 +5142,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V2.4 — QR AUTHORIZATION
+       SSHCP V2.5 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5633,7 +5695,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V2.4 — viewport-owned TEST dropdown.
+        /* SSHCP V2.5 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -6107,7 +6169,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V2.4 — no 20-entry truncation. History remains until the
+      /* SSHCP V2.5 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -6128,7 +6190,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V2.4 TEST LOG',
+        'SSHCP V2.5 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -6226,7 +6288,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V2.4 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V2.5 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -9317,7 +9379,7 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* SSHCP V2.4 — Once the tournament is complete, the normal leaderboard
+      /* SSHCP V2.5 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
          that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
