@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.9 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V3.0 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V2.9 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V3.0 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4001,7 +4001,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V2.9 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V3.0 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4010,7 +4010,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V2.9 — HOME VISUAL REFINEMENT
+   SSHCP V3.0 — HOME VISUAL REFINEMENT
    - Keep the 3-control group centered at ~80vh.
    - Equal vertical gaps between Leaderboard / Scorecard / Quick Guide.
    - Slimmer leaderboard button with unchanged text size.
@@ -4072,7 +4072,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V2.9 — FINAL HOME SCORECARD REFINEMENT
+   SSHCP V3.0 — FINAL HOME SCORECARD REFINEMENT
    - Gold scorecard control gets a little more height.
    - Team name becomes the strongest text on HOME.
    - Tighten the gaps above and below the scorecard control.
@@ -4151,7 +4151,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V2.9 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
+   SSHCP V3.0 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
    Same structure / same row counts / same column widths.
    We use dead space more aggressively without changing the
    proven scorecard or leaderboard geometry.
@@ -4407,128 +4407,195 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V2.9 — FINAL READABILITY PUSH
-   No structural redesign: same screen geometry, same row counts,
-   same scorecard columns. Spend remaining dead space on legibility.
+   SSHCP V3.0 — SIZE / PROPORTION PUSH
+   Build from the proven V2.8 visual baseline.
+   RULE: fixed labels stay on ONE LINE; use the available box.
+   No scorecard column-width changes. No 9-row geometry changes.
    ========================================================= */
 
-/* HOME: keep the approved layout, just use the available pixels harder. */
+/* ---------------------------------------------------------
+   HOME
+   Keep approved positions and button sizes.
+   Spend more of the inside of fixed-label buttons on text.
+   --------------------------------------------------------- */
 #homeView #homeLeaderboardButton{
-  font-size:22.7px!important;
+  font-size:23px!important;
+  white-space:nowrap!important;
 }
-#homeView .quick-guide-button{
-  font-size:20.6px!important;
+
+#homeView .home-scorecard-action{
+  font-size:22px!important;
+  white-space:nowrap!important;
 }
+
+/* Team name remains user-controlled; preserve the strong V2.7 sizing. */
+#homeView .home-scorecard-team{
+  font-size:29px!important;
+  font-weight:900!important;
+}
+
 #homeView .home-event-info{
   font-size:14px!important;
 }
 
-/* Scorecard current-team context: larger text inside the same gray panel. */
+/* ---------------------------------------------------------
+   SCORECARD
+   Same table geometry. Primary footer button gets a REAL size push.
+   --------------------------------------------------------- */
 #scorecardView .score-team-select-button{
-  padding-left:8px!important;
-  padding-right:8px!important;
-}
-#scorecardView .score-team-select-button .team-name,
-#scorecardView .score-team-select-button .selected-team-name,
-#scorecardView .score-team-select-button .score-team-name{
-  font-size:1.06em!important;
+  padding-left:6px!important;
+  padding-right:6px!important;
 }
 
-/* Scorecard footer: same outer space, slightly larger useful text. */
-#scorecardView .score-bottom-actions{
-  gap:7px!important;
-}
-#scorecardView .bottom-action{
-  padding-left:8px!important;
-  padding-right:8px!important;
-}
-#scorecardView .score-bottom-actions .bottom-action{
-  font-size:20px!important;
+#scorecardView .score-fixed-bottom{
+  padding-left:10px!important;
+  padding-right:10px!important;
 }
 
-/* Score-entry popup:
-   - score display becomes a near-square focal tile
-   - ~25% larger score number
-   - keep +/- positions and CLEAR secondary
-*/
-.score-entry-input{
-  width:min(118px,38%)!important;
-  height:clamp(62px,12dvh,92px)!important;
-  padding:2px 6px!important;
-  font-size:clamp(38px,7.7dvh,55px)!important;
+/* LIVE LEADERBOARD is a primary gold action:
+   ~30% larger text than V2.8 while staying one line. */
+#scorecardView #scoreLeaderboardButton{
+  font-size:25px!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+  padding-left:6px!important;
+  padding-right:6px!important;
+}
+
+/* ---------------------------------------------------------
+   SCORE ENTRY POPUP
+   This is the ACTUAL visible gray score readout.
+   Make it a near-square visual tile above the thumb controls.
+   +/- stay where they already are. CLEAR stays secondary.
+   --------------------------------------------------------- */
+.score-entry-preview-wrap{
+  width:112px!important;
+  height:96px!important;
+  margin:10px auto 0!important;
+}
+
+.score-entry-preview{
+  width:100%!important;
+  height:100%!important;
+  border-radius:14px!important;
+  font-size:52px!important;
   font-weight:800!important;
   line-height:1!important;
 }
 
-.score-entry-meta,
-.score-entry-hole-par{
-  margin-bottom:4px!important;
+/* Keep score marks proportional to the bigger readout. */
+.score-entry-preview .score-mark.par-mark{
+  font-size:1em!important;
 }
 
+.score-entry-preview .score-mark:not(.par-mark){
+  width:1.36em!important;
+  height:1.36em!important;
+  font-size:1em!important;
+}
+
+/* Do NOT move the thumb controls. */
+.score-entry-control{
+  margin-top:16px!important;
+}
+
+/* CLEAR remains secondary. */
 .score-entry-clear{
-  font-size:clamp(15.5px,2.95dvh,22px)!important;
-  padding-left:8px!important;
-  padding-right:8px!important;
+  border:5px solid var(--gold)!important;
+  background:#fff!important;
+  color:#000!important;
 }
 
-.score-entry-enter{
-  font-size:clamp(17.5px,3.3dvh,24px)!important;
+/* ---------------------------------------------------------
+   COMPLETED LEADERBOARD
+   The proven leaderboard box remains the same measured height.
+   LIVE title/progress disappear, leaderboard shifts up.
+   The freed result zone is used aggressively:
+   BREAK TIE / SCRAMBLE SUMMARY consumes ~90% of that zone.
+   --------------------------------------------------------- */
+
+/* Final-state informational refresh note no longer needs visual space. */
+.leaderboard-screen.tournament-complete .leader-update-note{
+  display:none!important;
 }
 
-/* Leaderboard footer buttons are already proportioned correctly.
-   Only use a little more internal text space. */
+/* The slot absorbs the freed vertical area without resizing the table. */
+.leaderboard-screen.tournament-complete .leader-final-slot{
+  display:flex!important;
+  flex:1 1 auto!important;
+  min-height:62px!important;
+  margin:0 12px!important;
+  padding:4px 0!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+/* Result button fills almost all of its available zone. */
+.leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action{
+  position:static!important;
+  left:auto!important;
+  top:auto!important;
+  transform:none!important;
+
+  width:92%!important;
+  max-width:none!important;
+
+  height:90%!important;
+  min-height:58px!important;
+  max-height:104px!important;
+
+  margin:0 auto!important;
+  padding:4px 10px!important;
+
+  border-radius:11px!important;
+
+  font-size:clamp(27px,7.4vw,38px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+/* SCRAMBLE SUMMARY is also a primary result action, not a small label. */
+.leaderboard-screen.tournament-complete
+.leader-final-slot
+.leader-final-action.summary-label{
+  font-size:clamp(24px,6.6vw,34px)!important;
+}
+
+/* Preserve comfortable separation from the established footer buttons. */
+.leaderboard-screen.tournament-complete .leader-bottom{
+  padding-top:8px!important;
+}
+
+/* ACCESS SCORECARD / REFRESH footer proportions remain as approved. */
 #leaderboardView .leader-bottom .access-scorecard,
 #leaderboardView .leader-bottom .leader-refresh-button{
-  padding-left:8px!important;
-  padding-right:8px!important;
+  min-height:56px!important;
 }
 
-/* Tiebreak result popup: a little larger overall and easier to read.
-   Tournament Summary remains essentially unchanged. */
-.tie-break-modal,
-.tiebreak-modal,
-.tie-break-result-modal{
-  width:min(94vw,680px)!important;
-}
-
-.tie-break-modal .modal-content,
-.tiebreak-modal .modal-content,
-.tie-break-result-modal .modal-content{
-  padding-left:14px!important;
-  padding-right:14px!important;
-}
-
-.tie-break-modal .modal-title,
-.tiebreak-modal .modal-title,
-.tie-break-result-modal .modal-title{
-  font-size:1.07em!important;
-}
-
-.tie-break-modal .winner,
-.tie-break-modal .winner-name,
-.tiebreak-modal .winner,
-.tiebreak-modal .winner-name,
-.tie-break-result-modal .winner,
-.tie-break-result-modal .winner-name{
-  font-size:1.08em!important;
-}
-
-.tie-break-modal .close,
-.tiebreak-modal .close,
-.tie-break-result-modal .close{
-  transform:scale(1.08)!important;
-  transform-origin:center!important;
+/* ---------------------------------------------------------
+   ONE-LINE SAFETY
+   Fixed primary labels do not wrap.
+   --------------------------------------------------------- */
+#scorecardView #scoreLeaderboardButton,
+#homeView #homeLeaderboardButton,
+#homeView .home-scorecard-action,
+.leader-final-main{
+  white-space:nowrap!important;
 }
 
 @media(max-width:420px){
-  #homeView #homeLeaderboardButton{
-    font-size:22px!important;
+  #scorecardView #scoreLeaderboardButton{
+    font-size:24px!important;
   }
-  #homeView .quick-guide-button{
-    font-size:20px!important;
+
+  .score-entry-preview-wrap{
+    width:108px!important;
+    height:94px!important;
   }
-  #homeView .home-event-info{
-    font-size:13.6px!important;
+
+  .score-entry-preview{
+    font-size:50px!important;
   }
 }
 
@@ -4566,7 +4633,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.9</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V3.0</button>
 
       <div class="splash-image-wrap">
 
@@ -5045,7 +5112,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.9
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V3.0
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5609,7 +5676,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V2.9 — QR AUTHORIZATION
+       SSHCP V3.0 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -6162,7 +6229,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V2.9 — viewport-owned TEST dropdown.
+        /* SSHCP V3.0 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -6389,7 +6456,7 @@ let scoreTimingDetail =
             () => {
 
               /*
-                SSHCP V2.9 progress positioning:
+                SSHCP V3.0 progress positioning:
                 normal page/load positioning uses verified GOLD scores.
                 Immediately after ENTER, useLocalProgress=true lets the
                 viewport follow the newly entered gray score without
@@ -6644,7 +6711,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V2.9 — no 20-entry truncation. History remains until the
+      /* SSHCP V3.0 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -6665,7 +6732,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V2.9 TEST LOG',
+        'SSHCP V3.0 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -6763,7 +6830,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V2.9 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V3.0 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -7895,7 +7962,7 @@ let scoreTimingDetail =
 
 
       /*
-        SSHCP V2.9 — the gray current-hole indicator follows LOCAL entry
+        SSHCP V3.0 — the gray current-hole indicator follows LOCAL entry
         progress immediately. Gold still follows verified/savedScores.
         This lets ENTER mean "move on now" while verification finishes
         in the background.
@@ -8660,7 +8727,7 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V2.9 — ENTER advances immediately.
+          SSHCP V3.0 — ENTER advances immediately.
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
@@ -9897,7 +9964,7 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* SSHCP V2.9 — Once the tournament is complete, the normal leaderboard
+      /* SSHCP V3.0 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
          that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
