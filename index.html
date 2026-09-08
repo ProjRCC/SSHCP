@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V3.0 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V3.1 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V3.0 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V3.1 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4001,7 +4001,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V3.0 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V3.1 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4010,7 +4010,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.0 — HOME VISUAL REFINEMENT
+   SSHCP V3.1 — HOME VISUAL REFINEMENT
    - Keep the 3-control group centered at ~80vh.
    - Equal vertical gaps between Leaderboard / Scorecard / Quick Guide.
    - Slimmer leaderboard button with unchanged text size.
@@ -4072,7 +4072,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.0 — FINAL HOME SCORECARD REFINEMENT
+   SSHCP V3.1 — FINAL HOME SCORECARD REFINEMENT
    - Gold scorecard control gets a little more height.
    - Team name becomes the strongest text on HOME.
    - Tighten the gaps above and below the scorecard control.
@@ -4151,7 +4151,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.0 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
+   SSHCP V3.1 — ACCESSIBILITY + FINAL-RESULTS VISUAL SYSTEM
    Same structure / same row counts / same column widths.
    We use dead space more aggressively without changing the
    proven scorecard or leaderboard geometry.
@@ -4407,7 +4407,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 
 /* =========================================================
-   SSHCP V3.0 — SIZE / PROPORTION PUSH
+   SSHCP V3.1 — SIZE / PROPORTION PUSH
    Build from the proven V2.8 visual baseline.
    RULE: fixed labels stay on ONE LINE; use the available box.
    No scorecard column-width changes. No 9-row geometry changes.
@@ -4599,6 +4599,125 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   }
 }
 
+
+/* =========================================================
+   SSHCP V3.1 — TARGETED FINISHING PASS
+   ========================================================= */
+
+/* SCORE ENTRY:
+   V3.0 internal sizing is approved. Move the ENTIRE popup lower. */
+.score-entry-overlay{
+  padding-top:14vh!important;
+}
+
+/* LEADERBOARD FOOTER:
+   SCORECARD is now a short fixed label, so spend the available width on it. */
+#leaderboardView #leaderScorecardButton{
+  font-size:25px!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+  padding-left:6px!important;
+  padding-right:6px!important;
+}
+
+/* Leaderboard row scrolling now moves in true row-height increments. */
+#leaderboardView .leader-content{
+  scroll-snap-type:y proximity;
+}
+#leaderboardView #leaderRows > .leader-row{
+  scroll-snap-align:start;
+  scroll-snap-stop:normal;
+}
+
+/* Final result action:
+   Size from V3.0 is good; lower it slightly toward the footer controls. */
+.leaderboard-screen.tournament-complete
+.leader-final-slot
+.leader-final-action{
+  transform:translateY(6px)!important;
+}
+
+/* TIE BREAK RESULT:
+   Readability first. Do not artificially cap this to the old compact card.
+   Let content determine the vertical height, with viewport scrolling only
+   if a genuinely long result ever requires it. */
+.modal-overlay.tournament-result{
+  padding:18px 16px!important;
+}
+
+.modal-overlay.tournament-result .modal-box{
+  width:min(540px, calc(100% - 4px))!important;
+  height:auto!important;
+  max-height:calc(100dvh - 36px)!important;
+  overflow-y:auto!important;
+  padding:24px 24px 22px!important;
+  border-radius:20px!important;
+}
+
+.modal-overlay.tournament-result .modal-title{
+  margin-bottom:16px!important;
+  font-size:clamp(27px,4.6dvh,36px)!important;
+  line-height:1.04!important;
+}
+
+.modal-overlay.tournament-result .modal-text{
+  font-size:clamp(19px,3.15dvh,25px)!important;
+  line-height:1.34!important;
+}
+
+.modal-overlay.tournament-result .tiebreak-winner{
+  margin:2px 0 18px!important;
+  font-size:clamp(32px,9vw,48px)!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+.modal-overlay.tournament-result .tiebreak-explanation{
+  font-size:inherit!important;
+  line-height:1.38!important;
+}
+
+.modal-overlay.tournament-result .modal-actions{
+  margin-top:22px!important;
+  gap:12px!important;
+}
+
+.modal-overlay.tournament-result .modal-btn{
+  min-height:64px!important;
+  font-size:clamp(19px,4.8vw,25px)!important;
+  font-weight:800!important;
+  padding:6px 8px!important;
+}
+
+.modal-overlay.tournament-result
+.modal-btn.tournament-summary-button{
+  white-space:nowrap!important;
+  font-size:clamp(18px,4.6vw,24px)!important;
+}
+
+@media(max-width:420px){
+  #leaderboardView #leaderScorecardButton{
+    font-size:24px!important;
+  }
+
+  .modal-overlay.tournament-result .modal-box{
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+
+  .modal-overlay.tournament-result .modal-title{
+    font-size:28px!important;
+  }
+
+  .modal-overlay.tournament-result .modal-text{
+    font-size:19px!important;
+  }
+
+  .modal-overlay.tournament-result .tiebreak-winner{
+    font-size:34px!important;
+  }
+}
+
 </style>
 </head>
 
@@ -4633,7 +4752,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V3.0</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V3.1</button>
 
       <div class="splash-image-wrap">
 
@@ -4917,7 +5036,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
           class="access-scorecard"
           type="button"
         >
-          ACCESS SCORECARD
+          SCORECARD
         </button>
         <button id="leaderRefreshButton" class="leader-refresh-button" type="button">REFRESH</button>
 
@@ -5112,7 +5231,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V3.0
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V3.1
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5676,7 +5795,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V3.0 — QR AUTHORIZATION
+       SSHCP V3.1 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -6229,7 +6348,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V3.0 — viewport-owned TEST dropdown.
+        /* SSHCP V3.1 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -6456,7 +6575,7 @@ let scoreTimingDetail =
             () => {
 
               /*
-                SSHCP V3.0 progress positioning:
+                SSHCP V3.1 progress positioning:
                 normal page/load positioning uses verified GOLD scores.
                 Immediately after ENTER, useLocalProgress=true lets the
                 viewport follow the newly entered gray score without
@@ -6711,7 +6830,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V3.0 — no 20-entry truncation. History remains until the
+      /* SSHCP V3.1 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -6732,7 +6851,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V3.0 TEST LOG',
+        'SSHCP V3.1 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -6830,7 +6949,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V3.0 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V3.1 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -7283,6 +7402,14 @@ let scoreTimingDetail =
         currentView !== 'leaderboard' ||
         !leaderboardHasLoaded
       ) {
+        return;
+      }
+
+      /* SSHCP V3.1 — once every active team is THRU 18, this screen
+         is a final-results screen. Stop the 10-second auto-refresh cycle.
+         Manual REFRESH remains available. */
+      if (tournamentIsComplete(lastLeaderboardRows)) {
+        resetLeaderboardRefreshProgress();
         return;
       }
 
@@ -7962,7 +8089,7 @@ let scoreTimingDetail =
 
 
       /*
-        SSHCP V3.0 — the gray current-hole indicator follows LOCAL entry
+        SSHCP V3.1 — the gray current-hole indicator follows LOCAL entry
         progress immediately. Gold still follows verified/savedScores.
         This lets ENTER mean "move on now" while verification finishes
         in the background.
@@ -8727,7 +8854,7 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V3.0 — ENTER advances immediately.
+          SSHCP V3.1 — ENTER advances immediately.
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
@@ -9511,6 +9638,10 @@ let scoreTimingDetail =
         return;
       }
 
+      /* Final-results mode is stable; no more automatic 10-second polling. */
+      stopLeaderboardRefreshCycle();
+      resetLeaderboardRefreshProgress();
+
       const tied = firstPlaceTiedRows(lastLeaderboardRows);
       if (tied.length < 2) {
         setLeaderboardFinalAction('tournament-summary');
@@ -9964,7 +10095,7 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* SSHCP V3.0 — Once the tournament is complete, the normal leaderboard
+      /* SSHCP V3.1 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
          that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
@@ -10621,16 +10752,57 @@ let scoreTimingDetail =
         return;
       }
 
-      const rowHeight = bodyHeight / 8;
+      /*
+        SSHCP V3.1 — size from the ACTUAL usable scroll viewport.
+        leader-content has vertical padding and leader-table has top/bottom
+        borders. Those pixels must be removed before dividing by 8, otherwise
+        the scroll range lands between row boundaries and leaves a small
+        partial-row sliver at the top/bottom.
+      */
+      const contentStyle = getComputedStyle(els.leaderContent);
+      const padTop = parseFloat(contentStyle.paddingTop) || 0;
+      const padBottom = parseFloat(contentStyle.paddingBottom) || 0;
+
+      const table = els.leaderContent.querySelector('.leader-table');
+      let tableBorders = 0;
+
+      if (table) {
+        const tableStyle = getComputedStyle(table);
+        tableBorders =
+          (parseFloat(tableStyle.borderTopWidth) || 0) +
+          (parseFloat(tableStyle.borderBottomWidth) || 0);
+      }
+
+      const usableHeight = Math.max(
+        0,
+        bodyHeight - padTop - padBottom - tableBorders
+      );
+
+      const rowHeight = usableHeight / 8;
 
       els.leaderContent.style.setProperty(
         '--leader-row-height',
         rowHeight + 'px'
       );
 
-      requestAnimationFrame(
-        fitLeaderboardTypography
-      );
+      /* Snap any existing position back onto an exact row boundary after
+         the measured row height is updated. */
+      requestAnimationFrame(() => {
+        const current = els.leaderContent.scrollTop;
+        if (rowHeight > 0 && current > 0) {
+          const snapped = Math.round(current / rowHeight) * rowHeight;
+          const maxScroll = Math.max(
+            0,
+            els.leaderContent.scrollHeight -
+            els.leaderContent.clientHeight
+          );
+
+          els.leaderContent.scrollTop =
+            Math.min(Math.max(0, snapped), maxScroll);
+        }
+
+        fitLeaderboardTypography();
+      });
     }
 
 
@@ -10715,7 +10887,10 @@ let scoreTimingDetail =
              This preserves a partial-row cue when more teams remain below,
              while naturally tapering at the bottom of any leaderboard size. */
           const rowHeight =
-            target.offsetHeight;
+            parseFloat(
+              getComputedStyle(els.leaderContent)
+                .getPropertyValue('--leader-row-height')
+            ) || target.getBoundingClientRect().height;
 
           const targetIndex =
             Array.prototype.indexOf.call(
