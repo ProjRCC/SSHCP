@@ -12,7 +12,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.2 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V2.4 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3948,7 +3948,7 @@ body.score-team-menu-open .score-fixed-top{
 
 
 /* =========================================================
-   SSHCP V2.2 — QR AUTHORIZATION / HOME / TEST PAGE
+   SSHCP V2.4 — QR AUTHORIZATION / HOME / TEST PAGE
    ========================================================= */
 .sshcp-home-guide-row{display:flex!important;justify-content:center!important;padding:0!important}
 .sshcp-home-guide-row .quick-guide-button{width:min(64%,260px)!important}
@@ -4001,7 +4001,7 @@ body.score-team-menu-open .score-fixed-top{
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
 
-/* SSHCP V2.2 — assigned Team QR uses direct team access; MASTER unchanged. */
+/* SSHCP V2.4 — assigned Team QR uses direct team access; MASTER unchanged. */
 body.team-qr-locked #homeTeamArrowButton{display:none!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-split{grid-template-columns:1fr!important}
 body.team-qr-locked #homeScorecardAccess .home-scorecard-main{padding-left:0!important}
@@ -4042,7 +4042,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.2</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V2.4</button>
 
       <div class="splash-image-wrap">
 
@@ -4519,7 +4519,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.2
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V2.4
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -5080,7 +5080,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V2.2 — QR AUTHORIZATION
+       SSHCP V2.4 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
 
@@ -5633,7 +5633,7 @@ let scoreTimingDetail =
       const openTeamMenu = () => {
         if (!menu || !button) return;
 
-        /* SSHCP V2.2 — viewport-owned TEST dropdown.
+        /* SSHCP V2.4 — viewport-owned TEST dropdown.
            It is fixed to the visible viewport rather than constrained by
            the modal box. It may extend beyond the popup and stops roughly
            35px above the actual visible bottom edge. */
@@ -6107,7 +6107,7 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V2.2 — no 20-entry truncation. History remains until the
+      /* SSHCP V2.4 — no 20-entry truncation. History remains until the
          user explicitly taps DELETE TEST DATA. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
@@ -6128,7 +6128,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V2.2 TEST LOG',
+        'SSHCP V2.4 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -6226,7 +6226,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* SSHCP V2.2 — TEST PAGE opening performs the same single CF V1.3
+      /* SSHCP V2.4 — TEST PAGE opening performs the same single CF V1.3
          qrDirectory request as LOAD ASSIGNED PASSKEYS. Existing cached data
          remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -8704,8 +8704,21 @@ let scoreTimingDetail =
       return Number(raw);
     }
 
+    function actualTiebreakHole(row, index) {
+      const raw = Array.isArray(row?.tiebreakHoles)
+        ? row.tiebreakHoles[index]
+        : '';
+
+      if (raw === '' || raw === null || raw === undefined) return '';
+      return String(raw).trim();
+    }
+
     function compareTiebreakRows(a, b) {
-      for (let index = 0; index < 5; index++) {
+      const aScores = Array.isArray(a?.tiebreakScores) ? a.tiebreakScores : [];
+      const bScores = Array.isArray(b?.tiebreakScores) ? b.tiebreakScores : [];
+      const holeCount = Math.max(aScores.length, bScores.length);
+
+      for (let index = 0; index < holeCount; index++) {
         const aScore = tiebreakValue(a, index);
         const bScore = tiebreakValue(b, index);
         if (!Number.isFinite(aScore) || !Number.isFinite(bScore)) return 0;
@@ -8733,7 +8746,16 @@ let scoreTimingDetail =
 
       let contenders = [...tied];
 
-      for (let index = 0; index < 5; index++) {
+      const holeCount = Math.max(
+        0,
+        ...tied.map(row =>
+          Array.isArray(row?.tiebreakScores)
+            ? row.tiebreakScores.length
+            : 0
+        )
+      );
+
+      for (let index = 0; index < holeCount; index++) {
         const enteringHole = [...contenders];
 
         const scored = enteringHole.map(row => ({
@@ -8783,14 +8805,23 @@ let scoreTimingDetail =
       return resolveTieContenders(tied);
     }
 
+    function ordinalNumber(number) {
+      const n = Number(number);
+      const mod100 = n % 100;
+      if (mod100 >= 11 && mod100 <= 13) return n + 'th';
+      switch (n % 10) {
+        case 1: return n + 'st';
+        case 2: return n + 'nd';
+        case 3: return n + 'rd';
+        default: return n + 'th';
+      }
+    }
+
     function ordinalHandicapHole(index) {
-      return [
-        '1st Handicap Hole',
-        '2nd Handicap Hole',
-        '3rd Handicap Hole',
-        '4th Handicap Hole',
-        '5th Handicap Hole'
-      ][index] || '';
+      const number = Number(index) + 1;
+      return Number.isFinite(number) && number > 0
+        ? ordinalNumber(number) + ' Handicap Hole'
+        : '';
     }
 
     function setLeaderboardFinalAction(mode) {
@@ -8874,10 +8905,17 @@ let scoreTimingDetail =
       if (!resolution.winner || resolution.decidingIndex === null) {
         els.modalBody.innerHTML =
           '<div class="tiebreak-winner">TIE REMAINS</div>' +
-          '<div class="tiebreak-explanation">The configured handicap holes did not separate the tied teams.</div>';
+          '<div class="tiebreak-explanation">All configured Handicap Holes were used and the tie still remains.</div>';
       } else {
         const tiedNet = formatGolfScore(resolution.tied[0].net);
         const holeLabel = ordinalHandicapHole(resolution.decidingIndex);
+        const actualHole = actualTiebreakHole(
+          resolution.winner,
+          resolution.decidingIndex
+        );
+        const actualHoleText = actualHole
+          ? ' (Hole ' + actualHole + ')'
+          : '';
         const priorCount = resolution.decidingIndex;
         const priorText = priorCount === 0 ? '' :
           (priorCount === 1 ? 'They remained tied on the 1st Handicap Hole.<br><br>' :
@@ -8902,6 +8940,9 @@ let scoreTimingDetail =
           priorText +
           escapeHtml(displayTeamName(resolution.winner.team || '')) +
           ' won on the <strong>' + escapeHtml(holeLabel) + '</strong>' +
+          (actualHoleText
+            ? ' <strong>' + escapeHtml(actualHoleText) + '</strong>'
+            : '') +
           escapeHtml(scoreText) + '.</div>';
       }
 
@@ -8999,11 +9040,17 @@ let scoreTimingDetail =
           resolution.decidingIndex !== null
         ) {
           if (place === 1) {
+            const actualHole = actualTiebreakHole(
+              winner,
+              resolution.decidingIndex
+            );
+
             annotations.set(winner, {
               marks: '*',
               note:
                 '* Won on ' +
-                ordinalHandicapHole(resolution.decidingIndex)
+                ordinalHandicapHole(resolution.decidingIndex) +
+                (actualHole ? ' (Hole ' + actualHole + ')' : '')
             });
           }
           else {
@@ -9270,7 +9317,7 @@ let scoreTimingDetail =
       rows
     ) {
 
-      /* SSHCP V2.2 — Once the tournament is complete, the normal leaderboard
+      /* SSHCP V2.4 — Once the tournament is complete, the normal leaderboard
          keeps the existing resolved podium ordering. Scramble Summary uses
          that same top-three logic, but does not resolve places 4 and below.
          A first-place tie still remains unrevealed until BREAK TIE is viewed. */
