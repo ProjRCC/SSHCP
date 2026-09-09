@@ -1,3 +1,4 @@
+<!-- SSHCP | BASE KEY: 5.7-A6G6A2 | BUILD KEY: 5.8-8SQ7MX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,12 +27,11 @@
           (role === 'QR' && qrTeam) ? qrTeam :
           (authorizedTeam || rememberedTeam || '');
 
-        /* V5.7: the same 25-character display rule is available before first
-           paint so pull-refresh never flashes a full name and then cuts it. */
+        /* V5.8: boot keeps the full trimmed name. The visible control owns
+           its line limit, target/min sizing and final | truncation after Oswald
+           measurement, so refresh and runtime follow the same rules. */
         window.__sshcpBootDisplayTeamName = function (name) {
-          var fullName = String(name || '').trim();
-          if (fullName.length <= 25) return fullName;
-          return fullName.slice(0, 25).replace(/\s+$/, '') + '|';
+          return String(name || '').trim();
         };
 
         window.__sshcpBootLocked =
@@ -130,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.7 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.8 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6514,7 +6514,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 
 /* =========================================================
-   SSHCP V5.7 — CONSOLIDATED RESPONSIVE CORRECTIONS
+   SSHCP V5.8 — CONSOLIDATED RESPONSIVE CORRECTIONS
    ========================================================= */
 
 /* SCORECARD gold tile: exact 1:1.5 height-to-width ratio. The height remains
@@ -6699,9 +6699,9 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   overflow:visible!important;
 }
 
-/* V5.7 LIVE leaderboard refresh bar: the current gold line is now tied to
-   the real 5-second idle refresh timer. Touch/pointer interaction restarts it.
-   Completion hides it; returning to live play restores it. */
+/* V5.8 LIVE leaderboard refresh bar: the current gold line is now tied to
+   the real 5-second idle refresh timer. Finger-down pauses it; release restarts
+   a fresh 5-second cycle. Completion hides it; returning to live play restores it. */
 #leaderboardView .leader-title-bar::after{
   content:"";
   position:absolute;
@@ -6776,7 +6776,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   white-space:nowrap!important;
 }
 
-/* V5.7 summary team fitting mirrors leaderboard TEAM logic:
+/* V5.8 summary team fitting mirrors leaderboard TEAM logic:
    target on one line -> two lines -> shrink only if the two-line block
    cannot stay within 80% of the actual row height. */
 .modal-overlay.tournament-summary .summary-team-text.two-line{
@@ -6848,7 +6848,95 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   font-weight:800!important;
 }
 
-</style>
+
+
+/* =========================================================
+   SSHCP V5.8 — REGRESSION-SAFE NAME / MARKER / REFRESH RULES
+   ========================================================= */
+
+/* Authorized-team highlight moves from the TEAM border to the PLACE cell. */
+#leaderboardView .leader-team-cell.authorized-team-cell{
+  box-shadow:none!important;
+  background:transparent!important;
+}
+#leaderboardView .leader-place-cell{
+  position:relative!important;
+  overflow:visible!important;
+}
+#leaderboardView .leader-place-cell.authorized-place-cell{
+  background:var(--gold)!important;
+  color:#000!important;
+  box-shadow:none!important;
+}
+#leaderboardView .leader-place-number{
+  position:relative!important;
+  display:inline-block!important;
+  line-height:1!important;
+}
+#leaderboardView .leader-place-marker{
+  position:static!important;
+  display:inline-block!important;
+  margin-left:1px!important;
+  transform:translateY(-.32em)!important;
+  color:#000!important;
+  font-size:.52em!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  pointer-events:none!important;
+}
+
+/* TEAM cells no longer reserve width for a marker; name fitting owns the area. */
+#leaderboardView .leader-team-anchor,
+.modal-overlay.tournament-summary .summary-team-anchor{
+  max-width:100%!important;
+}
+#leaderboardView .leader-team-marker,
+.modal-overlay.tournament-summary .summary-team-marker{
+  display:none!important;
+}
+
+/* Summary tiebreak markers move beside the PLACE number on its right. */
+.modal-overlay.tournament-summary .tournament-summary-place{
+  position:relative!important;
+}
+.modal-overlay.tournament-summary .summary-place-number{
+  position:relative!important;
+  display:inline-block!important;
+  line-height:1!important;
+}
+.modal-overlay.tournament-summary .summary-place-marker{
+  position:static!important;
+  display:inline-block!important;
+  margin-left:1px!important;
+  transform:translateY(-.32em)!important;
+  color:#000!important;
+  font-size:.52em!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  pointer-events:none!important;
+}
+
+/* One-line selectors/dropdowns: target -> shrink -> final | truncation only. */
+#homeView .home-scorecard-team,
+#scorecardView .score-team-select-button,
+.home-team-option,
+.score-team-option,
+.passkey-team-button,
+.passkey-team-option,
+.modal-overlay.authorization .auth-team-name{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+
+/* While a finger/pointer is held, freeze the current 5-second gold bar. */
+#leaderboardView.leader-auto-refresh-active.leader-auto-refresh-paused .leader-title-bar::after{
+  animation-play-state:paused!important;
+}
+
+  </style>
 </head>
 
 
@@ -6882,7 +6970,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.7</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.8</button>
 
       <div class="splash-image-wrap">
 
@@ -7478,7 +7566,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.7
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.8
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -7753,6 +7841,9 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
     let leaderboardRefreshTimerV57 =
       null;
+
+    let leaderboardRefreshPointerActiveV58 =
+      false;
 
 
     let saveInProgress =
@@ -8507,6 +8598,7 @@ let scoreTimingDetail =
         menu.classList.add('open');
         menu.setAttribute('aria-hidden','false');
         button.setAttribute('aria-expanded','true');
+        requestAnimationFrame(() => fitPasskeyTeamOptionsV58(menu));
       };
 
       if (button && menu) {
@@ -8519,8 +8611,10 @@ let scoreTimingDetail =
           const option = event.target.closest('.passkey-team-option');
           if (!option) return;
           button.textContent = option.dataset.label || 'MASTER';
+          button.dataset.fullTeamName = option.dataset.label || 'MASTER';
           els.modalInput.value = option.dataset.passkey || SSHCP_MASTER_TEST_KEY;
           closeTeamMenu();
+          requestAnimationFrame(() => fitPasskeyTeamButtonV58(button));
         });
       }
 
@@ -8528,6 +8622,9 @@ let scoreTimingDetail =
         { qrId:'MASTER', passkey:SSHCP_MASTER_TEST_KEY, role:'MASTER', assigned:true, team:'MASTER' }
       ];
       populatePasskeyTeamSelect(document.getElementById('passkeyTeamMenu'), directory);
+      requestAnimationFrame(() => {
+        fitPasskeyTeamButtonV58(button);
+      });
 
     }
     async function decodeQrImage(file){
@@ -8929,7 +9026,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.7 TEST LOG',
+        'SSHCP V5.8 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -9472,6 +9569,7 @@ let scoreTimingDetail =
       );
 
       if (view !== 'leaderboard') {
+        leaderboardRefreshPointerActiveV58 = false;
         stopLeaderboardRefreshCycleV57();
       }
 
@@ -9480,12 +9578,7 @@ let scoreTimingDetail =
 
 
     function displayTeamName(name) {
-      const fullName = String(name || '').trim();
-      /* V5.7 event rule: at most 25 source characters are displayed. If a
-         cutoff is required, trailing whitespace at the cut is removed before
-         the marker so the bar sits directly after the last visible letter. */
-      if (fullName.length <= 25) return fullName;
-      return fullName.slice(0, 25).replace(/\s+$/, '') + '|';
+      return String(name || '').trim();
     }
 
     function fitHomeScorecardTeamNameV55() {
@@ -9493,15 +9586,15 @@ let scoreTimingDetail =
       const teamLine = els.homeScorecardButton.querySelector('.home-scorecard-team');
       if (!teamLine || teamLine.classList.contains('select-team')) return;
 
-      fitTextToBoxV5(
+      fitSingleLineTeamTextV58(
         teamLine,
         teamLine,
+        teamLine.dataset.fullTeamName || teamLine.textContent,
         19.5,
         8,
         {
           horizontalPad: 6,
           verticalPad: 0,
-          wrap: false,
           lineHeight: 1,
           ignoreHeight: true
         }
@@ -9521,6 +9614,8 @@ let scoreTimingDetail =
         '</span>';
 
       if (displayTeam) {
+        const teamLine = els.homeScorecardButton.querySelector('.home-scorecard-team');
+        if (teamLine) teamLine.dataset.fullTeamName = secondLine;
         requestAnimationFrame(fitHomeScorecardTeamNameV55);
       }
     }
@@ -9563,6 +9658,7 @@ let scoreTimingDetail =
         button.type = 'button';
         button.className = 'home-team-option';
         button.textContent = displayTeamName(team.name);
+        button.dataset.fullTeamName = displayTeamName(team.name);
         button.addEventListener('click', async () => {
           closeHomeTeamDropup();
           if (!canNavigateToTeam(team)) { showNotAuthorized(); return; }
@@ -9588,6 +9684,7 @@ let scoreTimingDetail =
       els.homeTeamDropup.setAttribute('aria-hidden', 'false');
       els.homeTeamDropup.scrollTop = els.homeTeamDropup.scrollHeight;
       syncTeamMenuBackdrop();
+      requestAnimationFrame(fitHomeTeamOptionsV58);
     }
 
     async function homeScorecardAccess() {
@@ -9919,15 +10016,15 @@ let scoreTimingDetail =
       button.style.removeProperty('font-size');
       if (!selectedTeam) return;
 
-      fitTextToBoxV5(
+      fitSingleLineTeamTextV58(
         button,
         button,
+        button.dataset.fullTeamName || selectedTeam.name,
         22,
         8,
         {
           horizontalPad: 52,
           verticalPad: 6,
-          wrap: false,
           lineHeight: 1,
           ignoreHeight: true
         }
@@ -9938,6 +10035,11 @@ let scoreTimingDetail =
       syncTeamQrLockedUi();
       if (!els.scoreTeamSelectButton) return;
       els.scoreTeamSelectButton.textContent = selectedTeam ? displayTeamName(selectedTeam.name) : 'SELECT TEAM';
+      if (selectedTeam) {
+        els.scoreTeamSelectButton.dataset.fullTeamName = displayTeamName(selectedTeam.name);
+      } else {
+        delete els.scoreTeamSelectButton.dataset.fullTeamName;
+      }
       els.scoreTeamSelectButton.classList.toggle('has-team', !!selectedTeam);
 
       requestAnimationFrame(
@@ -9961,6 +10063,7 @@ let scoreTimingDetail =
         button.type = 'button';
         button.className = 'home-team-option score-team-option';
         button.textContent = displayTeamName(team.name);
+        button.dataset.fullTeamName = displayTeamName(team.name);
         button.setAttribute('role', 'option');
         button.addEventListener('click', async () => {
           closeScoreTeamDropdown();
@@ -9999,6 +10102,7 @@ let scoreTimingDetail =
       els.scoreTeamDropdown.setAttribute('aria-hidden', 'false');
       els.scoreTeamSelectButton.setAttribute('aria-expanded', 'true');
       syncTeamMenuBackdrop();
+      requestAnimationFrame(fitScoreTeamOptionsV58);
     }
 
     function toggleScoreTeamDropdown() {
@@ -10290,6 +10394,75 @@ let scoreTimingDetail =
       target.style.setProperty('text-align', 'center', 'important');
 
       return best;
+    }
+
+    function fitHomeTeamOptionsV58() {
+      if (!els.homeTeamDropup) return;
+      els.homeTeamDropup.querySelectorAll('.home-team-option').forEach(button => {
+        fitSingleLineTeamTextV58(
+          button,
+          button,
+          button.dataset.fullTeamName || button.textContent,
+          18,
+          8,
+          { horizontalPad: 24, verticalPad: 6, lineHeight: 1 }
+        );
+      });
+    }
+
+    function fitScoreTeamOptionsV58() {
+      if (!els.scoreTeamDropdown) return;
+      els.scoreTeamDropdown.querySelectorAll('.score-team-option').forEach(button => {
+        fitSingleLineTeamTextV58(
+          button,
+          button,
+          button.dataset.fullTeamName || button.textContent,
+          18,
+          8,
+          { horizontalPad: 24, verticalPad: 6, lineHeight: 1 }
+        );
+      });
+    }
+
+    function fitPasskeyTeamButtonV58(button) {
+      if (!button) return;
+      fitSingleLineTeamTextV58(
+        button,
+        button,
+        button.dataset.fullTeamName || button.textContent,
+        17,
+        8,
+        { horizontalPad: 64, verticalPad: 6, lineHeight: 1 }
+      );
+    }
+
+    function fitPasskeyTeamOptionsV58(menu) {
+      if (!menu) return;
+      menu.querySelectorAll('.passkey-team-option').forEach(button => {
+        button.dataset.fullTeamName = button.dataset.label || button.textContent;
+        fitSingleLineTeamTextV58(
+          button,
+          button,
+          button.dataset.fullTeamName,
+          17,
+          8,
+          { horizontalPad: 24, verticalPad: 6, lineHeight: 1 }
+        );
+      });
+    }
+
+    function fitAuthorizationTeamNameV58() {
+      if (!els.modalOverlay.classList.contains('authorization')) return;
+      const team = els.modalBody.querySelector('.auth-team-name');
+      if (!team) return;
+      fitSingleLineTeamTextV58(
+        team,
+        team,
+        selectedTeam ? selectedTeam.name : team.textContent,
+        30,
+        12,
+        { horizontalPad: 12, verticalPad: 2, lineHeight: 1.05 }
+      );
     }
 
 
@@ -11054,6 +11227,7 @@ let scoreTimingDetail =
       authorizeButton.disabled = true;
       els.modalActions.append(cancelButton, authorizeButton);
       els.modalOverlay.classList.add('open');
+      requestAnimationFrame(fitAuthorizationTeamNameV58);
 
       const check = document.getElementById('authConfirmCheck');
       if (check) {
@@ -11684,7 +11858,7 @@ let scoreTimingDetail =
        CLOUDFLARE: LEADERBOARD READ
        Google Apps Script is NOT used.
        Fresh read every time LIVE LEADERBOARD is opened + manual REFRESH.
-       V5.7 also runs a 5-second idle refresh cycle while the tournament is live.
+       V5.8 also runs a 5-second idle refresh cycle while the tournament is live.
        Any leaderboard interaction resets that cycle.
        ========================================================= */
 
@@ -11708,14 +11882,42 @@ let scoreTimingDetail =
       }
 
       if (els.leaderboardView) {
-        els.leaderboardView.classList.remove('leader-auto-refresh-active');
+        els.leaderboardView.classList.remove(
+          'leader-auto-refresh-active',
+          'leader-auto-refresh-paused'
+        );
       }
+    }
+
+    function pauseLeaderboardRefreshCycleV58() {
+      if (!leaderboardRefreshIsLiveV57() || leaderboardLoadInProgress) return;
+
+      leaderboardRefreshPointerActiveV58 = true;
+
+      if (leaderboardRefreshTimerV57) {
+        clearTimeout(leaderboardRefreshTimerV57);
+        leaderboardRefreshTimerV57 = null;
+      }
+
+      if (els.leaderboardView && els.leaderboardView.classList.contains('leader-auto-refresh-active')) {
+        els.leaderboardView.classList.add('leader-auto-refresh-paused');
+      }
+    }
+
+    function releaseLeaderboardRefreshCycleV58() {
+      if (!leaderboardRefreshPointerActiveV58) return;
+      leaderboardRefreshPointerActiveV58 = false;
+      restartLeaderboardRefreshCycleV57();
     }
 
     function restartLeaderboardRefreshCycleV57() {
       stopLeaderboardRefreshCycleV57();
 
-      if (!leaderboardRefreshIsLiveV57() || leaderboardLoadInProgress) {
+      if (
+        !leaderboardRefreshIsLiveV57() ||
+        leaderboardLoadInProgress ||
+        leaderboardRefreshPointerActiveV58
+      ) {
         return;
       }
 
@@ -11724,7 +11926,7 @@ let scoreTimingDetail =
         : null;
 
       if (els.leaderboardView) {
-        /* Force the same current gold bar to restart from zero. */
+        /* Force the existing gold bar to restart from zero. */
         if (titleBar) void titleBar.offsetWidth;
         els.leaderboardView.classList.add('leader-auto-refresh-active');
       }
@@ -12244,6 +12446,7 @@ let scoreTimingDetail =
         return;
       }
 
+      leaderboardRefreshPointerActiveV58 = false;
       stopLeaderboardRefreshCycleV57();
 
       /* Final-results mode: idle auto-refresh is off until play resumes. */
@@ -12548,7 +12751,7 @@ let scoreTimingDetail =
 
         if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 9, {horizontalPad:4,verticalPad:5});
         if (team && teamText) {
-          fitTwoLineTeamTextV57(
+          fitTwoLineTeamTextV58(
             team,
             teamAnchor,
             teamText,
@@ -12587,7 +12790,7 @@ let scoreTimingDetail =
         if (!teamText) return;
 
         const rowHeight = teamCell.clientHeight;
-        fitTwoLineTeamTextV57(
+        fitTwoLineTeamTextV58(
           teamCell,
           anchor,
           teamText,
@@ -12686,10 +12889,11 @@ let scoreTimingDetail =
 
         html +=
           '<div class="tournament-summary-row place-' + (index + 1) + '">' +
-          '<div class="tournament-summary-place">' + escapeHtml(String(index + 1)) + '</div>' +
+          '<div class="tournament-summary-place"><span class="summary-place-number">' + escapeHtml(String(index + 1)) + '</span>' +
+          (marks ? '<span class="summary-place-marker" aria-hidden="true">' + escapeHtml(marks) + '</span>' : '') +
+          '</div>' +
           '<div class="tournament-summary-team"><span class="summary-team-anchor">' +
           '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
-          (marks ? '<span class="summary-team-marker" aria-hidden="true">' + escapeHtml(marks) + '</span>' : '') +
           '</span></div>' +
           '<div class="tournament-summary-strokes top-three-strokes">' + escapeHtml(strokesText) + '</div>' +
           '<div class="tournament-summary-net ' + scoreClass(row.net) + '">' +
@@ -12857,7 +13061,11 @@ let scoreTimingDetail =
 
           const placeCell = document.createElement('div');
           placeCell.className = 'leader-place-cell';
-          placeCell.textContent = String(place);
+
+          const placeNumber = document.createElement('span');
+          placeNumber.className = 'leader-place-number';
+          placeNumber.textContent = String(place);
+          placeCell.appendChild(placeNumber);
 
           const teamCell =
             document.createElement(
@@ -12872,8 +13080,8 @@ let scoreTimingDetail =
             authorizedTeamName &&
             line.dataset.team === authorizedTeamName
           ) {
-            teamCell.classList.add(
-              'authorized-team-cell'
+            placeCell.classList.add(
+              'authorized-place-cell'
             );
           }
 
@@ -12889,6 +13097,7 @@ let scoreTimingDetail =
 
 
           teamName.textContent = displayTeamName(row.team || '');
+          teamName.dataset.v58Name = displayTeamName(row.team || '');
 
           const teamAnchor = document.createElement('span');
           teamAnchor.className = 'leader-team-anchor';
@@ -12899,10 +13108,10 @@ let scoreTimingDetail =
             const annotation = podiumForMarkers.annotations.get(row);
             if (annotation && annotation.marks) {
               const marker = document.createElement('span');
-              marker.className = 'leader-team-marker';
+              marker.className = 'leader-place-marker';
               marker.setAttribute('aria-hidden', 'true');
               marker.textContent = annotation.marks;
-              teamAnchor.appendChild(marker);
+              placeCell.appendChild(marker);
             }
           }
 
@@ -13166,7 +13375,19 @@ let scoreTimingDetail =
       requestAnimationFrame(() => {
         if (!els.leaderContent) return;
         const maxScroll = Math.max(0, els.leaderContent.scrollHeight - els.leaderContent.clientHeight);
-        els.leaderContent.scrollTop = Math.min(Math.max(0, priorLeaderboardScroll), maxScroll);
+        const rowHeight = parseFloat(
+          getComputedStyle(els.leaderContent).getPropertyValue('--leader-row-height')
+        ) || 0;
+        let restoredScroll = Math.max(0, priorLeaderboardScroll);
+
+        /* Tiny persisted offsets at the top can shave a few pixels off row 1.
+           Treat anything within the top quarter-row as true top=0 while still
+           preserving intentional deeper/partial-row scrolling. */
+        if (rowHeight > 0 && restoredScroll < rowHeight * 0.25) {
+          restoredScroll = 0;
+        }
+
+        els.leaderContent.scrollTop = Math.min(restoredScroll, maxScroll);
         saveLeaderboardSnapshotV53();
       });
       if (allowAutoScroll) {
@@ -13212,18 +13433,141 @@ let scoreTimingDetail =
       return [value.slice(0, cut), value.slice(cut)];
     }
 
-    function fitTwoLineTeamTextV57(container, anchor, textEl, rowHeight, targetSize, minSize, horizontalPad) {
+    function splitLeaderboardTeamTwoLinesV58(text) {
+      return splitLeaderboardTeamTwoLinesV55(text);
+    }
+
+    function measureTeamLineWidthV58(target, text, fontSize) {
+      if (!target) return Infinity;
+
+      if (!v5MeasureProbe) {
+        v5MeasureProbe = document.createElement('span');
+        v5MeasureProbe.setAttribute('aria-hidden', 'true');
+        Object.assign(v5MeasureProbe.style, {
+          position: 'fixed',
+          left: '-10000px',
+          top: '-10000px',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          zIndex: '-1'
+        });
+        document.body.appendChild(v5MeasureProbe);
+      }
+
+      const computed = getComputedStyle(target);
+      v5MeasureProbe.textContent = String(text || '');
+      v5MeasureProbe.style.fontFamily = computed.fontFamily;
+      v5MeasureProbe.style.fontWeight = computed.fontWeight;
+      v5MeasureProbe.style.fontStyle = computed.fontStyle;
+      v5MeasureProbe.style.letterSpacing = computed.letterSpacing;
+      v5MeasureProbe.style.textTransform = computed.textTransform;
+      v5MeasureProbe.style.whiteSpace = 'nowrap';
+      v5MeasureProbe.style.width = 'auto';
+      v5MeasureProbe.style.lineHeight = '1';
+      v5MeasureProbe.style.fontSize = fontSize + 'px';
+      return v5MeasureProbe.getBoundingClientRect().width;
+    }
+
+    function fitSingleLineTeamTextV58(container, textEl, fullName, targetSize, minSize, options = {}) {
+      if (!container || !textEl) return minSize;
+
+      const original = String(fullName || '').trim();
+      textEl.dataset.fullTeamName = original;
+      textEl.textContent = original;
+
+      const horizontalPad = Number(options.horizontalPad || 0);
+      const verticalPad = Number(options.verticalPad || 0);
+      const availableWidth = Math.max(1, container.clientWidth - horizontalPad);
+      const availableHeight = Math.max(1, container.clientHeight - verticalPad);
+      const lineHeight = Number(options.lineHeight || 1);
+      const minimum = Math.max(5, Number(minSize) || 8);
+      const target = Math.max(minimum, Number(targetSize) || minimum);
+
+      let size = fitTextToBoxV5(
+        container,
+        textEl,
+        target,
+        minimum,
+        {
+          horizontalPad,
+          verticalPad,
+          wrap: false,
+          lineHeight,
+          ignoreHeight: !!options.ignoreHeight
+        }
+      );
+
+      const fullWidth = measureTeamLineWidthV58(textEl, original, size);
+      const fullHeight = size * lineHeight;
+      if (
+        fullWidth <= availableWidth + 0.75 &&
+        (options.ignoreHeight || fullHeight <= availableHeight + 0.75)
+      ) {
+        return { size, truncated: false };
+      }
+
+      /* Last fallback only: at the minimum size, keep the longest prefix that
+         fits and place | immediately after the last visible non-space char. */
+      size = minimum;
+      textEl.style.setProperty('font-size', size + 'px', 'important');
+      textEl.style.setProperty('line-height', String(lineHeight), 'important');
+      textEl.style.setProperty('white-space', 'nowrap', 'important');
+      textEl.style.setProperty('overflow', 'hidden', 'important');
+
+      let chosen = '|';
+      for (let count = original.length - 1; count >= 1; count--) {
+        const prefix = original.slice(0, count).replace(/\s+$/, '');
+        if (!prefix) continue;
+        const candidate = prefix + '|';
+        const width = measureTeamLineWidthV58(textEl, candidate, size);
+        if (width <= availableWidth + 0.75) {
+          chosen = candidate;
+          break;
+        }
+      }
+
+      textEl.textContent = chosen;
+      return { size, truncated: chosen !== original };
+    }
+
+    function renderTwoLineTeamTextV58(textEl, line1, line2) {
+      textEl.replaceChildren(
+        document.createTextNode(line1),
+        document.createElement('br'),
+        document.createTextNode(line2)
+      );
+      textEl.classList.add('two-line');
+    }
+
+    function twoLineTeamFitsV58(textEl, value, fontSize, availableWidth, availableHeight) {
+      const [line1, line2] = splitLeaderboardTeamTwoLinesV58(value);
+      const width1 = measureTeamLineWidthV58(textEl, line1, fontSize);
+      const width2 = measureTeamLineWidthV58(textEl, line2, fontSize);
+      const height = fontSize * 1.02 * 2;
+      return {
+        fits: Math.max(width1, width2) <= availableWidth + 0.75 && height <= availableHeight + 0.75,
+        line1,
+        line2
+      };
+    }
+
+    function fitTwoLineTeamTextV58(container, anchor, textEl, rowHeight, targetSize, minSize, horizontalPad) {
       if (!container || !textEl) return;
 
-      const original = String(textEl.dataset.v57Name || textEl.textContent || '').trim();
-      textEl.dataset.v57Name = original;
+      const original = String(
+        textEl.dataset.v58Name ||
+        textEl.dataset.fullTeamName ||
+        textEl.textContent || ''
+      ).trim();
+      textEl.dataset.v58Name = original;
+      textEl.dataset.fullTeamName = original;
       textEl.classList.remove('two-line');
       textEl.textContent = original;
       textEl.style.removeProperty('font-size');
 
       if (anchor) {
         anchor.style.setProperty('width', 'auto', 'important');
-        anchor.style.setProperty('max-width', 'calc(100% - 14px)', 'important');
+        anchor.style.setProperty('max-width', '100%', 'important');
       }
 
       const availableWidth = Math.max(
@@ -13231,55 +13575,90 @@ let scoreTimingDetail =
         container.clientWidth - Math.max(0, Number(horizontalPad) || 0)
       );
       const availableTwoLineHeight = Math.max(1, rowHeight * 0.80);
+      const minimum = Math.max(5, Number(minSize) || 8);
+      const target = Math.max(minimum, Number(targetSize) || minimum);
 
-      /* Target size is always attempted on one line first. */
-      textEl.style.setProperty('font-size', targetSize + 'px', 'important');
+      /* Target size, one line first. */
+      textEl.style.setProperty('font-size', target + 'px', 'important');
       textEl.style.setProperty('line-height', '1.04', 'important');
       textEl.style.setProperty('white-space', 'nowrap', 'important');
       textEl.style.setProperty('overflow', 'visible', 'important');
 
       if (
-        textEl.scrollWidth <= availableWidth + 0.75 &&
-        textEl.scrollHeight <= availableTwoLineHeight + 0.75
+        measureTeamLineWidthV58(textEl, original, target) <= availableWidth + 0.75 &&
+        target * 1.04 <= availableTwoLineHeight + 0.75
       ) {
-        return targetSize;
+        return { size: target, truncated: false, lines: 1 };
       }
 
-      /* First fallback is two lines at the SAME target size. Only when the
-         two-line block exceeds width or 80% of row height do we shrink. */
-      const [line1, line2] = splitLeaderboardTeamTwoLinesV55(original);
-      textEl.replaceChildren(
-        document.createTextNode(line1),
-        document.createElement('br'),
-        document.createTextNode(line2)
+      /* First fallback: two lines at the SAME target size. */
+      let two = twoLineTeamFitsV58(
+        textEl,
+        original,
+        target,
+        availableWidth,
+        availableTwoLineHeight
       );
-      textEl.classList.add('two-line');
-
-      let size = targetSize;
-      textEl.style.setProperty('font-size', size + 'px', 'important');
+      renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
+      textEl.style.setProperty('font-size', target + 'px', 'important');
       textEl.style.setProperty('line-height', '1.02', 'important');
       textEl.style.setProperty('white-space', 'normal', 'important');
       textEl.style.setProperty('overflow', 'visible', 'important');
 
-      while (
-        size > minSize &&
-        (
-          textEl.scrollWidth > availableWidth + 0.75 ||
-          textEl.scrollHeight > availableTwoLineHeight + 0.75
-        )
-      ) {
-        size -= 0.5;
-        textEl.style.setProperty('font-size', size + 'px', 'important');
+      if (two.fits) {
+        return { size: target, truncated: false, lines: 2 };
       }
 
-      return size;
+      /* Only now shrink the two-line block. */
+      let size = target;
+      while (size > minimum) {
+        size = Math.max(minimum, size - 0.5);
+        two = twoLineTeamFitsV58(
+          textEl,
+          original,
+          size,
+          availableWidth,
+          availableTwoLineHeight
+        );
+        renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
+        textEl.style.setProperty('font-size', size + 'px', 'important');
+        if (two.fits) {
+          return { size, truncated: false, lines: 2 };
+        }
+      }
+
+      /* Final fallback: only after two lines + minimum still cannot fit,
+         truncate to the longest fitting prefix and add |. */
+      for (let count = original.length - 1; count >= 1; count--) {
+        const prefix = original.slice(0, count).replace(/\s+$/, '');
+        if (!prefix) continue;
+        const candidate = prefix + '|';
+        const candidateFit = twoLineTeamFitsV58(
+          textEl,
+          candidate,
+          minimum,
+          availableWidth,
+          availableTwoLineHeight
+        );
+        if (!candidateFit.fits) continue;
+
+        renderTwoLineTeamTextV58(textEl, candidateFit.line1, candidateFit.line2);
+        textEl.style.setProperty('font-size', minimum + 'px', 'important');
+        textEl.style.setProperty('line-height', '1.02', 'important');
+        return { size: minimum, truncated: true, lines: 2 };
+      }
+
+      textEl.textContent = '|';
+      textEl.classList.remove('two-line');
+      textEl.style.setProperty('font-size', minimum + 'px', 'important');
+      return { size: minimum, truncated: true, lines: 1 };
     }
 
     function fitLeaderboardTeamV55(teamCell, teamAnchor, team, rowHeight) {
       if (!teamCell || !team) return;
 
       const targetSize = Math.min(36, rowHeight * 0.50);
-      fitTwoLineTeamTextV57(
+      fitTwoLineTeamTextV58(
         teamCell,
         teamAnchor,
         team,
@@ -14100,18 +14479,40 @@ let scoreTimingDetail =
       );
 
 
-    /* V5.7: any leaderboard touch/pointer interaction restarts the 5-second
-       idle countdown. It does not itself refresh. */
-    els.leaderboardView
-      .addEventListener(
-        'pointerdown',
-        () => {
-          if (leaderboardRefreshIsLiveV57()) {
-            restartLeaderboardRefreshCycleV57();
-          }
+    /* V5.8: while a finger is physically down, freeze the 5-second refresh
+       bar/timer even during native scrolling. Touch owns touch interaction so
+       a browser pointercancel during scroll cannot accidentally restart it. */
+    els.leaderboardView.addEventListener(
+      'touchstart',
+      () => pauseLeaderboardRefreshCycleV58(),
+      { passive: true, capture: true }
+    );
+
+    ['touchend', 'touchcancel'].forEach(type => {
+      els.leaderboardView.addEventListener(
+        type,
+        () => releaseLeaderboardRefreshCycleV58(),
+        { passive: true, capture: true }
+      );
+    });
+
+    els.leaderboardView.addEventListener(
+      'pointerdown',
+      event => {
+        if (event.pointerType !== 'touch') pauseLeaderboardRefreshCycleV58();
+      },
+      { passive: true, capture: true }
+    );
+
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => {
+      els.leaderboardView.addEventListener(
+        type,
+        event => {
+          if (event.pointerType !== 'touch') releaseLeaderboardRefreshCycleV58();
         },
         { passive: true, capture: true }
       );
+    });
 
 
 
@@ -14493,7 +14894,7 @@ let scoreTimingDetail =
       sizeLeaderboardRows();
     }
 
-    /* V5.7 Oswald determinism: initial fallback-font measurements are allowed
+    /* V5.8 Oswald determinism: initial fallback-font measurements are allowed
        for instant paint, but every width-sensitive element is remeasured once
        the actual webfont is ready. This keeps S25/iPad fitting consistent. */
     if (document.fonts && document.fonts.ready) {
@@ -14501,9 +14902,14 @@ let scoreTimingDetail =
         requestAnimationFrame(() => {
           fitHomeScorecardTeamNameV55();
           fitScoreTeamSelectName();
+          fitHomeTeamOptionsV58();
+          fitScoreTeamOptionsV58();
           if (currentView === 'scorecard') sizeScorecardV5();
           if (currentView === 'leaderboard') sizeLeaderboardRows();
           if (currentView === 'testlog') fitTestPageButtonText();
+          if (els.modalOverlay.classList.contains('authorization')) {
+            fitAuthorizationTeamNameV58();
+          }
           if (els.modalOverlay.classList.contains('tournament-summary')) {
             fitTournamentSummaryRemaining();
           }
