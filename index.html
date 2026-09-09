@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.5-N3A6IM | BUILD KEY: 16.6-H4KD4J -->
+<!-- SSHCP | BASE KEY: 16.6-H4KD4J | BUILD KEY: 16.7-HXV8FX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6760,8 +6760,8 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 }
 
 /* V5.8 LIVE leaderboard refresh bar: the current gold line is now tied to
-   the real 5-second idle refresh timer. Finger-down pauses it; release restarts
-   a fresh 5-second cycle. Completion hides it; returning to live play restores it. */
+   the real 10-second idle refresh timer. Finger-down pauses it; release restarts
+   a fresh 10-second cycle. Completion hides it; returning to live play restores it. */
 #leaderboardView .leader-title-bar::after{
   content:"";
   position:absolute;
@@ -6776,7 +6776,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   animation:none;
 }
 #leaderboardView.leader-auto-refresh-active .leader-title-bar::after{
-  animation:sshcpLeaderLiveProgressV57 5s linear forwards;
+  animation:sshcpLeaderLiveProgressV57 10s linear forwards;
 }
 @keyframes sshcpLeaderLiveProgressV57{
   from{width:0;}
@@ -8241,9 +8241,16 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 /* Danger actions intentionally remain independent of the accent theme. */
 .leader-final-action.break-tie,
-.modal-btn.reset-danger,
 #testLogView .test-remove-auth {
   color:#fff!important;
+}
+
+/* DELETE ALL confirmation is a destructive OUTLINED action, not a filled
+   danger surface. Keep the red border and make YES readable in red. */
+.modal-btn.reset-danger{
+  border-color:var(--red)!important;
+  background:#fafafa!important;
+  color:var(--red)!important;
 }
 
 
@@ -8331,6 +8338,16 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   min-height:0!important;
   max-height:none!important;
 }
+
+
+/* =========================================================
+   SSHCP V16.7 — 9-TEAM LEADERBOARD ORIENTATION + 10s LIVE REFRESH
+   - LIVE LEADERBOARD entry: fresh read + 1.5s authorized-team auto-position.
+   - Manual/background refreshes preserve the current scroll position.
+   - Live refresh/progress cadence: 10 seconds.
+   - DELETE ALL YES restored as readable red-outline danger action.
+   ========================================================= */
+
 </style>
 </head>
 
@@ -8435,7 +8452,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.6</span>
+          <span class="home-version-info">SSHCP V16.7</span>
         </button>
 
       </div>
@@ -10387,7 +10404,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.6 TEST LOG',
+        'SSHCP V16.7 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11167,11 +11184,19 @@ let scoreTimingDetail =
       );
 
 
-      /* V16.5 — LIVE LEADERBOARD already performs a fresh read on entry.
-         The edge case was tapping it while ENTER SCORES was still in flight:
-         that read could beat the verified write and return THRU 17, leaving
-         the normal 5-second cycle to discover completion later. Queue the
-         fresh read for the instant the score-save chain settles instead. */
+      /* V16.7 — entering LIVE LEADERBOARD is an explicit orientation event.
+         Always begin at the top, perform an immediate fresh read, then let the
+         established 1.5-second authorized-team positioning bring a team below
+         the visible eight rows into view. Manual REFRESH and the background
+         cycle intentionally preserve the golfer's current scroll position. */
+      cancelLeaderboardAutoScroll();
+      if (els.leaderContent) {
+        els.leaderContent.scrollTop = 0;
+      }
+
+      /* If ENTER SCORES is still being written/verified, do not race that
+         write. Stay at the top and queue the same fresh-read + auto-position
+         sequence for the instant the final score-save chain settles. */
       if (saveInProgress || saveQueued) {
         leaderboardRefreshAfterScoreSave = true;
         startLoadingLine();
@@ -11184,6 +11209,7 @@ let scoreTimingDetail =
       ) {
 
         await loadLeaderboard(
+          true,
           true
         );
 
@@ -13324,7 +13350,7 @@ let scoreTimingDetail =
 
         /* If the player moved to LIVE LEADERBOARD while this score was being
            verified, refresh immediately after the final queued save attempt.
-           This is event-driven from score verification, not the 5-second idle
+           This is event-driven from score verification, not the 10-second idle
            leaderboard timer, so the completed state appears right away. */
         if (leaderboardRefreshAfterScoreSave && !queuedAnotherSave) {
           const shouldRefreshNow = currentView === 'leaderboard';
@@ -13332,7 +13358,7 @@ let scoreTimingDetail =
 
           if (shouldRefreshNow) {
             setTimeout(
-              () => loadLeaderboard(false),
+              () => loadLeaderboard(false, true),
               0
             );
           } else {
@@ -13349,7 +13375,7 @@ let scoreTimingDetail =
        CLOUDFLARE: LEADERBOARD READ
        Google Apps Script is NOT used.
        Fresh read every time LIVE LEADERBOARD is opened + manual REFRESH.
-       V5.8 also runs a 5-second idle refresh cycle while the tournament is live.
+       V5.8 also runs a 10-second idle refresh cycle while the tournament is live.
        Any leaderboard interaction resets that cycle.
        ========================================================= */
 
@@ -13434,13 +13460,14 @@ let scoreTimingDetail =
           els.leaderboardView.classList.remove('leader-auto-refresh-active');
         }
 
-        await loadLeaderboard(false);
-      }, 5000);
+        await loadLeaderboard(false, false);
+      }, 10000);
     }
 
 
     async function loadLeaderboard(
-      showErrorIfEmpty
+      showErrorIfEmpty,
+      autoPositionAuthorized = false
     ) {
 
       if (
@@ -13576,7 +13603,7 @@ let scoreTimingDetail =
 
         renderLeaderboard(
           rows,
-          !wasAlreadyLoaded
+          autoPositionAuthorized
         );
         updateTournamentFinishState(
           rows
@@ -13671,7 +13698,8 @@ let scoreTimingDetail =
             async () => {
               closeModal();
               await loadLeaderboard(
-                true
+                true,
+                autoPositionAuthorized
               );
             }
           );
@@ -16111,6 +16139,7 @@ let scoreTimingDetail =
         () => {
 
           loadLeaderboard(
+            false,
             false
           );
 
@@ -16118,7 +16147,7 @@ let scoreTimingDetail =
       );
 
 
-    /* V5.8: while a finger is physically down, freeze the 5-second refresh
+    /* V5.8: while a finger is physically down, freeze the 10-second refresh
        bar/timer even during native scrolling. Touch owns touch interaction so
        a browser pointercancel during scroll cannot accidentally restart it. */
     els.leaderboardView.addEventListener(
