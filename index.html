@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 5.8-8SQ7MX | BUILD KEY: 5.9O-Q4N8Z2 -->
+<!-- SSHCP | BASE KEY: 5.9O-Q4N8Z2 | BUILD KEY: 5.10-KCCY4Z -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.9 OFFICIAL -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.10 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6938,7 +6938,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 
 /* =========================================================
-   SSHCP V5.9 OFFICIAL — READABILITY / AUTHORIZED SCORECARD / HOME FOOTER
+   SSHCP V5.10 — VIEWPORT / SELECTOR / PLACE-MARKER SAFEGUARDS
    ========================================================= */
 
 /* MASTER scorecard selector keeps a protected arrow lane. All non-MASTER
@@ -6946,8 +6946,8 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 body.master-qr #scorecardView .score-team-select-button,
 body.master-qr #scorecardView .score-team-select-button.has-team,
 body.master-qr #scorecardView .score-team-select-button:focus{
-  padding-left:42px!important;
-  padding-right:42px!important;
+  padding-left:52px!important;
+  padding-right:52px!important;
   cursor:pointer!important;
 }
 body:not(.master-qr) #scorecardView .score-team-select-button,
@@ -6967,11 +6967,14 @@ body:not(.master-qr) #scorecardView .score-team-dropdown{
 /* ENTER PASSKEY remains a genuine one-line selector, so preserve a no-text
    lane around its arrow. */
 .passkey-team-button{
-  padding-left:48px!important;
-  padding-right:48px!important;
+  padding-left:56px!important;
+  padding-right:56px!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:hidden!important;
 }
 
-/* Keep the successful V5.9 STATUS refinement. */
+/* Keep the successful V5.9 STATUS refinement unchanged. */
 #leaderboardView .leader-through-score{
   flex-basis:31.5%!important;
   height:31.5%!important;
@@ -7021,6 +7024,75 @@ body:not(.master-qr) #scorecardView .score-team-dropdown{
   font-weight:800!important;
   line-height:1!important;
   letter-spacing:.1px!important;
+  white-space:nowrap!important;
+  pointer-events:none!important;
+}
+
+
+/* V5.10 hard viewport invariant: no scorecard text may widen the page. */
+html,
+body,
+#scorecardView,
+#scorecardView .scorecard-screen,
+#scorecardView .score-fixed-top,
+#scorecardView .score-nav,
+#scorecardView .team-select-wrap,
+#scorecardView .score-team-select-wrap,
+#scorecardView .score-table-head,
+#scorecardView .score-scroll,
+#scorecardView .score-fixed-bottom{
+  min-width:0!important;
+  max-width:100%!important;
+}
+html,body{
+  width:100%!important;
+  max-width:100vw!important;
+  overflow-x:hidden!important;
+}
+#scorecardView,
+#scorecardView .scorecard-screen{
+  width:100%!important;
+  max-width:min(760px,100vw)!important;
+  overflow-x:hidden!important;
+}
+#scorecardView .score-team-select-button{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+}
+
+/* Dropdowns reserve the arrow lane AND the same lane on the opposite side,
+   so the visible team name remains centered in the full control. */
+body.master-qr #scorecardView .score-team-select-button,
+body.master-qr #scorecardView .score-team-select-button.has-team,
+body.master-qr #scorecardView .score-team-select-button:focus{
+  padding-left:52px!important;
+  padding-right:52px!important;
+}
+.passkey-team-button{
+  padding-left:56px!important;
+  padding-right:56px!important;
+}
+
+/* Tiebreak markers are annotations attached to the rank. They never take
+   part in centering or font-fit calculations for the PLACE number. */
+#leaderboardView .leader-place-number,
+.modal-overlay.tournament-summary .summary-place-number{
+  position:relative!important;
+  display:inline-block!important;
+  line-height:1!important;
+}
+#leaderboardView .leader-place-marker,
+.modal-overlay.tournament-summary .summary-place-marker{
+  position:absolute!important;
+  left:calc(100% + 1px)!important;
+  top:0!important;
+  margin:0!important;
+  transform:translateY(-.18em)!important;
+  font-size:.52em!important;
+  font-weight:800!important;
+  line-height:1!important;
   white-space:nowrap!important;
   pointer-events:none!important;
 }
@@ -7129,7 +7201,7 @@ body:not(.master-qr) #scorecardView .score-team-dropdown{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V5.9 OFFICIAL</span>
+          <span class="home-version-info">SSHCP V5.10</span>
         </button>
 
       </div>
@@ -7660,7 +7732,7 @@ body:not(.master-qr) #scorecardView .score-team-dropdown{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.9 OFFICIAL
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.10
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -9124,7 +9196,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.9 OFFICIAL TEST LOG',
+        'SSHCP V5.10 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -10121,7 +10193,7 @@ let scoreTimingDetail =
         22,
         8,
         {
-          horizontalPad: isMasterQr() ? 84 : 36,
+          horizontalPad: isMasterQr() ? 104 : 36,
           verticalPad: 6,
           lineHeight: 1,
           ignoreHeight: true
@@ -10534,7 +10606,7 @@ let scoreTimingDetail =
         button.dataset.fullTeamName || button.textContent,
         17,
         8,
-        { horizontalPad: 64, verticalPad: 6, lineHeight: 1 }
+        { horizontalPad: 112, verticalPad: 6, lineHeight: 1 }
       );
     }
 
@@ -12991,9 +13063,9 @@ let scoreTimingDetail =
 
         html +=
           '<div class="tournament-summary-row place-' + (index + 1) + '">' +
-          '<div class="tournament-summary-place"><span class="summary-place-number">' + escapeHtml(String(index + 1)) + '</span>' +
+          '<div class="tournament-summary-place"><span class="summary-place-number">' + escapeHtml(String(index + 1)) +
           (marks ? '<span class="summary-place-marker" aria-hidden="true">' + escapeHtml(marks) + '</span>' : '') +
-          '</div>' +
+          '</span></div>' +
           '<div class="tournament-summary-team"><span class="summary-team-anchor">' +
           '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
           '</span></div>' +
@@ -13213,7 +13285,7 @@ let scoreTimingDetail =
               marker.className = 'leader-place-marker';
               marker.setAttribute('aria-hidden', 'true');
               marker.textContent = annotation.marks;
-              placeCell.appendChild(marker);
+              placeNumber.appendChild(marker);
             }
           }
 
@@ -13809,7 +13881,8 @@ let scoreTimingDetail =
         /* Every row-driven label starts from its approved row-height target.
            Minimums are only the final safeguard on extreme compression. */
         if (place) {
-          fitTextToBoxV5(place, place, rowHeight * 0.34, 8, {
+          const placeNumber = place.querySelector('.leader-place-number');
+          fitTextToBoxV5(place, placeNumber || place, rowHeight * 0.34, 8, {
             horizontalPad: 6,
             verticalPad: 5
           });
