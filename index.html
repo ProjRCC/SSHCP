@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 15.13d-DH9SVQ | BUILD KEY: 15.14-8V7W9L -->
+<!-- SSHCP | BASE KEY: 15.14-8V7W9L | BUILD KEY: 15.15-EDULDC -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7641,6 +7641,66 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   box-sizing:border-box!important;
   pointer-events:auto!important;
 }
+
+/* =========================================================
+   SSHCP V15.15 — TIE BREAK RESULT / RESOLVED PLACE DELTAS
+   V15.14 geometry is otherwise preserved.
+   ========================================================= */
+
+/* Tie Break Result popup uses a fixed 70% viewport-height bounding box. */
+.modal-overlay.tournament-result .modal-box{
+  height:70dvh!important;
+  max-height:calc(100dvh - 36px)!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+  overflow:hidden!important;
+}
+
+/* Winner stays at its existing size. The body below it owns the middle zone. */
+.modal-overlay.tournament-result .modal-text{
+  min-height:0!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  overflow:hidden!important;
+}
+
+.modal-overlay.tournament-result .tiebreak-winner{
+  align-self:start!important;
+}
+
+/* Explanation is vertically centered between winner and buttons. */
+.modal-overlay.tournament-result .tiebreak-explanation{
+  min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  text-align:center!important;
+}
+
+/* Only explanatory text gets the ~25% larger target.
+   JS shrinks this inner text only if a longer result cannot fit. */
+.modal-overlay.tournament-result .tiebreak-explanation-inner{
+  width:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  margin:0!important;
+  font-size:clamp(20px,5.375vw,27.5px)!important;
+  line-height:1.22!important;
+  text-align:center!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+}
+
+/* Keep the popup footer anchored to the bottom of the 70% box. */
+.modal-overlay.tournament-result .modal-actions{
+  align-self:end!important;
+}
+
 </style>
 </head>
 
@@ -7745,7 +7805,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V15.14</span>
+          <span class="home-version-info">SSHCP V15.15</span>
         </button>
 
       </div>
@@ -9740,7 +9800,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V15.14 TEST LOG',
+        'SSHCP V15.15 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13220,8 +13280,8 @@ let scoreTimingDetail =
       markTournamentTieBreakViewed();
       setLeaderboardFinalAction('tournament-summary');
 
-      /* Re-render immediately so the resolved winner moves to #1 and
-         receives the single asterisk on the normal leaderboard. */
+      /* Re-render immediately so the revealed tiebreak result is reflected
+         in FINAL RESULTS behind the result popup. */
       renderLeaderboard(lastLeaderboardRows, false);
 
       closeModal();
@@ -13233,7 +13293,7 @@ let scoreTimingDetail =
       if (!resolution.winner || resolution.decidingIndex === null) {
         els.modalBody.innerHTML =
           '<div class="tiebreak-winner">TIE REMAINS</div>' +
-          '<div class="tiebreak-explanation">All configured Handicap Holes were used and the tie still remains.</div>';
+          '<div class="tiebreak-explanation"><div class="tiebreak-explanation-inner">All configured Handicap Holes were used and the tie still remains.</div></div>';
       } else {
         const tiedNet = formatGolfScore(resolution.tied[0].net);
         const holeLabel = ordinalHandicapHole(resolution.decidingIndex);
@@ -13262,14 +13322,14 @@ let scoreTimingDetail =
           '<div class="tiebreak-winner">' +
           escapeHtml(displayTeamName(resolution.winner.team || '').toUpperCase()) +
           ' WINS</div>' +
-          '<div class="tiebreak-explanation">' +
+          '<div class="tiebreak-explanation"><div class="tiebreak-explanation-inner">' +
           joinTeamNamesHtml(resolution.tied) +
           ' finished tied at ' + escapeHtml(tiedNet) + '.<br><br>' +
           priorText +
           '<strong>' + escapeHtml(displayTeamName(resolution.winner.team || '')) + '</strong>' +
           ' won on the ' + escapeHtml(holeLabel) +
           (actualHoleText ? ' ' + actualHoleText : '') +
-          escapeHtml(scoreText) + '.</div>';
+          escapeHtml(scoreText) + '.</div></div>';
       }
 
       const back = makeModalButton('BACK', '', closeModal);
@@ -13286,8 +13346,57 @@ let scoreTimingDetail =
           horizontalPad: 12,
           verticalPad: 6
         });
+        requestAnimationFrame(fitTieBreakExplanationV1515);
       });
     }
+
+    function fitTieBreakExplanationV1515() {
+      if (!els.modalOverlay.classList.contains('tournament-result')) return;
+
+      const outer = els.modalBody
+        ? els.modalBody.querySelector('.tiebreak-explanation')
+        : null;
+      const inner = outer
+        ? outer.querySelector('.tiebreak-explanation-inner')
+        : null;
+
+      if (!outer || !inner) return;
+
+      inner.style.removeProperty('font-size');
+      inner.style.setProperty('line-height', '1.22', 'important');
+      inner.style.setProperty('white-space', 'normal', 'important');
+      inner.style.setProperty('overflow', 'hidden', 'important');
+
+      const targetPx = parseFloat(getComputedStyle(inner).fontSize) || 22;
+      const minPx = 14;
+
+      const fitsAt = size => {
+        inner.style.setProperty('font-size', size + 'px', 'important');
+        return (
+          inner.scrollWidth <= outer.clientWidth + 0.75 &&
+          inner.scrollHeight <= outer.clientHeight + 0.75
+        );
+      };
+
+      if (fitsAt(targetPx)) return;
+
+      let low = minPx;
+      let high = targetPx;
+      let best = minPx;
+
+      for (let i = 0; i < 12; i++) {
+        const mid = (low + high) / 2;
+        if (fitsAt(mid)) {
+          best = mid;
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+
+      fitsAt(best);
+    }
+
 
     function getSummaryHandicap(row) {
       const match = teams.find(team => Number(team.slot) === Number(row.slot));
@@ -13383,7 +13492,7 @@ let scoreTimingDetail =
               '• ' +
               place +
               ordinalSuffix(place) +
-              ' Won on ' +
+              ' Place Won on ' +
               hcpHoleNumber +
               ' HCP Hole' +
               (actualHole ? ' (Hole\u00A0' + actualHole + ')' : '')
@@ -13421,6 +13530,38 @@ let scoreTimingDetail =
       if (number === 2) return 'nd';
       if (number === 3) return 'rd';
       return 'th';
+    }
+
+    /* V15.15 — one authoritative resolved-place labeler shared by
+       FINAL RESULTS and SCRAMBLE SUMMARY after BREAK TIE is revealed. */
+    function resolvedTournamentPlaceLabel(orderedRows, rowIndex) {
+      if (!Array.isArray(orderedRows) || rowIndex < 0 || rowIndex >= orderedRows.length) {
+        return '';
+      }
+
+      if (rowIndex < 3) return String(rowIndex + 1);
+
+      const row = orderedRows[rowIndex];
+      const currentNet = Number(row && row.net);
+
+      const priorSameNet = orderedRows
+        .slice(3, rowIndex)
+        .some(item => Number(item && item.net) === currentNet);
+
+      const laterSameNet = orderedRows
+        .slice(rowIndex + 1)
+        .some(item => Number(item && item.net) === currentNet);
+
+      let unresolvedPlace = 4;
+      for (let i = 3; i < rowIndex; i++) {
+        if (Number(orderedRows[i] && orderedRows[i].net) < currentNet) {
+          unresolvedPlace++;
+        }
+      }
+
+      return (priorSameNet || laterSameNet)
+        ? 'T' + unresolvedPlace
+        : String(unresolvedPlace);
     }
 
 
@@ -13563,31 +13704,7 @@ let scoreTimingDetail =
       const rows = podium.ordered.slice(0, 10);
 
       function summaryPlaceLabel(rowIndex) {
-        if (rowIndex < 3) return String(rowIndex + 1);
-
-        const row = rows[rowIndex];
-        if (!row) return '';
-
-        const currentNet = Number(row.net);
-        const priorSameNet = rows
-          .slice(3, rowIndex)
-          .some(item => Number(item.net) === currentNet);
-
-        const laterSameNet = rows
-          .slice(rowIndex + 1)
-          .some(item => Number(item.net) === currentNet);
-
-        /* Podium has already been explicitly resolved. The first unresolved
-           row starts at place 4. Any tied NET group from there is shown as
-           T4 / T5 / etc rather than pretending additional places were won. */
-        let unresolvedPlace = 4;
-        for (let i = 3; i < rowIndex; i++) {
-          if (Number(rows[i].net) < currentNet) unresolvedPlace++;
-        }
-
-        return (priorSameNet || laterSameNet)
-          ? 'T' + unresolvedPlace
-          : String(unresolvedPlace);
+        return resolvedTournamentPlaceLabel(rows, rowIndex);
       }
 
       closeModal();
@@ -13757,6 +13874,10 @@ let scoreTimingDetail =
       let previousNet = null;
       let previousPlace = 0;
 
+      const useResolvedTournamentPlaces =
+        tournamentIsComplete(rows) &&
+        hasViewedTournamentTieBreak();
+
       const authorizedTeamName =
         normalizeName(
           getAuthorizedTeam() || ''
@@ -13777,8 +13898,16 @@ let scoreTimingDetail =
         (row, index) => {
 
           const netKey = Number(row.net);
-          const samePlace = index > 0 && Number.isFinite(netKey) && Number.isFinite(previousNet) && netKey === previousNet;
-          const place = samePlace ? previousPlace : index + 1;
+          const samePlace =
+            index > 0 &&
+            Number.isFinite(netKey) &&
+            Number.isFinite(previousNet) &&
+            netKey === previousNet;
+
+          const place = useResolvedTournamentPlaces
+            ? resolvedTournamentPlaceLabel(rows, index)
+            : (samePlace ? previousPlace : index + 1);
+
           previousNet = netKey;
           previousPlace = place;
 
@@ -15658,5 +15787,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
