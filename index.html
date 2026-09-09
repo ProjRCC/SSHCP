@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.7-HXV8FX | BUILD KEY: 16.8-ST8UPK -->
+<!-- SSHCP | BASE KEY: 16.8-ST8UPK | BUILD KEY: 16.9-Q7M4LX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8349,6 +8349,43 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
    - DELETE ALL YES restored as readable red-outline danger action.
    ========================================================= */
 
+
+/* =========================================================
+   SSHCP V16.9 — SCRAMBLE SUMMARY WEIGHTED GEOMETRY POLISH
+   - Fixed 15px title/subtitle/tiebreak buffers (no device multiplier).
+   - Column header = 1x.
+   - Podium = 2x / 1.5x / 1.33x.
+   - Lower standings = .8x each, capped at seven rows (TOP 10 geometry).
+   - Each tiebreak explanation line owns exactly 15px.
+   ========================================================= */
+.modal-overlay.tournament-summary .modal-title{
+  margin-bottom:15px!important;
+}
+.modal-overlay.tournament-summary .modal-text{
+  gap:0!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-subtitle{
+  margin:0!important;
+  padding:0!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-notes{
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-note{
+  height:15px!important;
+  min-height:15px!important;
+  max-height:15px!important;
+  margin:0!important;
+  padding:0 2%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:15px!important;
+}
+
 </style>
 </head>
 
@@ -8453,7 +8490,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.8</span>
+          <span class="home-version-info">SSHCP V16.9</span>
         </button>
 
       </div>
@@ -10405,7 +10442,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.8 TEST LOG',
+        'SSHCP V16.9 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -14308,35 +14345,51 @@ let scoreTimingDetail =
 
       const subtitle = body.querySelector('.tournament-summary-subtitle');
       const notes = body.querySelector('.tournament-summary-notes');
-      const noteCount = notes ? notes.querySelectorAll('.tournament-summary-note').length : 0;
-      const lowerCount = Array.isArray(lowerRows) ? lowerRows.length : 0;
+      const noteCount = Math.min(
+        3,
+        notes ? notes.querySelectorAll('.tournament-summary-note').length : 0
+      );
+      const lowerCount = Math.min(
+        7,
+        Array.isArray(lowerRows) ? lowerRows.length : 0
+      );
       const bodyHeight = Math.max(1, body.clientHeight);
 
+      /* V16.9 Scramble Summary geometry contract.
+         Fixed shell pieces are budgeted BEFORE x is solved:
+           - SCRAMBLE SUMMARY -> RESULTS/TOP 10 buffer = 15px (CSS/title row)
+           - RESULTS/TOP 10 text height = responsive approved subtitle target
+           - RESULTS/TOP 10 -> table buffer = 15px
+           - no tie notes = one 15px separator buffer
+           - 1-3 tie notes = 15px above + 15px per line + 15px below
+         Weighted row equation:
+           header 1x + 1st 2x + 2nd 1.5x + 3rd 1.33x
+           + up to seven lower rows at .8x each. */
+      const summaryBuffer = 15;
+      const tieLineH = 15;
       const subtitleH = Math.max(22, Math.min(38, bodyHeight * 0.055));
-      const headerH = Math.max(22, Math.min(36, bodyHeight * 0.050));
-      const noteLineH = Math.max(13, Math.min(18, bodyHeight * 0.024));
-      const noteBuffer = Math.max(5, Math.min(9, bodyHeight * 0.012));
+      const subtitleBlockH = subtitleH + summaryBuffer;
       const noteSectionH = noteCount > 0
-        ? (noteCount * noteLineH) + (noteBuffer * 2)
-        : noteBuffer * 2;
+        ? summaryBuffer + (noteCount * tieLineH) + summaryBuffer
+        : summaryBuffer;
 
-      const gap = Math.max(2, Math.min(5, bodyHeight * 0.005));
-      const reserved = subtitleH + headerH + noteSectionH + (gap * 3);
-      const teamSpace = Math.max(1, bodyHeight - reserved);
-      const weight = 4.5 + (0.8 * lowerCount);
-      const x = Math.max(1, teamSpace / Math.max(1, weight));
+      const fixedSpace = subtitleBlockH + noteSectionH;
+      const weightedSpace = Math.max(1, bodyHeight - fixedSpace);
+      const weight = 1 + 2 + 1.5 + 1.33 + (0.8 * lowerCount);
+      const x = Math.max(1, weightedSpace / Math.max(1, weight));
 
+      const headerH = 1 * x;
       const place1 = 2 * x;
       const place2 = 1.5 * x;
-      const place3 = 1 * x;
+      const place3 = 1.33 * x;
       const lowerRow = 0.8 * x;
       const topGridH = headerH + place1 + place2 + place3;
       const lowerH = lowerRow * lowerCount;
 
-      body.style.setProperty('gap', gap + 'px', 'important');
+      body.style.setProperty('gap', '0px', 'important');
       body.style.setProperty(
         'grid-template-rows',
-        subtitleH + 'px ' + topGridH + 'px ' + noteSectionH + 'px ' + lowerH + 'px',
+        subtitleBlockH + 'px ' + topGridH + 'px ' + noteSectionH + 'px ' + lowerH + 'px',
         'important'
       );
       topGrid.style.setProperty(
@@ -14350,11 +14403,18 @@ let scoreTimingDetail =
         'important'
       );
 
-      if (subtitle) subtitle.style.setProperty('height', subtitleH + 'px', 'important');
+      if (subtitle) {
+        subtitle.style.setProperty('height', subtitleH + 'px', 'important');
+        subtitle.style.setProperty('min-height', subtitleH + 'px', 'important');
+        subtitle.style.setProperty('max-height', subtitleH + 'px', 'important');
+        subtitle.style.setProperty('margin-bottom', summaryBuffer + 'px', 'important');
+      }
       if (notes) {
         notes.style.setProperty('height', noteSectionH + 'px', 'important');
-        notes.style.setProperty('padding-top', noteBuffer + 'px', 'important');
-        notes.style.setProperty('padding-bottom', noteBuffer + 'px', 'important');
+        notes.style.setProperty('min-height', noteSectionH + 'px', 'important');
+        notes.style.setProperty('max-height', noteSectionH + 'px', 'important');
+        notes.style.setProperty('padding-top', noteCount > 0 ? summaryBuffer + 'px' : '0px', 'important');
+        notes.style.setProperty('padding-bottom', noteCount > 0 ? summaryBuffer + 'px' : '0px', 'important');
       }
     }
 
