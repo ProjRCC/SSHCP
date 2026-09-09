@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 5.10-KCCY4Z | BUILD KEY: 5.11-M7Q2VX -->
+<!-- SSHCP | BASE KEY: 5.11-M7Q2VX | BUILD KEY: 5.12-P8R4NX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.11 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.12 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4299,8 +4299,8 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 
 /* Footer actions can use more of the same existing footer width. */
 #leaderboardView .leader-bottom {
-  padding-left: 10px !important;
-  padding-right: 10px !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
   gap: 8px !important;
 }
 
@@ -6267,7 +6267,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   display:contents!important;
 }
 #leaderboardView .leader-through-word{
-  grid-row:3!important;
+  grid-row:1!important;
 }
 #leaderboardView .leader-through-value{
   grid-row:4!important;
@@ -6530,7 +6530,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   min-width:0!important;
   min-height:0!important;
   max-width:none!important;
-  max-height:98%!important;
+  max-height:none!important;
   aspect-ratio:1.5 / 1!important;
   margin:auto!important;
   box-sizing:border-box!important;
@@ -7099,7 +7099,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
 
 /* =========================================================
-   SSHCP V5.11 — ROUND STACK + COMPLETED FOOTER
+   SSHCP V5.12 — ROUND STACK + COMPLETED FOOTER
    ========================================================= */
 
 /* ROUND is a true three-line visual stack. THRU is intentionally tiny —
@@ -7124,16 +7124,25 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   line-height:.92!important;
 }
 #leaderboardView .leader-through-label{
-  display:contents!important;
+  grid-row:3 / 5!important;
+  display:grid!important;
+  grid-template-columns:100%!important;
+  grid-template-rows:1fr 6fr!important;
   order:initial!important;
   flex:none!important;
-  width:auto!important;
-  height:auto!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
   margin:0!important;
   padding:0!important;
+  gap:0!important;
+  overflow:visible!important;
+  position:relative!important;
+  z-index:1!important;
 }
 #leaderboardView .leader-through-word{
-  grid-row:3!important;
+  grid-row:1!important;
   display:flex!important;
   width:100%!important;
   height:100%!important;
@@ -7151,7 +7160,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 }
 #leaderboardView .leader-through-value,
 #leaderboardView .leader-through-value.has-progress{
-  grid-row:4!important;
+  grid-row:2!important;
   display:flex!important;
   width:100%!important;
   height:100%!important;
@@ -7173,7 +7182,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 #leaderboardView .leaderboard-screen.tournament-complete{
   --v511-complete-button-h:clamp(64px,8.5dvh,82px);
   display:grid!important;
-  grid-template-columns:10px minmax(0,1fr) 8px minmax(0,2fr) 10px!important;
+  grid-template-columns:14px minmax(0,1fr) 8px minmax(0,2fr) 14px!important;
   grid-template-rows:
     auto
     var(--v5-leader-head-h,52px)
@@ -7255,6 +7264,15 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   color:#000!important;
   font-size:clamp(14px,2.4dvh,19px)!important;
   line-height:1!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete #leaderScorecardButton{
+  font-size:clamp(12px,1.9dvh,17px)!important;
+  letter-spacing:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  padding-left:3px!important;
+  padding-right:3px!important;
 }
 
   </style>
@@ -7361,7 +7379,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V5.11</span>
+          <span class="home-version-info">SSHCP V5.12</span>
         </button>
 
       </div>
@@ -7620,10 +7638,10 @@ body.master-qr #scorecardView .score-team-select-button:focus{
                 rows.innerHTML = snap.rowsHtml;
 
                 /* V5.7 refresh continuity: keep the stored two-line/fitted team
-                   state intact. Normalize only the current STATUS label and the
+                   state intact. Normalize only the current ROUND label and the
                    25-character display rule before first paint. */
                 rows.querySelectorAll('.leader-through-word').forEach(function (el) {
-                  el.textContent = 'H';
+                  el.textContent = 'THRU';
                 });
                 rows.querySelectorAll('.leader-team-name').forEach(function (el) {
                   var raw = String(el.textContent || '');
@@ -7892,7 +7910,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.11
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.12
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -9356,7 +9374,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.11 TEST LOG',
+        'SSHCP V5.12 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11042,11 +11060,25 @@ let scoreTimingDetail =
       const scoreCellWidth = sampleScoreCell
         ? sampleScoreCell.clientWidth
         : Math.max(1, els.scoreScroll.clientWidth * 0.35);
+      const scoreCellHeight = sampleScoreCell
+        ? sampleScoreCell.clientHeight
+        : rowHeight;
+      let scoreInnerWidth = scoreCellWidth;
+      let scoreInnerHeight = scoreCellHeight;
+      if (sampleScoreCell) {
+        const scoreCellStyle = getComputedStyle(sampleScoreCell);
+        scoreInnerWidth = Math.max(1, scoreCellWidth -
+          (parseFloat(scoreCellStyle.paddingLeft) || 0) -
+          (parseFloat(scoreCellStyle.paddingRight) || 0));
+        scoreInnerHeight = Math.max(1, scoreCellHeight -
+          (parseFloat(scoreCellStyle.paddingTop) || 0) -
+          (parseFloat(scoreCellStyle.paddingBottom) || 0));
+      }
       const scoreBox = Math.max(
         18,
         Math.min(
-          rowHeight * 0.98,
-          (scoreCellWidth * 0.98) / 1.5
+          scoreInnerHeight * 0.96,
+          (scoreInnerWidth * 0.96) / 1.5
         )
       );
       els.scorecardView.style.setProperty('--v5-score-box', scoreBox + 'px');
