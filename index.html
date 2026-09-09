@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16-VWDR5Z | BUILD KEY: 16.1-46C9ZE -->
+<!-- SSHCP | BASE KEY: 16.1-46C9ZE | BUILD KEY: 16.2-PEMNDS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7795,7 +7795,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   margin:0 var(--v16-rail,12px)!important;
 }
 #scorecardView .score-fixed-bottom{
-  padding-top:var(--v16-table-footer-gap,14px)!important;
+  padding-top:var(--v16-score-table-footer-gap,14px)!important;
   padding-left:var(--v16-rail,12px)!important;
   padding-right:var(--v16-rail,12px)!important;
   padding-bottom:calc(var(--v16-bottom-gap,9px) + env(safe-area-inset-bottom))!important;
@@ -7892,7 +7892,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   height:auto!important;
   min-height:0!important;
   margin:0!important;
-  padding-top:var(--v16-table-footer-gap,14px)!important;
+  padding-top:var(--v16-leader-table-footer-gap,14px)!important;
   padding-left:var(--v16-rail,12px)!important;
   padding-right:var(--v16-rail,12px)!important;
   padding-bottom:calc(var(--v16-bottom-gap,9px) + env(safe-area-inset-bottom))!important;
@@ -8001,6 +8001,92 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   z-index:2!important;
 }
 
+
+/* =========================================================
+   SSHCP V16.2 — SCORECARD BUFFER + TRUE SCORE-CELL NOTATION
+   - Scorecard upper gap remains the V16 12px S25 baseline.
+   - Scorecard table->footer gap is now its own 18px S25 baseline.
+   - Leaderboard/Final lower buffer stays at the proven V16/V16.1 value.
+   - Scramble Summary spacing is intentionally untouched.
+   - Score notation is drawn by the SCORE CELL, not by the gold/gray tile.
+     The score-entry popup remains untouched.
+   ========================================================= */
+
+/* Remove scorecard-only circle/square borders from the number wrapper.
+   The wrapper remains in place so the approved score-number sizing and
+   centering do not change. The score-entry preview is outside #scorecardView
+   and therefore keeps its existing notation implementation. */
+#scorecardView .score-button .score-mark.single-circle,
+#scorecardView .score-button .score-mark.double-circle,
+#scorecardView .score-button .score-mark.single-square,
+#scorecardView .score-button .score-mark.double-square,
+#scorecardView .score-button .score-mark.bold-square{
+  border:0!important;
+}
+#scorecardView .score-button .score-mark.double-circle::after,
+#scorecardView .score-button .score-mark.double-square::after{
+  content:none!important;
+  display:none!important;
+}
+
+/* The cell is the one hard clipping boundary. The tile is only a background.
+   Pseudo-elements are centered on the exact same cell center as the button. */
+#scorecardView .score-cell.score-notation{
+  --v162-notation-color:#000;
+  position:relative!important;
+  overflow:hidden!important;
+}
+#scorecardView .score-cell.score-notation.notation-unsaved{
+  --v162-notation-color:#fff;
+}
+#scorecardView .score-cell.score-notation::before,
+#scorecardView .score-cell.score-notation::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  box-sizing:border-box;
+  pointer-events:none;
+  z-index:1;
+}
+
+/* Single marks preserve the approved V16 scale. */
+#scorecardView .score-cell.notation-single-circle::before,
+#scorecardView .score-cell.notation-single-square::before,
+#scorecardView .score-cell.notation-double-circle::before,
+#scorecardView .score-cell.notation-double-square::before,
+#scorecardView .score-cell.notation-bold-square::before{
+  width:calc(var(--v5-score-box,58px) * .82);
+  height:calc(var(--v5-score-box,58px) * .82);
+  border:clamp(1.5px,calc(var(--v5-score-box,58px) * .045),3px) solid var(--v162-notation-color);
+}
+#scorecardView .score-cell.notation-single-circle::before,
+#scorecardView .score-cell.notation-double-circle::before,
+#scorecardView .score-cell.notation-double-circle::after{
+  border-radius:50%;
+}
+#scorecardView .score-cell.notation-single-square::before,
+#scorecardView .score-cell.notation-double-square::before,
+#scorecardView .score-cell.notation-double-square::after,
+#scorecardView .score-cell.notation-bold-square::before{
+  border-radius:1px;
+}
+
+/* Double marks are two complete independent shapes. The outer mark is
+   deliberately a touch larger than the 1:1.5 tile's height, but the score
+   cell remains the hard boundary. This removes the detached-side-rail failure. */
+#scorecardView .score-cell.notation-double-circle::after,
+#scorecardView .score-cell.notation-double-square::after{
+  width:calc(var(--v5-score-box,58px) * 1.02);
+  height:calc(var(--v5-score-box,58px) * 1.02);
+  border:clamp(1.2px,calc(var(--v5-score-box,58px) * .032),2.4px) solid var(--v162-notation-color);
+}
+
+#scorecardView .score-cell.notation-bold-square::before{
+  border-width:clamp(3px,calc(var(--v5-score-box,58px) * .075),5px);
+}
+
 </style>
 </head>
 
@@ -8105,7 +8191,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.1</span>
+          <span class="home-version-info">SSHCP V16.2</span>
         </button>
 
       </div>
@@ -10050,7 +10136,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.1 TEST LOG',
+        'SSHCP V16.2 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11713,7 +11799,8 @@ let scoreTimingDetail =
         '--v16-nav-context-gap': py(12),
         '--v16-context-h': py(88),
         '--v16-context-table-gap': py(12),
-        '--v16-table-footer-gap': py(28),
+        '--v16-score-table-footer-gap': py(18),
+        '--v16-leader-table-footer-gap': py(28),
         '--v16-footer-h': py(113),
         '--v16-bottom-gap': py(18),
         '--v16-internal-gap': px(28)
@@ -12108,11 +12195,22 @@ let scoreTimingDetail =
             }
             else {
 
+              const relative = Number(local) - Number(hole.par);
+              scoreCell.classList.add('score-notation');
+
+              if (relative === -1) scoreCell.classList.add('notation-single-circle');
+              else if (relative <= -2) scoreCell.classList.add('notation-double-circle');
+              else if (relative === 1) scoreCell.classList.add('notation-single-square');
+              else if (relative === 2) scoreCell.classList.add('notation-double-square');
+              else if (relative >= 3) scoreCell.classList.add('notation-bold-square');
+
               if (local === saved) {
+                scoreCell.classList.add('notation-saved');
                 button.classList.add('saved');
                 button.appendChild(makeSubmittedScoreMark(local, hole.par));
               }
               else {
+                scoreCell.classList.add('notation-unsaved');
                 button.classList.add('unsaved');
                 button.appendChild(makeSubmittedScoreMark(local, hole.par));
               }
