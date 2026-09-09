@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 5.12-P8R4NX | BUILD KEY: 15.13-X4LGNL -->
+<!-- SSHCP | BASE KEY: 5.12-P8R4NX | BUILD KEY: 15.13b-SMI49A -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V15.13 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V15.13b -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7099,7 +7099,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
 
 /* =========================================================
-   SSHCP V15.13 — ROUND STACK + COMPLETED FOOTER
+   SSHCP V15.13b — ROUND STACK + COMPLETED FOOTER
    ========================================================= */
 
 /* ROUND is a true three-line visual stack. THRU is intentionally tiny —
@@ -7277,122 +7277,214 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
   
 /* =========================================================
-   SSHCP V15.13 — ONE LEADERBOARD SHELL, LIVE + FINAL
+   SSHCP V15.13b — VERIFIED V5.12-BASE CORRECTION
    =========================================================
-   Completion changes content, not geometry:
-   LIVE LEADERBOARD -> FINAL RESULTS
-   SCORECARD / REFRESH -> SCORECARD / BREAK TIE or SCRAMBLE SUMMARY
-   Header, 8-row table, table bottom, footer height and footer position stay identical.
+   Do not create a second completed leaderboard geometry.
+   LIVE and FINAL share the exact same shell, columns, header, 8-row table,
+   table top/bottom and footer band. Completion changes title/actions only.
 */
+
+/* ROUND: three DIRECT children; no nested-grid math.
+   Vertical allocation: 14.5 + 28 + 15 + 28 + 14.5 = 100%. */
+#leaderboardView .leader-through-cell{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:100%!important;
+  grid-template-rows:14.5% 28% 15% 28% 14.5%!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:0!important;
+  padding:0 2%!important;
+  overflow:hidden!important;
+}
+#leaderboardView .leader-through-score{
+  grid-row:2!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  font-weight:800!important;
+  line-height:1!important;
+  overflow:hidden!important;
+  position:relative!important;
+  z-index:1!important;
+}
+#leaderboardView .leader-through-label{
+  display:contents!important;
+}
+#leaderboardView .leader-through-word{
+  grid-row:3!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  font-weight:400!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  position:relative!important;
+  z-index:1!important;
+}
+#leaderboardView .leader-through-value,
+#leaderboardView .leader-through-value.has-progress{
+  grid-row:4!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  position:relative!important;
+  z-index:1!important;
+}
+
+/* Font targets are percentages of the ROUND row height. */
+#leaderboardView .leader-through-score,
+#leaderboardView .leader-through-value,
+#leaderboardView .leader-through-value.has-progress{
+  font-size:calc(var(--v5-leader-row-h,56px) * .28)!important;
+}
+#leaderboardView .leader-through-word{
+  font-size:calc(var(--v5-leader-row-h,56px) * .15)!important;
+}
+
+/* Completed state uses the exact V5.12 LIVE flex shell.
+   No completed grid, no altered column widths, no second row-height model. */
 #leaderboardView .leaderboard-screen.tournament-complete{
   display:flex!important;
   flex-direction:column!important;
   grid-template-columns:none!important;
   grid-template-rows:none!important;
 }
-#leaderboardView .leaderboard-screen.tournament-complete .leader-top,
-#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar,
-#leaderboardView .leaderboard-screen.tournament-complete .leader-table-head,
-#leaderboardView .leaderboard-screen.tournament-complete .leader-content{
-  display:flex!important;
-}
 #leaderboardView .leaderboard-screen.tournament-complete .leader-top{
-  flex:0 0 auto!important;
+  display:flex!important;
   flex-direction:column!important;
+  flex:0 0 auto!important;
 }
 #leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
-  flex:0 0 auto!important;
+  display:flex!important;
+  visibility:visible!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title{
+  visibility:visible!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar::after{
+  display:none!important;
+  animation:none!important;
 }
 #leaderboardView .leaderboard-screen.tournament-complete .leader-table-head{
   flex:0 0 var(--v5-leader-head-h,52px)!important;
 }
 #leaderboardView .leaderboard-screen.tournament-complete .leader-content{
   flex:1 1 auto!important;
+  height:auto!important;
+  max-height:none!important;
   min-height:0!important;
 }
 #leaderboardView .leaderboard-screen.tournament-complete .leader-update-note{
   display:none!important;
 }
 
-/* Final action occupies the exact right-hand REFRESH footprint. */
-#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
-  position:absolute!important;
-  left:calc(60% + 4.4px)!important;
-  right:14px!important;
-  bottom:calc(8px + env(safe-area-inset-bottom))!important;
-  width:auto!important;
-  height:53px!important;
-  min-height:53px!important;
-  max-height:53px!important;
-  margin:0!important;
-  padding:0!important;
-  display:flex!important;
-  align-items:stretch!important;
-  justify-content:stretch!important;
-  z-index:95!important;
-}
-#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action{
-  width:100%!important;
-  height:53px!important;
-  min-height:53px!important;
-  max-height:53px!important;
-  margin:0!important;
-  padding:0 5%!important;
-  border-radius:9px!important;
-  box-sizing:border-box!important;
-  position:static!important;
-  transform:none!important;
-}
-
-/* Keep the normal live footer shell. Hide REFRESH and leave its footprint
-   for the absolutely-positioned final action above. */
+/* Completed footer occupies the SAME V5.12 footer band.
+   Width allocation is the approved 33% SCORECARD / 66% result action. */
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom{
   position:relative!important;
   z-index:90!important;
   display:grid!important;
-  grid-template-columns:3fr 2fr!important;
-  gap:11px!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;
+  gap:8px!important;
   width:auto!important;
   height:auto!important;
-  min-height:53px!important;
+  min-height:56px!important;
   margin:0!important;
-  padding:0 14px calc(8px + env(safe-area-inset-bottom)) 14px!important;
+  padding-left:14px!important;
+  padding-right:14px!important;
+  padding-top:0!important;
+  padding-bottom:calc(8px + env(safe-area-inset-bottom))!important;
   background:rgba(255,255,255,.96)!important;
   flex:0 0 auto!important;
+  align-items:stretch!important;
 }
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard{
+  grid-column:1!important;
   width:100%!important;
-  height:53px!important;
-  min-height:53px!important;
-  max-height:53px!important;
+  height:auto!important;
+  min-height:56px!important;
+  max-height:none!important;
   margin:0!important;
-  padding:0!important;
-  border:1px solid var(--gold)!important;
+  padding:0 4%!important;
+  border:2px solid var(--gold)!important;
   border-radius:9px!important;
   box-sizing:border-box!important;
-  background:#fafafa!important;
-  color:var(--gold)!important;
+  background:#fff!important;
+  color:#000!important;
 }
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
+  grid-column:2!important;
   display:block!important;
   visibility:hidden!important;
-  pointer-events:none!important;
   width:100%!important;
-  height:53px!important;
-  min-height:53px!important;
+  min-height:56px!important;
+  margin:0!important;
+  padding:0!important;
+  pointer-events:none!important;
 }
 
-/* Final title remains visible; only the live timer/progress line disappears. */
-#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar::after{
-  display:none!important;
-  animation:none!important;
+/* Move the existing final-action DOM into the exact visual footprint
+   of the hidden right-hand footer cell; it does not consume layout space. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  display:block!important;
+  position:absolute!important;
+  left:calc(33.333333% + 4px)!important;
+  right:14px!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  height:56px!important;
+  min-height:56px!important;
+  max-height:56px!important;
+  margin:0!important;
+  padding:0!important;
+  z-index:100!important;
+  pointer-events:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:56px!important;
+  min-height:56px!important;
+  max-height:56px!important;
+  margin:0!important;
+  padding:0 4%!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  pointer-events:auto!important;
 }
 
-/* Asterisks are retired from leaderboard and summary. */
+/* Asterisks are retired. Explanations carry a simple bullet instead. */
 #leaderboardView .leader-place-marker,
-.modal-overlay.tournament-summary .summary-place-marker,
-#leaderboardView .leader-team-marker,
-.modal-overlay.tournament-summary .summary-team-marker{
+.modal-overlay.tournament-summary .summary-place-marker{
   display:none!important;
 }
 
@@ -7500,7 +7592,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V15.13</span>
+          <span class="home-version-info">SSHCP V15.13b</span>
         </button>
 
       </div>
@@ -8031,7 +8123,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V15.13
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V15.13b
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -9495,7 +9587,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V15.13 TEST LOG',
+        'SSHCP V15.13b TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -12919,11 +13011,13 @@ let scoreTimingDetail =
         );
       }
 
-      const leaderTitle = els.leaderboardView
+      const leaderboardTitle = els.leaderboardView
         ? els.leaderboardView.querySelector('.leader-title')
         : null;
-      if (leaderTitle) {
-        leaderTitle.textContent = complete ? 'FINAL RESULTS' : 'LIVE LEADERBOARD';
+      if (leaderboardTitle) {
+        leaderboardTitle.textContent = complete
+          ? 'FINAL RESULTS'
+          : 'LIVE LEADERBOARD';
       }
 
       if (!complete) {
@@ -12944,9 +13038,6 @@ let scoreTimingDetail =
       if (tied.length < 2) {
         setLeaderboardFinalAction('tournament-summary');
 
-        requestAnimationFrame(
-          positionCompletedFinalAction
-        );
         return;
       }
 
@@ -12954,9 +13045,7 @@ let scoreTimingDetail =
         hasViewedTournamentTieBreak() ? 'tournament-summary' : 'break-tie'
       );
 
-      requestAnimationFrame(
-        positionCompletedFinalAction
-      );
+
     }
 
     function joinTeamNamesHtml(rows) {
@@ -14260,9 +14349,9 @@ let scoreTimingDetail =
       const tableBudget = contentRect.bottom - headerRect.top;
       if (!Number.isFinite(tableBudget) || tableBudget <= 0) return;
 
-      /* V15.13: LIVE and FINAL use the same rendered shell and therefore
-         the same table-boundary calculation. Completion never creates a
-         second row-height model. */
+      /* V5.7: LIVE and COMPLETE are solved independently from THEIR OWN
+         rendered table boundaries. No screen-height subtraction model and
+         no shared/frozen row height between the two boards. */
       const headerHeight = (tableBudget / 9) * 0.85;
       const calculatedRowHeight = Math.max(1, (tableBudget - headerHeight) / 8);
       const complete = screen.classList.contains('tournament-complete');
@@ -14280,14 +14369,11 @@ let scoreTimingDetail =
 
         els.leaderContent.style.setProperty('--leader-row-height', rowHeight + 'px');
 
-        rememberResponsiveGeometryV5({
-          leaderHeadLive: headerHeight,
-          leaderRowLive: rowHeight,
-          leaderHeadComplete: headerHeight,
-          leaderRowComplete: rowHeight,
-          leaderHead: headerHeight,
-          leaderRow: rowHeight
-        });
+        rememberResponsiveGeometryV5(
+          complete
+            ? { leaderHeadComplete: headerHeight, leaderRowComplete: rowHeight, leaderHead: headerHeight, leaderRow: rowHeight }
+            : { leaderHeadLive: headerHeight, leaderRowLive: rowHeight, leaderHead: headerHeight, leaderRow: rowHeight }
+        );
 
         const current = els.leaderContent.scrollTop;
         if (rowHeight > 0 && current > 0) {
