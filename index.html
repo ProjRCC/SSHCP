@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 15.13c-CHRGR9 | BUILD KEY: 15.13d-DH9SVQ -->
+<!-- SSHCP | BASE KEY: 15.13d-DH9SVQ | BUILD KEY: 15.14-8V7W9L -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7491,12 +7491,12 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
 
 /* =========================================================
-   SSHCP V15.13d — ROUND TYPOGRAPHY + SINGLE LEADERBOARD GEOMETRY
+   SSHCP V15.14 — ROUND RESPONSIVE TYPOGRAPHY + TIEBREAK NOTES
    FINAL STATE CHANGES CONTENT ONLY; NOT TABLE GEOMETRY.
    ========================================================= */
 
 /* ROUND: three direct text lines centered as one stack.
-   30 / 15 / 30 are FONT SIZES as percentages of the full leaderboard row height,
+   32 / 16 / 32 are FONT SIZES as percentages of the full leaderboard row height,
    not grid-track percentages. */
 #leaderboardView #leaderRows .leader-through-cell{
   display:flex!important;
@@ -7527,11 +7527,11 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 }
 #leaderboardView #leaderRows .leader-through-score,
 #leaderboardView #leaderRows .leader-through-value{
-  font-size:calc(var(--leader-row-height,56px) * .30)!important;
+  font-size:calc(var(--leader-row-height,56px) * .32)!important;
   line-height:.92!important;
 }
 #leaderboardView #leaderRows .leader-through-word{
-  font-size:calc(var(--leader-row-height,56px) * .15)!important;
+  font-size:calc(var(--leader-row-height,56px) * .16)!important;
   line-height:1!important;
 }
 #leaderboardView #leaderRows .leader-through-label{display:none!important;}
@@ -7745,7 +7745,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V15.13b</span>
+          <span class="home-version-info">SSHCP V15.14</span>
         </button>
 
       </div>
@@ -9740,7 +9740,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V15.13b TEST LOG',
+        'SSHCP V15.14 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13371,31 +13371,23 @@ let scoreTimingDetail =
           resolution.winner &&
           resolution.decidingIndex !== null
         ) {
-          if (place === 1) {
-            const actualHole = actualTiebreakHole(
-              winner,
-              resolution.decidingIndex
-            );
+          const actualHole = actualTiebreakHole(
+            winner,
+            resolution.decidingIndex
+          );
+          const hcpHoleNumber = Number(resolution.decidingIndex) + 1;
 
-            annotations.set(winner, {
-              marks: '',
-              note:
-                '• Won on ' +
-                ordinalHandicapHole(resolution.decidingIndex) +
-                (actualHole ? ' (Hole\u00A0' + actualHole + ')' : '')
-            });
-          }
-          else {
-            annotations.set(winner, {
-              marks: '',
-              note:
-                '• Won ' +
-                place +
-                ordinalSuffix(place) +
-                '-place tiebreak on ' +
-                ordinalHandicapHole(resolution.decidingIndex)
-            });
-          }
+          annotations.set(winner, {
+            marks: '',
+            note:
+              '• ' +
+              place +
+              ordinalSuffix(place) +
+              ' Won on ' +
+              hcpHoleNumber +
+              ' HCP Hole' +
+              (actualHole ? ' (Hole\u00A0' + actualHole + ')' : '')
+          });
         }
       }
 
@@ -14447,7 +14439,7 @@ let scoreTimingDetail =
         }
 
         if (score) {
-          fitTextToBoxV5(score, score, rowHeight * 0.30, 8, {
+          fitTextToBoxV5(score, score, rowHeight * 0.32, 8, {
             horizontalPad: 4,
             verticalPad: 1,
             lineHeight: 0.92
@@ -14455,7 +14447,7 @@ let scoreTimingDetail =
         }
 
         if (thruWord) {
-          fitTextToBoxV5(thruWord, thruWord, rowHeight * 0.15, 3, {
+          fitTextToBoxV5(thruWord, thruWord, rowHeight * 0.16, 3, {
             horizontalPad: 2,
             verticalPad: 0,
             wrap: false,
@@ -14464,7 +14456,7 @@ let scoreTimingDetail =
         }
 
         if (thruValue) {
-          fitTextToBoxV5(thruValue, thruValue, rowHeight * 0.30, 8, {
+          fitTextToBoxV5(thruValue, thruValue, rowHeight * 0.32, 8, {
             horizontalPad: 4,
             verticalPad: 1,
             wrap: false,
@@ -15402,7 +15394,12 @@ let scoreTimingDetail =
       window.visualViewport
         .addEventListener(
           'resize',
-          positionScoreEntry
+          () => {
+            positionScoreEntry();
+            if (currentView === 'leaderboard') {
+              sizeLeaderboardRows();
+            }
+          }
         );
 
 
