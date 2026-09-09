@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 5.7-A6G6A2 | BUILD KEY: 5.8-8SQ7MX -->
+<!-- SSHCP | BASE KEY: 5.8-8SQ7MX | BUILD KEY: 5.9O-Q4N8Z2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.9 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.9 OFFICIAL -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6937,42 +6937,92 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 }
 
 
-
 /* =========================================================
-   SSHCP V5.9 — TEAM ARROW / READABILITY / STATUS REFINEMENT
+   SSHCP V5.9 OFFICIAL — READABILITY / AUTHORIZED SCORECARD / HOME FOOTER
    ========================================================= */
 
-/* MASTER scorecard team selector: reserve a true no-text zone around the
-   dropdown arrow. Equal left/right padding keeps the team name centered. */
-#scorecardView .score-team-select-button,
-#scorecardView .score-team-select-button.has-team,
-#scorecardView .score-team-select-button:focus{
+/* MASTER scorecard selector keeps a protected arrow lane. All non-MASTER
+   scorecard identities are plain informational bars with no dropdown arrow. */
+body.master-qr #scorecardView .score-team-select-button,
+body.master-qr #scorecardView .score-team-select-button.has-team,
+body.master-qr #scorecardView .score-team-select-button:focus{
   padding-left:42px!important;
   padding-right:42px!important;
+  cursor:pointer!important;
 }
-body.team-qr-locked #scorecardView .score-team-select-button,
-body.team-qr-locked #scorecardView .score-team-select-button.has-team,
-body.team-qr-locked #scorecardView .score-team-select-button:focus{
+body:not(.master-qr) #scorecardView .score-team-select-button,
+body:not(.master-qr) #scorecardView .score-team-select-button.has-team,
+body:not(.master-qr) #scorecardView .score-team-select-button:focus{
   padding-left:18px!important;
   padding-right:18px!important;
+  cursor:default!important;
+}
+body:not(.master-qr) #scorecardView .score-team-select-button::after{
+  display:none!important;
+}
+body:not(.master-qr) #scorecardView .score-team-dropdown{
+  display:none!important;
 }
 
-/* ENTER PASSKEY team selector gets the same protected arrow lane. */
+/* ENTER PASSKEY remains a genuine one-line selector, so preserve a no-text
+   lane around its arrow. */
 .passkey-team-button{
   padding-left:48px!important;
   padding-right:48px!important;
 }
 
-/* Team names on leaderboard/summary now stop shrinking at a readable floor;
-   the existing V5.8 fitter then removes trailing characters as the fallback. */
-/* STATUS: score is exactly 5% larger than the V5.8 30% target, with a small
-   physical gap before the Hxx line. */
+/* Keep the successful V5.9 STATUS refinement. */
 #leaderboardView .leader-through-score{
   flex-basis:31.5%!important;
   height:31.5%!important;
 }
 #leaderboardView .leader-through-cell{
   gap:2px!important;
+}
+
+/* HOME bottom identity/test target: event line moves up slightly and the
+   gray version sits immediately beneath it. The entire two-line block is
+   an easy thumb target for TEST without changing the visible HOME controls. */
+#homeView .home-event-test-hotspot{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:calc(env(safe-area-inset-bottom) + 5px)!important;
+  width:100%!important;
+  min-height:38px!important;
+  padding:0 6px!important;
+  border:0!important;
+  background:transparent!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  z-index:20!important;
+}
+#homeView .home-event-test-hotspot .home-event-info{
+  position:static!important;
+  inset:auto!important;
+  margin:0!important;
+  color:var(--gold)!important;
+  font-size:14px!important;
+  font-weight:600!important;
+  line-height:1!important;
+  letter-spacing:.24px!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  pointer-events:none!important;
+}
+#homeView .home-version-info{
+  display:block!important;
+  margin:0!important;
+  color:#c7c7c7!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  letter-spacing:.1px!important;
+  white-space:nowrap!important;
+  pointer-events:none!important;
 }
 
   </style>
@@ -7009,9 +7059,7 @@ body.team-qr-locked #scorecardView .score-team-select-button:focus{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.9</button>
-
-      <div class="splash-image-wrap">
+            <div class="splash-image-wrap">
 
         <img
           src="Splash_white.jpg"
@@ -7055,6 +7103,10 @@ body.team-qr-locked #scorecardView .score-team-select-button:focus{
                 document.body.classList.add('team-qr-locked');
               }
 
+              if ((localStorage.getItem('sshcpQrRole') || '') === 'MASTER') {
+                document.body.classList.add('master-qr');
+              }
+
               if (btn && team) {
                 btn.innerHTML =
                   '<span class="home-scorecard-action">ACCESS SCORECARD</span>' +
@@ -7075,7 +7127,10 @@ body.team-qr-locked #scorecardView .score-team-select-button:focus{
           <button class="quick-guide-button" type="button" data-guide>QUICK GUIDE</button>
         </div>
 
-        <div class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</div>
+        <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
+          <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
+          <span class="home-version-info">SSHCP V5.9 OFFICIAL</span>
+        </button>
 
       </div>
 
@@ -7605,7 +7660,7 @@ body.team-qr-locked #scorecardView .score-team-select-button:focus{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.9
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.9 OFFICIAL
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -8130,10 +8185,14 @@ let scoreTimingDetail =
     function isTeamAuthorizationEnabled(){ return localStorage.getItem(SSHCP_TEAM_AUTH_KEY) !== '0'; }
     function syncTeamQrLockedUi(){
       const locked = isTeamQr() && !!getQrTeam();
+      const master = isMasterQr();
       document.body.classList.toggle('team-qr-locked', locked);
+      document.body.classList.toggle('master-qr', master);
+      if (!master) {
+        closeScoreTeamDropdown();
+      }
       if (locked) {
         closeHomeTeamDropup();
-        closeScoreTeamDropdown();
       }
     }
     function syncTestAuthorizationToggle(){
@@ -9065,7 +9124,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.9 TEST LOG',
+        'SSHCP V5.9 OFFICIAL TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -10062,7 +10121,7 @@ let scoreTimingDetail =
         22,
         8,
         {
-          horizontalPad: 84,
+          horizontalPad: isMasterQr() ? 84 : 36,
           verticalPad: 6,
           lineHeight: 1,
           ignoreHeight: true
@@ -10080,6 +10139,10 @@ let scoreTimingDetail =
         delete els.scoreTeamSelectButton.dataset.fullTeamName;
       }
       els.scoreTeamSelectButton.classList.toggle('has-team', !!selectedTeam);
+      const masterSelector = isMasterQr();
+      els.scoreTeamSelectButton.classList.toggle('master-team-selector', masterSelector);
+      els.scoreTeamSelectButton.setAttribute('aria-haspopup', masterSelector ? 'listbox' : 'false');
+      if (!masterSelector) els.scoreTeamSelectButton.setAttribute('aria-expanded', 'false');
 
       requestAnimationFrame(
         fitScoreTeamSelectName
@@ -10128,7 +10191,7 @@ let scoreTimingDetail =
     }
 
     function openScoreTeamDropdown() {
-      if (isTeamQr() && getQrTeam()) return;
+      if (!isMasterQr()) return;
       if (!els.scoreTeamDropdown || !els.scoreTeamSelectButton || !teams.length) return;
       renderScoreTeamDropdown();
       const buttonRect = els.scoreTeamSelectButton.getBoundingClientRect();
@@ -10145,7 +10208,7 @@ let scoreTimingDetail =
     }
 
     function toggleScoreTeamDropdown() {
-      if (isTeamQr() && getQrTeam()) return;
+      if (!isMasterQr()) return;
       if (els.scoreTeamDropdown.classList.contains('open')) closeScoreTeamDropdown();
       else openScoreTeamDropdown();
     }
@@ -10470,8 +10533,8 @@ let scoreTimingDetail =
         button,
         button.dataset.fullTeamName || button.textContent,
         17,
-        10,
-        { horizontalPad: 96, verticalPad: 6, lineHeight: 1 }
+        8,
+        { horizontalPad: 64, verticalPad: 6, lineHeight: 1 }
       );
     }
 
@@ -13769,7 +13832,7 @@ let scoreTimingDetail =
         }
 
         if (score) {
-          fitTextToBoxV5(score, score, rowHeight * 0.315, 8, {
+          fitTextToBoxV5(score, score, rowHeight * 0.30, 8, {
             horizontalPad: 4,
             verticalPad: 1,
             lineHeight: 0.92
