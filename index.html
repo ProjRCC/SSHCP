@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.2-PEMNDS | BUILD KEY: 16.2colorchange-ZQK4MM -->
+<!-- SSHCP | BASE KEY: 16.3-I5D7K3 | BUILD KEY: 16.4-86Y7NN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -144,8 +144,8 @@
 
     :root {
       --accent: #022F71;
---on-accent: #FFFFFF;
---accent-name: Blue;
+      --on-accent: #FFFFFF;
+      --accent-name: Blue;
       --gold: var(--accent);
       --light-gray: #e6e6e6;
       --test-blue: #6EC8FF;
@@ -8093,7 +8093,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
 
 /* =========================================================
-   SSHCP V16.2colorchange — CENTRAL ACCENT / OVERLAY THEME
+   SSHCP V16.3 — CENTRAL ACCENT / OVERLAY THEME
    Color-only pass. NO geometry or behavior changes.
 
    --accent      = the tournament accent itself.
@@ -8184,6 +8184,44 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 .modal-btn.reset-danger,
 #testLogView .test-remove-auth {
   color:#fff!important;
+}
+
+
+/* =========================================================
+   SSHCP V16.4 — FINAL-ACTION / CLEAR VISUAL POLISH +
+   COMPLETED-LEADERBOARD REFRESH CONTINUITY
+   No table geometry, scoring, tie logic, or theme-token changes.
+   ========================================================= */
+
+/* CLEAR is the destructive score-entry utility: retain its neutral/white
+   surface and current theme-aware text, but use the established red border. */
+.score-entry-clear{
+  border:5px solid var(--red)!important;
+}
+
+/* BREAK TIE and SCRAMBLE SUMMARY are already strong filled actions.
+   Remove the old black outline from the completed footer actions and from
+   SCRAMBLE SUMMARY inside the Tie Break Result popup. */
+.leader-final-action.break-tie,
+.leader-final-action.tournament-summary,
+.modal-btn.tournament-summary-button{
+  border:0!important;
+}
+
+/* Completed-leaderboard pull-refresh continuity.
+   The hidden REFRESH footer cell is the exact 2fr target. With 14px outer
+   padding + 8px grid gap, its left edge is W/3 + 10px. Using that same
+   pre-paint position prevents the restored BREAK TIE / SCRAMBLE SUMMARY
+   button from shifting a few pixels when JS measures the footer after load. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  left:calc(33.333333% + 10px)!important;
+}
+
+/* During HTML parse the completed shell can exist a fraction before the
+   saved final-action mode is reapplied. Never flash the empty base button. */
+#leaderboardView .leaderboard-screen.tournament-complete
+.leader-final-action:not(.break-tie):not(.tournament-summary){
+  visibility:hidden!important;
 }
 
 </style>
@@ -8290,7 +8328,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.2colorchange</span>
+          <span class="home-version-info">SSHCP V16.4</span>
         </button>
 
       </div>
@@ -10235,7 +10273,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.2colorchange TEST LOG',
+        'SSHCP V16.4 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
