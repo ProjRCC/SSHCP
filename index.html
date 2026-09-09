@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 5.9O-Q4N8Z2 | BUILD KEY: 5.10-KCCY4Z -->
+<!-- SSHCP | BASE KEY: 5.10-KCCY4Z | BUILD KEY: 5.11-M7Q2VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.10 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.11 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7097,6 +7097,166 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   pointer-events:none!important;
 }
 
+
+/* =========================================================
+   SSHCP V5.11 — ROUND STACK + COMPLETED FOOTER
+   ========================================================= */
+
+/* ROUND is a true three-line visual stack. THRU is intentionally tiny —
+   almost a divider — while score and completed-hole count carry the meaning. */
+#leaderboardView .leader-through-cell{
+  display:grid!important;
+  grid-template-columns:100%!important;
+  grid-template-rows:17.5% 30% 5% 30% 17.5%!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:0!important;
+  padding:0 2%!important;
+}
+#leaderboardView .leader-through-score{
+  grid-row:2!important;
+  order:initial!important;
+  flex:none!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  font-weight:800!important;
+  line-height:.92!important;
+}
+#leaderboardView .leader-through-label{
+  display:contents!important;
+  order:initial!important;
+  flex:none!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+}
+#leaderboardView .leader-through-word{
+  grid-row:3!important;
+  display:flex!important;
+  width:100%!important;
+  height:100%!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  font-weight:400!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  position:relative!important;
+  z-index:1!important;
+}
+#leaderboardView .leader-through-value,
+#leaderboardView .leader-through-value.has-progress{
+  grid-row:4!important;
+  display:flex!important;
+  width:100%!important;
+  height:100%!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  font-weight:800!important;
+  line-height:.92!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  position:relative!important;
+  z-index:1!important;
+}
+
+/* Completed tournament: remove the separate action row and use one footer row.
+   The existing button bottom stays anchored; both controls grow upward. */
+#leaderboardView .leaderboard-screen.tournament-complete{
+  --v511-complete-button-h:clamp(64px,8.5dvh,82px);
+  display:grid!important;
+  grid-template-columns:10px minmax(0,1fr) 8px minmax(0,2fr) 10px!important;
+  grid-template-rows:
+    auto
+    var(--v5-leader-head-h,52px)
+    minmax(0,1fr)
+    clamp(8px,1dvh,12px)
+    calc(var(--v511-complete-button-h) + 8px + env(safe-area-inset-bottom))!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-top{
+  grid-column:1 / -1!important;
+  grid-row:1!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-table-head{
+  grid-column:1 / -1!important;
+  grid-row:2!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-content{
+  grid-column:1 / -1!important;
+  grid-row:3!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-update-note{
+  display:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  grid-column:4!important;
+  grid-row:5!important;
+  display:flex!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0 0 calc(8px + env(safe-area-inset-bottom)) 0!important;
+  align-items:stretch!important;
+  justify-content:stretch!important;
+  overflow:visible!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0 5%!important;
+  border:3px solid #000!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom{
+  grid-column:2!important;
+  grid-row:5!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0 0 calc(8px + env(safe-area-inset-bottom)) 0!important;
+  gap:0!important;
+  background:rgba(255,255,255,.96)!important;
+  align-items:stretch!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
+  display:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0 4%!important;
+  border:2px solid var(--gold)!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+  color:#000!important;
+  font-size:clamp(14px,2.4dvh,19px)!important;
+  line-height:1!important;
+}
+
   </style>
 </head>
 
@@ -7201,7 +7361,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V5.10</span>
+          <span class="home-version-info">SSHCP V5.11</span>
         </button>
 
       </div>
@@ -7437,7 +7597,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <div class="leader-hcp-header"><span>HCP</span></div>
 
-        <div>STATUS</div>
+        <div>ROUND</div>
 
         <div>TOTAL</div>
 
@@ -7732,7 +7892,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.10
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.11
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -9196,7 +9356,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.10 TEST LOG',
+        'SSHCP V5.11 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13214,6 +13374,17 @@ let scoreTimingDetail =
           getAuthorizedTeam() || ''
         );
 
+      const completedMarkerByTeam = new Map();
+      if (tournamentIsComplete(rows) && hasViewedTournamentTieBreak()) {
+        const podiumForMarkers = buildTournamentPodium(rows);
+        podiumForMarkers.annotations.forEach((annotation, podiumRow) => {
+          const key = Number.isFinite(Number(podiumRow && podiumRow.slot))
+            ? 'slot:' + Number(podiumRow.slot)
+            : 'team:' + normalizeName((podiumRow && podiumRow.team) || '');
+          completedMarkerByTeam.set(key, annotation);
+        });
+      }
+
       rows.forEach(
         (row, index) => {
 
@@ -13277,9 +13448,11 @@ let scoreTimingDetail =
           teamAnchor.className = 'leader-team-anchor';
           teamAnchor.appendChild(teamName);
 
-          if (tournamentIsComplete(rows) && hasViewedTournamentTieBreak()) {
-            const podiumForMarkers = buildTournamentPodium(rows);
-            const annotation = podiumForMarkers.annotations.get(row);
+          if (completedMarkerByTeam.size) {
+            const markerKey = Number.isFinite(Number(row && row.slot))
+              ? 'slot:' + Number(row.slot)
+              : 'team:' + normalizeName((row && row.team) || '');
+            const annotation = completedMarkerByTeam.get(markerKey);
             if (annotation && annotation.marks) {
               const marker = document.createElement('span');
               marker.className = 'leader-place-marker';
@@ -13476,7 +13649,7 @@ let scoreTimingDetail =
 
 
           throughWord.textContent =
-            'H';
+            'THRU';
 
 
           const throughValue =
@@ -13831,7 +14004,7 @@ let scoreTimingDetail =
     function fitLeaderboardTeamV55(teamCell, teamAnchor, team, rowHeight) {
       if (!teamCell || !team) return;
 
-      const targetSize = Math.min(36, rowHeight * 0.50);
+      const targetSize = Math.min(36, rowHeight * 0.475);
       fitTwoLineTeamTextV58(
         teamCell,
         teamAnchor,
@@ -13875,7 +14048,8 @@ let scoreTimingDetail =
         const team = row.querySelector('.leader-team-name');
         const hcp = row.querySelector('.leader-hcp-cell');
         const score = row.querySelector('.leader-through-score');
-        const statusLabel = row.querySelector('.leader-through-label');
+        const thruWord = row.querySelector('.leader-through-word');
+        const thruValue = row.querySelector('.leader-through-value');
         const total = row.querySelector('.leader-total');
 
         /* Every row-driven label starts from its approved row-height target.
@@ -13912,19 +14086,22 @@ let scoreTimingDetail =
           });
         }
 
-        if (statusLabel) {
-          fitTextToBoxV5(
-            statusLabel,
-            statusLabel,
-            rowHeight * 0.40,
-            8,
-            {
-              horizontalPad: 4,
-              verticalPad: 1,
-              wrap: false,
-              lineHeight: 0.92
-            }
-          );
+        if (thruWord) {
+          fitTextToBoxV5(thruWord, thruWord, rowHeight * 0.05, 3, {
+            horizontalPad: 2,
+            verticalPad: 0,
+            wrap: false,
+            lineHeight: 1
+          });
+        }
+
+        if (thruValue) {
+          fitTextToBoxV5(thruValue, thruValue, rowHeight * 0.30, 8, {
+            horizontalPad: 4,
+            verticalPad: 1,
+            wrap: false,
+            lineHeight: 0.92
+          });
         }
       });
     }
