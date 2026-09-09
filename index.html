@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.4-86Y7NN | BUILD KEY: 16.5-N3A6IM -->
+<!-- SSHCP | BASE KEY: 16.5-N3A6IM | BUILD KEY: 16.6-H4KD4J -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7927,7 +7927,10 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 #leaderboardView .leader-table,
 #leaderboardView .leader-content.short-leaderboard .leader-table{
   width:100%!important;
-  height:100%!important;
+  /* V16.6: the viewport remains capped at 8 visible rows, but the table
+     itself must be allowed to grow for Team 9+ so .leader-content becomes
+     a real scroll container. <=8-team geometry remains unchanged. */
+  height:auto!important;
   min-height:100%!important;
   margin:0!important;
   box-sizing:border-box!important;
@@ -8432,7 +8435,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.5</span>
+          <span class="home-version-info">SSHCP V16.6</span>
         </button>
 
       </div>
@@ -10384,7 +10387,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.5 TEST LOG',
+        'SSHCP V16.6 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -15390,12 +15393,13 @@ let scoreTimingDetail =
       els.leaderContent.style.setProperty('--v16-visible-row-count', String(rowCount));
 
       requestAnimationFrame(() => {
-        const table = els.leaderContent.querySelector('.leader-table');
-        const actualContentHeight = table
-          ? table.getBoundingClientRect().height
-          : els.leaderContent.clientHeight;
-        const rowHeight = actualContentHeight > 0
-          ? actualContentHeight / rowCount
+        /* V16.6: row height belongs to the visible leaderboard viewport,
+           not to the full table. With 9+ teams the table is taller than the
+           viewport by design; dividing total table height by 8 would inflate
+           every row and destroy the proven <=8-team geometry. */
+        const actualViewportHeight = els.leaderContent.clientHeight;
+        const rowHeight = actualViewportHeight > 0
+          ? actualViewportHeight / rowCount
           : rowHeightInitial;
 
         els.leaderContent.style.setProperty('--leader-row-height', rowHeight + 'px');
