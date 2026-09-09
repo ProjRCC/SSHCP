@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 15.15-EDULDC | BUILD KEY: 16-VWDR5Z -->
+<!-- SSHCP | BASE KEY: 16-VWDR5Z | BUILD KEY: 16.1-46C9ZE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7966,6 +7966,41 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   overflow:hidden!important;
 }
 
+/* =========================================================
+   SSHCP V16.1 — NARROW GOLDEN-V16 PATCH
+   1) Center only the outer Scorecard shell on large screens.
+   2) The score CELL is the notation boundary; the gold tile may no longer
+      clip circle/square notation. Score-entry popup rules are untouched.
+   ========================================================= */
+
+/* V16.1 iPad / large-screen correction. The V5.10 rule constrained the
+   outer #scorecardView to 760px but left that outer view itself aligned to
+   the viewport's left edge. Center that existing bounded shell; phone width
+   and every internal percentage/row equation remain unchanged. */
+#scorecardView{
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+/* V16.1 score notation layering. The cell is the hard outer clipping box.
+   The 1:1.5 gold/gray button remains the background/highlight layer, while
+   its notation is allowed to paint outside that tile when required. */
+#scorecardView .score-cell{
+  position:relative!important;
+  overflow:hidden!important;
+}
+#scorecardView .score-button,
+#scorecardView .score-button.empty,
+#scorecardView .score-button.unsaved,
+#scorecardView .score-button.saved{
+  overflow:visible!important;
+}
+#scorecardView .score-button .score-mark,
+#scorecardView .score-button .score-mark-number{
+  position:relative!important;
+  z-index:2!important;
+}
+
 </style>
 </head>
 
@@ -8070,7 +8105,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16</span>
+          <span class="home-version-info">SSHCP V16.1</span>
         </button>
 
       </div>
@@ -10015,7 +10050,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16 TEST LOG',
+        'SSHCP V16.1 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -10729,7 +10764,6 @@ let scoreTimingDetail =
     async function showScorecard() {
 
       const preserveHydratedPosition = scorecardHydratedFromSnapshotV53;
-      const hydratedScrollTop = scorecardHydratedScrollTopV53;
 
       if (leaderboardAutoScrollTimer) {
         clearTimeout(leaderboardAutoScrollTimer);
@@ -10757,16 +10791,15 @@ let scoreTimingDetail =
       }
 
       if (preserveHydratedPosition) {
+        /*
+          SSHCP V16.1 — a real/browser refresh may hydrate the old Scorecard
+          snapshot immediately so the screen does not flash blank, but once the
+          fresh Cloudflare read finishes the old manual scroll position is no
+          longer authoritative. Re-run the exact same active-hole / four-below
+          positioning used when returning from Leaderboard to Scorecard.
+        */
         scorecardHydratedFromSnapshotV53 = false;
-        requestAnimationFrame(() => {
-          if (!els.scoreScroll) return;
-          const maxScroll = Math.max(0, els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight);
-          els.scoreScroll.scrollTop = Math.min(
-            Math.max(0, hydratedScrollTop),
-            maxScroll
-          );
-          rememberScorePosition();
-        });
+        restoreScorePosition();
       } else {
         restoreScorePosition();
       }
