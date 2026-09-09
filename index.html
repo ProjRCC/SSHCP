@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.6-H4KD4J | BUILD KEY: 16.7-HXV8FX -->
+<!-- SSHCP | BASE KEY: 16.7-HXV8FX | BUILD KEY: 16.8-ST8UPK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8341,9 +8341,10 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
 /* =========================================================
-   SSHCP V16.7 — 9-TEAM LEADERBOARD ORIENTATION + 10s LIVE REFRESH
+   SSHCP V16.8 — 9+ TEAM AUTO-ORIENTATION + RESOLVED FINAL PLACES
    - LIVE LEADERBOARD entry: fresh read + 1.5s authorized-team auto-position.
-   - Manual/background refreshes preserve the current scroll position.
+   - 10-second background refresh: top -> fresh read -> 1.5s authorized-team auto-position.
+   - Manual REFRESH button preserves the golfer's current scroll position.
    - Live refresh/progress cadence: 10 seconds.
    - DELETE ALL YES restored as readable red-outline danger action.
    ========================================================= */
@@ -8452,7 +8453,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.7</span>
+          <span class="home-version-info">SSHCP V16.8</span>
         </button>
 
       </div>
@@ -10404,7 +10405,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.7 TEST LOG',
+        'SSHCP V16.8 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11184,7 +11185,7 @@ let scoreTimingDetail =
       );
 
 
-      /* V16.7 — entering LIVE LEADERBOARD is an explicit orientation event.
+      /* V16.8 — entering LIVE LEADERBOARD is an explicit orientation event.
          Always begin at the top, perform an immediate fresh read, then let the
          established 1.5-second authorized-team positioning bring a team below
          the visible eight rows into view. Manual REFRESH and the background
@@ -13460,7 +13461,16 @@ let scoreTimingDetail =
           els.leaderboardView.classList.remove('leader-auto-refresh-active');
         }
 
-        await loadLeaderboard(false, false);
+        /* V16.8 — the 10-second live auto-refresh uses the same orientation
+           contract as entering LIVE LEADERBOARD / browser pull-refresh:
+           start from the top, fresh-read immediately, then let the established
+           1.5-second authorized-team positioning bring a team below the visible
+           eight rows back into view. */
+        cancelLeaderboardAutoScroll();
+        if (els.leaderContent) {
+          els.leaderContent.scrollTop = 0;
+        }
+        await loadLeaderboard(false, true);
       }, 10000);
     }
 
@@ -14656,9 +14666,18 @@ let scoreTimingDetail =
       let previousNet = null;
       let previousPlace = 0;
 
+      /* V16.8 — once FINAL RESULTS can legitimately reveal podium order,
+         its PLACE labels must match SCRAMBLE SUMMARY immediately. A first-place
+         tie remains intentionally unresolved until TIE BREAK is viewed; when
+         there is no first-place tie, podium places 1/2/3 are already safe to
+         resolve and lower unresolved ties use T4/T6/etc. */
+      const completedForPlaces = tournamentIsComplete(rows);
+      const firstPlaceTieForPlaces = completedForPlaces
+        ? firstPlaceTiedRows(rows)
+        : [];
       const useResolvedTournamentPlaces =
-        tournamentIsComplete(rows) &&
-        hasViewedTournamentTieBreak();
+        completedForPlaces &&
+        (firstPlaceTieForPlaces.length < 2 || hasViewedTournamentTieBreak());
 
       const authorizedTeamName =
         normalizeName(
@@ -14666,7 +14685,7 @@ let scoreTimingDetail =
         );
 
       const completedMarkerByTeam = new Map();
-      if (tournamentIsComplete(rows) && hasViewedTournamentTieBreak()) {
+      if (useResolvedTournamentPlaces) {
         const podiumForMarkers = buildTournamentPodium(rows);
         podiumForMarkers.annotations.forEach((annotation, podiumRow) => {
           const key = Number.isFinite(Number(podiumRow && podiumRow.slot))
