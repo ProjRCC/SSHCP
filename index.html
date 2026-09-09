@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.3-I5D7K3 | BUILD KEY: 16.4-86Y7NN -->
+<!-- SSHCP | BASE KEY: 16.4-86Y7NN | BUILD KEY: 16.5-N3A6IM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,6 +112,63 @@
               }
             }
           }
+        } catch (e) {}
+
+        /* V16.5 — establish the anchored V16 shell variables before first
+           paint. Prefer the exact same-size saved geometry; otherwise compute
+           the same S25 multiplier formula synchronously from this viewport.
+           Runtime geometry recomputes normally after initialization. */
+        try {
+          var v16NowW = window.innerWidth || 1;
+          var v16NowH = window.innerHeight || 1;
+          var savedV16Shell = JSON.parse(
+            sessionStorage.getItem('sshcpV16ShellGeometry') || 'null'
+          );
+          var bootV16Vars = null;
+
+          if (savedV16Shell && savedV16Shell.vars) {
+            var v16CloseW = Math.abs((savedV16Shell.w || 0) - v16NowW) <= 8;
+            var v16CloseH = Math.abs((savedV16Shell.h || 0) - v16NowH) <= 12;
+            if (v16CloseW && v16CloseH) {
+              bootV16Vars = savedV16Shell.vars;
+            }
+          }
+
+          if (!bootV16Vars) {
+            var v16Width = Math.max(1, Math.min(760, v16NowW));
+            var v16Height = Math.max(1, v16NowH);
+            var v16Sx = Math.max(0.38, Math.min(1.00, v16Width / 756));
+            var v16Sy = Math.max(0.40, Math.min(0.68, v16Height / 1423));
+            var v16Px = function (value) { return Math.max(1, value * v16Sx); };
+            var v16Py = function (value) { return Math.max(1, value * v16Sy); };
+
+            bootV16Vars = {
+              '--v16-rail': v16Px(24),
+              '--v16-nav-w': v16Px(141),
+              '--v16-nav-h': v16Py(78),
+              '--v16-top-inset': v16Py(14),
+              '--v16-nav-context-gap': v16Py(12),
+              '--v16-context-h': v16Py(88),
+              '--v16-context-table-gap': v16Py(12),
+              '--v16-score-table-footer-gap': v16Py(18),
+              '--v16-leader-table-footer-gap': v16Py(28),
+              '--v16-footer-h': v16Py(113),
+              '--v16-bottom-gap': v16Py(18),
+              '--v16-internal-gap': v16Px(28)
+            };
+            bootV16Vars['--v16-final-action-left'] =
+              (v16Width / 3) +
+              (bootV16Vars['--v16-rail'] / 3) +
+              ((bootV16Vars['--v16-internal-gap'] * 2) / 3);
+          }
+
+          var v16RootStyle = document.documentElement.style;
+          Object.keys(bootV16Vars).forEach(function (name) {
+            var value = Number(bootV16Vars[name]);
+            if (Number.isFinite(value)) {
+              v16RootStyle.setProperty(name, value + 'px');
+            }
+          });
         } catch (e) {}
       } catch (e) {
         window.__sshcpBootTeam = '';
@@ -8224,6 +8281,53 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   visibility:hidden!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V16.5 — FINAL ACTION / SCORE CLEAR / REFRESH POLISH
+   Visual + refresh-race corrections only. No leaderboard row math,
+   scoring semantics, tie resolution, or V16 anchor geometry changes.
+   ========================================================= */
+
+/* CLEAR returns to a quiet destructive utility treatment. */
+.score-entry-clear{
+  border-color:var(--muted)!important;
+  color:var(--muted)!important;
+}
+
+/* Filled Final Results actions and the Summary action inside Tie Break Result
+   use their fill alone. Explicitly suppress browser focus/appearance rings so
+   the old black frame cannot reappear after tapping or restoring state. */
+#leaderboardView .leader-final-action.break-tie,
+#leaderboardView .leader-final-action.tournament-summary,
+.modal-overlay.tournament-result .modal-btn.tournament-summary-button{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+
+/* The completed action occupies the exact hidden 2fr REFRESH footer cell from
+   first paint onward. Runtime uses the same variables, so browser pull-refresh
+   has no second-frame position/size correction to flicker through. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  left:var(--v16-final-action-left, calc(33.333333% + 10px))!important;
+  right:var(--v16-rail,12px)!important;
+  top:auto!important;
+  bottom:calc(var(--v16-bottom-gap,9px) + env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  height:var(--v16-footer-h,56px)!important;
+  min-height:var(--v16-footer-h,56px)!important;
+  max-height:var(--v16-footer-h,56px)!important;
+}
+
+#leaderboardView .leaderboard-screen.tournament-complete
+.leader-final-slot .leader-final-action{
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+}
 </style>
 </head>
 
@@ -8328,7 +8432,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.4</span>
+          <span class="home-version-info">SSHCP V16.5</span>
         </button>
 
       </div>
@@ -8641,7 +8745,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
             button.classList.add(mode === 'break-tie' ? 'break-tie' : 'tournament-summary');
             if (mode !== 'break-tie') button.classList.add('summary-label');
             button.innerHTML = '<span class="leader-final-main">' +
-              String(label || (mode === 'break-tie' ? 'BREAK TIE' : 'SCRAMBLE SUMMARY'))
+              String(mode === 'break-tie' ? 'TIE BREAK' : (label || 'SCRAMBLE SUMMARY'))
                 .replace(/[&<>"']/g, function (c) {
                   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
                 }) +
@@ -9144,6 +9248,13 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
     let saveQueued =
+      false;
+
+
+    /* V16.5 — if LIVE LEADERBOARD is tapped while a score write is still
+       being verified, do not let a pre-save leaderboard read become the
+       visible final state for the next 5-second cycle. */
+    let leaderboardRefreshAfterScoreSave =
       false;
 
 
@@ -10273,7 +10384,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.4 TEST LOG',
+        'SSHCP V16.5 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11053,6 +11164,16 @@ let scoreTimingDetail =
       );
 
 
+      /* V16.5 — LIVE LEADERBOARD already performs a fresh read on entry.
+         The edge case was tapping it while ENTER SCORES was still in flight:
+         that read could beat the verified write and return THRU 17, leaving
+         the normal 5-second cycle to discover completion later. Queue the
+         fresh read for the instant the score-save chain settles instead. */
+      if (saveInProgress || saveQueued) {
+        leaderboardRefreshAfterScoreSave = true;
+        startLoadingLine();
+        return;
+      }
 
 
       if (
@@ -11943,9 +12064,28 @@ let scoreTimingDetail =
         '--v16-internal-gap': px(28)
       };
 
+      /* Completed Final Results uses a 1fr / 2fr footer after subtracting
+         rails and the internal gap. Store the exact second-column left edge
+         as a variable so parse-time and runtime use the same anchor. */
+      vars['--v16-final-action-left'] =
+        (width / 3) +
+        (vars['--v16-rail'] / 3) +
+        ((vars['--v16-internal-gap'] * 2) / 3);
+
       Object.entries(vars).forEach(([name, value]) => {
         view.style.setProperty(name, value + 'px');
       });
+
+      try {
+        sessionStorage.setItem(
+          'sshcpV16ShellGeometry',
+          JSON.stringify({
+            w: window.innerWidth || 0,
+            h: window.innerHeight || 0,
+            vars
+          })
+        );
+      } catch (e) {}
 
       const navButtons = view.querySelectorAll('.nav-button');
       navButtons.forEach(button => {
@@ -13165,14 +13305,35 @@ let scoreTimingDetail =
 
         updateSubmitButtonState();
 
+        let queuedAnotherSave = false;
+
         if (saveQueued) {
           saveQueued = false;
 
           if (hasPendingScores()) {
+            queuedAnotherSave = true;
             setTimeout(
               () => submitScores(),
               0
             );
+          }
+        }
+
+        /* If the player moved to LIVE LEADERBOARD while this score was being
+           verified, refresh immediately after the final queued save attempt.
+           This is event-driven from score verification, not the 5-second idle
+           leaderboard timer, so the completed state appears right away. */
+        if (leaderboardRefreshAfterScoreSave && !queuedAnotherSave) {
+          const shouldRefreshNow = currentView === 'leaderboard';
+          leaderboardRefreshAfterScoreSave = false;
+
+          if (shouldRefreshNow) {
+            setTimeout(
+              () => loadLeaderboard(false),
+              0
+            );
+          } else {
+            stopLoadingLine();
           }
         }
 
@@ -13669,7 +13830,7 @@ let scoreTimingDetail =
       button.setAttribute('aria-hidden', 'false');
 
       if (mode === 'break-tie') {
-        button.innerHTML = '<span class="leader-final-main">BREAK TIE</span>';
+        button.innerHTML = '<span class="leader-final-main">TIE BREAK</span>';
         button.classList.add('break-tie');
       } else {
         button.innerHTML =
@@ -13714,38 +13875,27 @@ let scoreTimingDetail =
       const slot = els.leaderboardView
         ? els.leaderboardView.querySelector('.leader-final-slot')
         : null;
-      const target = els.leaderRefreshButton;
 
-      if (!screen || !screen.classList.contains('tournament-complete') || !slot || !target) {
+      if (!screen || !screen.classList.contains('tournament-complete') || !slot) {
         return;
       }
 
+      /* V16.5 — geometry is now deterministic CSS from the same V16 shell
+         variables used by the footer. JS only fits the action label; it no
+         longer moves/resizes the button one frame after paint. */
       requestAnimationFrame(() => {
-        const screenRect = screen.getBoundingClientRect();
-        const targetRect = target.getBoundingClientRect();
-        if (targetRect.width <= 0 || targetRect.height <= 0) return;
-
-        slot.style.setProperty('left', (targetRect.left - screenRect.left) + 'px', 'important');
-        slot.style.setProperty('top', (targetRect.top - screenRect.top) + 'px', 'important');
-        slot.style.setProperty('right', 'auto', 'important');
-        slot.style.setProperty('bottom', 'auto', 'important');
-        slot.style.setProperty('width', targetRect.width + 'px', 'important');
-        slot.style.setProperty('height', targetRect.height + 'px', 'important');
-        slot.style.setProperty('min-height', targetRect.height + 'px', 'important');
-        slot.style.setProperty('max-height', targetRect.height + 'px', 'important');
-
         const action = slot.querySelector('.leader-final-action');
-        if (action) {
-          action.style.setProperty('height', targetRect.height + 'px', 'important');
-          action.style.setProperty('min-height', targetRect.height + 'px', 'important');
-          action.style.setProperty('max-height', targetRect.height + 'px', 'important');
-          fitTextToBoxV5(action, action, targetRect.height * 0.34, 11, {
-            horizontalPad: 12,
-            verticalPad: 5,
-            wrap: false,
-            lineHeight: 1
-          });
-        }
+        if (!action) return;
+
+        const actionHeight = action.getBoundingClientRect().height;
+        if (actionHeight <= 0) return;
+
+        fitTextToBoxV5(action, action, actionHeight * 0.34, 11, {
+          horizontalPad: 12,
+          verticalPad: 5,
+          wrap: false,
+          lineHeight: 1
+        });
       });
     }
 
