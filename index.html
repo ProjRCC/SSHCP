@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 5.11-M7Q2VX | BUILD KEY: 5.12-P8R4NX -->
+<!-- SSHCP | BASE KEY: 5.12-P8R4NX | BUILD KEY: 15.13-X4LGNL -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.12 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V15.13 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7099,7 +7099,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
 
 /* =========================================================
-   SSHCP V5.12 — ROUND STACK + COMPLETED FOOTER
+   SSHCP V15.13 — ROUND STACK + COMPLETED FOOTER
    ========================================================= */
 
 /* ROUND is a true three-line visual stack. THRU is intentionally tiny —
@@ -7275,7 +7275,128 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   padding-right:3px!important;
 }
 
-  </style>
+  
+/* =========================================================
+   SSHCP V15.13 — ONE LEADERBOARD SHELL, LIVE + FINAL
+   =========================================================
+   Completion changes content, not geometry:
+   LIVE LEADERBOARD -> FINAL RESULTS
+   SCORECARD / REFRESH -> SCORECARD / BREAK TIE or SCRAMBLE SUMMARY
+   Header, 8-row table, table bottom, footer height and footer position stay identical.
+*/
+#leaderboardView .leaderboard-screen.tournament-complete{
+  display:flex!important;
+  flex-direction:column!important;
+  grid-template-columns:none!important;
+  grid-template-rows:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-top,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-table-head,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-content{
+  display:flex!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-top{
+  flex:0 0 auto!important;
+  flex-direction:column!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
+  flex:0 0 auto!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-table-head{
+  flex:0 0 var(--v5-leader-head-h,52px)!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-content{
+  flex:1 1 auto!important;
+  min-height:0!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-update-note{
+  display:none!important;
+}
+
+/* Final action occupies the exact right-hand REFRESH footprint. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  position:absolute!important;
+  left:calc(60% + 4.4px)!important;
+  right:14px!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  height:53px!important;
+  min-height:53px!important;
+  max-height:53px!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:stretch!important;
+  justify-content:stretch!important;
+  z-index:95!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action{
+  width:100%!important;
+  height:53px!important;
+  min-height:53px!important;
+  max-height:53px!important;
+  margin:0!important;
+  padding:0 5%!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  position:static!important;
+  transform:none!important;
+}
+
+/* Keep the normal live footer shell. Hide REFRESH and leave its footprint
+   for the absolutely-positioned final action above. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom{
+  position:relative!important;
+  z-index:90!important;
+  display:grid!important;
+  grid-template-columns:3fr 2fr!important;
+  gap:11px!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:53px!important;
+  margin:0!important;
+  padding:0 14px calc(8px + env(safe-area-inset-bottom)) 14px!important;
+  background:rgba(255,255,255,.96)!important;
+  flex:0 0 auto!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard{
+  width:100%!important;
+  height:53px!important;
+  min-height:53px!important;
+  max-height:53px!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid var(--gold)!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  background:#fafafa!important;
+  color:var(--gold)!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
+  display:block!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  width:100%!important;
+  height:53px!important;
+  min-height:53px!important;
+}
+
+/* Final title remains visible; only the live timer/progress line disappears. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar::after{
+  display:none!important;
+  animation:none!important;
+}
+
+/* Asterisks are retired from leaderboard and summary. */
+#leaderboardView .leader-place-marker,
+.modal-overlay.tournament-summary .summary-place-marker,
+#leaderboardView .leader-team-marker,
+.modal-overlay.tournament-summary .summary-team-marker{
+  display:none!important;
+}
+
+</style>
 </head>
 
 
@@ -7379,7 +7500,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V5.12</span>
+          <span class="home-version-info">SSHCP V15.13</span>
         </button>
 
       </div>
@@ -7910,7 +8031,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.12
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V15.13
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -9374,7 +9495,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.12 TEST LOG',
+        'SSHCP V15.13 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -12791,15 +12912,18 @@ let scoreTimingDetail =
         ? els.leaderboardView.querySelector('.leaderboard-screen')
         : null;
 
-      if (complete && screen && !screen.classList.contains('tournament-complete')) {
-        measureCompletedActionSpaceV53();
-      }
-
       if (screen) {
         screen.classList.toggle(
           'tournament-complete',
           complete
         );
+      }
+
+      const leaderTitle = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-title')
+        : null;
+      if (leaderTitle) {
+        leaderTitle.textContent = complete ? 'FINAL RESULTS' : 'LIVE LEADERBOARD';
       }
 
       if (!complete) {
@@ -13012,18 +13136,18 @@ let scoreTimingDetail =
             );
 
             annotations.set(winner, {
-              marks: '*',
+              marks: '',
               note:
-                '* Won on ' +
+                '• Won on ' +
                 ordinalHandicapHole(resolution.decidingIndex) +
                 (actualHole ? ' (Hole\u00A0' + actualHole + ')' : '')
             });
           }
           else {
             annotations.set(winner, {
-              marks: '**',
+              marks: '',
               note:
-                '** Won ' +
+                '• Won ' +
                 place +
                 ordinalSuffix(place) +
                 '-place tiebreak on ' +
@@ -13247,7 +13371,6 @@ let scoreTimingDetail =
 
       rows.slice(0, 3).forEach((row, index) => {
         const annotation = podium.annotations.get(row);
-        const marks = annotation ? annotation.marks : '';
         const hcp = getSummaryHandicap(row);
         const strokesText =
           String(row.totalStrokes ?? '') +
@@ -13256,7 +13379,6 @@ let scoreTimingDetail =
         html +=
           '<div class="tournament-summary-row place-' + (index + 1) + '">' +
           '<div class="tournament-summary-place"><span class="summary-place-number">' + escapeHtml(String(index + 1)) +
-          (marks ? '<span class="summary-place-marker" aria-hidden="true">' + escapeHtml(marks) + '</span>' : '') +
           '</span></div>' +
           '<div class="tournament-summary-team"><span class="summary-team-anchor">' +
           '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
@@ -13479,21 +13601,6 @@ let scoreTimingDetail =
           const teamAnchor = document.createElement('span');
           teamAnchor.className = 'leader-team-anchor';
           teamAnchor.appendChild(teamName);
-
-          if (completedMarkerByTeam.size) {
-            const markerKey = Number.isFinite(Number(row && row.slot))
-              ? 'slot:' + Number(row.slot)
-              : 'team:' + normalizeName((row && row.team) || '');
-            const annotation = completedMarkerByTeam.get(markerKey);
-            if (annotation && annotation.marks) {
-              const marker = document.createElement('span');
-              marker.className = 'leader-place-marker';
-              marker.setAttribute('aria-hidden', 'true');
-              marker.textContent = annotation.marks;
-              placeNumber.appendChild(marker);
-            }
-          }
-
 
           const hcpCell =
             document.createElement(
@@ -14153,9 +14260,9 @@ let scoreTimingDetail =
       const tableBudget = contentRect.bottom - headerRect.top;
       if (!Number.isFinite(tableBudget) || tableBudget <= 0) return;
 
-      /* V5.7: LIVE and COMPLETE are solved independently from THEIR OWN
-         rendered table boundaries. No screen-height subtraction model and
-         no shared/frozen row height between the two boards. */
+      /* V15.13: LIVE and FINAL use the same rendered shell and therefore
+         the same table-boundary calculation. Completion never creates a
+         second row-height model. */
       const headerHeight = (tableBudget / 9) * 0.85;
       const calculatedRowHeight = Math.max(1, (tableBudget - headerHeight) / 8);
       const complete = screen.classList.contains('tournament-complete');
@@ -14173,11 +14280,14 @@ let scoreTimingDetail =
 
         els.leaderContent.style.setProperty('--leader-row-height', rowHeight + 'px');
 
-        rememberResponsiveGeometryV5(
-          complete
-            ? { leaderHeadComplete: headerHeight, leaderRowComplete: rowHeight, leaderHead: headerHeight, leaderRow: rowHeight }
-            : { leaderHeadLive: headerHeight, leaderRowLive: rowHeight, leaderHead: headerHeight, leaderRow: rowHeight }
-        );
+        rememberResponsiveGeometryV5({
+          leaderHeadLive: headerHeight,
+          leaderRowLive: rowHeight,
+          leaderHeadComplete: headerHeight,
+          leaderRowComplete: rowHeight,
+          leaderHead: headerHeight,
+          leaderRow: rowHeight
+        });
 
         const current = els.leaderContent.scrollTop;
         if (rowHeight > 0 && current > 0) {
