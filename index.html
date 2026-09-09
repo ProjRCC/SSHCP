@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.1-46C9ZE | BUILD KEY: 16.2-PEMNDS -->
+<!-- SSHCP | BASE KEY: 16.2-PEMNDS | BUILD KEY: 16.2colorchange-ZQK4MM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,7 +143,10 @@
   <style>
 
     :root {
-      --gold: #D0A621;
+      --accent: #022F71;
+--on-accent: #FFFFFF;
+--accent-name: Blue;
+      --gold: var(--accent);
       --light-gray: #e6e6e6;
       --test-blue: #6EC8FF;
       --text: #000000;
@@ -798,7 +801,7 @@
 
     .score-button.saved {
       border-color:
-        #D0A621;
+        var(--accent);
 
       background:
         var(--gold);
@@ -2963,7 +2966,7 @@ body.score-team-menu-open .score-fixed-top{
 }
 
 .score-button.saved {
-  border: 1px solid #D0A621 !important;
+  border: 1px solid var(--accent) !important;
   background: var(--gold) !important;
   color: #000 !important;
 }
@@ -8087,6 +8090,102 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   border-width:clamp(3px,calc(var(--v5-score-box,58px) * .075),5px);
 }
 
+
+
+/* =========================================================
+   SSHCP V16.2colorchange — CENTRAL ACCENT / OVERLAY THEME
+   Color-only pass. NO geometry or behavior changes.
+
+   --accent      = the tournament accent itself.
+   --on-accent   = foreground drawn ON an accent-filled surface.
+                   Gold/dark-blue -> white; very light future accent can
+                   switch this one token to black.
+   --accent-name = human-readable Quick Guide label.
+
+   --gold remains a compatibility alias to --accent so every existing
+   accent border/title/progress line follows the centralized color token.
+   ========================================================= */
+
+/* ---------- ACCENT-FILLED SURFACES: use overlay foreground ---------- */
+#homeView .home-scorecard-main,
+#homeView .home-scorecard-arrow,
+#scorecardView .leaderboard-button,
+#scorecardView .submit-button:not(:disabled),
+.score-entry-control .score-step-button,
+.score-entry-enter,
+.modal-btn.primary:not(:disabled),
+.auth-captcha input:checked + .auth-check-box,
+.leader-final-action.tournament-summary,
+.modal-btn.tournament-summary-button,
+.test-switch-auth.authorized,
+.passkey-team-option:active,
+.home-team-option:active,
+#testLogView .test-log-home,
+#leaderboardView .leaderboard-screen:not(.tournament-complete) .access-scorecard {
+  color:var(--on-accent)!important;
+}
+
+/* HOME scorecard arrow is an icon drawn over the accent fill. */
+#homeView .home-scorecard-arrow::after {
+  border-left-color:var(--on-accent)!important;
+  border-top-color:var(--on-accent)!important;
+}
+
+/* ---------- VERIFIED SCORE TILE + TRUE SCORE-CELL NOTATION ---------- */
+#scorecardView .score-button.saved {
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+#scorecardView .score-button.saved .score-mark,
+#scorecardView .score-button.saved .score-mark-number {
+  color:var(--on-accent)!important;
+}
+/* V16.2 notation is painted by the SCORE CELL. Saved notation follows
+   --on-accent; pending/unsaved notation deliberately remains white on gray. */
+#scorecardView .score-cell.score-notation:not(.notation-unsaved) {
+  --v162-notation-color:var(--on-accent)!important;
+}
+
+/* ---------- LEADERBOARD AUTHORIZED / CURRENT PLACE HIGHLIGHT ---------- */
+#leaderboardView .leader-place-cell.authorized-place-cell,
+#leaderboardView .leader-place-cell.authorized-place-cell .leader-place-number,
+#leaderboardView .leader-place-cell.authorized-place-cell .leader-place-marker {
+  color:var(--on-accent)!important;
+}
+
+/* ---------- ACCENT-OUTLINED SECONDARY CONTROLS ----------
+   White/neutral surface + accent border => accent text/icon. */
+#homeView #homeLeaderboardButton,
+#homeView #homeLeaderboardButton:active,
+.score-entry-clear,
+.test-switch-auth:not(.authorized),
+.switch-auth-button,
+.passkey-team-button,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard,
+#leaderboardView .leaderboard-screen.tournament-complete .access-scorecard,
+html.sshcp-pre-complete #leaderboardView .access-scorecard {
+  color:var(--accent)!important;
+}
+
+/* Passkey selector arrow belongs to the outlined secondary control. */
+.passkey-team-button::after {
+  border-top-color:var(--accent)!important;
+}
+
+/* Existing accent-outline TEST add controls already use var(--gold); make the
+   semantic relationship explicit for future accent changes. */
+#testLogView .test-score-action.add,
+#testLogView .test-switch-auth:not(.authorized) {
+  color:var(--accent)!important;
+}
+
+/* Danger actions intentionally remain independent of the accent theme. */
+.leader-final-action.break-tie,
+.modal-btn.reset-danger,
+#testLogView .test-remove-auth {
+  color:#fff!important;
+}
+
 </style>
 </head>
 
@@ -8191,7 +8290,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.2</span>
+          <span class="home-version-info">SSHCP V16.2colorchange</span>
         </button>
 
       </div>
@@ -10136,7 +10235,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.2 TEST LOG',
+        'SSHCP V16.2colorchange TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -15530,12 +15629,19 @@ let scoreTimingDetail =
         );
 
 
+      const accentName =
+        String(
+          getComputedStyle(document.documentElement)
+            .getPropertyValue('--accent-name') || 'Gold'
+        ).trim() || 'Gold';
+
+
       els.modalBody.innerHTML =
         '<ol class="quick-list">' +
           '<li>Tap <strong>ACCESS SCORECARD</strong> for your Team</li>' +
           '<li>Tap a Score Box</li>' +
           '<li>Use <strong>− / +</strong> to set score, <strong>CLEAR</strong> to remove, then <strong>ENTER</strong></li>' +
-          '<li>Gold = Successfully Submitted</li>' +
+          '<li>' + escapeHtml(accentName) + ' = Successfully Submitted</li>' +
           '<li>Gray = Not Submitted - Refresh Page</li>' +
           '<li>Need to correct a score? Tap the score and reenter.</li>' +
         '</ol>' +
