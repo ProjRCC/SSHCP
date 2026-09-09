@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 5.12-P8R4NX | BUILD KEY: 15.13b-SMI49A -->
+<!-- SSHCP | BASE KEY: 15.13c-CHRGR9 | BUILD KEY: 15.13d-DH9SVQ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7488,6 +7488,159 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   display:none!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V15.13d — ROUND TYPOGRAPHY + SINGLE LEADERBOARD GEOMETRY
+   FINAL STATE CHANGES CONTENT ONLY; NOT TABLE GEOMETRY.
+   ========================================================= */
+
+/* ROUND: three direct text lines centered as one stack.
+   30 / 15 / 30 are FONT SIZES as percentages of the full leaderboard row height,
+   not grid-track percentages. */
+#leaderboardView #leaderRows .leader-through-cell{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+#leaderboardView #leaderRows .leader-through-score,
+#leaderboardView #leaderRows .leader-through-word,
+#leaderboardView #leaderRows .leader-through-value{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  width:100%!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  display:block!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  font-weight:800!important;
+}
+#leaderboardView #leaderRows .leader-through-score,
+#leaderboardView #leaderRows .leader-through-value{
+  font-size:calc(var(--leader-row-height,56px) * .30)!important;
+  line-height:.92!important;
+}
+#leaderboardView #leaderRows .leader-through-word{
+  font-size:calc(var(--leader-row-height,56px) * .15)!important;
+  line-height:1!important;
+}
+#leaderboardView #leaderRows .leader-through-label{display:none!important;}
+
+/* ONE leaderboard shell. FINAL inherits the live flex geometry unchanged. */
+#leaderboardView .leaderboard-screen.tournament-complete{
+  display:flex!important;
+  flex-direction:column!important;
+  grid-template-columns:none!important;
+  grid-template-rows:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-top{
+  flex:0 0 auto!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
+  min-height:43px!important;
+  margin-top:5px!important;
+  display:flex!important;
+  visibility:visible!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title{
+  visibility:visible!important;
+  font-size:27px!important;
+}
+/* Preserve the live title-region boundary while removing the moving fill. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar::after{
+  display:block!important;
+  width:100%!important;
+  height:3px!important;
+  background:var(--gold)!important;
+  opacity:1!important;
+  animation:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-table-head{
+  flex:0 0 var(--v5-leader-head-h,52px)!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-content{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-update-note{
+  display:none!important;
+}
+
+/* Footer stays in the exact live footer band; completed state only changes contents. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom{
+  position:relative!important;
+  z-index:90!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;
+  gap:11px!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:8px 14px calc(8px + env(safe-area-inset-bottom))!important;
+  background:rgba(255,255,255,.96)!important;
+  align-items:stretch!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard{
+  grid-column:1!important;
+  min-height:56px!important;
+  width:100%!important;
+  margin:0!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
+  grid-column:2!important;
+  display:block!important;
+  visibility:hidden!important;
+  min-height:56px!important;
+  width:100%!important;
+  margin:0!important;
+  pointer-events:none!important;
+}
+/* Existing final-action node overlays the hidden right footer cell, with the same 11px gap. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  display:block!important;
+  position:absolute!important;
+  left:calc(33.333333% + 5.5px)!important;
+  right:14px!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  height:56px!important;
+  min-height:56px!important;
+  max-height:56px!important;
+  margin:0!important;
+  padding:0!important;
+  z-index:100!important;
+  pointer-events:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:56px!important;
+  min-height:56px!important;
+  max-height:56px!important;
+  margin:0!important;
+  padding:0 4%!important;
+  box-sizing:border-box!important;
+  pointer-events:auto!important;
+}
 </style>
 </head>
 
@@ -13856,19 +14009,11 @@ let scoreTimingDetail =
             );
 
 
-          const throughLabel =
-            document.createElement(
-              'div'
-            );
-
-
-          throughLabel.className =
-            'leader-through-label';
-
-
+          /* V15.13c — ROUND is three direct rows.
+             No nested label wrapper: SCORE / THRU / HOLES COMPLETED. */
           const throughWord =
             document.createElement(
-              'span'
+              'div'
             );
 
 
@@ -13882,7 +14027,7 @@ let scoreTimingDetail =
 
           const throughValue =
             document.createElement(
-              'span'
+              'div'
             );
 
 
@@ -13899,15 +14044,10 @@ let scoreTimingDetail =
             row.thru;
 
 
-          throughLabel.append(
-            throughWord,
-            throughValue
-          );
-
-
           throughCell.append(
             throughScore,
-            throughLabel
+            throughWord,
+            throughValue
           );
 
 
@@ -14315,7 +14455,7 @@ let scoreTimingDetail =
         }
 
         if (thruWord) {
-          fitTextToBoxV5(thruWord, thruWord, rowHeight * 0.05, 3, {
+          fitTextToBoxV5(thruWord, thruWord, rowHeight * 0.15, 3, {
             horizontalPad: 2,
             verticalPad: 0,
             wrap: false,
@@ -14349,12 +14489,11 @@ let scoreTimingDetail =
       const tableBudget = contentRect.bottom - headerRect.top;
       if (!Number.isFinite(tableBudget) || tableBudget <= 0) return;
 
-      /* V5.7: LIVE and COMPLETE are solved independently from THEIR OWN
-         rendered table boundaries. No screen-height subtraction model and
-         no shared/frozen row height between the two boards. */
+      /* V15.13c: there is ONE leaderboard geometry. LIVE and FINAL use
+         the same rendered table boundaries and therefore the same header
+         and eight-row calculation. Completion changes content only. */
       const headerHeight = (tableBudget / 9) * 0.85;
       const calculatedRowHeight = Math.max(1, (tableBudget - headerHeight) / 8);
-      const complete = screen.classList.contains('tournament-complete');
 
       els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
       els.leaderContent.style.setProperty('--leader-row-height', calculatedRowHeight + 'px');
@@ -14369,11 +14508,14 @@ let scoreTimingDetail =
 
         els.leaderContent.style.setProperty('--leader-row-height', rowHeight + 'px');
 
-        rememberResponsiveGeometryV5(
-          complete
-            ? { leaderHeadComplete: headerHeight, leaderRowComplete: rowHeight, leaderHead: headerHeight, leaderRow: rowHeight }
-            : { leaderHeadLive: headerHeight, leaderRowLive: rowHeight, leaderHead: headerHeight, leaderRow: rowHeight }
-        );
+        rememberResponsiveGeometryV5({
+          leaderHeadLive: headerHeight,
+          leaderRowLive: rowHeight,
+          leaderHeadComplete: headerHeight,
+          leaderRowComplete: rowHeight,
+          leaderHead: headerHeight,
+          leaderRow: rowHeight
+        });
 
         const current = els.leaderContent.scrollTop;
         if (rowHeight > 0 && current > 0) {
