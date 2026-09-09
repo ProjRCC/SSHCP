@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 15.14-8V7W9L | BUILD KEY: 15.15-EDULDC -->
+<!-- SSHCP | BASE KEY: 15.15-EDULDC | BUILD KEY: 16-VWDR5Z -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7701,6 +7701,271 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   align-self:end!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V16 — ANCHORED RESPONSIVE SHELLS
+   S25 = 1.00 visual reference. Anchors/buffers define the table rectangle;
+   existing table percentages and typography rules fill that rectangle.
+   HOME / TEST / scoring logic are intentionally not redesigned here.
+   ========================================================= */
+
+#scorecardView .scorecard-screen,
+#leaderboardView .leaderboard-screen{
+  position:relative!important;
+  width:min(760px,100%)!important;
+  height:100dvh!important;
+  min-height:0!important;
+  margin:0 auto!important;
+  overflow:hidden!important;
+}
+
+/* Shared top anchors: outer rails, HOME/INFO corner controls, centered event. */
+#scorecardView .score-fixed-top,
+#leaderboardView .leader-top{
+  padding-top:calc(var(--v16-top-inset,7px) + env(safe-area-inset-top))!important;
+  padding-left:var(--v16-rail,12px)!important;
+  padding-right:var(--v16-rail,12px)!important;
+  padding-bottom:0!important;
+}
+#scorecardView .score-nav,
+#leaderboardView .leader-nav{
+  grid-template-columns:var(--v16-nav-w,70px) minmax(0,1fr) var(--v16-nav-w,70px)!important;
+  column-gap:var(--v16-internal-gap,14px)!important;
+  row-gap:0!important;
+  height:var(--v16-nav-h,39px)!important;
+  min-height:var(--v16-nav-h,39px)!important;
+  max-height:var(--v16-nav-h,39px)!important;
+  padding:0!important;
+  align-items:stretch!important;
+}
+#scorecardView .nav-button,
+#leaderboardView .nav-button{
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#scorecardView .header-brand,
+#leaderboardView .header-brand{
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+
+/* Scorecard context zone = fixed S25-multiplied rectangle. */
+#scorecardView .team-select-wrap{
+  width:100%!important;
+  height:var(--v16-context-h,44px)!important;
+  min-height:var(--v16-context-h,44px)!important;
+  max-height:var(--v16-context-h,44px)!important;
+  margin:var(--v16-nav-context-gap,6px) 0 var(--v16-context-table-gap,6px)!important;
+  padding:0!important;
+}
+#scorecardView .top-team-select{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#scorecardView .score-table-head{
+  width:100%!important;
+  margin:0!important;
+}
+#scorecardView .score-scroll{
+  width:auto!important;
+  min-width:0!important;
+  height:100%!important;
+  margin:0 var(--v16-rail,12px)!important;
+}
+#scorecardView .score-fixed-bottom{
+  padding-top:var(--v16-table-footer-gap,14px)!important;
+  padding-left:var(--v16-rail,12px)!important;
+  padding-right:var(--v16-rail,12px)!important;
+  padding-bottom:calc(var(--v16-bottom-gap,9px) + env(safe-area-inset-bottom))!important;
+}
+#scorecardView .score-bottom-actions{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:0!important;
+}
+#scorecardView .bottom-action,
+#scorecardView .score-bottom-actions .leaderboard-button{
+  width:100%!important;
+  height:var(--v16-footer-h,56px)!important;
+  min-height:var(--v16-footer-h,56px)!important;
+  max-height:var(--v16-footer-h,56px)!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+/* Same row gets both navigation cues: gray HOLE cell + gold mini-box border. */
+#scorecardView .score-button.active-hole-score{
+  border:3px solid var(--gold)!important;
+  box-sizing:border-box!important;
+}
+
+/* Add visible air between eagle/double-bogey rings without changing number/tile math. */
+#scorecardView .score-button .score-mark.double-circle::after,
+#scorecardView .score-button .score-mark.double-square::after{
+  inset:-.13em!important;
+}
+
+/* Leader title/progress occupies the same upper-context envelope as selector. */
+#leaderboardView .leader-top{
+  flex:0 0 auto!important;
+}
+#leaderboardView .leader-title-bar,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
+  width:100%!important;
+  height:var(--v16-context-h,44px)!important;
+  min-height:var(--v16-context-h,44px)!important;
+  max-height:var(--v16-context-h,44px)!important;
+  margin:var(--v16-nav-context-gap,6px) 0 var(--v16-context-table-gap,6px)!important;
+  padding:0!important;
+}
+#leaderboardView .leader-title{
+  width:100%!important;
+  min-width:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+#leaderboardView .leader-table-head{
+  width:auto!important;
+  margin:0 var(--v16-rail,12px)!important;
+  flex:0 0 var(--v5-leader-head-h,52px)!important;
+}
+#leaderboardView .leader-content,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-content{
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0 var(--v16-rail,12px)!important;
+  padding:0!important;
+  flex:1 1 auto!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+}
+#leaderboardView .leader-table,
+#leaderboardView .leader-content.short-leaderboard .leader-table{
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#leaderboardView #leaderRows{
+  min-height:100%!important;
+}
+#leaderboardView #leaderRows > .leader-row{
+  flex:none!important;
+}
+
+/* Footer is independently bottom-anchored. 24px S25 rails / 28px internal gap. */
+#leaderboardView .leader-bottom,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom{
+  position:relative!important;
+  z-index:90!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,2fr) minmax(0,1fr)!important;
+  gap:var(--v16-internal-gap,14px)!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding-top:var(--v16-table-footer-gap,14px)!important;
+  padding-left:var(--v16-rail,12px)!important;
+  padding-right:var(--v16-rail,12px)!important;
+  padding-bottom:calc(var(--v16-bottom-gap,9px) + env(safe-area-inset-bottom))!important;
+  flex:0 0 auto!important;
+  align-items:stretch!important;
+  background:rgba(255,255,255,.96)!important;
+}
+#leaderboardView .leader-bottom .access-scorecard,
+#leaderboardView .leader-bottom .leader-refresh-button,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
+  width:100%!important;
+  height:var(--v16-footer-h,56px)!important;
+  min-height:var(--v16-footer-h,56px)!important;
+  max-height:var(--v16-footer-h,56px)!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom{
+  grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
+  display:block!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  display:block!important;
+  position:absolute!important;
+  z-index:100!important;
+  margin:0!important;
+  padding:0!important;
+  pointer-events:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action{
+  width:100%!important;
+  margin:0!important;
+  pointer-events:auto!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+/* V16 Tie Break Result: 60% box; V15.15 explanation target is unchanged. */
+.modal-overlay.tournament-result .modal-box{
+  height:60dvh!important;
+  max-height:calc(100dvh - 36px)!important;
+}
+.modal-overlay.tournament-result .tiebreak-explanation-inner{
+  font-size:clamp(20px,5.375vw,27.5px)!important;
+  line-height:1.22!important;
+}
+
+/* V16 Scramble Summary: one 80% popup. JS assigns weighted team rows. */
+.modal-overlay.tournament-summary .modal-box{
+  height:80dvh!important;
+  max-height:calc(100dvh - 16px)!important;
+  min-height:0!important;
+}
+.modal-overlay.tournament-summary .modal-text{
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-grid,
+.modal-overlay.tournament-summary .tournament-summary-remaining,
+.modal-overlay.tournament-summary .tournament-summary-notes{
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+
 </style>
 </head>
 
@@ -7805,7 +8070,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V15.15</span>
+          <span class="home-version-info">SSHCP V16</span>
         </button>
 
       </div>
@@ -9519,169 +9784,119 @@ let scoreTimingDetail =
 
 
 
+    function scorecardStartingHoleV16(team = selectedTeam) {
+      if (!team) return 1;
+
+      const candidates = [
+        team.startingHole,
+        team.startHole,
+        team.starting_hole,
+        team.startingHoleNumber,
+        team.starting_hole_number,
+        team.starting
+      ];
+
+      for (const candidate of candidates) {
+        const value = Number(candidate);
+        if (Number.isInteger(value) && value >= 1 && value <= 18) {
+          return value;
+        }
+      }
+
+      return 1;
+    }
+
+
+    function scorecardPlayOrderV16(team = selectedTeam) {
+      const start = Math.max(1, Math.min(18, scorecardStartingHoleV16(team))) - 1;
+      return Array.from({ length: 18 }, (_, offset) => (start + offset) % 18);
+    }
+
+
+    function scorecardActiveHoleIndexV16(scores, team = selectedTeam) {
+      const source = Array.isArray(scores) ? scores : [];
+      const order = scorecardPlayOrderV16(team);
+
+      for (const index of order) {
+        if (source[index] === null || source[index] === undefined || source[index] === '') {
+          return index;
+        }
+      }
+
+      return order.length ? order[order.length - 1] : 0;
+    }
+
+
     function restoreScorePosition(useLocalProgress = false) {
 
       if (
         !selectedTeam ||
         !els.scoreScroll
       ) {
-
         return;
-
       }
-
 
       requestAnimationFrame(
         () => {
-
           requestAnimationFrame(
             () => {
-
               /*
-                SSHCP V5.2 progress positioning:
-                normal page/load positioning uses verified GOLD scores.
-                Immediately after ENTER, useLocalProgress=true lets the
-                viewport follow the newly entered gray score without
-                waiting for Worker verification.
+                SSHCP V16 — Starting Hole controls only the play order / active
+                navigation position. THRU remains independent and is still the
+                count of completed scores.
 
-                The score viewport is exactly nine holes tall.
-
-                Through Hole 5 -> show 1-9
-                Through Hole 6 -> show 2-10
-                Through Hole 7 -> show 3-11
-                ...
-                Through Hole 14 -> show 10-18
-                Hole 15+ -> remain at 10-18
+                The active hole is the first blank score in the team's cyclic
+                Starting-Hole order. The viewport positions that active hole
+                with four course rows below whenever the 1–18 boundaries allow.
+                A wrap from Hole 18 to Hole 1 therefore returns to the beginning.
               */
-              let lastCompletedIndex =
-                -1;
+              const progressScores = useLocalProgress ? localScores : savedScores;
+              const activeIndex = scorecardActiveHoleIndexV16(progressScores, selectedTeam);
 
-              const progressScores =
-                useLocalProgress
-                  ? localScores
-                  : savedScores;
-
-
-              progressScores.forEach(
-                (
-                  score,
-                  index
-                ) => {
-
-                  if (
-                    score !== null
-                  ) {
-
-                    lastCompletedIndex =
-                      index;
-
-                  }
-
-                }
+              const targetIndex = Math.min(
+                9,
+                Math.max(0, activeIndex - 4)
               );
 
+              const row = els.scoreRows.querySelector(
+                '.score-row[data-score-index="' + targetIndex + '"]'
+              );
 
-              if (
-                lastCompletedIndex >= 0
-              ) {
+              if (row) {
+                const maxScroll = Math.max(
+                  0,
+                  els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight
+                );
 
-                const targetIndex =
-                  Math.min(
-                    9,
-                    Math.max(
-                      0,
-                      lastCompletedIndex - 4
-                    )
-                  );
+                const scrollRect = els.scoreScroll.getBoundingClientRect();
+                const rowRect = row.getBoundingClientRect();
+                const targetScroll = els.scoreScroll.scrollTop + (rowRect.top - scrollRect.top);
+                const clampedTarget = Math.min(Math.max(0, targetScroll), maxScroll);
 
+                const reducedMotion = window.matchMedia &&
+                  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-                const row =
-                  els.scoreRows.querySelector(
-                    '.score-row[data-score-index="' +
-                    targetIndex +
-                    '"]'
-                  );
+                const shouldSmooth = !useLocalProgress && !reducedMotion &&
+                  Math.abs(clampedTarget - els.scoreScroll.scrollTop) > 2;
 
-
-                if (row) {
-
-                  const maxScroll =
-                    Math.max(
-                      0,
-                      els.scoreScroll.scrollHeight -
-                      els.scoreScroll.clientHeight
-                    );
-
-
-                  const scrollRect =
-                    els.scoreScroll.getBoundingClientRect();
-
-                  const rowRect =
-                    row.getBoundingClientRect();
-
-                  const targetScroll =
-                    els.scoreScroll.scrollTop +
-                    (
-                      rowRect.top -
-                      scrollRect.top
-                    );
-
-
-                  const clampedTarget =
-                    Math.min(
-                      Math.max(
-                        0,
-                        targetScroll
-                      ),
-                      maxScroll
-                    );
-
-                  const reducedMotion =
-                    window.matchMedia &&
-                    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-                  const shouldSmooth =
-                    !useLocalProgress &&
-                    !reducedMotion &&
-                    clampedTarget >
-                      (els.scoreScroll.scrollTop + 2);
-
-                  if (shouldSmooth) {
-                    els.scoreScroll.scrollTo({
-                      top: clampedTarget,
-                      behavior: 'smooth'
-                    });
-
-                    window.setTimeout(
-                      rememberScorePosition,
-                      520
-                    );
-                  } else {
-                    els.scoreScroll.scrollTop =
-                      clampedTarget;
-
-                    rememberScorePosition();
-                  }
-
-                  return;
-
+                if (shouldSmooth) {
+                  els.scoreScroll.scrollTo({ top: clampedTarget, behavior: 'smooth' });
+                  window.setTimeout(rememberScorePosition, 520);
+                } else {
+                  els.scoreScroll.scrollTop = clampedTarget;
+                  rememberScorePosition();
                 }
-
+                return;
               }
 
-
-              els.scoreScroll.scrollTop =
-                0;
-
+              els.scoreScroll.scrollTop = 0;
               rememberScorePosition();
-
             }
           );
-
         }
       );
-
     }
+
 
     function rememberCurrentView(
       view
@@ -9800,7 +10015,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V15.15 TEST LOG',
+        'SSHCP V16 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -10788,13 +11003,18 @@ let scoreTimingDetail =
       if (!button) return;
 
       button.style.removeProperty('font-size');
-      if (!selectedTeam) return;
+
+      const value = selectedTeam
+        ? (button.dataset.fullTeamName || displayTeamName(selectedTeam.name))
+        : String(button.textContent || 'SELECT TEAM');
+
+      const target = Math.min(22, Math.max(12, button.clientHeight * 0.50));
 
       fitSingleLineTeamTextV58(
         button,
         button,
-        button.dataset.fullTeamName || selectedTeam.name,
-        22,
+        value,
+        target,
         8,
         {
           horizontalPad: isMasterQr() ? 104 : 36,
@@ -10804,6 +11024,7 @@ let scoreTimingDetail =
         }
       );
     }
+
 
     function updateScoreTeamSelectButton() {
       syncTeamQrLockedUi();
@@ -11432,6 +11653,67 @@ let scoreTimingDetail =
     }
 
 
+    function applyV16ShellGeometry(view) {
+      if (!view) return null;
+
+      const shell = view.querySelector('.scorecard-screen, .leaderboard-screen');
+      if (!shell) return null;
+
+      const width = Math.max(1, Math.min(760, shell.clientWidth || window.innerWidth || 1));
+      const height = Math.max(1, shell.clientHeight || window.innerHeight || 1);
+
+      /* S25 visual reference: 756px wide × ~1423px browser-content height.
+         Values below are the approved screenshot measurements multiplied by
+         independent horizontal/vertical device factors. Large-screen growth
+         is bounded so iPad controls remain deliberate rather than enormous. */
+      const sx = Math.max(0.38, Math.min(1.00, width / 756));
+      const sy = Math.max(0.40, Math.min(0.68, height / 1423));
+
+      const px = value => Math.max(1, value * sx);
+      const py = value => Math.max(1, value * sy);
+
+      const vars = {
+        '--v16-rail': px(24),
+        '--v16-nav-w': px(141),
+        '--v16-nav-h': py(78),
+        '--v16-top-inset': py(14),
+        '--v16-nav-context-gap': py(12),
+        '--v16-context-h': py(88),
+        '--v16-context-table-gap': py(12),
+        '--v16-table-footer-gap': py(28),
+        '--v16-footer-h': py(113),
+        '--v16-bottom-gap': py(18),
+        '--v16-internal-gap': px(28)
+      };
+
+      Object.entries(vars).forEach(([name, value]) => {
+        view.style.setProperty(name, value + 'px');
+      });
+
+      const navButtons = view.querySelectorAll('.nav-button');
+      navButtons.forEach(button => {
+        fitTextToBoxV5(button, button, vars['--v16-nav-h'] * 0.52, 12, {
+          horizontalPad: 8,
+          verticalPad: 4,
+          wrap: false,
+          lineHeight: 1
+        });
+      });
+
+      const brand = view.querySelector('.header-brand');
+      if (brand) {
+        fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.38, 8, {
+          horizontalPad: 4,
+          verticalPad: 2,
+          wrap: false,
+          lineHeight: 1
+        });
+      }
+
+      return { width, height, sx, sy, vars };
+    }
+
+
     function sizeScorecardV5() {
       const screen = els.scorecardView
         ? els.scorecardView.querySelector('.scorecard-screen')
@@ -11446,35 +11728,26 @@ let scoreTimingDetail =
         ? els.scorecardView.querySelector('.score-fixed-bottom')
         : null;
 
-      if (!screen || !top || !header || !bottom || !els.scoreScroll) {
-        return;
-      }
+      if (!screen || !top || !header || !bottom || !els.scoreScroll) return;
+
+      const geometry = applyV16ShellGeometry(els.scorecardView);
+      if (!geometry) return;
 
       const screenHeight = screen.clientHeight;
       const topHeight = top.getBoundingClientRect().height;
       const oldHeaderHeight = header.getBoundingClientRect().height;
       const bottomHeight = bottom.getBoundingClientRect().height;
-
       if (!Number.isFinite(screenHeight) || screenHeight <= 0) return;
 
-      /*
-        V5.2 fixed-point geometry.
-        HEADER + 9 ROWS + divider share ONE current table-height budget.
-        Because the header is removed from the measured fixed shell before
-        solving, rerendering data cannot change the result.
-      */
-      const fixedShellWithoutHeader =
-        Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
-
-      const tableBudget =
-        Math.max(1, screenHeight - fixedShellWithoutHeader);
-
-      const divider =
-        Math.max(2, Math.min(4, tableBudget * 0.004));
-
+      /* V16: anchors/buffers define one table rectangle. The table merely fills it.
+         Header = 0.85x; nine visible score rows = 9x. The tiny nine-hole divider
+         is taken out first so it cannot distort the agreed 0.85 : 1 row ratio. */
+      const fixedShellWithoutHeader = Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
+      const tableBudget = Math.max(1, screenHeight - fixedShellWithoutHeader);
+      const divider = Math.max(2, Math.min(4, tableBudget * 0.004));
       const scoreTableBudget = Math.max(1, tableBudget - divider);
-      const headerHeight = (scoreTableBudget / 10) * 0.85;
-      const rowHeight = Math.max(1, (scoreTableBudget - headerHeight) / 9);
+      const rowHeight = Math.max(1, scoreTableBudget / 9.85);
+      const headerHeight = rowHeight * 0.85;
 
       els.scorecardView.style.setProperty('--v5-score-row-h', rowHeight + 'px');
       els.scorecardView.style.setProperty('--v5-score-head-h', headerHeight + 'px');
@@ -11489,6 +11762,7 @@ let scoreTimingDetail =
       const scoreCellHeight = sampleScoreCell
         ? sampleScoreCell.clientHeight
         : rowHeight;
+
       let scoreInnerWidth = scoreCellWidth;
       let scoreInnerHeight = scoreCellHeight;
       if (sampleScoreCell) {
@@ -11500,6 +11774,7 @@ let scoreTimingDetail =
           (parseFloat(scoreCellStyle.paddingTop) || 0) -
           (parseFloat(scoreCellStyle.paddingBottom) || 0));
       }
+
       const scoreBox = Math.max(
         18,
         Math.min(
@@ -11516,7 +11791,6 @@ let scoreTimingDetail =
         scoreDivider: divider
       });
 
-      /* Header content fits its CURRENT hard cells. */
       Array.from(header.children).forEach((cell, index) => {
         if (index < 3) {
           fitTextToBoxV5(cell, cell, headerHeight * 0.375, 12, {
@@ -11541,19 +11815,21 @@ let scoreTimingDetail =
         const yards = row.querySelector('.yardage-cell');
         const button = row.querySelector('.score-button');
 
-        if (holeCell && hole) {
-          fitTextToBoxV5(holeCell, hole, rowHeight * 0.50, 13, {horizontalPad:8,verticalPad:6});
-        }
-        if (par) {
-          fitTextToBoxV5(par, par, rowHeight * 0.40, 12, {horizontalPad:8,verticalPad:6});
-        }
-        if (yards) {
-          fitTextToBoxV5(yards, yards, rowHeight * 0.40, 11, {horizontalPad:8,verticalPad:6});
-        }
-        if (button) {
-          fitTextToBoxV5(button, button, scoreBox * 0.68, 13, {horizontalPad:4,verticalPad:4});
-        }
+        if (holeCell && hole) fitTextToBoxV5(holeCell, hole, rowHeight * 0.50, 13, {horizontalPad:8,verticalPad:6});
+        if (par) fitTextToBoxV5(par, par, rowHeight * 0.40, 12, {horizontalPad:8,verticalPad:6});
+        if (yards) fitTextToBoxV5(yards, yards, rowHeight * 0.40, 11, {horizontalPad:8,verticalPad:6});
+        if (button) fitTextToBoxV5(button, button, scoreBox * 0.68, 13, {horizontalPad:4,verticalPad:4});
       });
+
+      const footerButton = els.scorecardView.querySelector('.score-bottom-actions .leaderboard-button');
+      if (footerButton) {
+        fitTextToBoxV5(footerButton, footerButton, footerButton.clientHeight * 0.35, 13, {
+          horizontalPad: 12,
+          verticalPad: 6,
+          wrap: false,
+          lineHeight: 1
+        });
+      }
     }
 
 
@@ -11573,20 +11849,7 @@ let scoreTimingDetail =
         This lets ENTER mean "move on now" while verification finishes
         in the background.
       */
-      let lastEnteredHoleIndex = -1;
-
-      localScores.forEach(
-        (score, index) => {
-          if (score !== null) {
-            lastEnteredHoleIndex = index;
-          }
-        }
-      );
-
-      const nextHoleIndex =
-        lastEnteredHoleIndex < holes.length - 1
-          ? lastEnteredHoleIndex + 1
-          : holes.length - 1;
+      const nextHoleIndex = scorecardActiveHoleIndexV16(localScores, selectedTeam);
 
 
       holes.forEach(
@@ -11760,6 +12023,10 @@ let scoreTimingDetail =
 
           button.className =
             'score-button';
+
+          if (index === nextHoleIndex) {
+            button.classList.add('active-hole-score');
+          }
 
 
           if (
@@ -13176,32 +13443,44 @@ let scoreTimingDetail =
       const screen = els.leaderboardView
         ? els.leaderboardView.querySelector('.leaderboard-screen')
         : null;
+      const slot = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-final-slot')
+        : null;
+      const target = els.leaderRefreshButton;
 
-      if (
-        !screen ||
-        !screen.classList.contains('tournament-complete') ||
-        !els.leaderContent
-      ) {
+      if (!screen || !screen.classList.contains('tournament-complete') || !slot || !target) {
         return;
       }
 
-      /*
-        SSHCP V5.2:
-        Completed-state leaderboard uses the SAME live responsive table
-        sizing as in-play. There is no stored/frozen table height.
-
-        Once the title/progress disappear, normal flex layout gives:
-          responsive leaderboard
-          responsive result-action row
-          fixed footer
-
-        Re-run the normal leaderboard row fitter against the CURRENT
-        available height every time the layout changes.
-      */
       requestAnimationFrame(() => {
-        sizeLeaderboardRows();
+        const screenRect = screen.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        if (targetRect.width <= 0 || targetRect.height <= 0) return;
+
+        slot.style.setProperty('left', (targetRect.left - screenRect.left) + 'px', 'important');
+        slot.style.setProperty('top', (targetRect.top - screenRect.top) + 'px', 'important');
+        slot.style.setProperty('right', 'auto', 'important');
+        slot.style.setProperty('bottom', 'auto', 'important');
+        slot.style.setProperty('width', targetRect.width + 'px', 'important');
+        slot.style.setProperty('height', targetRect.height + 'px', 'important');
+        slot.style.setProperty('min-height', targetRect.height + 'px', 'important');
+        slot.style.setProperty('max-height', targetRect.height + 'px', 'important');
+
+        const action = slot.querySelector('.leader-final-action');
+        if (action) {
+          action.style.setProperty('height', targetRect.height + 'px', 'important');
+          action.style.setProperty('min-height', targetRect.height + 'px', 'important');
+          action.style.setProperty('max-height', targetRect.height + 'px', 'important');
+          fitTextToBoxV5(action, action, targetRect.height * 0.34, 11, {
+            horizontalPad: 12,
+            verticalPad: 5,
+            wrap: false,
+            lineHeight: 1
+          });
+        }
       });
     }
+
 
     function updateTournamentFinishState(rows) {
       lastLeaderboardRows = Array.isArray(rows) ? rows.map(row => ({ ...row })) : [];
@@ -13565,6 +13844,62 @@ let scoreTimingDetail =
     }
 
 
+    function applyTournamentSummaryGeometryV16(body, topGrid, lower, lowerRows) {
+      if (!body || !topGrid || !lower) return;
+
+      const subtitle = body.querySelector('.tournament-summary-subtitle');
+      const notes = body.querySelector('.tournament-summary-notes');
+      const noteCount = notes ? notes.querySelectorAll('.tournament-summary-note').length : 0;
+      const lowerCount = Array.isArray(lowerRows) ? lowerRows.length : 0;
+      const bodyHeight = Math.max(1, body.clientHeight);
+
+      const subtitleH = Math.max(22, Math.min(38, bodyHeight * 0.055));
+      const headerH = Math.max(22, Math.min(36, bodyHeight * 0.050));
+      const noteLineH = Math.max(13, Math.min(18, bodyHeight * 0.024));
+      const noteBuffer = Math.max(5, Math.min(9, bodyHeight * 0.012));
+      const noteSectionH = noteCount > 0
+        ? (noteCount * noteLineH) + (noteBuffer * 2)
+        : noteBuffer * 2;
+
+      const gap = Math.max(2, Math.min(5, bodyHeight * 0.005));
+      const reserved = subtitleH + headerH + noteSectionH + (gap * 3);
+      const teamSpace = Math.max(1, bodyHeight - reserved);
+      const weight = 4.5 + (0.8 * lowerCount);
+      const x = Math.max(1, teamSpace / Math.max(1, weight));
+
+      const place1 = 2 * x;
+      const place2 = 1.5 * x;
+      const place3 = 1 * x;
+      const lowerRow = 0.8 * x;
+      const topGridH = headerH + place1 + place2 + place3;
+      const lowerH = lowerRow * lowerCount;
+
+      body.style.setProperty('gap', gap + 'px', 'important');
+      body.style.setProperty(
+        'grid-template-rows',
+        subtitleH + 'px ' + topGridH + 'px ' + noteSectionH + 'px ' + lowerH + 'px',
+        'important'
+      );
+      topGrid.style.setProperty(
+        'grid-template-rows',
+        headerH + 'px ' + place1 + 'px ' + place2 + 'px ' + place3 + 'px',
+        'important'
+      );
+      lower.style.setProperty(
+        'grid-template-rows',
+        lowerCount > 0 ? 'repeat(' + lowerCount + ', ' + lowerRow + 'px)' : '0px',
+        'important'
+      );
+
+      if (subtitle) subtitle.style.setProperty('height', subtitleH + 'px', 'important');
+      if (notes) {
+        notes.style.setProperty('height', noteSectionH + 'px', 'important');
+        notes.style.setProperty('padding-top', noteBuffer + 'px', 'important');
+        notes.style.setProperty('padding-bottom', noteBuffer + 'px', 'important');
+      }
+    }
+
+
     function fitTournamentSummaryRemaining() {
       if (!els.modalOverlay.classList.contains('tournament-summary')) return;
       if (!els.modalBox || !els.modalBody) return;
@@ -13576,6 +13911,8 @@ let scoreTimingDetail =
 
       const lowerRows = Array.from(lower.querySelectorAll('.tournament-summary-remaining-row'));
       document.documentElement.style.setProperty('--v5-summary-lower-count', String(Math.max(1, lowerRows.length)));
+
+      applyTournamentSummaryGeometryV16(body, topGrid, lower, lowerRows);
 
       fitTextToBoxV5(els.modalTitle, els.modalTitle, Math.min(52, els.modalBox.clientWidth * 0.115), 20, {
         horizontalPad: 12,
@@ -13749,17 +14086,14 @@ let scoreTimingDetail =
           notes.push(annotation.note);
         }
       });
-      if (notes.length) {
-        html += '<div class="tournament-summary-notes">' +
-          notes.map(note =>
-            '<div class="tournament-summary-note">' + escapeHtml(note) + '</div>'
-          ).join('') +
-          '</div>';
-      }
+      html += '<div class="tournament-summary-notes">' +
+        notes.map(note =>
+          '<div class="tournament-summary-note">' + escapeHtml(note) + '</div>'
+        ).join('') +
+        '</div>';
 
-      if (rows.length > 3) {
-        html += '<div class="tournament-summary-remaining">';
-        rows.slice(3).forEach((row, index) => {
+      html += '<div class="tournament-summary-remaining">';
+      rows.slice(3).forEach((row, index) => {
           const rowIndex = index + 3;
           const place = summaryPlaceLabel(rowIndex);
           const hcp = getSummaryHandicap(row);
@@ -13776,9 +14110,8 @@ let scoreTimingDetail =
             '<div class="tournament-summary-remaining-cell net-score ' + scoreClass(row.net) + '">' +
             escapeHtml(formatGolfScore(row.net)) + '</div>' +
             '</div>';
-        });
-        html += '</div>';
-      }
+      });
+      html += '</div>';
 
       els.modalBody.innerHTML = html;
       const back = makeModalButton('BACK', '', closeModal);
@@ -14605,27 +14938,47 @@ let scoreTimingDetail =
 
       if (!screen || !header || !els.leaderContent) return;
 
+      const geometry = applyV16ShellGeometry(els.leaderboardView);
+      if (!geometry) return;
+
+      const titleBar = els.leaderboardView.querySelector('.leader-title-bar');
+      const title = els.leaderboardView.querySelector('.leader-title');
+      if (titleBar && title) {
+        fitTextToBoxV5(titleBar, title, titleBar.clientHeight * 0.55, 14, {
+          horizontalPad: 10,
+          verticalPad: 5,
+          wrap: false,
+          lineHeight: 1
+        });
+      }
+
       const headerRect = header.getBoundingClientRect();
       const contentRect = els.leaderContent.getBoundingClientRect();
       const tableBudget = contentRect.bottom - headerRect.top;
       if (!Number.isFinite(tableBudget) || tableBudget <= 0) return;
 
-      /* V15.13c: there is ONE leaderboard geometry. LIVE and FINAL use
-         the same rendered table boundaries and therefore the same header
-         and eight-row calculation. Completion changes content only. */
-      const headerHeight = (tableBudget / 9) * 0.85;
-      const calculatedRowHeight = Math.max(1, (tableBudget - headerHeight) / 8);
+      const rowCount = Math.max(
+        1,
+        Math.min(8, els.leaderRows ? els.leaderRows.querySelectorAll('.leader-row').length : 1)
+      );
+
+      /* V16: the anchored shell defines the table rectangle first.
+         HEADER = 0.85x and N visible team rows = N*x, N capped at 8. */
+      const rowHeightInitial = Math.max(1, tableBudget / (rowCount + 0.85));
+      const headerHeight = rowHeightInitial * 0.85;
 
       els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
-      els.leaderContent.style.setProperty('--leader-row-height', calculatedRowHeight + 'px');
+      els.leaderContent.style.setProperty('--leader-row-height', rowHeightInitial + 'px');
+      els.leaderContent.style.setProperty('--v16-visible-row-count', String(rowCount));
 
       requestAnimationFrame(() => {
-        /* Use the REAL post-header content box as the final authority so
-           exactly eight equal rows occupy it with no ninth-row sliver. */
-        const actualContentHeight = els.leaderContent.clientHeight;
+        const table = els.leaderContent.querySelector('.leader-table');
+        const actualContentHeight = table
+          ? table.getBoundingClientRect().height
+          : els.leaderContent.clientHeight;
         const rowHeight = actualContentHeight > 0
-          ? actualContentHeight / 8
-          : calculatedRowHeight;
+          ? actualContentHeight / rowCount
+          : rowHeightInitial;
 
         els.leaderContent.style.setProperty('--leader-row-height', rowHeight + 'px');
 
@@ -14646,6 +14999,20 @@ let scoreTimingDetail =
         }
 
         fitLeaderboardTypography();
+
+        const footerButtons = els.leaderboardView.querySelectorAll('.leader-bottom button');
+        footerButtons.forEach(button => {
+          fitTextToBoxV5(button, button, button.clientHeight * 0.34, 11, {
+            horizontalPad: 10,
+            verticalPad: 5,
+            wrap: false,
+            lineHeight: 1
+          });
+        });
+
+        if (screen.classList.contains('tournament-complete')) {
+          positionCompletedFinalAction();
+        }
       });
     }
 
@@ -15787,4 +16154,5 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
 
