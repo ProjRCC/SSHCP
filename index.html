@@ -130,7 +130,7 @@
 
   <title>ROTB 2026</title>
 
-  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.8 -->
+  <!-- SIMPLE SCRAMBLE HANDICAP — SSHCP V5.9 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6936,6 +6936,45 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   animation-play-state:paused!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V5.9 — TEAM ARROW / READABILITY / STATUS REFINEMENT
+   ========================================================= */
+
+/* MASTER scorecard team selector: reserve a true no-text zone around the
+   dropdown arrow. Equal left/right padding keeps the team name centered. */
+#scorecardView .score-team-select-button,
+#scorecardView .score-team-select-button.has-team,
+#scorecardView .score-team-select-button:focus{
+  padding-left:42px!important;
+  padding-right:42px!important;
+}
+body.team-qr-locked #scorecardView .score-team-select-button,
+body.team-qr-locked #scorecardView .score-team-select-button.has-team,
+body.team-qr-locked #scorecardView .score-team-select-button:focus{
+  padding-left:18px!important;
+  padding-right:18px!important;
+}
+
+/* ENTER PASSKEY team selector gets the same protected arrow lane. */
+.passkey-team-button{
+  padding-left:48px!important;
+  padding-right:48px!important;
+}
+
+/* Team names on leaderboard/summary now stop shrinking at a readable floor;
+   the existing V5.8 fitter then removes trailing characters as the fallback. */
+/* STATUS: score is exactly 5% larger than the V5.8 30% target, with a small
+   physical gap before the Hxx line. */
+#leaderboardView .leader-through-score{
+  flex-basis:31.5%!important;
+  height:31.5%!important;
+}
+#leaderboardView .leader-through-cell{
+  gap:2px!important;
+}
+
   </style>
 </head>
 
@@ -6970,7 +7009,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
     <div class="home-shell">
 
-      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.8</button>
+      <button id="testLogHotspot" class="test-log-hotspot" type="button" aria-label="Open test log">SSHCP V5.9</button>
 
       <div class="splash-image-wrap">
 
@@ -7566,7 +7605,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   <script>
 
     // ==========================================================
-    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.8
+    // SIMPLE SCRAMBLE HANDICAP — SSHCP V5.9
     //
     // BACKEND ARCHITECTURE — LOCKED
     //
@@ -9026,7 +9065,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V5.8 TEST LOG',
+        'SSHCP V5.9 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -10023,7 +10062,7 @@ let scoreTimingDetail =
         22,
         8,
         {
-          horizontalPad: 52,
+          horizontalPad: 84,
           verticalPad: 6,
           lineHeight: 1,
           ignoreHeight: true
@@ -10431,8 +10470,8 @@ let scoreTimingDetail =
         button,
         button.dataset.fullTeamName || button.textContent,
         17,
-        8,
-        { horizontalPad: 64, verticalPad: 6, lineHeight: 1 }
+        10,
+        { horizontalPad: 96, verticalPad: 6, lineHeight: 1 }
       );
     }
 
@@ -12757,7 +12796,7 @@ let scoreTimingDetail =
             teamText,
             row.clientHeight,
             Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])),
-            10,
+            13,
             22
           );
         }
@@ -12796,7 +12835,7 @@ let scoreTimingDetail =
           teamText,
           rowHeight,
           Math.min(28, rowHeight * 0.40),
-          9,
+          13,
           10
         );
       });
@@ -13664,7 +13703,7 @@ let scoreTimingDetail =
         team,
         rowHeight,
         targetSize,
-        8,
+        13,
         14
       );
     }
@@ -13730,7 +13769,7 @@ let scoreTimingDetail =
         }
 
         if (score) {
-          fitTextToBoxV5(score, score, rowHeight * 0.30, 8, {
+          fitTextToBoxV5(score, score, rowHeight * 0.315, 8, {
             horizontalPad: 4,
             verticalPad: 1,
             lineHeight: 0.92
