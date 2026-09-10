@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.8-ST8UPK | BUILD KEY: 16.9-Q7M4LX -->
+<!-- SSHCP | BASE KEY: 16.9-Q7M4LX | BUILD KEY: 16.10-NCENON -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8351,15 +8351,21 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
 /* =========================================================
-   SSHCP V16.9 — SCRAMBLE SUMMARY WEIGHTED GEOMETRY POLISH
-   - Fixed 15px title/subtitle/tiebreak buffers (no device multiplier).
-   - Column header = 1x.
-   - Podium = 2x / 1.5x / 1.33x.
-   - Lower standings = .8x each, capped at seven rows (TOP 10 geometry).
-   - Each tiebreak explanation line owns exactly 15px.
+   SSHCP V16.10 — SCRAMBLE SUMMARY GEOMETRY TUNING
+   - Popup height = 85dvh.
+   - SCRAMBLE SUMMARY title text target = 80% of V16.9 target.
+   - Fixed 10px title->RESULTS/TOP 10 and subtitle->table buffers.
+   - Column header = 1.1x.
+   - Podium = 2x / 1.5x / 1.5x.
+   - Lower standings = 1x each, capped at seven rows (TOP 10 geometry).
+   - No tie notes = one 15px separator.
+   - 1-3 tie notes = 8px above + 15px per line + 8px below.
    ========================================================= */
+.modal-overlay.tournament-summary .modal-box{
+  height:85dvh!important;
+}
 .modal-overlay.tournament-summary .modal-title{
-  margin-bottom:15px!important;
+  margin-bottom:10px!important;
 }
 .modal-overlay.tournament-summary .modal-text{
   gap:0!important;
@@ -8384,6 +8390,12 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   white-space:nowrap!important;
   overflow:hidden!important;
   line-height:15px!important;
+}
+
+/* HOME: version identity follows the active accent and is ~10% larger. */
+#homeView .home-version-info{
+  color:var(--accent)!important;
+  font-size:13.2px!important;
 }
 
 </style>
@@ -8490,7 +8502,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.9</span>
+          <span class="home-version-info">SSHCP V16.10</span>
         </button>
 
       </div>
@@ -10442,7 +10454,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.9 TEST LOG',
+        'SSHCP V16.10 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -14355,34 +14367,36 @@ let scoreTimingDetail =
       );
       const bodyHeight = Math.max(1, body.clientHeight);
 
-      /* V16.9 Scramble Summary geometry contract.
+      /* V16.10 Scramble Summary geometry contract.
          Fixed shell pieces are budgeted BEFORE x is solved:
-           - SCRAMBLE SUMMARY -> RESULTS/TOP 10 buffer = 15px (CSS/title row)
+           - SCRAMBLE SUMMARY -> RESULTS/TOP 10 buffer = 10px (CSS/title row)
            - RESULTS/TOP 10 text height = responsive approved subtitle target
-           - RESULTS/TOP 10 -> table buffer = 15px
+           - RESULTS/TOP 10 -> table buffer = 10px
            - no tie notes = one 15px separator buffer
-           - 1-3 tie notes = 15px above + 15px per line + 15px below
+           - 1-3 tie notes = 8px above + 15px per line + 8px below
          Weighted row equation:
-           header 1x + 1st 2x + 2nd 1.5x + 3rd 1.33x
-           + up to seven lower rows at .8x each. */
-      const summaryBuffer = 15;
+           header 1.1x + 1st 2x + 2nd 1.5x + 3rd 1.5x
+           + up to seven lower rows at 1x each. */
+      const resultsBuffer = 10;
+      const noTieBuffer = 15;
+      const tieBuffer = 8;
       const tieLineH = 15;
       const subtitleH = Math.max(22, Math.min(38, bodyHeight * 0.055));
-      const subtitleBlockH = subtitleH + summaryBuffer;
+      const subtitleBlockH = subtitleH + resultsBuffer;
       const noteSectionH = noteCount > 0
-        ? summaryBuffer + (noteCount * tieLineH) + summaryBuffer
-        : summaryBuffer;
+        ? tieBuffer + (noteCount * tieLineH) + tieBuffer
+        : noTieBuffer;
 
       const fixedSpace = subtitleBlockH + noteSectionH;
       const weightedSpace = Math.max(1, bodyHeight - fixedSpace);
-      const weight = 1 + 2 + 1.5 + 1.33 + (0.8 * lowerCount);
+      const weight = 1.1 + 2 + 1.5 + 1.5 + lowerCount;
       const x = Math.max(1, weightedSpace / Math.max(1, weight));
 
-      const headerH = 1 * x;
+      const headerH = 1.1 * x;
       const place1 = 2 * x;
       const place2 = 1.5 * x;
-      const place3 = 1.33 * x;
-      const lowerRow = 0.8 * x;
+      const place3 = 1.5 * x;
+      const lowerRow = 1 * x;
       const topGridH = headerH + place1 + place2 + place3;
       const lowerH = lowerRow * lowerCount;
 
@@ -14407,14 +14421,14 @@ let scoreTimingDetail =
         subtitle.style.setProperty('height', subtitleH + 'px', 'important');
         subtitle.style.setProperty('min-height', subtitleH + 'px', 'important');
         subtitle.style.setProperty('max-height', subtitleH + 'px', 'important');
-        subtitle.style.setProperty('margin-bottom', summaryBuffer + 'px', 'important');
+        subtitle.style.setProperty('margin-bottom', resultsBuffer + 'px', 'important');
       }
       if (notes) {
         notes.style.setProperty('height', noteSectionH + 'px', 'important');
         notes.style.setProperty('min-height', noteSectionH + 'px', 'important');
         notes.style.setProperty('max-height', noteSectionH + 'px', 'important');
-        notes.style.setProperty('padding-top', noteCount > 0 ? summaryBuffer + 'px' : '0px', 'important');
-        notes.style.setProperty('padding-bottom', noteCount > 0 ? summaryBuffer + 'px' : '0px', 'important');
+        notes.style.setProperty('padding-top', noteCount > 0 ? tieBuffer + 'px' : '0px', 'important');
+        notes.style.setProperty('padding-bottom', noteCount > 0 ? tieBuffer + 'px' : '0px', 'important');
       }
     }
 
@@ -14433,7 +14447,7 @@ let scoreTimingDetail =
 
       applyTournamentSummaryGeometryV16(body, topGrid, lower, lowerRows);
 
-      fitTextToBoxV5(els.modalTitle, els.modalTitle, Math.min(52, els.modalBox.clientWidth * 0.115), 20, {
+      fitTextToBoxV5(els.modalTitle, els.modalTitle, Math.min(52, els.modalBox.clientWidth * 0.115) * 0.80, 16, {
         horizontalPad: 12,
         verticalPad: 2,
         wrap: true,
