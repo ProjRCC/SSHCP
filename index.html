@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.19-K7R2VX | BUILD KEY: 16.20-H3N7QP -->
+<!-- SSHCP | BASE KEY: 16.20-H3N7QP | BUILD KEY: 16.21-R5M8QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1417,6 +1417,15 @@
       font-size: 18px;
 
       line-height: 1.42;
+    }
+
+    .modal-overlay.score-save-warning .modal-title,
+    .modal-overlay.score-save-warning .modal-text {
+      text-align: center;
+    }
+
+    .modal-overlay.score-save-warning .modal-title {
+      white-space: pre-line;
     }
 
     .modal-input {
@@ -8864,7 +8873,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.20</span>
+          <span class="home-version-info">SSHCP V16.21</span>
         </button>
 
       </div>
@@ -9662,7 +9671,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
     /*
-      SSHCP V16.20 — fixed visual save cadence.
+      SSHCP V16.21 — fixed visual save cadence.
 
       The real Cloudflare -> Google Sheets write/readback verification still
       starts immediately and remains authoritative. The Scorecard's visual
@@ -9673,7 +9682,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
         verify success -> keep Blue
         verify failure -> no failure UI before 1.5s from that ENTER; then
                           revert the affected still-unconfirmed score(s) gray
-                          and show the V16.20 trigger-specific save warning.
+                          and show the V16.21 trigger-specific save warning.
 
       This is UI timing only. It never delays the save request, write, readback,
       exact verification, queueing, or pending-score persistence.
@@ -9774,12 +9783,19 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
       });
     }
 
-    function showScoreSaveFailureModalV1620(context) {
+    function showScoreSaveFailureModalV1621(context) {
       if (context === 'refresh') {
         showMessageModal(
-          'GREY SCORES remain UNSAVED',
+          'GREY SCORES\nremain UNSAVED',
           ''
         );
+
+        els.modalOverlay
+          .classList
+          .add(
+            'score-save-warning'
+          );
+
         return;
       }
 
@@ -9787,6 +9803,12 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
         'SCORE NOT SAVED',
         ''
       );
+
+      els.modalOverlay
+        .classList
+        .add(
+          'score-save-warning'
+        );
 
       const lineOne = document.createElement('div');
       lineOne.textContent = 'SCORE will remain GREY';
@@ -9805,7 +9827,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
       savedAtRequest,
       requestGenerations,
       failureReferenceAt,
-      failureContextV1620 = 'enter'
+      failureContextV1621 = 'enter'
     ) {
       const affected = expectedScores
         .map((score, index) => score !== savedAtRequest[index] ? index : -1)
@@ -9814,12 +9836,12 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
       if (!affected.length) return;
 
       /*
-        V16.20 warning split:
+        V16.21 warning split:
           ENTER failure   -> hold until 1.5s from ENTER, then SCORE NOT SAVED.
           REFRESH failure -> once the refresh retry has actually failed, report
                              GREY SCORES remain UNSAVED without an added delay.
       */
-      const targetAt = failureContextV1620 === 'refresh'
+      const targetAt = failureContextV1621 === 'refresh'
         ? performance.now()
         : failureReferenceAt + SCORE_FAILURE_NOTICE_DELAY_V1619;
       const delay = Math.max(0, targetAt - performance.now());
@@ -9851,7 +9873,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
         });
 
         renderScorecard();
-        showScoreSaveFailureModalV1620(failureContextV1620);
+        showScoreSaveFailureModalV1621(failureContextV1621);
       }, delay);
     }
 
@@ -9903,7 +9925,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
     let saveQueued =
       false;
 
-    let saveQueuedFailureContextV1620 =
+    let saveQueuedFailureContextV1621 =
       null;
 
 
@@ -10930,7 +10952,7 @@ let scoreTimingDetail =
 
 
     /*
-      SSHCP V16.20 — ENTER beauty scroll + fixed visual save cadence.
+      SSHCP V16.21 — ENTER beauty scroll + fixed visual save cadence.
       Normal score entry keeps every V16.17 scoring / gray / Blue behavior
       unchanged, but when the four-rows-below viewport actually has to move,
       the scorecard visibly travels to the new position over ~0.8 seconds.
@@ -11210,7 +11232,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.20 CONTROL CENTER LOG',
+        'SSHCP V16.21 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13900,7 +13922,7 @@ let scoreTimingDetail =
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
-          V16.20 visual Blue now follows the fixed 0.8s cadence; backend
+          V16.21 visual Blue now follows the fixed 0.8s cadence; backend
           verification remains authoritative and can roll it back on failure.
         */
         if (!commitResult.cleared) {
@@ -13952,12 +13974,12 @@ let scoreTimingDetail =
        One request only:
        Worker writes -> reads Google Sheets back -> verifies.
        Worker verification still requires verified:true plus an exact
-       verifiedScores match. V16.20's Blue state is a UI-only 0.8s optimistic
+       verifiedScores match. V16.21's Blue state is a UI-only 0.8s optimistic
        cadence and is rolled back on a failed/unconfirmed save.
        ========================================================= */
 
 
-    async function submitScores(failureContextV1620 = 'enter') {
+    async function submitScores(failureContextV1621 = 'enter') {
 
       if (
         !selectedTeam ||
@@ -13970,8 +13992,8 @@ let scoreTimingDetail =
         saveQueued = true;
         /* A queued real ENTER is the more specific user action. Otherwise
            preserve REFRESH so a failed refresh retry gets refresh-only copy. */
-        if (failureContextV1620 === 'enter' || saveQueuedFailureContextV1620 !== 'enter') {
-          saveQueuedFailureContextV1620 = failureContextV1620;
+        if (failureContextV1621 === 'enter' || saveQueuedFailureContextV1621 !== 'enter') {
+          saveQueuedFailureContextV1621 = failureContextV1621;
         }
         return;
       }
@@ -14218,7 +14240,7 @@ let scoreTimingDetail =
           savedScoresAtRequestV1619,
           visualGenerationsAtRequestV1619,
           failureReferenceAtV1619,
-          failureContextV1620
+          failureContextV1621
         );
 
       }
@@ -14233,13 +14255,13 @@ let scoreTimingDetail =
 
         if (saveQueued) {
           saveQueued = false;
-          const queuedFailureContextV1620 = saveQueuedFailureContextV1620 || 'enter';
-          saveQueuedFailureContextV1620 = null;
+          const queuedFailureContextV1621 = saveQueuedFailureContextV1621 || 'enter';
+          saveQueuedFailureContextV1621 = null;
 
           if (hasPendingScores()) {
             queuedAnotherSave = true;
             setTimeout(
-              () => submitScores(queuedFailureContextV1620),
+              () => submitScores(queuedFailureContextV1621),
               0
             );
           }
@@ -16894,7 +16916,8 @@ let scoreTimingDetail =
           'quick-guide',
           'switch-authorization',
           'tournament-result',
-          'tournament-summary'
+          'tournament-summary',
+          'score-save-warning'
         );
 
 
