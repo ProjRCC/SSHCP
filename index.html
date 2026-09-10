@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.12-R8K3HV | BUILD KEY: 16.13-VQY3KR -->
+<!-- SSHCP | BASE KEY: 16.13-VQY3KR | BUILD KEY: 16.14-C7R4MP -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8411,6 +8411,126 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   font-size:13.2px!important;
 }
 
+
+/* =========================================================
+   SSHCP V16.14 — TEST PAGE -> CONTROL CENTER
+   Layout-only Control Center pass plus role-independent DELETE ALL access
+   for any already-valid QR authorization. Golden V16.13 scoring, shotgun,
+   leaderboard, Summary, and general app geometry remain untouched.
+   ========================================================= */
+#testLogView .test-log-screen{
+  padding:calc(10px + env(safe-area-inset-top)) 12px 0!important;
+}
+#testLogView .test-log-header{
+  grid-template-columns:1fr!important;
+  margin-bottom:8px!important;
+}
+#testLogView .test-log-title{
+  color:var(--accent)!important;
+  font-size:22px!important;
+  line-height:1!important;
+}
+
+/* Only the latest two log entries are rendered on-screen. Full local history
+   remains available through COPY ALL. */
+#testLogView .test-log-table{
+  flex:0 0 auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+}
+#testLogView .test-log-row{
+  min-height:28px!important;
+}
+#testLogView .test-log-detail{
+  display:none!important;
+}
+
+/* Authorization uses one compact row. TEAM AUTHORIZATION CHECK is relevant
+   only when MASTER is selected, so it is hidden for TEAM/NONE authorization. */
+#testLogView .test-auth-controls{
+  margin-top:8px!important;
+  gap:0!important;
+}
+#testLogView .test-auth-button-row{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:5px!important;
+  align-items:stretch!important;
+}
+#testLogView .test-auth-button-row.authorized:not(.master-authorized){
+  grid-template-columns:minmax(0,1fr) minmax(0,.70fr)!important;
+}
+#testLogView .test-auth-button-row.master-authorized{
+  grid-template-columns:minmax(0,1.25fr) minmax(0,1.05fr) minmax(0,.70fr)!important;
+}
+#testLogView .test-team-auth-toggle{
+  display:none!important;
+  min-height:46px!important;
+  height:46px!important;
+  margin:0!important;
+  padding:3px 5px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:8px!important;
+  background:#fafafa!important;
+  color:var(--accent)!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  line-height:.95!important;
+  text-align:center!important;
+}
+#testLogView .test-auth-button-row.master-authorized .test-team-auth-toggle{
+  display:flex!important;
+}
+#testLogView .test-team-auth-toggle input{
+  flex:0 0 auto!important;
+  width:17px!important;
+  height:17px!important;
+  margin:0!important;
+  accent-color:var(--accent)!important;
+}
+#testLogView .test-team-auth-toggle span{
+  min-width:0!important;
+  white-space:normal!important;
+}
+#testLogView .test-switch-auth,
+#testLogView .test-remove-auth{
+  height:46px!important;
+  min-height:46px!important;
+}
+
+/* Future Control Center sections. V16.14 establishes placement/style only;
+   sheet read/write wiring comes in later scoped builds. */
+#testLogView .control-center-nav{
+  flex:0 0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:5px!important;
+  margin-top:8px!important;
+}
+#testLogView .control-center-nav-button{
+  height:46px!important;
+  min-height:46px!important;
+  padding:2px 4px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:8px!important;
+  background:#fafafa!important;
+  color:var(--accent)!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:.1px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+#testLogView .test-score-controls{
+  margin-top:8px!important;
+}
+#testLogView .test-log-footer-utils{
+  margin-top:auto!important;
+  padding-top:8px!important;
+}
+
 </style>
 </head>
 
@@ -8515,7 +8635,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.13</span>
+          <span class="home-version-info">SSHCP V16.14</span>
         </button>
 
       </div>
@@ -8865,41 +8985,51 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
   <!-- =======================================================
-       TEST LOG
+       CONTROL CENTER — SSHCP V16.14
        ======================================================= -->
 
   <section id="testLogView" class="view">
     <div class="test-log-screen">
       <div class="test-log-header">
         <div aria-hidden="true"></div>
-        <div class="test-log-title">TEST LOG</div>
+        <div class="test-log-title">CONTROL CENTER</div>
       </div>
-      <div class="test-log-table">
+
+      <div class="test-log-table" aria-label="Latest Control Center log entries">
         <div class="test-log-row header">
           <div>TIME</div><div>ACTION</div><div>RESULT</div><div>TOTAL</div>
         </div>
         <div id="testLogRows"></div>
       </div>
+
       <div class="test-auth-controls">
-        <label class="test-team-auth-toggle">
-          <input id="testTeamAuthorizationCheck" type="checkbox">
-          <span>TEAM AUTHORIZATION</span>
-        </label>
         <div id="testAuthorizationButtonRow" class="test-auth-button-row">
-          <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTHORIZATION</button>
           <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTHORIZATION</button>
+          <label class="test-team-auth-toggle">
+            <input id="testTeamAuthorizationCheck" type="checkbox">
+            <span>TEAM AUTHORIZATION CHECK</span>
+          </label>
+          <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTH</button>
         </div>
       </div>
+
+      <div class="control-center-nav" aria-label="Control Center sections">
+        <button id="controlCenterTeamsButton" class="control-center-nav-button" type="button">TEAMS</button>
+        <button id="controlCenterGeekModeButton" class="control-center-nav-button" type="button">GEEK MODE</button>
+        <button id="controlCenterGamesButton" class="control-center-nav-button" type="button">GAMES</button>
+      </div>
+
       <div class="test-score-controls">
         <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR</button>
         <button id="testAddRandomCurrentButton" class="test-score-action add" type="button">ADD RANDOM</button>
         <button id="testAddRandom2CurrentButton" class="test-score-action add" type="button">ADD RANDOM 2</button>
         <button id="testDeleteAllButton" class="test-score-action delete" type="button">DELETE ALL</button>
       </div>
+
       <div class="test-log-footer-utils">
         <button id="testLogResetButton" class="test-log-reset" type="button">DELETE TEST DATA</button>
         <button id="testLogHomeButton" class="test-log-home" type="button">HOME</button>
-        <button id="testCopyLogButton" class="test-copy-log" type="button">COPY LOG</button>
+        <button id="testCopyLogButton" class="test-copy-log" type="button">COPY ALL</button>
       </div>
       <input id="testQrCameraInput" type="file" accept="image/*" capture="environment" hidden>
     </div>
@@ -9603,6 +9733,7 @@ let scoreTimingDetail =
 
       if (els.testAuthorizationButtonRow) {
         els.testAuthorizationButtonRow.classList.toggle('authorized', authorized);
+        els.testAuthorizationButtonRow.classList.toggle('master-authorized', isMasterQr());
       }
 
       if (els.testSwitchAuthorizationButton) {
@@ -10536,7 +10667,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.13 TEST LOG',
+        'SSHCP V16.14 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -10599,7 +10730,7 @@ let scoreTimingDetail =
       if (copied) {
         addTestLog('COPY LOG', 'OK', '—', getTestLog().length + ' ENTRIES COPIED');
         if (els.testCopyLogButton) {
-          const original = 'COPY LOG';
+          const original = 'COPY ALL';
           els.testCopyLogButton.textContent = 'COPIED';
           setTimeout(() => {
             if (els.testCopyLogButton) els.testCopyLogButton.textContent = original;
@@ -10616,12 +10747,12 @@ let scoreTimingDetail =
         els.testLogRows.innerHTML = '<div class="test-log-empty">NO TEST ACTIONS RECORDED</div>';
         return;
       }
-      els.testLogRows.innerHTML = log.map(item => {
+      const visibleLog = log.slice(0, 2);
+      els.testLogRows.innerHTML = visibleLog.map(item => {
         const resultClass = item.result === 'OK' || item.result === 'VERIFIED' ? 'test-log-ok' : (item.result === 'FAILED' ? 'test-log-fail' : '');
-        const detail = item.detail ? '<div class="test-log-detail">' + escapeHtml(item.detail) + '</div>' : '';
         return '<div class="test-log-row">' +
           '<div>' + escapeHtml(item.time) + '</div>' +
-          '<div class="test-log-action"><strong>' + escapeHtml(item.action) + '</strong>' + detail + '</div>' +
+          '<div class="test-log-action"><strong>' + escapeHtml(item.action) + '</strong></div>' +
           '<div class="' + resultClass + '">' + escapeHtml(item.result) + '</div>' +
           '<div>' + escapeHtml(item.total) + '</div>' +
           '</div>';
@@ -10920,12 +11051,24 @@ let scoreTimingDetail =
         if (isRandom2) {
           data = await runRandom2Current();
         } else {
+          const controlCenterPasskey =
+            isMasterQr()
+              ? getQrPasskey()
+              : (
+                  mode === 'clear' &&
+                  scope === 'all' &&
+                  isTeamQr() &&
+                  getQrPasskey()
+                )
+                ? SSHCP_MASTER_TEST_KEY
+                : '';
+
           const response = await fetch(
             CLOUDFLARE_API_URL +
               '?action=testScores' +
               '&mode=' + encodeURIComponent(mode) +
               '&scope=' + encodeURIComponent(scope) +
-              '&passkey=' + encodeURIComponent(isMasterQr() ? getQrPasskey() : '') +
+              '&passkey=' + encodeURIComponent(controlCenterPasskey) +
               '&refresh=' + Date.now(),
             { cache: 'no-store' }
           );
