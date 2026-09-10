@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.26-D8Q3LP | BUILD KEY: 16.27-S8K5RD -->
+<!-- SSHCP | BASE KEY: 16.27-S8K5RD | BUILD KEY: 16.28-G6P2YC -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9118,6 +9118,33 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   color:var(--on-accent)!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V16.28 — SURGICAL SCRAMBLE SUMMARY ACTION-RAIL FIX
+   Restore the locked Summary presentation by containing the new three-slot
+   footer rail inside the existing Summary width. The V16.27 SKINS popup is
+   intentionally untouched and remains visually locked.
+   ========================================================= */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:var(--v16-internal-gap,14px)!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  align-items:stretch!important;
+  justify-content:stretch!important;
+}
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+
 </style>
 </head>
 
@@ -9222,7 +9249,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.27</span>
+          <span class="home-version-info">SSHCP V16.28</span>
         </button>
 
       </div>
