@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.17-T6J4CX | BUILD KEY: 16.18-M8V4QS -->
+<!-- SSHCP | BASE KEY: 16.18-M8V4QS | BUILD KEY: 16.19-K7R2VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8864,7 +8864,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.18</span>
+          <span class="home-version-info">SSHCP V16.19</span>
         </button>
 
       </div>
@@ -9659,6 +9659,170 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
     let savedScores =
       Array(18).fill(null);
+
+
+    /*
+      SSHCP V16.19 — fixed visual save cadence.
+
+      The real Cloudflare -> Google Sheets write/readback verification still
+      starts immediately and remains authoritative. The Scorecard's visual
+      confirmation is intentionally decoupled from variable network timing:
+
+        ENTER -> pending gray immediately
+        0.8s  -> optimistic Blue tile + next-hole Blue border
+        verify success -> keep Blue
+        verify failure -> no failure UI before 1.5s from that ENTER; then
+                          revert the affected still-unconfirmed score(s) gray
+                          and show the existing Save Not Confirmed popup.
+
+      This is UI timing only. It never delays the save request, write, readback,
+      exact verification, queueing, or pending-score persistence.
+    */
+    const SCORE_VISUAL_BLUE_DELAY_V1619 = 800;
+    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 1500;
+    let scoreVisualGenerationV1619 = 0;
+    let scoreVisualStateV1619 = Array(18).fill(null);
+
+    function clearScoreVisualStateV1619(index) {
+      const state = scoreVisualStateV1619[index];
+      if (state && state.timer) window.clearTimeout(state.timer);
+      scoreVisualStateV1619[index] = null;
+    }
+
+    function resetScoreVisualStateV1619() {
+      scoreVisualStateV1619.forEach((state, index) => {
+        if (state && state.timer) window.clearTimeout(state.timer);
+        scoreVisualStateV1619[index] = null;
+      });
+    }
+
+    function beginScoreVisualCadenceV1619(index, value) {
+      if (!Number.isInteger(index) || index < 0 || index >= 18 || value === null) return;
+
+      clearScoreVisualStateV1619(index);
+
+      const enteredAt = performance.now();
+      const state = {
+        generation: ++scoreVisualGenerationV1619,
+        value,
+        previousSavedValue: savedScores[index],
+        enteredAt,
+        releaseAt: enteredAt + SCORE_VISUAL_BLUE_DELAY_V1619,
+        blue: false,
+        verified: false,
+        timer: 0
+      };
+
+      scoreVisualStateV1619[index] = state;
+
+      state.timer = window.setTimeout(() => {
+        if (scoreVisualStateV1619[index] !== state) return;
+        if (localScores[index] !== state.value) {
+          clearScoreVisualStateV1619(index);
+          return;
+        }
+
+        state.timer = 0;
+        state.blue = true;
+
+        /* If the backend already verified this exact value, the temporary
+           visual gate can now be removed; native savedScores styling keeps
+           the tile Blue from this same render onward. */
+        if (
+          state.verified &&
+          savedScores[index] === state.value
+        ) {
+          scoreVisualStateV1619[index] = null;
+        }
+
+        renderScorecard();
+      }, SCORE_VISUAL_BLUE_DELAY_V1619);
+    }
+
+    function scoreIsVisuallyBlueV1619(index, localValue, savedValue) {
+      const state = scoreVisualStateV1619[index];
+      if (state && localValue === state.value) return state.blue === true;
+      return localValue === savedValue;
+    }
+
+    function scoreVisualProgressV1619() {
+      const visual = normalizeScores(savedScores);
+
+      scoreVisualStateV1619.forEach((state, index) => {
+        if (!state || localScores[index] !== state.value) return;
+        visual[index] = state.blue ? state.value : state.previousSavedValue;
+      });
+
+      return visual;
+    }
+
+    function markScoreVisualVerificationV1619(confirmedScores, requestGenerations) {
+      scoreVisualStateV1619.forEach((state, index) => {
+        if (!state) return;
+        if (!requestGenerations || requestGenerations[index] !== state.generation) return;
+        if (confirmedScores[index] !== state.value) return;
+
+        state.verified = true;
+
+        /* Verification may finish before 0.8s. Keep the score gray until the
+           fixed visual release time. If 0.8s has already elapsed, native
+           verified styling can take over immediately with no visible change. */
+        if (performance.now() >= state.releaseAt) {
+          if (state.timer) window.clearTimeout(state.timer);
+          scoreVisualStateV1619[index] = null;
+        }
+      });
+    }
+
+    function scheduleScoreFailureNoticeV1619(
+      expectedScores,
+      savedAtRequest,
+      requestGenerations,
+      failureReferenceAt
+    ) {
+      const affected = expectedScores
+        .map((score, index) => score !== savedAtRequest[index] ? index : -1)
+        .filter(index => index >= 0);
+
+      if (!affected.length) return;
+
+      const targetAt = failureReferenceAt + SCORE_FAILURE_NOTICE_DELAY_V1619;
+      const delay = Math.max(0, targetAt - performance.now());
+
+      window.setTimeout(() => {
+        const unresolved = affected.filter(index => {
+          if (localScores[index] !== expectedScores[index]) return false;
+          if (savedScores[index] === expectedScores[index]) return false;
+
+          const requestGeneration = requestGenerations[index];
+          if (requestGeneration !== null && requestGeneration !== undefined) {
+            const state = scoreVisualStateV1619[index];
+            if (!state || state.generation !== requestGeneration) return false;
+          }
+
+          return true;
+        });
+
+        if (!unresolved.length) return;
+
+        unresolved.forEach(index => {
+          const state = scoreVisualStateV1619[index];
+          if (state) {
+            if (state.timer) window.clearTimeout(state.timer);
+            state.timer = 0;
+            state.blue = false;
+            state.verified = false;
+          }
+        });
+
+        renderScorecard();
+
+        showMessageModal(
+          'Save Not Confirmed',
+          'Google Sheets did not confirm the new scores. Your entered scores remain gray. If they stay gray, refresh the page and ROTB will read the official scorecard, retry the pending scores, and verify them.'
+        );
+      }, delay);
+    }
 
 
     let activeScoreIndex =
@@ -10732,7 +10896,7 @@ let scoreTimingDetail =
 
 
     /*
-      SSHCP V16.18 — ENTER beauty scroll.
+      SSHCP V16.19 — ENTER beauty scroll + fixed visual save cadence.
       Normal score entry keeps every V16.17 scoring / gray / Blue behavior
       unchanged, but when the four-rows-below viewport actually has to move,
       the scorecard visibly travels to the new position over ~0.8 seconds.
@@ -10844,7 +11008,7 @@ let scoreTimingDetail =
                   Math.abs(clampedTarget - els.scoreScroll.scrollTop) > 2;
 
                 /*
-                  V16.18: a real ENTER uses an explicit ~0.8s visual scroll
+                  V16.19: a real ENTER uses the V16.18 explicit ~0.8s visual scroll
                   only when the four-below target actually changes. The save
                   request / pending gray / verified Blue states continue on
                   their existing timing and are never gated by this animation.
@@ -11012,7 +11176,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.18 CONTROL CENTER LOG',
+        'SSHCP V16.19 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -12155,6 +12319,7 @@ let scoreTimingDetail =
     function selectTeam(slot, scrollToTop = true) {
       const team = teams.find(item => Number(item.slot) === Number(slot));
       if (!team) return;
+      resetScoreVisualStateV1619();
       selectedTeam = team;
       localScores = normalizeScores(team.scores);
       savedScores = normalizeScores(team.scores);
@@ -12167,6 +12332,7 @@ let scoreTimingDetail =
     }
 
     function clearSelectedTeam() {
+      resetScoreVisualStateV1619();
       selectedTeam = null;
       localScores = Array(18).fill(null);
       savedScores = Array(18).fill(null);
@@ -12930,7 +13096,8 @@ let scoreTimingDetail =
         in that same render.
       */
       const nextHoleIndex = scorecardActiveHoleIndexV16(localScores, selectedTeam);
-      const verifiedNextHoleIndex = scorecardActiveHoleIndexV16(savedScores, selectedTeam);
+      const visualProgressScoresV1619 = scoreVisualProgressV1619();
+      const verifiedNextHoleIndex = scorecardActiveHoleIndexV16(visualProgressScoresV1619, selectedTeam);
       const showVerifiedNextHoleBorder = nextHoleIndex === verifiedNextHoleIndex;
 
 
@@ -13166,7 +13333,7 @@ let scoreTimingDetail =
               else if (relative === 2) scoreCell.classList.add('notation-double-square');
               else if (relative >= 3) scoreCell.classList.add('notation-bold-square');
 
-              if (local === saved) {
+              if (scoreIsVisuallyBlueV1619(index, local, saved)) {
                 scoreCell.classList.add('notation-saved');
                 button.classList.add('saved');
                 button.appendChild(makeSubmittedScoreMark(local, hole.par));
@@ -13699,12 +13866,18 @@ let scoreTimingDetail =
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
-          Gold remains verification-only.
+          V16.19 visual Blue now follows the fixed 0.8s cadence; backend
+          verification remains authoritative and can roll it back on failure.
         */
         if (!commitResult.cleared) {
+          beginScoreVisualCadenceV1619(
+            commitResult.index,
+            localScores[commitResult.index]
+          );
           restoreScorePosition(true);
         } else {
-          /* CLEAR stays stationary, including cancelling any residual ENTER motion. */
+          /* CLEAR stays stationary and never participates in optimistic Blue. */
+          clearScoreVisualStateV1619(commitResult.index);
           cancelScoreEnterBeautyScrollV1618();
         }
 
@@ -13744,8 +13917,9 @@ let scoreTimingDetail =
 
        One request only:
        Worker writes -> reads Google Sheets back -> verifies.
-       Gold score state is applied only after verified:true and
-       exact verifiedScores match. No artificial wait. No same-attempt retry.
+       Worker verification still requires verified:true plus an exact
+       verifiedScores match. V16.19's Blue state is a UI-only 0.8s optimistic
+       cadence and is rolled back on a failed/unconfirmed save.
        ========================================================= */
 
 
@@ -13788,6 +13962,21 @@ let scoreTimingDetail =
         normalizeScores(
           localScores
         );
+
+      const savedScoresAtRequestV1619 = normalizeScores(savedScores);
+      const visualGenerationsAtRequestV1619 = scoreVisualStateV1619.map(
+        state => state ? state.generation : null
+      );
+      const visualEnteredTimesAtRequestV1619 = scoreVisualStateV1619
+        .map((state, index) => (
+          state &&
+          visualGenerationsAtRequestV1619[index] === state.generation &&
+          expectedScores[index] !== savedScoresAtRequestV1619[index]
+        ) ? state.enteredAt : null)
+        .filter(value => Number.isFinite(value));
+      const failureReferenceAtV1619 = visualEnteredTimesAtRequestV1619.length
+        ? Math.max(...visualEnteredTimesAtRequestV1619)
+        : started;
 
       const expectedSlot =
         Number(
@@ -13898,6 +14087,11 @@ let scoreTimingDetail =
             ...confirmedScores
           ];
 
+        markScoreVisualVerificationV1619(
+          confirmedScores,
+          visualGenerationsAtRequestV1619
+        );
+
         /*
           Do not overwrite localScores here. The player may already have
           entered another hole while this request was in flight. The
@@ -13980,9 +14174,11 @@ let scoreTimingDetail =
         addTestLog('ENTER SCORES', 'FAILED', scoreSaveSeconds + 's', String(error && error.message ? error.message : 'Save failed'));
         stopLoadingLine();
 
-        showMessageModal(
-          'Save Not Confirmed',
-          'Google Sheets did not confirm the new scores. Your entered scores remain gray. If they stay gray, refresh the page and ROTB will read the official scorecard, retry the pending scores, and verify them.'
+        scheduleScoreFailureNoticeV1619(
+          expectedScores,
+          savedScoresAtRequestV1619,
+          visualGenerationsAtRequestV1619,
+          failureReferenceAtV1619
         );
 
       }
