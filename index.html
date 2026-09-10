@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.11-V6K2RM | BUILD KEY: 16.12-R8K3HV -->
+<!-- SSHCP | BASE KEY: 16.12-R8K3HV | BUILD KEY: 16.13-VQY3KR -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8515,7 +8515,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.12</span>
+          <span class="home-version-info">SSHCP V16.13</span>
         </button>
 
       </div>
@@ -10266,19 +10266,22 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V16.12 — SHOTGUN STARTING-HOLE INTRO
+       SSHCP V16.13 — SHOTGUN STARTING-HOLE INTRO
 
-       Blank / missing Starting Hole already normalizes to 1 through
-       scorecardStartingHoleV16().  Scan active teams from Team 1 forward;
+       Blank / missing / invalid Starting Hole normalizes to 1 through
+       scorecardStartingHoleV16(). Scan active teams from Team 1 forward;
        the first active team above 1 makes the event a shotgun start.
 
        In shotgun mode, every team — including a team that starts on 1 —
-       receives one informational STARTING HOLE X popup on first entry to
-       a completely blank 18-hole card.  The popup is navigation-only and
-       does not change THRU, scoring, save verification, or cyclic play order.
+       receives STARTING HOLE X every time that team's scorecard is entered
+       while all 18 scores are blank. Dismissing the message does not create
+       a persistent seen-state. As soon as any score exists, the message stops.
+       If all scores are later cleared again, the message resumes automatically.
+       This is informational only and does not change THRU, scoring, save
+       verification, or cyclic play order.
        ========================================================= */
 
-    function tournamentUsesShotgunStartV1612() {
+    function tournamentUsesShotgunStartV1613() {
       const activeTeams = Array.isArray(teams) ? teams : [];
 
       for (const team of activeTeams) {
@@ -10290,7 +10293,7 @@ let scoreTimingDetail =
     }
 
 
-    function scorecardIsCompletelyBlankV1612(scores = localScores) {
+    function scorecardIsCompletelyBlankV1613(scores = localScores) {
       const source = Array.isArray(scores) ? scores : [];
 
       for (let index = 0; index < 18; index++) {
@@ -10304,41 +10307,10 @@ let scoreTimingDetail =
     }
 
 
-    function startingHoleIntroKeyV1612(team = selectedTeam) {
-      if (!team) return '';
-
-      return (
-        'sshcpStartingHoleIntroV1612:' +
-        String(team.slot || normalizeName(team.name || 'team')) + ':' +
-        String(scorecardStartingHoleV16(team))
-      );
-    }
-
-
-    function resetStartingHoleIntroV1612(team = selectedTeam) {
-      const key = startingHoleIntroKeyV1612(team);
-      if (key) localStorage.removeItem(key);
-    }
-
-
-    function showStartingHoleIntroV1612() {
+    function showStartingHoleIntroV1613() {
       if (!selectedTeam || currentView !== 'scorecard') return false;
-
-      const key = startingHoleIntroKeyV1612(selectedTeam);
-      if (!key) return false;
-
-      /* Once scoring has begun, clear the one-time blank-card marker.
-         If the card is later intentionally reset to all blank for another
-         test/round, the intro can be shown once again. */
-      if (!scorecardIsCompletelyBlankV1612(localScores)) {
-        localStorage.removeItem(key);
-        return false;
-      }
-
-      if (!tournamentUsesShotgunStartV1612()) return false;
-      if (localStorage.getItem(key) === '1') return false;
-
-      localStorage.setItem(key, '1');
+      if (!scorecardIsCompletelyBlankV1613(localScores)) return false;
+      if (!tournamentUsesShotgunStartV1613()) return false;
 
       closeModal();
 
@@ -10564,7 +10536,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.12 TEST LOG',
+        'SSHCP V16.13 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11318,7 +11290,7 @@ let scoreTimingDetail =
         restoreScorePosition();
       }
 
-      showStartingHoleIntroV1612();
+      showStartingHoleIntroV1613();
 
     }
 
@@ -11649,7 +11621,7 @@ let scoreTimingDetail =
           }
 
           restoreScorePosition();
-          showStartingHoleIntroV1612();
+          showStartingHoleIntroV1613();
           addTestLog('TEAM SELECT', 'OK', '—', team.name);
         });
         els.scoreTeamDropdown.appendChild(button);
@@ -13209,7 +13181,6 @@ let scoreTimingDetail =
           Gold remains verification-only.
         */
         if (!commitResult.cleared) {
-          resetStartingHoleIntroV1612();
           restoreScorePosition(true);
         }
 
