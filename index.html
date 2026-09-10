@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.24-J9C5WL | BUILD KEY: 16.25-K4V8NJ -->
+<!-- SSHCP | BASE KEY: 16.25-K4V8NJ | BUILD KEY: 16.26-D8Q3LP -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8771,11 +8771,12 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 }
 
 /* =========================================================
-   SSHCP V16.25 — CONTROL CENTER / TEAMS POPUP
+   SSHCP V16.26 — CONTROL CENTER / TEAMS POPUP
    Read-only CF V1.9 team-data confirmation view. Five locked columns are
    10/50/10/15/15. Only assigned teams are shown, up to 36. Header and team
    rows share one exact calculated height: available table height / (N + 1).
-   Text starts at 60% of that calculated row height and shrinks only for width.
+   Column text targets use calculated row height: TEAM 40%, NAME 60%, HCP 50%,
+   QR ID 40%, HOLE 40%; each shrinks only when its actual text needs the width.
    ========================================================= */
 .teams-popup-overlay{
   position:fixed;
@@ -8789,6 +8790,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   box-sizing:border-box;
 }
 .teams-popup-overlay.open{display:flex;}
+.teams-popup-overlay.teams-loading .teams-popup-table-scroll{visibility:hidden;}
 .teams-popup-box{
   width:min(760px,calc(100vw - 16px));
   height:95dvh;
@@ -8866,6 +8868,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   color:var(--on-accent);
 }
 .teams-popup-name{font-weight:800;}
+.teams-popup-hcp{color:var(--red);}
 .teams-popup-back{
   flex:0 0 auto;
   width:100%;
@@ -8986,7 +8989,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.25</span>
+          <span class="home-version-info">SSHCP V16.26</span>
         </button>
 
       </div>
@@ -9398,7 +9401,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
   <!-- =======================================================
-       CONTROL CENTER — TEAMS POPUP (SSHCP V16.25)
+       CONTROL CENTER — TEAMS POPUP (SSHCP V16.26)
        ======================================================= -->
   <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
     <div class="teams-popup-box" role="dialog" aria-label="Teams">
@@ -11382,7 +11385,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.25 CONTROL CENTER LOG',
+        'SSHCP V16.26 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11494,24 +11497,27 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V16.25 — CONTROL CENTER / TEAMS POPUP
+       SSHCP V16.26 — CONTROL CENTER / TEAMS POPUP
        CF V1.9 supplies all 36 fixed TEAMS slots from TEAMS!B1:F37.
        This frontend view is intentionally read-only: only assigned/active
        teams are displayed, and Google Sheets remains the sole edit surface.
+       Refresh restore keeps the last rendered TEAMS snapshot visible while
+       fresh data loads so no provisional giant-header geometry can flash.
        ========================================================= */
 
     let controlCenterTeamsData = [];
-    const TEAMS_POPUP_OPEN_KEY_V1625 = 'sshcpTeamsPopupOpenV1625';
-    const TEAMS_POPUP_SCROLL_KEY_V1625 = 'sshcpTeamsPopupScrollTopV1625';
+    const TEAMS_POPUP_OPEN_KEY_V1626 = 'sshcpTeamsPopupOpenV1626';
+    const TEAMS_POPUP_SCROLL_KEY_V1626 = 'sshcpTeamsPopupScrollTopV1626';
+    const TEAMS_POPUP_DATA_KEY_V1626 = 'sshcpTeamsPopupDataV1626';
 
-    function teamsPopupWasOpenOnRefreshV1625() {
-      return sessionStorage.getItem(TEAMS_POPUP_OPEN_KEY_V1625) === '1';
+    function teamsPopupWasOpenOnRefreshV1626() {
+      return sessionStorage.getItem(TEAMS_POPUP_OPEN_KEY_V1626) === '1';
     }
 
-    function rememberTeamsPopupScrollV1625() {
+    function rememberTeamsPopupScrollV1626() {
       if (!els.teamsPopupTableScroll) return;
       sessionStorage.setItem(
-        TEAMS_POPUP_SCROLL_KEY_V1625,
+        TEAMS_POPUP_SCROLL_KEY_V1626,
         String(Math.max(0, els.teamsPopupTableScroll.scrollTop || 0))
       );
     }
@@ -11535,6 +11541,28 @@ let scoreTimingDetail =
       };
     }
 
+    function saveTeamsPopupSnapshotV1626(rows) {
+      try {
+        sessionStorage.setItem(
+          TEAMS_POPUP_DATA_KEY_V1626,
+          JSON.stringify(Array.isArray(rows) ? rows.slice(0, 36) : [])
+        );
+      } catch (error) {}
+    }
+
+    function readTeamsPopupSnapshotV1626() {
+      try {
+        const parsed = JSON.parse(sessionStorage.getItem(TEAMS_POPUP_DATA_KEY_V1626) || '[]');
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+          .map((row, index) => normalizeControlCenterTeamRow(row, index + 1))
+          .filter(team => team.active)
+          .slice(0, 36);
+      } catch (error) {
+        return [];
+      }
+    }
+
     function makeTeamsPopupCell(value, extraClass = '') {
       const cell = document.createElement('div');
       cell.className = 'teams-popup-cell' + (extraClass ? ' ' + extraClass : '');
@@ -11553,21 +11581,19 @@ let scoreTimingDetail =
         row.dataset.slot = String(team.slot);
 
         row.append(
-          makeTeamsPopupCell(team.slot),
+          makeTeamsPopupCell(team.slot, 'teams-popup-team'),
           makeTeamsPopupCell(team.name, 'teams-popup-name'),
-          makeTeamsPopupCell(team.handicap),
-          makeTeamsPopupCell(team.qrId),
-          makeTeamsPopupCell(team.startingHole)
+          makeTeamsPopupCell(team.handicap, 'teams-popup-hcp'),
+          makeTeamsPopupCell(team.qrId, 'teams-popup-qr'),
+          makeTeamsPopupCell(team.startingHole, 'teams-popup-hole')
         );
         els.teamsPopupRows.appendChild(row);
       });
-
-      requestAnimationFrame(fitTeamsPopupGeometry);
     }
 
     const teamsPopupTextMeasureCanvas = document.createElement('canvas');
     const teamsPopupTextMeasureContext = teamsPopupTextMeasureCanvas.getContext('2d');
-    let teamsPopupCalculatedRowHeightV1625 = 36;
+    let teamsPopupCalculatedRowHeightV1626 = 36;
 
     function teamsPopupMeasureTextWidth(element, text, fontSize) {
       if (!teamsPopupTextMeasureContext) return 0;
@@ -11584,10 +11610,23 @@ let scoreTimingDetail =
       return width;
     }
 
+    function teamsPopupTargetRatioV1626(element) {
+      if (!element) return 0.60;
+      if (element.closest('.teams-popup-row.header')) return 0.60;
+      if (element.classList.contains('teams-popup-name')) return 0.60;
+      if (element.classList.contains('teams-popup-hcp')) return 0.50;
+      if (
+        element.classList.contains('teams-popup-team') ||
+        element.classList.contains('teams-popup-qr') ||
+        element.classList.contains('teams-popup-hole')
+      ) return 0.40;
+      return 0.40;
+    }
+
     function fitTeamsPopupCellText(element) {
       if (!element) return;
-      const rowHeight = Math.max(1, teamsPopupCalculatedRowHeightV1625 || 36);
-      const target = rowHeight * 0.60;
+      const rowHeight = Math.max(1, teamsPopupCalculatedRowHeightV1626 || 36);
+      const target = rowHeight * teamsPopupTargetRatioV1626(element);
       const minimum = 7;
       const text = element.textContent || '';
       const available = Math.max(1, element.clientWidth - 6);
@@ -11603,21 +11642,33 @@ let scoreTimingDetail =
     function fitTeamsPopupGeometry() {
       if (!els.teamsPopupOverlay || !els.teamsPopupOverlay.classList.contains('open')) return;
       if (!els.teamsPopupTableScroll) return;
+      if (!controlCenterTeamsData.length) return;
 
       const tableHeight = els.teamsPopupTableScroll.clientHeight;
       if (!tableHeight) return;
 
-      /* V16.25 — exact dynamic geometry. N assigned teams plus one header
+      /* V16.26 — exact dynamic geometry. N assigned teams plus one header
          consume exactly the available table viewport. 36 teams = /37. */
       const assignedCount = Math.min(36, controlCenterTeamsData.length);
-      const divisor = Math.max(1, assignedCount + 1);
-      const rowHeight = Math.max(1, tableHeight / divisor);
-      teamsPopupCalculatedRowHeightV1625 = rowHeight;
+      const divisor = assignedCount + 1;
+      const rowHeight = tableHeight / divisor;
+      teamsPopupCalculatedRowHeightV1626 = rowHeight;
       els.teamsPopupOverlay.style.setProperty('--teams-popup-row-h', rowHeight + 'px');
 
       els.teamsPopupTableScroll
         .querySelectorAll('.teams-popup-row .teams-popup-cell')
         .forEach(fitTeamsPopupCellText);
+    }
+
+    function revealTeamsPopupAfterLayoutV1626() {
+      requestAnimationFrame(() => {
+        fitTeamsPopupGeometry();
+        requestAnimationFrame(() => {
+          if (els.teamsPopupOverlay) {
+            els.teamsPopupOverlay.classList.remove('teams-loading');
+          }
+        });
+      });
     }
 
     async function loadControlCenterTeams() {
@@ -11637,7 +11688,9 @@ let scoreTimingDetail =
           .map((row, index) => normalizeControlCenterTeamRow(row, index + 1))
           .filter(team => team.active)
           .slice(0, 36);
+        saveTeamsPopupSnapshotV1626(controlCenterTeamsData);
         renderTeamsPopupRows(controlCenterTeamsData);
+        revealTeamsPopupAfterLayoutV1626();
 
         const seconds = timerSeconds(started);
         const timing = data.timing || {};
@@ -11646,6 +11699,9 @@ let scoreTimingDetail =
           ' • CF ' + ((Number(timing.totalMs) || 0) / 1000).toFixed(3) + 's';
         addTestLog('TEAMS LOAD', 'OK', seconds + 's', detail);
       } catch (error) {
+        if (!controlCenterTeamsData.length && els.teamsPopupOverlay) {
+          els.teamsPopupOverlay.classList.remove('teams-loading');
+        }
         addTestLog('TEAMS LOAD', 'FAILED', timerSeconds(started) + 's', String(error && error.message || 'Request failed'));
       }
     }
@@ -11655,19 +11711,30 @@ let scoreTimingDetail =
       const restoringAfterRefresh = options && options.restoreAfterRefresh === true;
       closeModal();
       closeScoreEntry(false);
-      els.teamsPopupRows.innerHTML = '';
-      controlCenterTeamsData = [];
+
+      const restoredRows = restoringAfterRefresh ? readTeamsPopupSnapshotV1626() : [];
+      controlCenterTeamsData = restoredRows;
+      if (els.teamsPopupRows) els.teamsPopupRows.innerHTML = '';
+
       els.teamsPopupOverlay.classList.add('open');
       els.teamsPopupOverlay.setAttribute('aria-hidden', 'false');
-      sessionStorage.setItem(TEAMS_POPUP_OPEN_KEY_V1625, '1');
+      sessionStorage.setItem(TEAMS_POPUP_OPEN_KEY_V1626, '1');
+
+      if (restoredRows.length) {
+        renderTeamsPopupRows(restoredRows);
+        fitTeamsPopupGeometry();
+        els.teamsPopupOverlay.classList.remove('teams-loading');
+      } else {
+        els.teamsPopupOverlay.classList.add('teams-loading');
+      }
 
       if (els.teamsPopupTableScroll) {
         const saved = restoringAfterRefresh
-          ? Number(sessionStorage.getItem(TEAMS_POPUP_SCROLL_KEY_V1625))
+          ? Number(sessionStorage.getItem(TEAMS_POPUP_SCROLL_KEY_V1626))
           : 0;
         els.teamsPopupTableScroll.scrollTop = Number.isFinite(saved) && saved > 0 ? saved : 0;
         if (!restoringAfterRefresh) {
-          sessionStorage.setItem(TEAMS_POPUP_SCROLL_KEY_V1625, '0');
+          sessionStorage.setItem(TEAMS_POPUP_SCROLL_KEY_V1626, '0');
         }
       }
 
@@ -11683,9 +11750,10 @@ let scoreTimingDetail =
 
     function closeTeamsPopup() {
       if (!els.teamsPopupOverlay) return;
-      rememberTeamsPopupScrollV1625();
-      sessionStorage.removeItem(TEAMS_POPUP_OPEN_KEY_V1625);
-      sessionStorage.removeItem(TEAMS_POPUP_SCROLL_KEY_V1625);
+      rememberTeamsPopupScrollV1626();
+      sessionStorage.removeItem(TEAMS_POPUP_OPEN_KEY_V1626);
+      sessionStorage.removeItem(TEAMS_POPUP_SCROLL_KEY_V1626);
+      els.teamsPopupOverlay.classList.remove('teams-loading');
       els.teamsPopupOverlay.classList.remove('open');
       els.teamsPopupOverlay.setAttribute('aria-hidden', 'true');
     }
@@ -17449,7 +17517,7 @@ let scoreTimingDetail =
     if (els.teamsPopupTableScroll) {
       els.teamsPopupTableScroll.addEventListener('scroll', () => {
         if (els.teamsPopupOverlay && els.teamsPopupOverlay.classList.contains('open')) {
-          rememberTeamsPopupScrollV1625();
+          rememberTeamsPopupScrollV1626();
         }
       }, { passive: true });
     }
@@ -17771,7 +17839,7 @@ let scoreTimingDetail =
 
       const rememberedView =
         getRememberedView();
-      const restoreTeamsPopupV1625 = teamsPopupWasOpenOnRefreshV1625();
+      const restoreTeamsPopupV1626 = teamsPopupWasOpenOnRefreshV1626();
 
       if (
         rememberedView ===
@@ -17792,10 +17860,10 @@ let scoreTimingDetail =
       syncTeamQrLockedUi();
       updateHomeScorecardAccess();
 
-      /* V16.25 — browser refresh while TEAMS is open returns directly to the
+      /* V16.26 — browser refresh while TEAMS is open returns directly to the
          TEAMS workspace (and restores its table scroll position) instead of
          falling through to HOME. */
-      if (restoreTeamsPopupV1625) {
+      if (restoreTeamsPopupV1626) {
         showTestLog();
         openTeamsPopup({ restoreAfterRefresh: true });
         return;
@@ -17983,4 +18051,5 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
 
