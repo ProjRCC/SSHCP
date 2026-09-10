@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.27-S8K5RD | BUILD KEY: 16.28-G6P2YC -->
+<!-- SSHCP | BASE KEY: 16.28-G6P2YC | BUILD KEY: 16.29-P7D4XM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9145,6 +9145,46 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   box-sizing:border-box!important;
 }
 
+
+/* =========================================================
+   SSHCP V16.29 — SCRAMBLE SUMMARY VISUAL NORMALIZATION
+   Summary-only styling. The V16.27 SKINS popup is visually locked and
+   intentionally untouched. No standings/title/row/tiebreak geometry changes.
+   ========================================================= */
+
+/* Match the tournament-results table-header language already established by
+   the locked SKINS popup without changing Summary header height or columns. */
+.modal-overlay.tournament-summary .tournament-summary-row.header{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-row.header > div{
+  color:var(--on-accent)!important;
+  border-right-color:rgba(255,255,255,.55)!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-row.header > div:last-child{
+  border-right-color:transparent!important;
+}
+
+/* Keep the reserved three-slot geometry, but use the same compact visible
+   button relationship as the locked SKINS popup. */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627{
+  gap:10px!important;
+}
+
+/* Hierarchy is functional, not positional: BACK is secondary; SKINS is the
+   forward/primary action. */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn:not(.summary-action-placeholder-v1627):not(.summary-skins-button-v1627){
+  border:2px solid var(--accent)!important;
+  background:#fff!important;
+  color:var(--accent)!important;
+}
+.modal-overlay.tournament-summary .summary-skins-button-v1627{
+  border:2px solid var(--accent)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+
 </style>
 </head>
 
@@ -9249,7 +9289,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.28</span>
+          <span class="home-version-info">SSHCP V16.29</span>
         </button>
 
       </div>
