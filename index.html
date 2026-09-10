@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.22-F4K9WT | BUILD KEY: 16.23-W2H6NB -->
+<!-- SSHCP | BASE KEY: 16.23-W2H6NB | BUILD KEY: 16.24-J9C5WL -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8771,10 +8771,11 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 }
 
 /* =========================================================
-   SSHCP V16.23 — CONTROL CENTER / TEAMS POPUP
+   SSHCP V16.24 — CONTROL CENTER / TEAMS POPUP
    Read-only CF V1.9 team-data view. Five locked columns are 10/50/10/15/15.
    The popup has no title/header area; the solid table header is one row high.
-   At least 18 team rows are targeted in the visible table viewport.
+   Exact viewport math keeps one header + 18 team rows in view; text starts at
+   75% of the calculated row height and only shrinks when its measured text width requires it.
    ========================================================= */
 .teams-popup-overlay{
   position:fixed;
@@ -8802,13 +8803,23 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   background:#fff;
   overflow:hidden;
 }
-.teams-popup-table-scroll{
+.teams-popup-table-frame{
   flex:1 1 auto;
   min-height:0;
-  overflow-y:auto;
-  overflow-x:hidden;
+  overflow:hidden;
   border:1px solid #a9a9a9;
   border-radius:8px;
+  background:#fff;
+}
+.teams-popup-table-scroll{
+  width:100%;
+  height:100%;
+  min-height:0;
+  box-sizing:border-box;
+  overflow-y:auto;
+  overflow-x:hidden;
+  border:0;
+  border-radius:0;
   background:#fff;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
@@ -9001,7 +9012,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.23</span>
+          <span class="home-version-info">SSHCP V16.24</span>
         </button>
 
       </div>
@@ -9413,19 +9424,21 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
   <!-- =======================================================
-       CONTROL CENTER — TEAMS POPUP (SSHCP V16.23)
+       CONTROL CENTER — TEAMS POPUP (SSHCP V16.24)
        ======================================================= -->
   <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
     <div class="teams-popup-box" role="dialog" aria-label="Teams">
-      <div id="teamsPopupTableScroll" class="teams-popup-table-scroll">
-        <div class="teams-popup-row header">
-          <div class="teams-popup-cell">TEAM</div>
-          <div class="teams-popup-cell">NAME</div>
-          <div class="teams-popup-cell">HCP</div>
-          <div class="teams-popup-cell">QR ID</div>
-          <div class="teams-popup-cell">HOLE</div>
+      <div class="teams-popup-table-frame">
+        <div id="teamsPopupTableScroll" class="teams-popup-table-scroll">
+          <div class="teams-popup-row header">
+            <div class="teams-popup-cell">TEAM</div>
+            <div class="teams-popup-cell">NAME</div>
+            <div class="teams-popup-cell">HCP</div>
+            <div class="teams-popup-cell">QR ID</div>
+            <div class="teams-popup-cell">HOLE</div>
+          </div>
+          <div id="teamsPopupRows"></div>
         </div>
-        <div id="teamsPopupRows"></div>
       </div>
       <button id="teamsPopupBackButton" class="teams-popup-back" type="button">BACK</button>
     </div>
@@ -11395,7 +11408,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.23 CONTROL CENTER LOG',
+        'SSHCP V16.24 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11507,7 +11520,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V16.23 — CONTROL CENTER / TEAMS POPUP
+       SSHCP V16.24 — CONTROL CENTER / TEAMS POPUP
        CF V1.9 supplies all 36 fixed TEAMS slots from TEAMS!B1:F37.
        This frontend pass is intentionally read-only at the backend: cells
        are keyboard-editable for layout/input testing, but BACK does not
@@ -11515,6 +11528,21 @@ let scoreTimingDetail =
        ========================================================= */
 
     let controlCenterTeamsData = [];
+    const TEAMS_POPUP_OPEN_KEY_V1624 = 'sshcpTeamsPopupOpenV1624';
+    const TEAMS_POPUP_SCROLL_KEY_V1624 = 'sshcpTeamsPopupScrollTopV1624';
+
+    function teamsPopupWasOpenOnRefreshV1624() {
+      return sessionStorage.getItem(TEAMS_POPUP_OPEN_KEY_V1624) === '1';
+    }
+
+    function rememberTeamsPopupScrollV1624() {
+      if (!els.teamsPopupTableScroll) return;
+      sessionStorage.setItem(
+        TEAMS_POPUP_SCROLL_KEY_V1624,
+        String(Math.max(0, els.teamsPopupTableScroll.scrollTop || 0))
+      );
+    }
+
 
     function normalizeControlCenterTeamRow(row, fallbackSlot) {
       const slotNumber = Number(row && row.slot);
@@ -11601,35 +11629,35 @@ let scoreTimingDetail =
 
     const teamsPopupTextMeasureCanvas = document.createElement('canvas');
     const teamsPopupTextMeasureContext = teamsPopupTextMeasureCanvas.getContext('2d');
+    let teamsPopupCalculatedRowHeightV1624 = 36;
 
-    function teamsPopupTargetFontSize(element, rowHeight) {
-      const targetVisibleHeight = Math.max(10, rowHeight * 0.75);
-      if (!teamsPopupTextMeasureContext) return Math.max(10, rowHeight * 0.96);
-
+    function teamsPopupMeasureTextWidth(element, text, fontSize) {
+      if (!teamsPopupTextMeasureContext) return 0;
       const style = getComputedStyle(element);
       const family = style.fontFamily || "'Oswald',Arial,sans-serif";
       const weight = style.fontWeight || '400';
-      const referenceSize = 100;
-      teamsPopupTextMeasureContext.font = weight + ' ' + referenceSize + 'px ' + family;
-      const metrics = teamsPopupTextMeasureContext.measureText('Hg0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-      const envelope = Number(metrics.actualBoundingBoxAscent || 0) + Number(metrics.actualBoundingBoxDescent || 0);
-      if (!(envelope > 0)) return Math.max(10, rowHeight * 0.96);
-      return Math.max(10, targetVisibleHeight * referenceSize / envelope);
+      const fontStyle = style.fontStyle || 'normal';
+      teamsPopupTextMeasureContext.font = fontStyle + ' ' + weight + ' ' + fontSize + 'px ' + family;
+      let width = teamsPopupTextMeasureContext.measureText(String(text || '')).width;
+      const spacing = parseFloat(style.letterSpacing);
+      if (Number.isFinite(spacing) && spacing !== 0) {
+        width += Math.max(0, String(text || '').length - 1) * spacing;
+      }
+      return width;
     }
 
     function fitTeamsPopupCellText(element) {
       if (!element) return;
-      const row = element.closest('.teams-popup-row');
-      if (!row) return;
-      const rowHeight = row.getBoundingClientRect().height || 36;
-      const target = teamsPopupTargetFontSize(element, rowHeight);
+      const rowHeight = Math.max(1, teamsPopupCalculatedRowHeightV1624 || 36);
+      const target = rowHeight * 0.75;
       const minimum = 8;
-      element.style.fontSize = target + 'px';
-
+      const text = element.tagName === 'INPUT' ? element.value : element.textContent;
+      const available = Math.max(1, element.clientWidth - 6);
       let size = target;
-      const available = Math.max(1, element.clientWidth - 4);
-      while (size > minimum && element.scrollWidth > available) {
-        size -= 0.5;
+
+      element.style.fontSize = size + 'px';
+      while (size > minimum && teamsPopupMeasureTextWidth(element, text, size) > available) {
+        size = Math.max(minimum, size - 0.5);
         element.style.fontSize = size + 'px';
       }
     }
@@ -11641,23 +11669,15 @@ let scoreTimingDetail =
       const tableHeight = els.teamsPopupTableScroll.clientHeight;
       if (!tableHeight) return;
 
-      /* One header row + 18 team rows occupy the visible table height. */
-      const rowHeight = Math.max(24, Math.floor((tableHeight / 19) * 10) / 10);
+      /* V16.24 — exact geometry: one header + 18 team rows = viewport.
+         Fractional CSS pixels are intentional; do not round the row height. */
+      const rowHeight = Math.max(1, tableHeight / 19);
+      teamsPopupCalculatedRowHeightV1624 = rowHeight;
       els.teamsPopupOverlay.style.setProperty('--teams-popup-row-h', rowHeight + 'px');
 
-      const headerCells = els.teamsPopupTableScroll.querySelectorAll('.teams-popup-row.header .teams-popup-cell');
-      headerCells.forEach(cell => {
-        const target = teamsPopupTargetFontSize(cell, rowHeight);
-        cell.style.fontSize = target + 'px';
-        let size = target;
-        const available = Math.max(1, cell.clientWidth - 4);
-        while (size > 8 && cell.scrollWidth > available) {
-          size -= 0.5;
-          cell.style.fontSize = size + 'px';
-        }
-      });
-
-      els.teamsPopupTableScroll.querySelectorAll('.teams-popup-slot, .teams-popup-input').forEach(fitTeamsPopupCellText);
+      els.teamsPopupTableScroll
+        .querySelectorAll('.teams-popup-row.header .teams-popup-cell, .teams-popup-slot, .teams-popup-input')
+        .forEach(fitTeamsPopupCellText);
     }
 
     async function loadControlCenterTeams() {
@@ -11689,15 +11709,27 @@ let scoreTimingDetail =
       }
     }
 
-    function openTeamsPopup() {
+    function openTeamsPopup(options = {}) {
       if (!els.teamsPopupOverlay) return;
+      const restoringAfterRefresh = options && options.restoreAfterRefresh === true;
       closeModal();
       closeScoreEntry(false);
       controlCenterTeamsData = buildBlankControlCenterTeams();
       renderTeamsPopupRows(controlCenterTeamsData);
       els.teamsPopupOverlay.classList.add('open');
       els.teamsPopupOverlay.setAttribute('aria-hidden', 'false');
-      if (els.teamsPopupTableScroll) els.teamsPopupTableScroll.scrollTop = 0;
+      sessionStorage.setItem(TEAMS_POPUP_OPEN_KEY_V1624, '1');
+
+      if (els.teamsPopupTableScroll) {
+        const saved = restoringAfterRefresh
+          ? Number(sessionStorage.getItem(TEAMS_POPUP_SCROLL_KEY_V1624))
+          : 0;
+        els.teamsPopupTableScroll.scrollTop = Number.isFinite(saved) && saved > 0 ? saved : 0;
+        if (!restoringAfterRefresh) {
+          sessionStorage.setItem(TEAMS_POPUP_SCROLL_KEY_V1624, '0');
+        }
+      }
+
       requestAnimationFrame(() => {
         fitTeamsPopupGeometry();
         loadControlCenterTeams();
@@ -11717,6 +11749,9 @@ let scoreTimingDetail =
       if (active && active.classList && active.classList.contains('teams-popup-input')) {
         active.blur();
       }
+      rememberTeamsPopupScrollV1624();
+      sessionStorage.removeItem(TEAMS_POPUP_OPEN_KEY_V1624);
+      sessionStorage.removeItem(TEAMS_POPUP_SCROLL_KEY_V1624);
       els.teamsPopupOverlay.classList.remove('open');
       els.teamsPopupOverlay.setAttribute('aria-hidden', 'true');
     }
@@ -17478,6 +17513,13 @@ let scoreTimingDetail =
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
     if (els.controlCenterTeamsButton) els.controlCenterTeamsButton.addEventListener('click', openTeamsPopup);
     if (els.teamsPopupBackButton) els.teamsPopupBackButton.addEventListener('click', closeTeamsPopup);
+    if (els.teamsPopupTableScroll) {
+      els.teamsPopupTableScroll.addEventListener('scroll', () => {
+        if (els.teamsPopupOverlay && els.teamsPopupOverlay.classList.contains('open')) {
+          rememberTeamsPopupScrollV1624();
+        }
+      }, { passive: true });
+    }
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
     if (els.testRemoveAuthorizationButton) els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
     if (els.testTeamAuthorizationCheck) {
@@ -17796,6 +17838,7 @@ let scoreTimingDetail =
 
       const rememberedView =
         getRememberedView();
+      const restoreTeamsPopupV1624 = teamsPopupWasOpenOnRefreshV1624();
 
       if (
         rememberedView ===
@@ -17815,6 +17858,15 @@ let scoreTimingDetail =
       syncTestAuthorizationToggle();
       syncTeamQrLockedUi();
       updateHomeScorecardAccess();
+
+      /* V16.24 — browser refresh while TEAMS is open returns directly to the
+         TEAMS workspace (and restores its table scroll position) instead of
+         falling through to HOME. */
+      if (restoreTeamsPopupV1624) {
+        showTestLog();
+        openTeamsPopup({ restoreAfterRefresh: true });
+        return;
+      }
 
       if (
         rememberedView ===
@@ -17998,5 +18050,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
