@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.20-H3N7QP | BUILD KEY: 16.21-R5M8QK -->
+<!-- SSHCP | BASE KEY: 16.21-R5M8QK | BUILD KEY: 16.22-F4K9WT -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8769,6 +8769,131 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   background:var(--accent)!important;
   color:var(--on-accent)!important;
 }
+
+/* =========================================================
+   SSHCP V16.22 — CONTROL CENTER / TEAMS POPUP
+   Read-only CF V1.9 team-data view. Five locked columns are 10/50/10/15/15.
+   The popup has no title/header area; the solid table header is one row high.
+   At least 18 team rows are targeted in the visible table viewport.
+   ========================================================= */
+.teams-popup-overlay{
+  position:fixed;
+  inset:0;
+  z-index:260;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:0 8px;
+  background:rgba(0,0,0,.18);
+  box-sizing:border-box;
+}
+.teams-popup-overlay.open{display:flex;}
+.teams-popup-box{
+  width:min(760px,calc(100vw - 16px));
+  height:95dvh;
+  max-height:95dvh;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  padding:6px;
+  border:2px solid #000;
+  border-radius:14px;
+  background:#fff;
+  overflow:hidden;
+}
+.teams-popup-table-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  border:1px solid #a9a9a9;
+  border-radius:8px;
+  background:#fff;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+.teams-popup-row{
+  display:grid;
+  grid-template-columns:10fr 50fr 10fr 15fr 15fr;
+  width:100%;
+  height:var(--teams-popup-row-h,36px);
+  min-height:var(--teams-popup-row-h,36px);
+  box-sizing:border-box;
+  background:#fff;
+}
+.teams-popup-row.header{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:var(--accent);
+  color:var(--on-accent);
+  font-weight:800;
+}
+.teams-popup-cell{
+  min-width:0;
+  height:100%;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 2px;
+  border-right:1px solid #b7b7b7;
+  border-bottom:1px solid #b7b7b7;
+  overflow:hidden;
+  white-space:nowrap;
+  font-family:'Oswald',Arial,sans-serif;
+  line-height:1;
+}
+.teams-popup-row .teams-popup-cell:last-child{border-right:0;}
+.teams-popup-row.header .teams-popup-cell{
+  border-color:rgba(255,255,255,.55);
+  font-weight:800;
+  text-align:center;
+}
+.teams-popup-slot{
+  font-weight:400;
+  color:#000;
+}
+.teams-popup-input{
+  display:block;
+  width:100%;
+  height:100%;
+  min-width:0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0 2px;
+  border:0;
+  border-radius:0;
+  outline:0;
+  background:transparent;
+  color:#000;
+  font-family:'Oswald',Arial,sans-serif;
+  font-weight:400;
+  line-height:1;
+  text-align:center;
+  white-space:nowrap;
+}
+.teams-popup-input:focus{
+  background:#f3f3f3;
+  box-shadow:inset 0 0 0 2px var(--accent);
+}
+.teams-popup-back{
+  flex:0 0 auto;
+  width:100%;
+  height:48px;
+  min-height:48px;
+  margin:7px 0 0;
+  padding:0 8px;
+  border:2px solid var(--accent);
+  border-radius:8px;
+  background:var(--accent);
+  color:var(--on-accent);
+  font-family:'Oswald',Arial,sans-serif;
+  font-size:20px;
+  font-weight:800;
+  line-height:1;
+}
 </style>
 </head>
 
@@ -8873,7 +8998,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.21</span>
+          <span class="home-version-info">SSHCP V16.22</span>
         </button>
 
       </div>
@@ -9285,6 +9410,26 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
   <!-- =======================================================
+       CONTROL CENTER — TEAMS POPUP (SSHCP V16.22)
+       ======================================================= -->
+  <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
+    <div class="teams-popup-box" role="dialog" aria-label="Teams">
+      <div id="teamsPopupTableScroll" class="teams-popup-table-scroll">
+        <div class="teams-popup-row header">
+          <div class="teams-popup-cell">TEAM</div>
+          <div class="teams-popup-cell">NAME</div>
+          <div class="teams-popup-cell">HCP</div>
+          <div class="teams-popup-cell">QR ID</div>
+          <div class="teams-popup-cell">HOLE</div>
+        </div>
+        <div id="teamsPopupRows"></div>
+      </div>
+      <button id="teamsPopupBackButton" class="teams-popup-back" type="button">BACK</button>
+    </div>
+  </div>
+
+
+  <!-- =======================================================
        GENERAL MODAL
        ======================================================= -->
 
@@ -9502,6 +9647,21 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
       testCopyLogButton:
         document.getElementById('testCopyLogButton'),
+
+      controlCenterTeamsButton:
+        document.getElementById('controlCenterTeamsButton'),
+
+      teamsPopupOverlay:
+        document.getElementById('teamsPopupOverlay'),
+
+      teamsPopupTableScroll:
+        document.getElementById('teamsPopupTableScroll'),
+
+      teamsPopupRows:
+        document.getElementById('teamsPopupRows'),
+
+      teamsPopupBackButton:
+        document.getElementById('teamsPopupBackButton'),
 
       testAddParCurrentButton:
         document.getElementById('testAddParCurrentButton'),
@@ -11232,7 +11392,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.21 CONTROL CENTER LOG',
+        'SSHCP V16.22 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11341,6 +11501,189 @@ let scoreTimingDetail =
       runAssignedPasskeyLoad();
       requestAnimationFrame(fitTestPageButtonText);
       window.scrollTo(0, 0);
+    }
+
+    /* =========================================================
+       SSHCP V16.22 — CONTROL CENTER / TEAMS POPUP
+       CF V1.9 supplies all 36 fixed TEAMS slots from TEAMS!B1:F37.
+       This frontend pass is intentionally read-only at the backend: cells
+       are keyboard-editable for layout/input testing, but BACK does not
+       write changes to Google Sheets.
+       ========================================================= */
+
+    let controlCenterTeamsData = [];
+
+    function normalizeControlCenterTeamRow(row, fallbackSlot) {
+      const slotNumber = Number(row && row.slot);
+      return {
+        slot: Number.isInteger(slotNumber) && slotNumber >= 1 && slotNumber <= 36
+          ? slotNumber
+          : fallbackSlot,
+        name: String((row && row.name) ?? ''),
+        handicap: (row && row.handicap) === '' || (row && row.handicap) === null || (row && row.handicap) === undefined
+          ? ''
+          : String(row.handicap),
+        qrId: String((row && row.qrId) ?? ''),
+        startingHole: (row && row.startingHole) === '' || (row && row.startingHole) === null || (row && row.startingHole) === undefined
+          ? ''
+          : String(row.startingHole)
+      };
+    }
+
+    function buildBlankControlCenterTeams() {
+      return Array.from({ length: 36 }, (_, index) =>
+        normalizeControlCenterTeamRow(null, index + 1)
+      );
+    }
+
+    function makeTeamsPopupInput(value, field, inputMode) {
+      const input = document.createElement('input');
+      input.className = 'teams-popup-input';
+      input.type = 'text';
+      input.value = value;
+      input.dataset.field = field;
+      input.autocomplete = 'off';
+      input.autocapitalize = 'off';
+      input.spellcheck = false;
+      if (inputMode) input.inputMode = inputMode;
+      input.addEventListener('input', () => {
+        requestAnimationFrame(() => fitTeamsPopupCellText(input));
+      });
+      return input;
+    }
+
+    function renderTeamsPopupRows(rows) {
+      if (!els.teamsPopupRows) return;
+      const source = Array.isArray(rows) && rows.length ? rows : buildBlankControlCenterTeams();
+      els.teamsPopupRows.innerHTML = '';
+
+      for (let index = 0; index < 36; index++) {
+        const team = normalizeControlCenterTeamRow(source[index], index + 1);
+        const row = document.createElement('div');
+        row.className = 'teams-popup-row';
+        row.dataset.slot = String(team.slot);
+
+        const slotCell = document.createElement('div');
+        slotCell.className = 'teams-popup-cell teams-popup-slot';
+        slotCell.textContent = String(team.slot);
+
+        const nameCell = document.createElement('div');
+        nameCell.className = 'teams-popup-cell';
+        nameCell.appendChild(makeTeamsPopupInput(team.name, 'name', 'text'));
+
+        const hcpCell = document.createElement('div');
+        hcpCell.className = 'teams-popup-cell';
+        hcpCell.appendChild(makeTeamsPopupInput(team.handicap, 'handicap', 'decimal'));
+
+        const qrCell = document.createElement('div');
+        qrCell.className = 'teams-popup-cell';
+        qrCell.appendChild(makeTeamsPopupInput(team.qrId, 'qrId', 'text'));
+
+        const holeCell = document.createElement('div');
+        holeCell.className = 'teams-popup-cell';
+        holeCell.appendChild(makeTeamsPopupInput(team.startingHole, 'startingHole', 'numeric'));
+
+        row.append(slotCell, nameCell, hcpCell, qrCell, holeCell);
+        els.teamsPopupRows.appendChild(row);
+      }
+
+      requestAnimationFrame(fitTeamsPopupGeometry);
+    }
+
+    function fitTeamsPopupCellText(element) {
+      if (!element) return;
+      const row = element.closest('.teams-popup-row');
+      if (!row) return;
+      const rowHeight = row.getBoundingClientRect().height || 36;
+      const target = Math.max(10, rowHeight * 0.75);
+      const minimum = 8;
+      element.style.fontSize = target + 'px';
+
+      let size = target;
+      const available = Math.max(1, element.clientWidth - 4);
+      while (size > minimum && element.scrollWidth > available) {
+        size -= 0.5;
+        element.style.fontSize = size + 'px';
+      }
+    }
+
+    function fitTeamsPopupGeometry() {
+      if (!els.teamsPopupOverlay || !els.teamsPopupOverlay.classList.contains('open')) return;
+      if (!els.teamsPopupTableScroll) return;
+
+      const tableHeight = els.teamsPopupTableScroll.clientHeight;
+      if (!tableHeight) return;
+
+      /* One header row + 18 team rows occupy the visible table height. */
+      const rowHeight = Math.max(24, Math.floor((tableHeight / 19) * 10) / 10);
+      els.teamsPopupOverlay.style.setProperty('--teams-popup-row-h', rowHeight + 'px');
+
+      const headerCells = els.teamsPopupTableScroll.querySelectorAll('.teams-popup-row.header .teams-popup-cell');
+      headerCells.forEach(cell => {
+        cell.style.fontSize = Math.max(10, rowHeight * 0.75) + 'px';
+        let size = parseFloat(cell.style.fontSize) || 10;
+        const available = Math.max(1, cell.clientWidth - 4);
+        while (size > 8 && cell.scrollWidth > available) {
+          size -= 0.5;
+          cell.style.fontSize = size + 'px';
+        }
+      });
+
+      els.teamsPopupTableScroll.querySelectorAll('.teams-popup-slot, .teams-popup-input').forEach(fitTeamsPopupCellText);
+    }
+
+    async function loadControlCenterTeams() {
+      const started = timerStart();
+      try {
+        const response = await fetch(
+          CLOUDFLARE_API_URL + '?action=teams&refresh=' + Date.now(),
+          { cache: 'no-store' }
+        );
+        if (!response.ok) throw new Error('Teams request failed.');
+        const data = await response.json();
+        if (!data || data.ok !== true || !Array.isArray(data.teams)) {
+          throw new Error((data && data.error) || 'Teams data unavailable.');
+        }
+
+        controlCenterTeamsData = Array.from({ length: 36 }, (_, index) =>
+          normalizeControlCenterTeamRow(data.teams[index], index + 1)
+        );
+        renderTeamsPopupRows(controlCenterTeamsData);
+
+        const seconds = timerSeconds(started);
+        const timing = data.timing || {};
+        const detail =
+          '36 SLOTS • READ ' + ((Number(timing.readMs) || 0) / 1000).toFixed(3) + 's' +
+          ' • CF ' + ((Number(timing.totalMs) || 0) / 1000).toFixed(3) + 's';
+        addTestLog('TEAMS LOAD', 'OK', seconds + 's', detail);
+      } catch (error) {
+        addTestLog('TEAMS LOAD', 'FAILED', timerSeconds(started) + 's', String(error && error.message || 'Request failed'));
+      }
+    }
+
+    function openTeamsPopup() {
+      if (!els.teamsPopupOverlay) return;
+      closeModal();
+      closeScoreEntry(false);
+      controlCenterTeamsData = buildBlankControlCenterTeams();
+      renderTeamsPopupRows(controlCenterTeamsData);
+      els.teamsPopupOverlay.classList.add('open');
+      els.teamsPopupOverlay.setAttribute('aria-hidden', 'false');
+      if (els.teamsPopupTableScroll) els.teamsPopupTableScroll.scrollTop = 0;
+      requestAnimationFrame(() => {
+        fitTeamsPopupGeometry();
+        loadControlCenterTeams();
+      });
+    }
+
+    function closeTeamsPopup() {
+      if (!els.teamsPopupOverlay) return;
+      const active = document.activeElement;
+      if (active && active.classList && active.classList.contains('teams-popup-input')) {
+        active.blur();
+      }
+      els.teamsPopupOverlay.classList.remove('open');
+      els.teamsPopupOverlay.setAttribute('aria-hidden', 'true');
     }
 
     function resetTestLog() {
@@ -17053,6 +17396,17 @@ let scoreTimingDetail =
     }
 
 
+    window.addEventListener('resize', () => {
+      if (
+        els.teamsPopupOverlay &&
+        els.teamsPopupOverlay.classList.contains('open') &&
+        !(document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('teams-popup-input'))
+      ) {
+        requestAnimationFrame(fitTeamsPopupGeometry);
+      }
+    });
+
+
     /* =========================================================
        EVENTS
        ========================================================= */
@@ -17087,6 +17441,8 @@ let scoreTimingDetail =
     if (els.testLogScorecardButton) els.testLogScorecardButton.addEventListener('click', showScorecard);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
+    if (els.controlCenterTeamsButton) els.controlCenterTeamsButton.addEventListener('click', openTeamsPopup);
+    if (els.teamsPopupBackButton) els.teamsPopupBackButton.addEventListener('click', closeTeamsPopup);
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
     if (els.testRemoveAuthorizationButton) els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
     if (els.testTeamAuthorizationCheck) {
@@ -17607,5 +17963,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
