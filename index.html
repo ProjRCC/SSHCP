@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.14-C7R4MP | BUILD KEY: 16.15-4R8NZX -->
+<!-- SSHCP | BASE KEY: 16.15-4R8NZX | BUILD KEY: 16.16-P4W8JN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8534,7 +8534,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
 /* =========================================================
-   SSHCP V16.15 — CONTROL CENTER BOTTOM-UP GEOMETRY
+   SSHCP V16.16 — CONTROL CENTER BOTTOM-UP GEOMETRY
    CONTROL CENTER + detailed log anchor from the top. Every control row
    anchors from the bottom; the scrollable log is the only region that
    grows/squeezes with available height. Production-facing views untouched.
@@ -8664,12 +8664,20 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 }
 #testLogView .test-auth-button-row,
 #testLogView .test-auth-button-row.authorized,
-#testLogView .test-auth-button-row.authorized:not(.master-authorized),
 #testLogView .test-auth-button-row.master-authorized{
   display:grid!important;
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
   gap:7px!important;
   align-items:stretch!important;
+}
+/* SSHCP V16.16 — when a normal TEAM is authorized, only REMOVE AUTH and
+   TEAM X AUTH are visible, so they split the full row 50/50. MASTER keeps
+   the three-peer row with AUTH CHECK in the middle. */
+#testLogView .test-auth-button-row.authorized:not(.master-authorized){
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+#testLogView .test-auth-button-row.authorized:not(.master-authorized) .test-switch-auth{
+  grid-column:2!important;
 }
 #testLogView .test-remove-auth{
   display:block!important;
@@ -8738,7 +8746,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   min-height:42px!important;
   margin:0!important;
   padding:2px 4px!important;
-  border:1px solid #000!important;
+  border:2px solid var(--accent)!important;
   border-radius:7px!important;
   background:#fafafa!important;
   color:#000!important;
@@ -8856,7 +8864,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.15</span>
+          <span class="home-version-info">SSHCP V16.16</span>
         </button>
 
       </div>
@@ -9206,7 +9214,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
   <!-- =======================================================
-       CONTROL CENTER — SSHCP V16.15
+       CONTROL CENTER — SSHCP V16.16
        Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
@@ -10911,7 +10919,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.15 CONTROL CENTER LOG',
+        'SSHCP V16.16 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -10992,7 +11000,7 @@ let scoreTimingDetail =
         return;
       }
 
-      /* V16.15 — render the full stored history in the flexible scrollable
+      /* V16.16 — render the full stored history in the flexible scrollable
          table. The table is the only Control Center region allowed to squeeze
          as viewport height is consumed by bottom-anchored controls. */
       els.testLogRows.innerHTML = log.map(item => {
@@ -17233,5 +17241,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
