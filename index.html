@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.21-R5M8QK | BUILD KEY: 16.22-F4K9WT -->
+<!-- SSHCP | BASE KEY: 16.22-F4K9WT | BUILD KEY: 16.23-W2H6NB -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8771,7 +8771,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 }
 
 /* =========================================================
-   SSHCP V16.22 — CONTROL CENTER / TEAMS POPUP
+   SSHCP V16.23 — CONTROL CENTER / TEAMS POPUP
    Read-only CF V1.9 team-data view. Five locked columns are 10/50/10/15/15.
    The popup has no title/header area; the solid table header is one row high.
    At least 18 team rows are targeted in the visible table viewport.
@@ -8784,7 +8784,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   align-items:center;
   justify-content:center;
   padding:0 8px;
-  background:rgba(0,0,0,.18);
+  background:#fff;
   box-sizing:border-box;
 }
 .teams-popup-overlay.open{display:flex;}
@@ -8873,6 +8873,9 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   line-height:1;
   text-align:center;
   white-space:nowrap;
+}
+.teams-popup-name-input{
+  font-weight:800;
 }
 .teams-popup-input:focus{
   background:#f3f3f3;
@@ -8998,7 +9001,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.22</span>
+          <span class="home-version-info">SSHCP V16.23</span>
         </button>
 
       </div>
@@ -9410,7 +9413,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
   <!-- =======================================================
-       CONTROL CENTER — TEAMS POPUP (SSHCP V16.22)
+       CONTROL CENTER — TEAMS POPUP (SSHCP V16.23)
        ======================================================= -->
   <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
     <div class="teams-popup-box" role="dialog" aria-label="Teams">
@@ -11392,7 +11395,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.22 CONTROL CENTER LOG',
+        'SSHCP V16.23 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -11504,7 +11507,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V16.22 — CONTROL CENTER / TEAMS POPUP
+       SSHCP V16.23 — CONTROL CENTER / TEAMS POPUP
        CF V1.9 supplies all 36 fixed TEAMS slots from TEAMS!B1:F37.
        This frontend pass is intentionally read-only at the backend: cells
        are keyboard-editable for layout/input testing, but BACK does not
@@ -11538,16 +11541,22 @@ let scoreTimingDetail =
 
     function makeTeamsPopupInput(value, field, inputMode) {
       const input = document.createElement('input');
-      input.className = 'teams-popup-input';
+      input.className = 'teams-popup-input' + (field === 'name' ? ' teams-popup-name-input' : '');
       input.type = 'text';
       input.value = value;
       input.dataset.field = field;
       input.autocomplete = 'off';
       input.autocapitalize = 'off';
       input.spellcheck = false;
+      input.enterKeyHint = 'done';
       if (inputMode) input.inputMode = inputMode;
       input.addEventListener('input', () => {
         requestAnimationFrame(() => fitTeamsPopupCellText(input));
+      });
+      input.addEventListener('keydown', event => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        input.blur();
       });
       return input;
     }
@@ -11590,12 +11599,30 @@ let scoreTimingDetail =
       requestAnimationFrame(fitTeamsPopupGeometry);
     }
 
+    const teamsPopupTextMeasureCanvas = document.createElement('canvas');
+    const teamsPopupTextMeasureContext = teamsPopupTextMeasureCanvas.getContext('2d');
+
+    function teamsPopupTargetFontSize(element, rowHeight) {
+      const targetVisibleHeight = Math.max(10, rowHeight * 0.75);
+      if (!teamsPopupTextMeasureContext) return Math.max(10, rowHeight * 0.96);
+
+      const style = getComputedStyle(element);
+      const family = style.fontFamily || "'Oswald',Arial,sans-serif";
+      const weight = style.fontWeight || '400';
+      const referenceSize = 100;
+      teamsPopupTextMeasureContext.font = weight + ' ' + referenceSize + 'px ' + family;
+      const metrics = teamsPopupTextMeasureContext.measureText('Hg0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+      const envelope = Number(metrics.actualBoundingBoxAscent || 0) + Number(metrics.actualBoundingBoxDescent || 0);
+      if (!(envelope > 0)) return Math.max(10, rowHeight * 0.96);
+      return Math.max(10, targetVisibleHeight * referenceSize / envelope);
+    }
+
     function fitTeamsPopupCellText(element) {
       if (!element) return;
       const row = element.closest('.teams-popup-row');
       if (!row) return;
       const rowHeight = row.getBoundingClientRect().height || 36;
-      const target = Math.max(10, rowHeight * 0.75);
+      const target = teamsPopupTargetFontSize(element, rowHeight);
       const minimum = 8;
       element.style.fontSize = target + 'px';
 
@@ -11620,8 +11647,9 @@ let scoreTimingDetail =
 
       const headerCells = els.teamsPopupTableScroll.querySelectorAll('.teams-popup-row.header .teams-popup-cell');
       headerCells.forEach(cell => {
-        cell.style.fontSize = Math.max(10, rowHeight * 0.75) + 'px';
-        let size = parseFloat(cell.style.fontSize) || 10;
+        const target = teamsPopupTargetFontSize(cell, rowHeight);
+        cell.style.fontSize = target + 'px';
+        let size = target;
         const available = Math.max(1, cell.clientWidth - 4);
         while (size > 8 && cell.scrollWidth > available) {
           size -= 0.5;
@@ -11674,6 +11702,13 @@ let scoreTimingDetail =
         fitTeamsPopupGeometry();
         loadControlCenterTeams();
       });
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          if (els.teamsPopupOverlay && els.teamsPopupOverlay.classList.contains('open')) {
+            fitTeamsPopupGeometry();
+          }
+        }).catch(() => {});
+      }
     }
 
     function closeTeamsPopup() {
@@ -17963,4 +17998,5 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
 
