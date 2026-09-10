@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.15-4R8NZX | BUILD KEY: 16.16-P4W8JN -->
+<!-- SSHCP | BASE KEY: 16.16-P4W8JN | BUILD KEY: 16.17-T6J4CX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8534,7 +8534,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
 /* =========================================================
-   SSHCP V16.16 — CONTROL CENTER BOTTOM-UP GEOMETRY
+   SSHCP V16.17 — CONTROL CENTER BOTTOM-UP GEOMETRY
    CONTROL CENTER + detailed log anchor from the top. Every control row
    anchors from the bottom; the scrollable log is the only region that
    grows/squeezes with available height. Production-facing views untouched.
@@ -8670,7 +8670,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   gap:7px!important;
   align-items:stretch!important;
 }
-/* SSHCP V16.16 — when a normal TEAM is authorized, only REMOVE AUTH and
+/* SSHCP V16.17 — when a normal TEAM is authorized, only REMOVE AUTH and
    TEAM X AUTH are visible, so they split the full row 50/50. MASTER keeps
    the three-peer row with AUTH CHECK in the middle. */
 #testLogView .test-auth-button-row.authorized:not(.master-authorized){
@@ -8864,7 +8864,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.16</span>
+          <span class="home-version-info">SSHCP V16.17</span>
         </button>
 
       </div>
@@ -9214,7 +9214,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
   <!-- =======================================================
-       CONTROL CENTER — SSHCP V16.16
+       CONTROL CENTER — SSHCP V16.17
        Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
@@ -10919,7 +10919,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.16 CONTROL CENTER LOG',
+        'SSHCP V16.17 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -12824,12 +12824,21 @@ let scoreTimingDetail =
 
 
       /*
-        SSHCP V5.2 — the gray current-hole indicator follows LOCAL entry
-        progress immediately. Gold still follows verified/savedScores.
-        This lets ENTER mean "move on now" while verification finishes
-        in the background.
+        SSHCP V16.17 — split the immediate navigation cue from the verified
+        next-hole score-box cue. The gray HOLE cell follows LOCAL progress
+        immediately after ENTER, so the player can move on without waiting.
+
+        The Blue border around the NEXT score box is verification-gated:
+        it appears only when localScores and savedScores agree on the same
+        next blank hole. While a newly entered score is still gray/pending,
+        the next HOLE cell may already move forward, but its Blue score-box
+        border stays hidden. The instant the previous score is verified and
+        turns Blue, savedScores advances and the next-hole Blue border appears
+        in that same render.
       */
       const nextHoleIndex = scorecardActiveHoleIndexV16(localScores, selectedTeam);
+      const verifiedNextHoleIndex = scorecardActiveHoleIndexV16(savedScores, selectedTeam);
+      const showVerifiedNextHoleBorder = nextHoleIndex === verifiedNextHoleIndex;
 
 
       holes.forEach(
@@ -13004,7 +13013,7 @@ let scoreTimingDetail =
           button.className =
             'score-button';
 
-          if (index === nextHoleIndex) {
+          if (showVerifiedNextHoleBorder && index === nextHoleIndex) {
             button.classList.add('active-hole-score');
           }
 
