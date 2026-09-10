@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.9-Q7M4LX | BUILD KEY: 16.10-NCENON -->
+<!-- SSHCP | BASE KEY: 16.10-NCENON | BUILD KEY: 16.11-V6K2RM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8351,28 +8351,38 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
 /* =========================================================
-   SSHCP V16.10 — SCRAMBLE SUMMARY GEOMETRY TUNING
-   - Popup height = 85dvh.
-   - SCRAMBLE SUMMARY title text target = 80% of V16.9 target.
-   - Fixed 10px title->RESULTS/TOP 10 and subtitle->table buffers.
-   - Column header = 1.1x.
-   - Podium = 2x / 1.5x / 1.5x.
-   - Lower standings = 1x each, capped at seven rows (TOP 10 geometry).
-   - No tie notes = one 15px separator.
-   - 1-3 tie notes = 8px above + 15px per line + 8px below.
+   SSHCP V16.11 — SCRAMBLE SUMMARY TRUE CONTENT SPACING
+   - Keep the V16.10 85dvh popup and 80% title-text target.
+   - Remove inherited fixed title/subtitle height boxes from the visual math.
+   - Popup top -> SCRAMBLE SUMMARY text = one measured RESULTS/TOP 10 line-height.
+   - SCRAMBLE SUMMARY text -> RESULTS/TOP 10 text = true 15px.
+   - RESULTS/TOP 10 text -> top standings table = true 15px.
+   - Bottom standings table -> BACK = true 15px.
+   - Row equation remains V16.10: header 1.1x; podium 2x / 1.5x / 1.5x;
+     lower rows 1x each, capped at seven rows.
+   - Tie spacing remains: no notes 15px; notes use 8px + 15px/line + 8px.
    ========================================================= */
 .modal-overlay.tournament-summary .modal-box{
   height:85dvh!important;
+  padding-top:var(--v16-summary-top-space,26px)!important;
 }
 .modal-overlay.tournament-summary .modal-title{
-  margin-bottom:10px!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0 0 15px!important;
+  padding:0!important;
 }
 .modal-overlay.tournament-summary .modal-text{
   gap:0!important;
 }
 .modal-overlay.tournament-summary .tournament-summary-subtitle{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
   margin:0!important;
   padding:0!important;
+  align-self:start!important;
 }
 .modal-overlay.tournament-summary .tournament-summary-notes{
   margin:0!important;
@@ -8390,6 +8400,9 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   white-space:nowrap!important;
   overflow:hidden!important;
   line-height:15px!important;
+}
+.modal-overlay.tournament-summary .modal-actions{
+  padding:15px 0 0!important;
 }
 
 /* HOME: version identity follows the active accent and is ~10% larger. */
@@ -8502,7 +8515,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.10</span>
+          <span class="home-version-info">SSHCP V16.11</span>
         </button>
 
       </div>
@@ -10454,7 +10467,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.10 TEST LOG',
+        'SSHCP V16.11 TEST LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -14367,22 +14380,26 @@ let scoreTimingDetail =
       );
       const bodyHeight = Math.max(1, body.clientHeight);
 
-      /* V16.10 Scramble Summary geometry contract.
-         Fixed shell pieces are budgeted BEFORE x is solved:
-           - SCRAMBLE SUMMARY -> RESULTS/TOP 10 buffer = 10px (CSS/title row)
-           - RESULTS/TOP 10 text height = responsive approved subtitle target
-           - RESULTS/TOP 10 -> table buffer = 10px
+      /* V16.11 Scramble Summary geometry contract.
+         The title/subtitle are natural content-height elements, not fixed
+         invisible boxes. Fixed shell pieces are budgeted BEFORE x is solved:
+           - popup top -> SCRAMBLE SUMMARY = one measured RESULTS/TOP 10 line-height
+           - SCRAMBLE SUMMARY -> RESULTS/TOP 10 = 15px (title margin)
+           - RESULTS/TOP 10 -> top table = 15px
+           - lower table -> BACK = 15px (modal-actions top padding)
            - no tie notes = one 15px separator buffer
            - 1-3 tie notes = 8px above + 15px per line + 8px below
-         Weighted row equation:
+         Weighted row equation is unchanged from V16.10:
            header 1.1x + 1st 2x + 2nd 1.5x + 3rd 1.5x
            + up to seven lower rows at 1x each. */
-      const resultsBuffer = 10;
+      const resultsBuffer = 15;
       const noTieBuffer = 15;
       const tieBuffer = 8;
       const tieLineH = 15;
-      const subtitleH = Math.max(22, Math.min(38, bodyHeight * 0.055));
-      const subtitleBlockH = subtitleH + resultsBuffer;
+      const measuredSubtitleH = subtitle
+        ? Math.max(1, Math.ceil(subtitle.getBoundingClientRect().height))
+        : 24;
+      const subtitleBlockH = measuredSubtitleH + resultsBuffer;
       const noteSectionH = noteCount > 0
         ? tieBuffer + (noteCount * tieLineH) + tieBuffer
         : noTieBuffer;
@@ -14418,10 +14435,10 @@ let scoreTimingDetail =
       );
 
       if (subtitle) {
-        subtitle.style.setProperty('height', subtitleH + 'px', 'important');
-        subtitle.style.setProperty('min-height', subtitleH + 'px', 'important');
-        subtitle.style.setProperty('max-height', subtitleH + 'px', 'important');
-        subtitle.style.setProperty('margin-bottom', resultsBuffer + 'px', 'important');
+        subtitle.style.setProperty('height', 'auto', 'important');
+        subtitle.style.setProperty('min-height', '0px', 'important');
+        subtitle.style.setProperty('max-height', 'none', 'important');
+        subtitle.style.setProperty('margin', '0px', 'important');
       }
       if (notes) {
         notes.style.setProperty('height', noteSectionH + 'px', 'important');
@@ -14445,22 +14462,48 @@ let scoreTimingDetail =
       const lowerRows = Array.from(lower.querySelectorAll('.tournament-summary-remaining-row'));
       document.documentElement.style.setProperty('--v5-summary-lower-count', String(Math.max(1, lowerRows.length)));
 
-      applyTournamentSummaryGeometryV16(body, topGrid, lower, lowerRows);
-
+      /* V16.11: fit the two headings as content first. Their measured
+         heights then become real geometry inputs instead of inherited
+         fixed-height boxes. */
       fitTextToBoxV5(els.modalTitle, els.modalTitle, Math.min(52, els.modalBox.clientWidth * 0.115) * 0.80, 16, {
         horizontalPad: 12,
-        verticalPad: 2,
+        verticalPad: 0,
         wrap: true,
-        lineHeight: 0.92
+        lineHeight: 0.92,
+        ignoreHeight: true
       });
 
       const subtitle = body.querySelector('.tournament-summary-subtitle');
       if (subtitle) {
-        fitTextToBoxV5(subtitle, subtitle, Math.min(34, subtitle.clientHeight * 0.72), 18, {
-          horizontalPad: 8,
-          verticalPad: 2
-        });
+        const fitSubtitleFromBodyHeight = measuredBodyH => {
+          const v1610SubtitleBoxH = Math.max(22, Math.min(38, measuredBodyH * 0.055));
+          const subtitleTarget = Math.min(34, v1610SubtitleBoxH * 0.72);
+          fitTextToBoxV5(subtitle, subtitle, subtitleTarget, 18, {
+            horizontalPad: 8,
+            verticalPad: 0,
+            lineHeight: 1,
+            ignoreHeight: true
+          });
+        };
+
+        fitSubtitleFromBodyHeight(Math.max(1, body.clientHeight));
+
+        /* The top breathing room is deliberately one actual RESULTS/TOP 10
+           line-height. This preserves the V16.10 visual top placement without
+           keeping the old invisible title box. */
+        let measuredResultsH = Math.max(1, Math.ceil(subtitle.getBoundingClientRect().height));
+        els.modalBox.style.setProperty('--v16-summary-top-space', measuredResultsH + 'px');
+
+        /* One immediate second pass lets the subtitle respond to the body
+           height after that real top-space measurement has replaced the
+           fallback value. This converges the content-based geometry in the
+           same frame instead of waiting for another resize event. */
+        fitSubtitleFromBodyHeight(Math.max(1, body.clientHeight));
+        measuredResultsH = Math.max(1, Math.ceil(subtitle.getBoundingClientRect().height));
+        els.modalBox.style.setProperty('--v16-summary-top-space', measuredResultsH + 'px');
       }
+
+      applyTournamentSummaryGeometryV16(body, topGrid, lower, lowerRows);
 
       const header = topGrid.querySelector('.tournament-summary-row.header');
       if (header) {
