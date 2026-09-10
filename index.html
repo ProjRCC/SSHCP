@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.28-G6P2YC | BUILD KEY: 16.29-P7D4XM -->
+<!-- SSHCP | BASE KEY: 16.29-P7D4XM | BUILD KEY: 16.30-J4T8QH -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +39,13 @@
 
         window.__sshcpBootTournamentComplete =
           sessionStorage.getItem('sshcpTournamentComplete') === '1';
+
+        /* V16.30 — completed HOME styling/label is available before normal
+           runtime initialization so returning golfers do not flash LIVE state. */
+        document.documentElement.classList.toggle(
+          'sshcp-tournament-complete',
+          window.__sshcpBootTournamentComplete
+        );
 
         window.__sshcpBootFinalActionMode =
           sessionStorage.getItem('sshcpFinalActionMode') || '';
@@ -9185,6 +9192,62 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   color:var(--on-accent)!important;
 }
 
+
+/* =========================================================
+   SSHCP V16.30 — AFTER-PLAY HIERARCHY + SUMMARY SCALE
+   - Scramble Summary uses about 95% of the visible screen.
+   - Summary footer controls are slightly taller.
+   - Completed Leaderboard SCRAMBLE SUMMARY has no black frame.
+   - Completed HOME: FINAL RESULTS is primary Blue; ACCESS SCORECARD is
+     secondary white/Blue outline.
+   - Locked V16.27 SKINS popup is intentionally untouched.
+   ========================================================= */
+.modal-overlay.tournament-summary .modal-box{
+  height:95dvh!important;
+  max-height:calc(100dvh - 8px)!important;
+}
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn{
+  height:40px!important;
+  min-height:40px!important;
+}
+
+#leaderboardView .leaderboard-screen.tournament-complete
+.leader-final-action.tournament-summary{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+
+html.sshcp-tournament-complete #homeView .home-scorecard-split{
+  background:#fff!important;
+  border-color:var(--accent)!important;
+}
+html.sshcp-tournament-complete #homeView .home-scorecard-main,
+html.sshcp-tournament-complete #homeView .home-scorecard-arrow{
+  background:#fff!important;
+  color:var(--accent)!important;
+}
+html.sshcp-tournament-complete #homeView .home-scorecard-arrow{
+  border-left-color:var(--accent)!important;
+}
+html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
+  border-left-color:var(--accent)!important;
+  border-top-color:var(--accent)!important;
+}
+html.sshcp-tournament-complete #homeView .home-scorecard-action,
+html.sshcp-tournament-complete #homeView .home-scorecard-team{
+  color:var(--accent)!important;
+}
+
 </style>
 </head>
 
@@ -9240,6 +9303,17 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
           VIEW LIVE LEADERBOARD
         </button>
 
+        <script>
+          (function () {
+            try {
+              if (window.__sshcpBootTournamentComplete === true) {
+                var homeLeaderboard = document.getElementById('homeLeaderboardButton');
+                if (homeLeaderboard) homeLeaderboard.textContent = 'FINAL RESULTS';
+              }
+            } catch (_) {}
+          })();
+        </script>
+
 
         <div class="home-scorecard-access" id="homeScorecardAccess">
           <div id="homeTeamDropup" class="home-team-dropup" aria-hidden="true"></div>
@@ -9289,7 +9363,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.29</span>
+          <span class="home-version-info">SSHCP V16.30</span>
         </button>
 
       </div>
@@ -15585,10 +15659,21 @@ let scoreTimingDetail =
     }
 
 
+    function syncHomeTournamentCompleteV1630(complete) {
+      const isComplete = Boolean(complete);
+      document.documentElement.classList.toggle('sshcp-tournament-complete', isComplete);
+      if (els.homeLeaderboardButton) {
+        els.homeLeaderboardButton.textContent = isComplete
+          ? 'FINAL RESULTS'
+          : 'VIEW LIVE LEADERBOARD';
+      }
+    }
+
     function updateTournamentFinishState(rows) {
       lastLeaderboardRows = Array.isArray(rows) ? rows.map(row => ({ ...row })) : [];
 
       const complete = tournamentIsComplete(lastLeaderboardRows);
+      syncHomeTournamentCompleteV1630(complete);
 
       sessionStorage.setItem(
         'sshcpTournamentComplete',
@@ -18355,6 +18440,9 @@ let scoreTimingDetail =
       const rememberedView =
         getRememberedView();
       const restoreTeamsPopupV1626 = teamsPopupWasOpenOnRefreshV1626();
+      syncHomeTournamentCompleteV1630(
+        sessionStorage.getItem('sshcpTournamentComplete') === '1'
+      );
 
       if (
         rememberedView ===
