@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.25-K4V8NJ | BUILD KEY: 16.26-D8Q3LP -->
+<!-- SSHCP | BASE KEY: 16.26-D8Q3LP | BUILD KEY: 16.27-S8K5RD -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8771,7 +8771,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 }
 
 /* =========================================================
-   SSHCP V16.26 — CONTROL CENTER / TEAMS POPUP
+   SSHCP V16.27 — CONTROL CENTER / TEAMS POPUP
    Read-only CF V1.9 team-data confirmation view. Five locked columns are
    10/50/10/15/15. Only assigned teams are shown, up to 36. Header and team
    rows share one exact calculated height: available table height / (N + 1).
@@ -8839,6 +8839,8 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   position:sticky;
   top:0;
   z-index:2;
+  height:var(--teams-popup-header-h,27px);
+  min-height:var(--teams-popup-header-h,27px);
   background:var(--accent);
   color:var(--on-accent);
   font-weight:800;
@@ -8885,6 +8887,237 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   font-weight:800;
   line-height:1;
 }
+
+
+/* =========================================================
+   SSHCP V16.27 — SKINS FIRST PASS + TEAMS HEADER GEOMETRY
+   Control Center SKINS is a local prototype visibility switch until the
+   GEEKnGAMEmode sheet cell contract is finalized. Tournament scoring remains
+   authoritative from OFFICIAL via the existing scorecard read endpoint.
+   ========================================================= */
+#testLogView .control-center-skins-toggle{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  cursor:pointer!important;
+  box-sizing:border-box!important;
+}
+#testLogView .control-center-skins-toggle input{
+  position:absolute!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+#testLogView .control-center-skins-box{
+  width:18px!important;
+  height:18px!important;
+  flex:0 0 18px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:2px solid var(--accent)!important;
+  border-radius:3px!important;
+  background:#fff!important;
+  color:transparent!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:1!important;
+}
+#testLogView .control-center-skins-toggle input:checked + .control-center-skins-box{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+
+/* Preserve the locked Scramble Summary body geometry. Only its existing
+   action row becomes a fixed three-column rail: GEEK reserve | BACK | SKINS. */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+.modal-overlay.tournament-summary .summary-action-placeholder-v1627{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.modal-overlay.tournament-summary .summary-skins-button-v1627{
+  border:2px solid var(--accent)!important;
+  background:#fff!important;
+  color:var(--accent)!important;
+}
+
+/* SKINS result viewer: same tournament family, black stage / white card. */
+.modal-overlay.skins-results-v1627{
+  position:fixed!important;
+  inset:0!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:12px!important;
+  background:#000!important;
+  overflow:hidden!important;
+}
+.modal-overlay.skins-results-v1627.open{display:flex!important;}
+.modal-overlay.skins-results-v1627 .modal-box{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:min(94vw,680px)!important;
+  height:auto!important;
+  max-height:90dvh!important;
+  min-height:0!important;
+  margin:auto!important;
+  padding:14px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  border:2px solid var(--accent)!important;
+  border-radius:18px!important;
+  background:#fff!important;
+}
+.modal-overlay.skins-results-v1627 .modal-close-x{display:none!important;}
+.modal-overlay.skins-results-v1627 .modal-title{
+  flex:0 0 auto!important;
+  margin:0 0 12px!important;
+  padding:0!important;
+  color:var(--accent)!important;
+  font-size:30px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.modal-overlay.skins-results-v1627 .modal-text{
+  flex:0 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  font-size:initial!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.skins-table-frame-v1627{
+  width:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  border:1px solid #aaa!important;
+  border-radius:10px!important;
+  background:#fff!important;
+}
+.skins-table-scroll-v1627{
+  width:100%!important;
+  max-height:62dvh!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+}
+.skins-row-v1627{
+  width:100%!important;
+  height:50px!important;
+  min-height:50px!important;
+  display:grid!important;
+  grid-template-columns:55fr 20fr 25fr!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+}
+.skins-row-v1627.header{
+  position:sticky!important;
+  top:0!important;
+  z-index:2!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  font-weight:800!important;
+}
+.skins-cell-v1627{
+  min-width:0!important;
+  height:100%!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 5px!important;
+  border-right:1px solid #b7b7b7!important;
+  border-bottom:1px solid #b7b7b7!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  font-family:'Oswald',Arial,sans-serif!important;
+  font-size:25px!important; /* 50% of the 50px result row */
+  font-weight:400!important;
+  line-height:1!important;
+  text-align:center!important;
+  color:#000!important;
+}
+.skins-row-v1627.header .skins-cell-v1627{
+  border-color:rgba(255,255,255,.55)!important;
+  color:var(--on-accent)!important;
+  font-size:15px!important; /* 30% of the 50px header row */
+  font-weight:800!important;
+}
+.skins-row-v1627 .skins-cell-v1627:last-child{border-right:0!important;}
+.skins-row-v1627:last-child .skins-cell-v1627{border-bottom:0!important;}
+.skins-team-v1627{font-weight:800!important;}
+.skins-score-mark-v1627{
+  position:relative!important;
+  width:34px!important;
+  height:34px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  color:#000!important;
+  font-size:25px!important;
+  font-weight:700!important;
+  line-height:1!important;
+}
+.skins-score-mark-v1627.single-circle,
+.skins-score-mark-v1627.double-circle{border:2px solid #000!important;border-radius:50%!important;}
+.skins-score-mark-v1627.double-circle::after{
+  content:""!important;
+  position:absolute!important;
+  inset:-5px!important;
+  border:1.5px solid #000!important;
+  border-radius:50%!important;
+  pointer-events:none!important;
+}
+.skins-score-number-v1627{display:inline-block!important;transform:none!important;}
+.skins-empty-v1627{
+  min-height:90px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  box-sizing:border-box!important;
+  font-family:'Oswald',Arial,sans-serif!important;
+  font-size:20px!important;
+  font-weight:600!important;
+  color:#333!important;
+}
+.modal-overlay.skins-results-v1627 .modal-actions{
+  flex:0 0 auto!important;
+  width:100%!important;
+  margin:12px 0 0!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:10px!important;
+}
+.modal-overlay.skins-results-v1627 .modal-btn{
+  min-height:50px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:var(--accent)!important;
+  font-family:'Oswald',Arial,sans-serif!important;
+  font-size:18px!important;
+  font-weight:800!important;
+  line-height:1!important;
+}
+.modal-overlay.skins-results-v1627 .modal-btn:last-child{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+
 </style>
 </head>
 
@@ -8989,7 +9222,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.26</span>
+          <span class="home-version-info">SSHCP V16.27</span>
         </button>
 
       </div>
@@ -9363,7 +9596,11 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
         </div>
 
         <div class="control-center-nav" aria-label="Control Center sections">
-          <button id="controlCenterGamesButton" class="control-center-nav-button" type="button">GAMES</button>
+          <label id="controlCenterSkinsToggle" class="control-center-nav-button control-center-skins-toggle">
+            <input id="controlCenterSkinsCheck" type="checkbox">
+            <span class="control-center-skins-box" aria-hidden="true">✓</span>
+            <span>SKINS</span>
+          </label>
           <button id="controlCenterGeekModeButton" class="control-center-nav-button" type="button">GEEK MODE</button>
           <button id="controlCenterTeamsButton" class="control-center-nav-button" type="button">TEAMS</button>
         </div>
@@ -9643,6 +9880,9 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
       controlCenterTeamsButton:
         document.getElementById('controlCenterTeamsButton'),
+
+      controlCenterSkinsCheck:
+        document.getElementById('controlCenterSkinsCheck'),
 
       teamsPopupOverlay:
         document.getElementById('teamsPopupOverlay'),
@@ -11497,7 +11737,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V16.26 — CONTROL CENTER / TEAMS POPUP
+       SSHCP V16.27 — CONTROL CENTER / TEAMS POPUP
        CF V1.9 supplies all 36 fixed TEAMS slots from TEAMS!B1:F37.
        This frontend view is intentionally read-only: only assigned/active
        teams are displayed, and Google Sheets remains the sole edit surface.
@@ -11612,7 +11852,7 @@ let scoreTimingDetail =
 
     function teamsPopupTargetRatioV1626(element) {
       if (!element) return 0.60;
-      if (element.closest('.teams-popup-row.header')) return 0.60;
+      if (element.closest('.teams-popup-row.header')) return 0.45;
       if (element.classList.contains('teams-popup-name')) return 0.60;
       if (element.classList.contains('teams-popup-hcp')) return 0.50;
       if (
@@ -11647,13 +11887,15 @@ let scoreTimingDetail =
       const tableHeight = els.teamsPopupTableScroll.clientHeight;
       if (!tableHeight) return;
 
-      /* V16.26 — exact dynamic geometry. N assigned teams plus one header
-         consume exactly the available table viewport. 36 teams = /37. */
+      /* V16.27 — exact dynamic geometry. Team rows are x; header is .75x.
+         N assigned teams therefore consume (N + .75)x exactly. */
       const assignedCount = Math.min(36, controlCenterTeamsData.length);
-      const divisor = assignedCount + 1;
+      const divisor = assignedCount + 0.75;
       const rowHeight = tableHeight / divisor;
+      const headerHeight = rowHeight * 0.75;
       teamsPopupCalculatedRowHeightV1626 = rowHeight;
       els.teamsPopupOverlay.style.setProperty('--teams-popup-row-h', rowHeight + 'px');
+      els.teamsPopupOverlay.style.setProperty('--teams-popup-header-h', headerHeight + 'px');
 
       els.teamsPopupTableScroll
         .querySelectorAll('.teams-popup-row .teams-popup-cell')
@@ -13311,6 +13553,8 @@ let scoreTimingDetail =
           const authLabel = row.querySelector('.test-team-auth-toggle');
           if (authLabel) authLabel.style.fontSize = sharedSize + 'px';
         }
+        const skinsLabel = row.querySelector('.control-center-skins-toggle');
+        if (skinsLabel) skinsLabel.style.fontSize = sharedSize + 'px';
       }
 
       /* Control Center typography rule: each functional row shares one text
@@ -15878,6 +16122,191 @@ let scoreTimingDetail =
     }
 
 
+
+    /* =========================================================
+       SSHCP V16.27 — SKINS FIRST PASS
+       Gross skins only. Assigned OFFICIAL teams are eligible. For each actual
+       Hole 1-18, the unique lowest valid score wins one skin. Tied low scores
+       produce no winner; no carryover and no handicap adjustment in this pass.
+       ========================================================= */
+    const SKINS_ENABLED_KEY_V1627 = 'sshcpSkinsEnabledV1627';
+
+    function skinsEnabledV1627() {
+      return localStorage.getItem(SKINS_ENABLED_KEY_V1627) === '1';
+    }
+
+    function setSkinsEnabledV1627(enabled) {
+      localStorage.setItem(SKINS_ENABLED_KEY_V1627, enabled ? '1' : '0');
+      if (els.controlCenterSkinsCheck) els.controlCenterSkinsCheck.checked = Boolean(enabled);
+      addTestLog('SKINS', enabled ? 'ON' : 'OFF', '—', 'Summary button ' + (enabled ? 'shown' : 'hidden'));
+    }
+
+    function buildSkinsResultsV1627(scorecardTeams, courseHoles) {
+      const eligible = Array.isArray(scorecardTeams)
+        ? scorecardTeams.filter(team => team && String(team.name || '').trim() !== '')
+        : [];
+      const course = Array.isArray(courseHoles) ? courseHoles : [];
+      const results = [];
+
+      for (let index = 0; index < 18; index++) {
+        const hole = course[index] || {};
+        const entered = eligible.map(team => {
+          const value = Number(Array.isArray(team.scores) ? team.scores[index] : NaN);
+          return { team, score: value };
+        }).filter(item => Number.isFinite(item.score) && item.score > 0);
+
+        /* A skin is only meaningful when every currently assigned team has a
+           valid score on that hole. Completed Summary normally guarantees it,
+           but this guard prevents partial data from awarding a false skin. */
+        if (!eligible.length || entered.length !== eligible.length) continue;
+
+        const low = Math.min(...entered.map(item => item.score));
+        const winners = entered.filter(item => item.score === low);
+        if (winners.length !== 1) continue;
+
+        results.push({
+          team: winners[0].team,
+          hole: Number(hole.hole) || (index + 1),
+          par: Number(hole.par),
+          score: low
+        });
+      }
+
+      return results;
+    }
+
+    function makeSkinsScoreMarkV1627(score, par) {
+      const wrap = document.createElement('span');
+      wrap.className = 'skins-score-mark-v1627';
+      const relative = Number(score) - Number(par);
+      if (relative === -1) wrap.classList.add('single-circle');
+      else if (relative <= -2) wrap.classList.add('double-circle');
+
+      const number = document.createElement('span');
+      number.className = 'skins-score-number-v1627';
+      number.textContent = String(score);
+      wrap.appendChild(number);
+      return wrap;
+    }
+
+    function fitSkinsTableTextV1627() {
+      const rows = els.modalBody.querySelectorAll('.skins-row-v1627:not(.header)');
+      rows.forEach(row => {
+        const teamCell = row.querySelector('.skins-team-v1627');
+        const holeCell = row.querySelector('.skins-hole-v1627');
+        if (teamCell) fitTextToBoxV5(teamCell, teamCell, 25, 10, { horizontalPad:10, verticalPad:5, wrap:false, lineHeight:1 });
+        if (holeCell) fitTextToBoxV5(holeCell, holeCell, 25, 12, { horizontalPad:8, verticalPad:5, wrap:false, lineHeight:1 });
+      });
+    }
+
+    async function fetchSkinsSourceV1627() {
+      const started = timerStart();
+      const response = await fetch(
+        CLOUDFLARE_API_URL + '?refresh=' + Date.now(),
+        { cache: 'no-store' }
+      );
+      if (!response.ok) throw new Error('Skins scorecard read failed.');
+      const data = await response.json();
+      if (!data || data.ok !== true) throw new Error((data && data.error) || 'Skins data unavailable.');
+      const sourceTeams = Array.isArray(data.teams) ? data.teams : [];
+      const sourceHoles = Array.isArray(data.course && data.course.holes) ? data.course.holes : [];
+      const timing = data.timing || {};
+      addTestLog(
+        'SKINS LOAD',
+        'OK',
+        timerSeconds(started) + 's',
+        sourceTeams.length + ' TEAMS • READ ' + ((Number(timing.readMs) || 0) / 1000).toFixed(3) + 's • CF ' + ((Number(timing.totalMs) || 0) / 1000).toFixed(3) + 's'
+      );
+      return { teams: sourceTeams, holes: sourceHoles };
+    }
+
+    function renderSkinsPopupV1627(results) {
+      closeModal();
+      els.modalOverlay.classList.add('skins-results-v1627');
+      els.modalTitle.textContent = 'SKINS';
+      els.modalInput.style.display = 'none';
+
+      if (!results.length) {
+        els.modalBody.innerHTML = '<div class="skins-empty-v1627">NO SKINS WON</div>';
+      } else {
+        const frame = document.createElement('div');
+        frame.className = 'skins-table-frame-v1627';
+        const scroll = document.createElement('div');
+        scroll.className = 'skins-table-scroll-v1627';
+
+        const desiredTableHeight = (results.length + 1) * 50;
+        const maxTableHeight = Math.max(100, Math.floor((window.innerHeight || 800) * 0.62));
+        scroll.style.height = Math.min(desiredTableHeight, maxTableHeight) + 'px';
+
+        const header = document.createElement('div');
+        header.className = 'skins-row-v1627 header';
+        ['TEAM','HOLE','SCORE'].forEach(label => {
+          const cell = document.createElement('div');
+          cell.className = 'skins-cell-v1627';
+          cell.textContent = label;
+          header.appendChild(cell);
+        });
+        scroll.appendChild(header);
+
+        results.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'skins-row-v1627';
+
+          const team = document.createElement('div');
+          team.className = 'skins-cell-v1627 skins-team-v1627';
+          team.textContent = displayTeamName(item.team.name || '');
+
+          const hole = document.createElement('div');
+          hole.className = 'skins-cell-v1627 skins-hole-v1627';
+          hole.textContent = String(item.hole);
+
+          const score = document.createElement('div');
+          score.className = 'skins-cell-v1627 skins-score-v1627';
+          score.appendChild(makeSkinsScoreMarkV1627(item.score, item.par));
+
+          row.append(team, hole, score);
+          scroll.appendChild(row);
+        });
+
+        frame.appendChild(scroll);
+        els.modalBody.replaceChildren(frame);
+      }
+
+      const home = makeModalButton('HOME', '', () => {
+        closeModal();
+        showHome();
+      });
+      const back = makeModalButton('BACK', '', () => {
+        showTournamentSummary();
+      });
+      els.modalActions.className = 'modal-actions';
+      els.modalActions.replaceChildren(home, back);
+      els.modalOverlay.classList.add('open');
+      requestAnimationFrame(fitSkinsTableTextV1627);
+    }
+
+    async function showSkinsPopupV1627() {
+      if (!skinsEnabledV1627()) return;
+      startLoadingLine();
+      try {
+        const source = await fetchSkinsSourceV1627();
+        const results = buildSkinsResultsV1627(source.teams, source.holes);
+        completeLoadingLine();
+        renderSkinsPopupV1627(results);
+      } catch (error) {
+        completeLoadingLine();
+        addTestLog('SKINS LOAD', 'FAILED', '—', String(error && error.message || 'Request failed'));
+        closeModal();
+        els.modalTitle.textContent = 'SKINS';
+        els.modalBody.textContent = 'SKINS DATA UNAVAILABLE';
+        els.modalInput.style.display = 'none';
+        const back = makeModalButton('BACK', '', showTournamentSummary);
+        els.modalActions.className = 'modal-actions single';
+        els.modalActions.replaceChildren(back);
+        els.modalOverlay.classList.add('open');
+      }
+    }
+
     function showTournamentSummary() {
       if (!tournamentIsComplete(lastLeaderboardRows)) {
         closeModal();
@@ -15961,9 +16390,20 @@ let scoreTimingDetail =
       html += '</div>';
 
       els.modalBody.innerHTML = html;
+      const geekReserve = makeModalButton('GEEK MODE', 'summary-action-placeholder-v1627', () => {});
+      geekReserve.tabIndex = -1;
+      geekReserve.setAttribute('aria-hidden', 'true');
       const back = makeModalButton('BACK', '', closeModal);
-      els.modalActions.className = 'modal-actions single';
-      els.modalActions.replaceChildren(back);
+      els.modalActions.className = 'modal-actions tournament-summary-actions-v1627';
+      if (skinsEnabledV1627()) {
+        const skins = makeModalButton('SKINS', 'summary-skins-button-v1627', showSkinsPopupV1627);
+        els.modalActions.replaceChildren(geekReserve, back, skins);
+      } else {
+        const skinsReserve = makeModalButton('SKINS', 'summary-action-placeholder-v1627', () => {});
+        skinsReserve.tabIndex = -1;
+        skinsReserve.setAttribute('aria-hidden', 'true');
+        els.modalActions.replaceChildren(geekReserve, back, skinsReserve);
+      }
       els.modalOverlay.classList.add('open');
 
       if (tournamentSummaryResizeObserver) {
@@ -17332,6 +17772,7 @@ let scoreTimingDetail =
           'switch-authorization',
           'tournament-result',
           'tournament-summary',
+          'skins-results-v1627',
           'score-save-warning'
         );
 
@@ -17513,6 +17954,13 @@ let scoreTimingDetail =
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
     if (els.controlCenterTeamsButton) els.controlCenterTeamsButton.addEventListener('click', openTeamsPopup);
+    if (els.controlCenterSkinsCheck) {
+      els.controlCenterSkinsCheck.checked = skinsEnabledV1627();
+      els.controlCenterSkinsCheck.addEventListener('change', event => {
+        setSkinsEnabledV1627(Boolean(event.target.checked));
+        fitTestPageButtonText();
+      });
+    }
     if (els.teamsPopupBackButton) els.teamsPopupBackButton.addEventListener('click', closeTeamsPopup);
     if (els.teamsPopupTableScroll) {
       els.teamsPopupTableScroll.addEventListener('scroll', () => {
