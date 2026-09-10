@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.13-VQY3KR | BUILD KEY: 16.14-C7R4MP -->
+<!-- SSHCP | BASE KEY: 16.14-C7R4MP | BUILD KEY: 16.15-4R8NZX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8413,7 +8413,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
 /* =========================================================
-   SSHCP V16.14 — TEST PAGE -> CONTROL CENTER
+   SSHCP V16.15 — TEST PAGE -> CONTROL CENTER
    Layout-only Control Center pass plus role-independent DELETE ALL access
    for any already-valid QR authorization. Golden V16.13 scoring, shotgun,
    leaderboard, Summary, and general app geometry remain untouched.
@@ -8499,7 +8499,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   min-height:46px!important;
 }
 
-/* Future Control Center sections. V16.14 establishes placement/style only;
+/* Future Control Center sections. V16.15 establishes placement/style only;
    sheet read/write wiring comes in later scoped builds. */
 #testLogView .control-center-nav{
   flex:0 0 auto!important;
@@ -8531,6 +8531,227 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   padding-top:8px!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V16.15 — CONTROL CENTER BOTTOM-UP GEOMETRY
+   CONTROL CENTER + detailed log anchor from the top. Every control row
+   anchors from the bottom; the scrollable log is the only region that
+   grows/squeezes with available height. Production-facing views untouched.
+   ========================================================= */
+#testLogView .test-log-screen{
+  box-sizing:border-box!important;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  padding:calc(25px + env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom))!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+#testLogView .test-log-header{
+  flex:0 0 auto!important;
+  display:block!important;
+  margin:0 0 10px!important;
+}
+#testLogView .test-log-title{
+  margin:0!important;
+  color:var(--accent)!important;
+  font-size:22px!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+#testLogView .test-log-table{
+  flex:1 1 0!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#testLogView .test-log-row.header{
+  position:sticky!important;
+  top:0!important;
+  z-index:3!important;
+}
+#testLogView .test-log-row{
+  min-height:28px!important;
+}
+#testLogView .test-log-detail{
+  display:block!important;
+  margin-top:2px!important;
+  font-size:8px!important;
+  line-height:1.12!important;
+  color:#666!important;
+}
+#testLogView .control-center-bottom-stack{
+  flex:0 0 auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:7px!important;
+  margin-top:10px!important;
+  min-height:0!important;
+}
+#testLogView .test-log-utility-row{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:7px!important;
+  margin:0!important;
+}
+#testLogView .test-log-utility-row .test-log-reset,
+#testLogView .test-log-utility-row .test-copy-log{
+  display:block!important;
+  width:100%!important;
+  height:42px!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:2px 4px!important;
+  border-radius:7px!important;
+  background:#fafafa!important;
+  font-weight:700!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#testLogView .test-log-utility-row .test-log-reset{
+  border:1px solid #999!important;
+  color:#777!important;
+}
+#testLogView .test-log-utility-row .test-copy-log{
+  border:1px solid #000!important;
+  color:#000!important;
+}
+#testLogView .control-center-nav{
+  flex:0 0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin:0!important;
+}
+#testLogView .control-center-nav-button{
+  height:46px!important;
+  min-height:46px!important;
+  margin:0!important;
+  padding:2px 4px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:8px!important;
+  background:#fafafa!important;
+  color:var(--accent)!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#testLogView .test-score-controls{
+  flex:0 0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:5px!important;
+  margin:0!important;
+}
+#testLogView .test-score-action{
+  height:46px!important;
+  min-height:46px!important;
+  margin:0!important;
+  padding:2px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#testLogView .test-auth-controls{
+  flex:0 0 auto!important;
+  display:block!important;
+  margin:0!important;
+}
+#testLogView .test-auth-button-row,
+#testLogView .test-auth-button-row.authorized,
+#testLogView .test-auth-button-row.authorized:not(.master-authorized),
+#testLogView .test-auth-button-row.master-authorized{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:7px!important;
+  align-items:stretch!important;
+}
+#testLogView .test-remove-auth{
+  display:block!important;
+  grid-column:1!important;
+  height:46px!important;
+  min-height:46px!important;
+  margin:0!important;
+  padding:2px 4px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#testLogView .test-team-auth-toggle{
+  display:none!important;
+  grid-column:2!important;
+  height:46px!important;
+  min-height:46px!important;
+  margin:0!important;
+  padding:3px 5px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:8px!important;
+  background:#fafafa!important;
+  color:var(--accent)!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+}
+#testLogView .test-auth-button-row.master-authorized .test-team-auth-toggle{
+  display:flex!important;
+}
+#testLogView .test-team-auth-toggle span{
+  white-space:nowrap!important;
+}
+#testLogView .test-switch-auth{
+  grid-column:3!important;
+  height:46px!important;
+  min-height:46px!important;
+  margin:0!important;
+  padding:2px 4px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#testLogView .test-switch-auth.authorized{
+  border-color:var(--accent)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+#testLogView .control-center-nav-buffer{
+  display:none!important;
+}
+/* 7px normal row gap + 18px top margin = exactly 25px between the
+   authorization row and bottom navigation row. */
+#testLogView .test-bottom-nav{
+  flex:0 0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin:18px 0 0!important;
+}
+#testLogView .test-bottom-nav-button{
+  width:100%!important;
+  height:42px!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:2px 4px!important;
+  border:1px solid #000!important;
+  border-radius:7px!important;
+  background:#fafafa!important;
+  color:#000!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#testLogView .test-bottom-nav-button.home{
+  border-color:var(--accent)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
 </style>
 </head>
 
@@ -8635,7 +8856,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.14</span>
+          <span class="home-version-info">SSHCP V16.15</span>
         </button>
 
       </div>
@@ -8985,52 +9206,62 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
   <!-- =======================================================
-       CONTROL CENTER — SSHCP V16.14
+       CONTROL CENTER — SSHCP V16.15
+       Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
   <section id="testLogView" class="view">
     <div class="test-log-screen">
       <div class="test-log-header">
-        <div aria-hidden="true"></div>
         <div class="test-log-title">CONTROL CENTER</div>
       </div>
 
-      <div class="test-log-table" aria-label="Latest Control Center log entries">
+      <div class="test-log-table" aria-label="Control Center detailed log">
         <div class="test-log-row header">
           <div>TIME</div><div>ACTION</div><div>RESULT</div><div>TOTAL</div>
         </div>
         <div id="testLogRows"></div>
       </div>
 
-      <div class="test-auth-controls">
-        <div id="testAuthorizationButtonRow" class="test-auth-button-row">
-          <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTHORIZATION</button>
-          <label class="test-team-auth-toggle">
-            <input id="testTeamAuthorizationCheck" type="checkbox">
-            <span>TEAM AUTHORIZATION CHECK</span>
-          </label>
-          <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTH</button>
+      <div class="control-center-bottom-stack">
+        <div class="test-log-utility-row">
+          <button id="testLogResetButton" class="test-log-reset" type="button">DELETE TEST DATA</button>
+          <button id="testCopyLogButton" class="test-copy-log" type="button">COPY LOG</button>
+        </div>
+
+        <div class="control-center-nav" aria-label="Control Center sections">
+          <button id="controlCenterGamesButton" class="control-center-nav-button" type="button">GAMES</button>
+          <button id="controlCenterGeekModeButton" class="control-center-nav-button" type="button">GEEK MODE</button>
+          <button id="controlCenterTeamsButton" class="control-center-nav-button" type="button">TEAMS</button>
+        </div>
+
+        <div class="test-score-controls">
+          <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR</button>
+          <button id="testAddRandomCurrentButton" class="test-score-action add" type="button">RANDOM</button>
+          <button id="testAddRandom2CurrentButton" class="test-score-action add" type="button">RANDOM 2</button>
+          <button id="testDeleteAllButton" class="test-score-action delete" type="button">DELETE ALL</button>
+        </div>
+
+        <div class="test-auth-controls">
+          <div id="testAuthorizationButtonRow" class="test-auth-button-row">
+            <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTH</button>
+            <label class="test-team-auth-toggle">
+              <input id="testTeamAuthorizationCheck" type="checkbox">
+              <span>AUTH CHECK</span>
+            </label>
+            <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTH</button>
+          </div>
+        </div>
+
+        <div class="control-center-nav-buffer" aria-hidden="true"></div>
+
+        <div class="test-bottom-nav" aria-label="Control Center navigation">
+          <button id="testLogLeaderboardButton" class="test-bottom-nav-button" type="button">LEADERBOARD</button>
+          <button id="testLogScorecardButton" class="test-bottom-nav-button" type="button">SCORECARD</button>
+          <button id="testLogHomeButton" class="test-bottom-nav-button home" type="button">HOME</button>
         </div>
       </div>
 
-      <div class="control-center-nav" aria-label="Control Center sections">
-        <button id="controlCenterTeamsButton" class="control-center-nav-button" type="button">TEAMS</button>
-        <button id="controlCenterGeekModeButton" class="control-center-nav-button" type="button">GEEK MODE</button>
-        <button id="controlCenterGamesButton" class="control-center-nav-button" type="button">GAMES</button>
-      </div>
-
-      <div class="test-score-controls">
-        <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR</button>
-        <button id="testAddRandomCurrentButton" class="test-score-action add" type="button">ADD RANDOM</button>
-        <button id="testAddRandom2CurrentButton" class="test-score-action add" type="button">ADD RANDOM 2</button>
-        <button id="testDeleteAllButton" class="test-score-action delete" type="button">DELETE ALL</button>
-      </div>
-
-      <div class="test-log-footer-utils">
-        <button id="testLogResetButton" class="test-log-reset" type="button">DELETE TEST DATA</button>
-        <button id="testLogHomeButton" class="test-log-home" type="button">HOME</button>
-        <button id="testCopyLogButton" class="test-copy-log" type="button">COPY ALL</button>
-      </div>
       <input id="testQrCameraInput" type="file" accept="image/*" capture="environment" hidden>
     </div>
   </section>
@@ -9242,6 +9473,12 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
       testLogHomeButton:
         document.getElementById('testLogHomeButton'),
+
+      testLogLeaderboardButton:
+        document.getElementById('testLogLeaderboardButton'),
+
+      testLogScorecardButton:
+        document.getElementById('testLogScorecardButton'),
 
       testLogResetButton:
         document.getElementById('testLogResetButton'),
@@ -9718,6 +9955,13 @@ let scoreTimingDetail =
         closeHomeTeamDropup();
       }
     }
+    function compactTestAuthTeamLabel(name) {
+      const text = String(name || '').trim().toUpperCase();
+      const match = text.match(/\bTEAM\s*#?\s*(\d{1,2})\b/i);
+      if (match) return 'TEAM ' + match[1];
+      return text || 'TEAM';
+    }
+
     function syncTestAuthorizationToggle(){
       if (els.testTeamAuthorizationCheck) {
         if (isTeamQr()) {
@@ -9740,11 +9984,11 @@ let scoreTimingDetail =
         els.testSwitchAuthorizationButton.classList.toggle('authorized', authorized);
 
         if (isMasterQr()) {
-          els.testSwitchAuthorizationButton.textContent = 'MASTER AUTHORIZED';
+          els.testSwitchAuthorizationButton.textContent = 'MASTER AUTH';
         } else if (isTeamQr() && getQrTeam()) {
-          els.testSwitchAuthorizationButton.textContent = getQrTeam().toUpperCase() + ' AUTHORIZED';
+          els.testSwitchAuthorizationButton.textContent = compactTestAuthTeamLabel(getQrTeam()) + ' AUTH';
         } else {
-          els.testSwitchAuthorizationButton.textContent = 'GAIN AUTHORIZATION';
+          els.testSwitchAuthorizationButton.textContent = 'GAIN AUTH';
         }
       }
     
@@ -10667,7 +10911,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.14 CONTROL CENTER LOG',
+        'SSHCP V16.15 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -10730,7 +10974,7 @@ let scoreTimingDetail =
       if (copied) {
         addTestLog('COPY LOG', 'OK', '—', getTestLog().length + ' ENTRIES COPIED');
         if (els.testCopyLogButton) {
-          const original = 'COPY ALL';
+          const original = 'COPY LOG';
           els.testCopyLogButton.textContent = 'COPIED';
           setTimeout(() => {
             if (els.testCopyLogButton) els.testCopyLogButton.textContent = original;
@@ -10747,12 +10991,18 @@ let scoreTimingDetail =
         els.testLogRows.innerHTML = '<div class="test-log-empty">NO TEST ACTIONS RECORDED</div>';
         return;
       }
-      const visibleLog = log.slice(0, 2);
-      els.testLogRows.innerHTML = visibleLog.map(item => {
+
+      /* V16.15 — render the full stored history in the flexible scrollable
+         table. The table is the only Control Center region allowed to squeeze
+         as viewport height is consumed by bottom-anchored controls. */
+      els.testLogRows.innerHTML = log.map(item => {
         const resultClass = item.result === 'OK' || item.result === 'VERIFIED' ? 'test-log-ok' : (item.result === 'FAILED' ? 'test-log-fail' : '');
+        const detail = String(item.detail || '').trim();
         return '<div class="test-log-row">' +
           '<div>' + escapeHtml(item.time) + '</div>' +
-          '<div class="test-log-action"><strong>' + escapeHtml(item.action) + '</strong></div>' +
+          '<div class="test-log-action"><strong>' + escapeHtml(item.action) + '</strong>' +
+            (detail ? '<span class="test-log-detail">' + escapeHtml(detail) + '</span>' : '') +
+          '</div>' +
           '<div class="' + resultClass + '">' + escapeHtml(item.result) + '</div>' +
           '<div>' + escapeHtml(item.total) + '</div>' +
           '</div>';
@@ -12285,35 +12535,53 @@ let scoreTimingDetail =
     function fitTestPageButtonText() {
       if (!els.testLogView || currentView !== 'testlog') return;
 
-      els.testLogView.querySelectorAll('button').forEach(button => {
-        if (button.clientHeight <= 0 || button.clientWidth <= 0) return;
+      function fitRow(selector, targetSize, minimumSize) {
+        const row = els.testLogView.querySelector(selector);
+        if (!row) return;
 
-        const isAuthorization =
-          button.classList.contains('test-switch-auth') ||
-          button.classList.contains('test-remove-auth');
-        const isHome = button.classList.contains('test-log-home');
-
-        /* V5.7 TEST typography: deliberately small/technical.
-           Authorization keeps its prior target. HOME is larger, but restrained.
-           Every label is one line and shrinks only when its real Oswald width
-           cannot fit the existing button. */
-        const targetSize = isAuthorization ? 13 : (isHome ? 15 : 10);
-        const minimumSize = isAuthorization ? 8 : 7;
-
-        fitTextToBoxV5(
-          button,
-          button,
-          targetSize,
-          minimumSize,
-          {
-            horizontalPad: 10,
-            verticalPad: 4,
-            wrap: false,
-            lineHeight: 1,
-            ignoreHeight: false
-          }
+        const buttons = Array.from(row.querySelectorAll('button')).filter(
+          button => button.clientHeight > 0 && button.clientWidth > 0
         );
-      });
+        if (!buttons.length) return;
+
+        let sharedSize = targetSize;
+
+        buttons.forEach(button => {
+          button.style.fontSize = targetSize + 'px';
+          fitTextToBoxV5(
+            button,
+            button,
+            targetSize,
+            minimumSize,
+            {
+              horizontalPad: 8,
+              verticalPad: 4,
+              wrap: false,
+              lineHeight: 1,
+              ignoreHeight: false
+            }
+          );
+          const fitted = parseFloat(getComputedStyle(button).fontSize);
+          if (Number.isFinite(fitted)) sharedSize = Math.min(sharedSize, fitted);
+        });
+
+        buttons.forEach(button => {
+          button.style.fontSize = sharedSize + 'px';
+        });
+
+        if (row.classList.contains('test-auth-button-row')) {
+          const authLabel = row.querySelector('.test-team-auth-toggle');
+          if (authLabel) authLabel.style.fontSize = sharedSize + 'px';
+        }
+      }
+
+      /* Control Center typography rule: each functional row shares one text
+         size. If one label is the limiting case, only that row shrinks. */
+      fitRow('.test-log-utility-row', 11, 7);
+      fitRow('.control-center-nav', 12, 8);
+      fitRow('.test-score-controls', 10, 7);
+      fitRow('.test-auth-button-row', 11, 7);
+      fitRow('.test-bottom-nav', 12, 8);
     }
 
     function rememberResponsiveGeometryV5(patch = {}) {
@@ -16441,6 +16709,8 @@ let scoreTimingDetail =
 
     els.testLogHotspot.addEventListener('click', showTestLog);
     els.testLogHomeButton.addEventListener('click', showHome);
+    if (els.testLogLeaderboardButton) els.testLogLeaderboardButton.addEventListener('click', showLeaderboard);
+    if (els.testLogScorecardButton) els.testLogScorecardButton.addEventListener('click', showScorecard);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
@@ -16963,4 +17233,5 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
 
