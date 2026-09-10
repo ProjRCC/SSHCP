@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.16-P4W8JN | BUILD KEY: 16.17-T6J4CX -->
+<!-- SSHCP | BASE KEY: 16.17-T6J4CX | BUILD KEY: 16.18-M8V4QS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8864,7 +8864,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.17</span>
+          <span class="home-version-info">SSHCP V16.18</span>
         </button>
 
       </div>
@@ -10731,6 +10731,66 @@ let scoreTimingDetail =
     }
 
 
+    /*
+      SSHCP V16.18 — ENTER beauty scroll.
+      Normal score entry keeps every V16.17 scoring / gray / Blue behavior
+      unchanged, but when the four-rows-below viewport actually has to move,
+      the scorecard visibly travels to the new position over ~0.8 seconds.
+
+      CLEAR never starts this animation. Refresh / return positioning keeps
+      the already-approved native smooth scroll behavior.
+    */
+    let scoreEnterBeautyScrollFrameV1618 = 0;
+    let scoreEnterBeautyScrollTargetV1618 = null;
+
+    function cancelScoreEnterBeautyScrollV1618() {
+      if (scoreEnterBeautyScrollFrameV1618) {
+        cancelAnimationFrame(scoreEnterBeautyScrollFrameV1618);
+      }
+
+      scoreEnterBeautyScrollFrameV1618 = 0;
+      scoreEnterBeautyScrollTargetV1618 = null;
+    }
+
+    function animateScoreEnterBeautyScrollV1618(targetTop, durationMs = 800) {
+      if (!els.scoreScroll) return false;
+
+      const startTop = els.scoreScroll.scrollTop;
+      const distance = targetTop - startTop;
+
+      if (Math.abs(distance) <= 2) {
+        return false;
+      }
+
+      cancelScoreEnterBeautyScrollV1618();
+
+      const startedAt = performance.now();
+      scoreEnterBeautyScrollTargetV1618 = targetTop;
+
+      const step = now => {
+        const progress = Math.min(1, Math.max(0, (now - startedAt) / durationMs));
+        const eased = progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+        els.scoreScroll.scrollTop = startTop + (distance * eased);
+
+        if (progress < 1) {
+          scoreEnterBeautyScrollFrameV1618 = requestAnimationFrame(step);
+          return;
+        }
+
+        els.scoreScroll.scrollTop = targetTop;
+        scoreEnterBeautyScrollFrameV1618 = 0;
+        scoreEnterBeautyScrollTargetV1618 = null;
+        rememberScorePosition();
+      };
+
+      scoreEnterBeautyScrollFrameV1618 = requestAnimationFrame(step);
+      return true;
+    }
+
+
     function restoreScorePosition(useLocalProgress = false) {
 
       if (
@@ -10780,13 +10840,46 @@ let scoreTimingDetail =
                 const reducedMotion = window.matchMedia &&
                   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-                const shouldSmooth = !useLocalProgress && !reducedMotion &&
+                const needsMove =
                   Math.abs(clampedTarget - els.scoreScroll.scrollTop) > 2;
 
-                if (shouldSmooth) {
+                /*
+                  V16.18: a real ENTER uses an explicit ~0.8s visual scroll
+                  only when the four-below target actually changes. The save
+                  request / pending gray / verified Blue states continue on
+                  their existing timing and are never gated by this animation.
+                */
+                if (useLocalProgress && !reducedMotion && needsMove) {
+                  animateScoreEnterBeautyScrollV1618(clampedTarget, 800);
+                  return;
+                }
+
+                /*
+                  Verification can finish while the ENTER animation is still
+                  traveling to this same target. Do not start a second scroll
+                  on top of it. If a newer local score is already queued, also
+                  leave the viewport under the newer local-progress animation.
+                */
+                if (
+                  !useLocalProgress &&
+                  scoreEnterBeautyScrollFrameV1618 &&
+                  (
+                    hasPendingScores() ||
+                    (
+                      Number.isFinite(scoreEnterBeautyScrollTargetV1618) &&
+                      Math.abs(clampedTarget - scoreEnterBeautyScrollTargetV1618) <= 2
+                    )
+                  )
+                ) {
+                  return;
+                }
+
+                if (!useLocalProgress && !reducedMotion && needsMove) {
+                  cancelScoreEnterBeautyScrollV1618();
                   els.scoreScroll.scrollTo({ top: clampedTarget, behavior: 'smooth' });
                   window.setTimeout(rememberScorePosition, 520);
                 } else {
+                  cancelScoreEnterBeautyScrollV1618();
                   els.scoreScroll.scrollTop = clampedTarget;
                   rememberScorePosition();
                 }
@@ -10919,7 +11012,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.17 CONTROL CENTER LOG',
+        'SSHCP V16.18 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13610,6 +13703,9 @@ let scoreTimingDetail =
         */
         if (!commitResult.cleared) {
           restoreScorePosition(true);
+        } else {
+          /* CLEAR stays stationary, including cancelling any residual ENTER motion. */
+          cancelScoreEnterBeautyScrollV1618();
         }
 
         submitScores();
@@ -17250,4 +17346,5 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
 
