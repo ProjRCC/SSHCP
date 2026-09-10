@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.18-M8V4QS | BUILD KEY: 16.19-K7R2VX -->
+<!-- SSHCP | BASE KEY: 16.19-K7R2VX | BUILD KEY: 16.20-H3N7QP -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8864,7 +8864,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.19</span>
+          <span class="home-version-info">SSHCP V16.20</span>
         </button>
 
       </div>
@@ -9662,7 +9662,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
 
     /*
-      SSHCP V16.19 — fixed visual save cadence.
+      SSHCP V16.20 — fixed visual save cadence.
 
       The real Cloudflare -> Google Sheets write/readback verification still
       starts immediately and remains authoritative. The Scorecard's visual
@@ -9673,7 +9673,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
         verify success -> keep Blue
         verify failure -> no failure UI before 1.5s from that ENTER; then
                           revert the affected still-unconfirmed score(s) gray
-                          and show the existing Save Not Confirmed popup.
+                          and show the V16.20 trigger-specific save warning.
 
       This is UI timing only. It never delays the save request, write, readback,
       exact verification, queueing, or pending-score persistence.
@@ -9774,11 +9774,38 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
       });
     }
 
+    function showScoreSaveFailureModalV1620(context) {
+      if (context === 'refresh') {
+        showMessageModal(
+          'GREY SCORES remain UNSAVED',
+          ''
+        );
+        return;
+      }
+
+      showMessageModal(
+        'SCORE NOT SAVED',
+        ''
+      );
+
+      const lineOne = document.createElement('div');
+      lineOne.textContent = 'SCORE will remain GREY';
+
+      const lineTwo = document.createElement('div');
+      lineTwo.textContent = 'Continue to Enter / Attempt Manual Refresh';
+
+      els.modalBody.replaceChildren(
+        lineOne,
+        lineTwo
+      );
+    }
+
     function scheduleScoreFailureNoticeV1619(
       expectedScores,
       savedAtRequest,
       requestGenerations,
-      failureReferenceAt
+      failureReferenceAt,
+      failureContextV1620 = 'enter'
     ) {
       const affected = expectedScores
         .map((score, index) => score !== savedAtRequest[index] ? index : -1)
@@ -9786,7 +9813,15 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
       if (!affected.length) return;
 
-      const targetAt = failureReferenceAt + SCORE_FAILURE_NOTICE_DELAY_V1619;
+      /*
+        V16.20 warning split:
+          ENTER failure   -> hold until 1.5s from ENTER, then SCORE NOT SAVED.
+          REFRESH failure -> once the refresh retry has actually failed, report
+                             GREY SCORES remain UNSAVED without an added delay.
+      */
+      const targetAt = failureContextV1620 === 'refresh'
+        ? performance.now()
+        : failureReferenceAt + SCORE_FAILURE_NOTICE_DELAY_V1619;
       const delay = Math.max(0, targetAt - performance.now());
 
       window.setTimeout(() => {
@@ -9816,11 +9851,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
         });
 
         renderScorecard();
-
-        showMessageModal(
-          'Save Not Confirmed',
-          'Google Sheets did not confirm the new scores. Your entered scores remain gray. If they stay gray, refresh the page and ROTB will read the official scorecard, retry the pending scores, and verify them.'
-        );
+        showScoreSaveFailureModalV1620(failureContextV1620);
       }, delay);
     }
 
@@ -9871,6 +9902,9 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 
     let saveQueued =
       false;
+
+    let saveQueuedFailureContextV1620 =
+      null;
 
 
     /* V16.5 — if LIVE LEADERBOARD is tapped while a score write is still
@@ -10896,7 +10930,7 @@ let scoreTimingDetail =
 
 
     /*
-      SSHCP V16.19 — ENTER beauty scroll + fixed visual save cadence.
+      SSHCP V16.20 — ENTER beauty scroll + fixed visual save cadence.
       Normal score entry keeps every V16.17 scoring / gray / Blue behavior
       unchanged, but when the four-rows-below viewport actually has to move,
       the scorecard visibly travels to the new position over ~0.8 seconds.
@@ -11176,7 +11210,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.19 CONTROL CENTER LOG',
+        'SSHCP V16.20 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -12142,7 +12176,7 @@ let scoreTimingDetail =
         */
         if (hasPendingScores()) {
           setTimeout(
-            () => submitScores(),
+            () => submitScores('refresh'),
             0
           );
         }
@@ -13866,7 +13900,7 @@ let scoreTimingDetail =
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
-          V16.19 visual Blue now follows the fixed 0.8s cadence; backend
+          V16.20 visual Blue now follows the fixed 0.8s cadence; backend
           verification remains authoritative and can roll it back on failure.
         */
         if (!commitResult.cleared) {
@@ -13881,7 +13915,7 @@ let scoreTimingDetail =
           cancelScoreEnterBeautyScrollV1618();
         }
 
-        submitScores();
+        submitScores('enter');
 
       }
 
@@ -13918,12 +13952,12 @@ let scoreTimingDetail =
        One request only:
        Worker writes -> reads Google Sheets back -> verifies.
        Worker verification still requires verified:true plus an exact
-       verifiedScores match. V16.19's Blue state is a UI-only 0.8s optimistic
+       verifiedScores match. V16.20's Blue state is a UI-only 0.8s optimistic
        cadence and is rolled back on a failed/unconfirmed save.
        ========================================================= */
 
 
-    async function submitScores() {
+    async function submitScores(failureContextV1620 = 'enter') {
 
       if (
         !selectedTeam ||
@@ -13934,6 +13968,11 @@ let scoreTimingDetail =
 
       if (saveInProgress) {
         saveQueued = true;
+        /* A queued real ENTER is the more specific user action. Otherwise
+           preserve REFRESH so a failed refresh retry gets refresh-only copy. */
+        if (failureContextV1620 === 'enter' || saveQueuedFailureContextV1620 !== 'enter') {
+          saveQueuedFailureContextV1620 = failureContextV1620;
+        }
         return;
       }
 
@@ -14178,7 +14217,8 @@ let scoreTimingDetail =
           expectedScores,
           savedScoresAtRequestV1619,
           visualGenerationsAtRequestV1619,
-          failureReferenceAtV1619
+          failureReferenceAtV1619,
+          failureContextV1620
         );
 
       }
@@ -14193,11 +14233,13 @@ let scoreTimingDetail =
 
         if (saveQueued) {
           saveQueued = false;
+          const queuedFailureContextV1620 = saveQueuedFailureContextV1620 || 'enter';
+          saveQueuedFailureContextV1620 = null;
 
           if (hasPendingScores()) {
             queuedAnotherSave = true;
             setTimeout(
-              () => submitScores(),
+              () => submitScores(queuedFailureContextV1620),
               0
             );
           }
