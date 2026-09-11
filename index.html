@@ -1,14 +1,13 @@
-<!-- SSHCP | BASE KEY: 16.31-H9Q4ZT | BUILD KEY: 17.0-K6M9QW -->
+<!-- SSHCP | BASE KEY: 17.0-K6M9QW | BUILD KEY: 17.1-R7K4MN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.0 — mainline from exact V16.31. Fresh assigned-team QR
-           entry gets the Welcome presentation layer. V16.31 authorization
-           remains the only authorization path; V16.37 contributed Welcome
-           formatting/positioning only, never startup/auth state. */
+        /* SSHCP V17.1 — chained from exact V17.0. Welcome behavior remains inherited
+           unchanged from V17.0; V16.31 authorization remains the authoritative
+           path and V16.37 remains Welcome-formatting donor only. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -9266,7 +9265,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V17.0 — FRESH TEAM QR WELCOME OVERLAY
+   SSHCP V17.1 — FRESH TEAM QR WELCOME OVERLAY
    Mainline is exact V16.31. V16.37 is donor-only for the approved Welcome
    formatting/positioning. Presentation only: no second auth request; ENTER
    only dismisses this layer.
@@ -9402,13 +9401,26 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   }
 }
 
+/* =========================================================
+   SSHCP V17.1 — HOME QUICK GUIDE REFINEMENT
+   HOME only: keep the approved height, typography, radius and 1.5px border
+   weight. Narrow the control to 80% of its prior width and move its utility
+   treatment from black to tournament Blue. Scorecard/Leaderboard HOME/INFO
+   remain black utility controls.
+   ========================================================= */
+#homeView .sshcp-home-guide-row .quick-guide-button{
+  width:min(51.2%,208px)!important;
+  border-color:var(--accent)!important;
+  color:var(--accent)!important;
+}
+
 </style>
 </head>
 
 
 <body>
 
-  <!-- SSHCP V17.0 — fresh QR presentation layer; V16.37 donor geometry only. -->
+  <!-- SSHCP V17.1 — fresh QR presentation layer inherited from V17.0; V16.37 donor geometry only. -->
   <div id="qrWelcomeOverlayV170" class="qr-welcome-overlay-v170" aria-hidden="true">
     <div class="qr-welcome-inner-v170">
       <div class="qr-welcome-title-v170">WELCOME</div>
@@ -9529,7 +9541,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.0</span>
+          <span class="home-version-info">SSHCP V17.1</span>
         </button>
 
       </div>
@@ -9879,7 +9891,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 
 
   <!-- =======================================================
-       CONTROL CENTER — CURRENT SSHCP V17.0
+       CONTROL CENTER — CURRENT SSHCP V17.1
        Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
@@ -9945,7 +9957,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 
 
   <!-- =======================================================
-       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.0)
+       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.1)
        ======================================================= -->
   <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
     <div class="teams-popup-box" role="dialog" aria-label="Teams">
@@ -12000,7 +12012,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.0 CONTROL CENTER LOG',
+        'SSHCP V17.1 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -18807,7 +18819,7 @@ let scoreTimingDetail =
       syncTeamQrLockedUi();
       updateHomeScorecardAccess();
 
-      /* V17.0 — retained behavior: browser refresh while TEAMS is open returns directly to the
+      /* V17.1 — retained behavior: browser refresh while TEAMS is open returns directly to the
          TEAMS workspace (and restores its table scroll position) instead of
          falling through to HOME. */
       if (restoreTeamsPopupV1626) {
