@@ -1,13 +1,13 @@
-<!-- SSHCP | BASE KEY: 17.1-R7K4MN | BUILD KEY: 17.2-Q8M4LX -->
+<!-- SSHCP | BASE KEY: 17.2-Q8M4LX | BUILD KEY: 17.3-N5R8TZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.2 — chained from exact Golden V17.1. V17.1 behavior remains the
-           authoritative baseline; V16.31 authorization remains the authoritative
-           path and V16.37 remains Welcome-formatting donor only. */
+        /* SSHCP V17.3 — chained from exact V17.2. V17.1 remains the protected Golden
+           recovery point; V16.31 authorization remains the authoritative path
+           and V16.37 remains Welcome-formatting donor only. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -9265,7 +9265,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V17.2 — FRESH TEAM QR WELCOME OVERLAY
+   SSHCP V17.3 — FRESH TEAM QR WELCOME OVERLAY
    Mainline is exact V16.31. V16.37 is donor-only for the approved Welcome
    formatting/positioning. Presentation only: no second auth request; ENTER
    only dismisses this layer.
@@ -9417,15 +9417,15 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 
 
 /* =========================================================
-   SSHCP V17.2 — POLISH PASS FROM GOLDEN V17.1
+   SSHCP V17.3 — POLISH PASS FROM GOLDEN V17.1
    - Literal-button black cleanup: any remaining BLACK text/border/background
      on action buttons is normalized to the tournament accent, while danger,
      score tiles and dropdown/select controls keep their established semantics.
    - QUICK GUIDE rebuilt to a fixed 80dvh reference card with centered header,
      left-aligned body, symmetrical 35px breathing room and 3/2/3 footer.
-   - Literal buttons receive momentary monochrome press feedback. Haptics are
+   - Literal buttons receive momentary light/dark press feedback. Haptics are
      progressive enhancement only; unsupported browsers silently do nothing.
-   - ENTER on the Welcome presentation dissolves the entire layer over .5s.
+   - ENTER on the Welcome presentation dissolves the entire layer over 1.0s.
    ========================================================= */
 
 /* Remaining visible BLACK action-button treatments -> accent. */
@@ -9487,8 +9487,8 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   min-height:0!important;
   overflow:hidden!important;
   text-align:left!important;
-  font-size:18px!important;
-  line-height:1.2!important;
+  font-size:16px!important;
+  line-height:1.24!important;
 }
 .quick-guide-lines-v172{
   width:100%;
@@ -9525,17 +9525,30 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   line-height:1!important;
 }
 
+/* V17.3 Quick Guide destinations: matched outer pair, primary accent fill.
+   JS targets 50% of the 54px button height, then uses the smaller size needed
+   to fit BOTH LEADERBOARD and SCORECARD so their text height always matches. */
+.modal-overlay.quick-guide .quick-guide-destination-v173{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+.modal-overlay.quick-guide .quick-guide-destination-v173,
+.modal-overlay.quick-guide .quick-guide-back-v173{
+  font-size:27px;
+}
+
 /* Welcome exit: presentation-only whole-layer dissolve. */
 .qr-welcome-overlay-v170.sshcp-welcome-exit-v172{
   pointer-events:none!important;
-  transition:opacity .5s ease-out!important;
+  transition:opacity 1s ease-out!important;
   opacity:1;
 }
 .qr-welcome-overlay-v170.sshcp-welcome-exit-v172.fade-v172{
   opacity:0!important;
 }
 
-/* Press feedback uses only pure black / pure white. JavaScript supplies each
+/* Press feedback uses only dark gray / pure white. JavaScript supplies each
    thresholded property from the button's actual pre-press computed colors. */
 button.sshcp-button-pressed-v172{
   background:var(--sshcp-press-bg-v172)!important;
@@ -9551,7 +9564,7 @@ button.sshcp-button-pressed-v172{
 
 <body>
 
-  <!-- SSHCP V17.2 — Welcome presentation inherited from Golden V17.1; V16.37 donor geometry only. -->
+  <!-- SSHCP V17.3 — Welcome presentation inherited from Golden V17.1; V16.37 donor geometry only. -->
   <div id="qrWelcomeOverlayV170" class="qr-welcome-overlay-v170" aria-hidden="true">
     <div class="qr-welcome-inner-v170">
       <div class="qr-welcome-title-v170">WELCOME</div>
@@ -9672,7 +9685,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.2</span>
+          <span class="home-version-info">SSHCP V17.3</span>
         </button>
 
       </div>
@@ -10022,7 +10035,7 @@ button.sshcp-button-pressed-v172{
 
 
   <!-- =======================================================
-       CONTROL CENTER — CURRENT SSHCP V17.2
+       CONTROL CENTER — CURRENT SSHCP V17.3
        Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
@@ -10088,7 +10101,7 @@ button.sshcp-button-pressed-v172{
 
 
   <!-- =======================================================
-       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.2)
+       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.3)
        ======================================================= -->
   <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
     <div class="teams-popup-box" role="dialog" aria-label="Teams">
@@ -12143,7 +12156,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.2 CONTROL CENTER LOG',
+        'SSHCP V17.3 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -18205,6 +18218,35 @@ let scoreTimingDetail =
     }
 
 
+    function fitQuickGuideButtonTextV173(button, startPx) {
+      if (!button) return startPx;
+      const computed = getComputedStyle(button);
+      const padLeft = parseFloat(computed.paddingLeft) || 0;
+      const padRight = parseFloat(computed.paddingRight) || 0;
+      const available = Math.max(1, button.clientWidth - padLeft - padRight - 2);
+      let size = startPx;
+      button.style.fontSize = size + 'px';
+      while (size > 12 && button.scrollWidth > available + padLeft + padRight) {
+        size -= 0.5;
+        button.style.fontSize = size + 'px';
+      }
+      return size;
+    }
+
+    function fitQuickGuideFooterV173(leaderboard, back, scorecard) {
+      if (!leaderboard || !back || !scorecard) return;
+
+      const outerTarget = Math.max(12, Math.floor(leaderboard.clientHeight * 0.50));
+      const leaderboardFit = fitQuickGuideButtonTextV173(leaderboard, outerTarget);
+      const scorecardFit = fitQuickGuideButtonTextV173(scorecard, outerTarget);
+      const matchedOuter = Math.min(leaderboardFit, scorecardFit);
+      leaderboard.style.fontSize = matchedOuter + 'px';
+      scorecard.style.fontSize = matchedOuter + 'px';
+
+      const backTarget = Math.max(12, Math.floor(back.clientHeight * 0.50));
+      fitQuickGuideButtonTextV173(back, backTarget);
+    }
+
     function showQuickGuide() {
 
       closeModal();
@@ -18259,12 +18301,15 @@ let scoreTimingDetail =
           }
         );
 
+      leaderboard.classList.add('quick-guide-destination-v173');
+
       const back =
         makeModalButton(
           'BACK',
           '',
           closeModal
         );
+      back.classList.add('quick-guide-back-v173');
 
       const scorecard =
         makeModalButton(
@@ -18282,6 +18327,8 @@ let scoreTimingDetail =
       els.modalActions.className =
         'modal-actions quick-guide-actions-v172';
 
+      scorecard.classList.add('quick-guide-destination-v173');
+
       els.modalActions.replaceChildren(
         leaderboard,
         back,
@@ -18293,6 +18340,12 @@ let scoreTimingDetail =
         .add(
           'open'
         );
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          fitQuickGuideFooterV173(leaderboard, back, scorecard);
+        });
+      });
 
     }
 
@@ -18387,7 +18440,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V17.2 — LITERAL BUTTON PRESS FEEDBACK
+       SSHCP V17.3 — LITERAL BUTTON PRESS FEEDBACK
        Score tiles and dropdown/select controls are intentionally excluded.
        ========================================================= */
 
@@ -18420,10 +18473,10 @@ let scoreTimingDetail =
 
     function monochromeCssV172(value, transparentAsWhite) {
       const c = parseCssColorV172(value);
-      if (!c) return transparentAsWhite ? '#fff' : '#000';
+      if (!c) return transparentAsWhite ? '#fff' : '#333';
       if (c.a < .08) return transparentAsWhite ? '#fff' : 'transparent';
       const luminance = ((.2126 * c.r) + (.7152 * c.g) + (.0722 * c.b)) / 255;
-      return luminance >= .5 ? '#fff' : '#000';
+      return luminance >= .5 ? '#fff' : '#333';
     }
 
     function beginLiteralButtonPressV172(button, event) {
@@ -18463,7 +18516,7 @@ let scoreTimingDetail =
         event && event.pointerType === 'touch' &&
         navigator && typeof navigator.vibrate === 'function'
       ) {
-        try { navigator.vibrate(9); } catch (_) {}
+        try { navigator.vibrate(7); } catch (_) {}
       }
     }
 
@@ -18974,7 +19027,7 @@ let scoreTimingDetail =
         overlay.style.removeProperty('opacity');
         overlay.style.removeProperty('transition');
         dismissQrWelcomeV170();
-      }, 520);
+      }, 1020);
     }
 
     function setupQrWelcomeV170() {
