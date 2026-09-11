@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 17.5-B7K3NW | BUILD KEY: 17.7-M4Q8ZX -->
+<!-- SSHCP | BASE KEY: 17.7-M4Q8ZX | BUILD KEY: 17.8-T6K3PV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.7 — branched directly from exact Golden V17.5. The V17.6
+        /* SSHCP V17.8 — based directly on exact V17.7, which branched from Golden V17.5. The V17.6
            table-geometry experiment is intentionally NOT inherited. V16.31
            authorization remains authoritative and V16.37 remains Welcome-formatting donor only. */
         var initialQrParams = new URLSearchParams(window.location.search);
@@ -9463,6 +9463,22 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   color:var(--red)!important;
 }
 
+/* V17.8 — restore white labels on the two tournament-family PRIMARY buttons.
+   The V17.5 generic secondary modal rule has higher selector specificity than
+   the older SKINS/Summary rules, so without these late semantic overrides the
+   labels become accent-on-accent and appear blank. */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627
+  .summary-skins-button-v1627{
+  border-color:var(--accent)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+.modal-overlay.skins-results-v1627 .modal-actions .modal-btn:last-child{
+  border-color:var(--accent)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+
 /* QUICK GUIDE fixed geometry. */
 .modal-overlay.quick-guide{
   align-items:center!important;
@@ -9594,7 +9610,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 /* V17.7 — universal data reveal shields, branched from Golden V17.5.
    Scorecard / Leaderboard / Scramble Summary use white over only their data
    region. SKINS uses a full-viewport black shield so its dynamic popup can
-   build completely underneath. Every finished view is revealed in .2s. */
+   build completely underneath. Every finished view is revealed in .7s. */
 .sshcp-data-reveal-shield-v177{
   position:fixed!important;
   z-index:4900!important;
@@ -9605,7 +9621,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   background:#fff!important;
   opacity:1!important;
   pointer-events:auto!important;
-  transition:opacity .2s ease-out!important;
+  transition:opacity .7s ease-out!important;
   will-change:opacity;
 }
 .sshcp-data-reveal-shield-v177.is-revealing-v177{
@@ -9767,7 +9783,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.7</span>
+          <span class="home-version-info">SSHCP V17.8</span>
         </button>
 
       </div>
@@ -12238,7 +12254,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.7 CONTROL CENTER LOG',
+        'SSHCP V17.8 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13289,7 +13305,7 @@ let scoreTimingDetail =
         return;
       }
       shield.classList.add('is-revealing-v177');
-      window.setTimeout(() => removeDataRevealShieldV177(key, shield), 230);
+      window.setTimeout(() => removeDataRevealShieldV177(key, shield), 730);
     }
 
     function revealDataShieldAfterLayoutV177(key, shield, frames = 2, elements = null) {
