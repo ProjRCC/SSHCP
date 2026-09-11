@@ -1,23 +1,41 @@
-<!-- SSHCP | BASE KEY: 17.10-V6R2KH | BUILD KEY: 17.11-Z4P8KC -->
+<!-- SSHCP | BASE KEY: 18.0-G7P4XN | BUILD KEY: 18.0b-N6R4QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.11 — based directly on exact V17.10, with V17.5 still protected Golden.
-           V17.11 changes only the main Scorecard/Leaderboard reveal-shield geometry: those two
-           page shields are edge-to-edge from immediately below the permanent top navigation all
-           the way to the bottom of the viewport. Popup reveal geometry is deliberately unchanged.
-           V16.31 authorization remains authoritative and V16.37 remains Welcome-formatting donor only. */
+        /* SSHCP V18.0b — based directly on exact V18.0 first GEEK MODE draft.
+           V18.0 Geek UI/data behavior, V17.11 Scorecard/Leaderboard geometry, V16.31 authorization,
+           scoring, save, leaderboard, Summary, and SKINS remain authoritative and unchanged.
+           V18.0b adds only the unauthenticated COMPETITOR Welcome path and temporary compact
+           GEEK diagnostic COPY logging. GEEK data is still requested only when GEEK MODE is tapped. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
         );
-        window.__sshcpIncomingQrWelcomeV170 = hasIncomingQrWelcome;
+
+        /* V18.0b — direct/plain entry gets the protected Welcome presentation
+           only while this device has no saved QR or local scoring authorization.
+           Existing incoming-QR Welcome behavior stays unchanged. */
+        var hasSavedAuthorizationV180b = !!(
+          localStorage.getItem('sshcpQrPasskey') ||
+          localStorage.getItem('rotbAuthorizedTeam')
+        );
+        var competitorWelcomeV180b = !!(
+          !hasIncomingQrWelcome && !hasSavedAuthorizationV180b
+        );
+
+        window.__sshcpWelcomeModeV180b = hasIncomingQrWelcome
+          ? 'QR'
+          : (competitorWelcomeV180b ? 'COMPETITOR' : '');
+
+        /* Preserve the established Welcome-active flag so Quick Guide and
+           ENTER continue using the proven V17 presentation/dismissal path. */
+        window.__sshcpIncomingQrWelcomeV170 = !!window.__sshcpWelcomeModeV180b;
         window.__sshcpQrWelcomeStartedAtV170 =
           (window.performance && performance.now) ? performance.now() : Date.now();
-        if (hasIncomingQrWelcome) {
+        if (window.__sshcpIncomingQrWelcomeV170) {
           document.documentElement.classList.add('sshcp-qr-welcome-v170');
         }
 
@@ -9267,7 +9285,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V17.5 — FRESH TEAM QR WELCOME OVERLAY
+   SSHCP V18.0b — QR / COMPETITOR WELCOME OVERLAY
    Mainline is exact V16.31. V16.37 is donor-only for the approved Welcome
    formatting/positioning. Presentation only: no second auth request; ENTER
    only dismisses this layer.
@@ -9276,7 +9294,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
    0.0–0.6s  clean white startup pause.
    0.6–2.1s  WELCOME fades in.
    2.1–3.1s  WELCOME holds.
-   >=3.1s    only after assigned-team authorization, TEAM fades in over .8s.
+   >=3.1s    after startup auth resolution, TEAM or COMPETITOR fades in over .8s.
    then       QUICK GUIDE + ENTER fade in over 1.5s.
    ========================================================= */
 .qr-welcome-overlay-v170{
@@ -9658,6 +9676,471 @@ button.sshcp-button-pressed-v172{
   filter:none!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V18.0b — GEEK MODE FIRST DRAFT + TEST DIAGNOSTICS
+   Presentation-only frontend for CF V2.0 action=geekMode.
+   Scoring, score writes, leaderboard, Summary, and SKINS are untouched.
+   ========================================================= */
+
+/* Control Center GEEK MODE is a local visibility checkbox, matching SKINS. */
+#testLogView .control-center-geek-toggle{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  cursor:pointer!important;
+  box-sizing:border-box!important;
+}
+#testLogView .control-center-geek-toggle input{
+  position:absolute!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+#testLogView .control-center-geek-box{
+  width:18px!important;
+  height:18px!important;
+  flex:0 0 18px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:2px solid var(--accent)!important;
+  border-radius:3px!important;
+  background:#fff!important;
+  color:transparent!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:1!important;
+}
+#testLogView .control-center-geek-toggle input:checked + .control-center-geek-box{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+
+/* V18.0b temporary diagnostic COPY control. It is deliberately only a
+   light-gray word in the upper-right of the Geek popup. */
+.geek-copy-v180b{
+  position:absolute!important;
+  top:11px!important;
+  right:14px!important;
+  z-index:8!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:2px 0!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:none!important;
+  background:transparent!important;
+  color:#b8b8b8!important;
+  font-size:12px!important;
+  font-weight:600!important;
+  line-height:1!important;
+  letter-spacing:.45px!important;
+  box-shadow:none!important;
+}
+
+/* Summary uses the already-reserved left action slot. */
+.modal-overlay.tournament-summary .summary-geek-button-v180{
+  border:2px solid var(--accent)!important;
+  background:#fff!important;
+  color:var(--accent)!important;
+}
+
+/* Main GEEK popup. */
+.modal-overlay.geek-mode-v180{
+  position:fixed!important;
+  inset:0!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:2.5dvh 3vw!important;
+  background:rgba(0,0,0,.88)!important;
+  overflow:hidden!important;
+}
+.modal-overlay.geek-mode-v180.open{
+  display:flex!important;
+}
+.modal-overlay.geek-mode-v180 .modal-box{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:min(95vw,720px)!important;
+  height:95dvh!important;
+  min-height:0!important;
+  max-height:95dvh!important;
+  margin:auto!important;
+  padding:12px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  border:2px solid var(--accent)!important;
+  border-radius:18px!important;
+  background:#fff!important;
+}
+.modal-overlay.geek-mode-v180 .modal-close-x{
+  display:none!important;
+}
+.modal-overlay.geek-mode-v180 .modal-title{
+  flex:0 0 auto!important;
+  margin:0 0 10px!important;
+  padding:0!important;
+  color:var(--accent)!important;
+  font-size:30px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.modal-overlay.geek-mode-v180 .modal-text{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  text-align:center!important;
+  font-size:initial!important;
+  line-height:1!important;
+}
+.geek-main-v180{
+  position:relative!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+.geek-table-shell-v180{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  border:1px solid #aaa!important;
+  border-radius:10px!important;
+  background:#fff!important;
+}
+.geek-row-v180{
+  width:100%!important;
+  height:var(--geek-row-h-v180,44px)!important;
+  min-height:var(--geek-row-h-v180,44px)!important;
+  max-height:var(--geek-row-h-v180,44px)!important;
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:52fr 20fr 28fr!important;
+  background:#fff!important;
+}
+.geek-row-v180.header{
+  flex:0 0 var(--geek-row-h-v180,44px)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  font-weight:800!important;
+}
+.geek-row-v180.category{
+  grid-template-columns:1fr!important;
+  background:#666!important;
+  color:#fff!important;
+  font-weight:800!important;
+}
+.geek-cell-v180{
+  min-width:0!important;
+  height:100%!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 5px!important;
+  border-right:1px solid #b7b7b7!important;
+  border-bottom:1px solid #b7b7b7!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:clip!important;
+  font-family:'Oswald',Arial,sans-serif!important;
+  font-size:15px!important;
+  font-weight:600!important;
+  line-height:1!important;
+}
+.geek-row-v180 .geek-cell-v180:last-child{
+  border-right:0!important;
+}
+.geek-row-v180.header .geek-cell-v180{
+  border-color:rgba(255,255,255,.55)!important;
+  color:var(--on-accent)!important;
+  font-size:15px!important;
+  font-weight:800!important;
+}
+.geek-row-v180.category .geek-cell-v180{
+  border-right:0!important;
+  border-color:#fff!important;
+  color:#fff!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  letter-spacing:.3px!important;
+}
+.geek-stat-cell-v180{
+  justify-content:flex-start!important;
+  padding-left:10px!important;
+  text-align:left!important;
+}
+.geek-result-cell-v180{
+  font-weight:800!important;
+}
+.geek-team-button-v180{
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0 4px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#000!important;
+  font:inherit!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+.geek-team-button-v180.authorized-owner{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  font-weight:900!important;
+}
+.geek-table-scroll-v180{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+  scroll-snap-type:y proximity!important;
+}
+.geek-table-scroll-v180 .geek-row-v180{
+  scroll-snap-align:start!important;
+}
+.geek-empty-v180{
+  min-height:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:20px!important;
+  color:#666!important;
+  font-size:18px!important;
+  font-weight:700!important;
+}
+.geek-load-shield-v180{
+  position:absolute!important;
+  inset:0!important;
+  z-index:5!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#fff!important;
+  opacity:1!important;
+  transition:opacity .5s ease!important;
+  pointer-events:auto!important;
+}
+.geek-load-shield-v180.reveal{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.geek-load-label-v180{
+  color:var(--accent)!important;
+  font-size:18px!important;
+  font-weight:800!important;
+  letter-spacing:.4px!important;
+}
+.modal-overlay.geek-mode-v180 .modal-actions{
+  flex:0 0 auto!important;
+  width:100%!important;
+  min-height:58px!important;
+  margin:10px 0 0!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:20fr 80fr!important;
+  gap:8px!important;
+}
+.modal-overlay.geek-mode-v180 .modal-actions > .modal-btn{
+  width:100%!important;
+  height:58px!important;
+  min-height:58px!important;
+  margin:0!important;
+  padding:0 6px!important;
+  box-sizing:border-box!important;
+  border-radius:9px!important;
+  font-size:18px!important;
+  line-height:1!important;
+}
+.geek-back-v180{
+  border:2px solid var(--accent)!important;
+  background:#fff!important;
+  color:var(--accent)!important;
+  font-weight:800!important;
+}
+.geek-filter-panel-v180{
+  width:100%!important;
+  height:58px!important;
+  min-height:58px!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,1fr)!important;
+  gap:0!important;
+  border:2px solid var(--accent)!important;
+  border-radius:9px!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  overflow:hidden!important;
+}
+.geek-filter-label-v180{
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  padding:0 2px!important;
+  color:var(--on-accent)!important;
+  font-size:10px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  cursor:pointer!important;
+}
+.geek-filter-label-v180 input{
+  width:13px!important;
+  height:13px!important;
+  min-width:13px!important;
+  margin:0!important;
+  accent-color:#fff!important;
+}
+
+/* Detail popup: content-sized, no table. */
+.modal-overlay.geek-detail-v180{
+  position:fixed!important;
+  inset:0!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  background:rgba(0,0,0,.88)!important;
+  overflow-y:auto!important;
+}
+.modal-overlay.geek-detail-v180.open{
+  display:flex!important;
+}
+.modal-overlay.geek-detail-v180 .modal-box{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:min(92vw,560px)!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:90dvh!important;
+  margin:auto!important;
+  padding:18px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow-y:auto!important;
+  border:2px solid var(--accent)!important;
+  border-radius:18px!important;
+  background:#fff!important;
+}
+.modal-overlay.geek-detail-v180 .modal-close-x{
+  display:none!important;
+}
+.modal-overlay.geek-detail-v180 .modal-title{
+  margin:0 0 12px!important;
+  padding:0!important;
+  color:#000!important;
+  font-size:27px!important;
+  font-weight:900!important;
+  line-height:1.05!important;
+  text-align:center!important;
+}
+.modal-overlay.geek-detail-v180 .modal-text{
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  color:#000!important;
+  font-size:17px!important;
+  line-height:1.25!important;
+  text-align:left!important;
+}
+.geek-detail-description-v180{
+  margin:0 0 18px!important;
+  text-align:center!important;
+}
+.geek-detail-section-v180{
+  margin:0 0 6px!important;
+  color:#555!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  letter-spacing:.5px!important;
+  text-transform:uppercase!important;
+}
+.geek-detail-result-v180{
+  margin:0 0 18px!important;
+  color:#000!important;
+  font-size:22px!important;
+  font-weight:900!important;
+  line-height:1.05!important;
+  text-align:center!important;
+}
+.geek-detail-teams-v180{
+  margin:0!important;
+  padding-left:28px!important;
+  font-size:18px!important;
+  line-height:1.45!important;
+}
+.geek-detail-teams-v180 li.authorized{
+  color:var(--accent)!important;
+  font-weight:900!important;
+}
+.modal-overlay.geek-detail-v180 .modal-actions{
+  width:100%!important;
+  margin:18px 0 0!important;
+  padding:0!important;
+}
+.modal-overlay.geek-detail-v180 .modal-actions.single{
+  display:flex!important;
+  justify-content:center!important;
+}
+.modal-overlay.geek-detail-v180 .modal-actions .modal-btn{
+  width:min(70%,260px)!important;
+  min-height:52px!important;
+  margin:0!important;
+  border:2px solid var(--accent)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  font-weight:800!important;
+}
+
+@media(max-width:420px){
+  .modal-overlay.geek-mode-v180 .modal-box{
+    width:96vw!important;
+    padding:9px!important;
+  }
+  .geek-cell-v180,
+  .geek-row-v180.header .geek-cell-v180,
+  .geek-row-v180.category .geek-cell-v180{
+    font-size:13px!important;
+  }
+  .geek-filter-label-v180{
+    font-size:9px!important;
+  }
+}
+
 </style>
 </head>
 
@@ -9785,7 +10268,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.11</span>
+          <span class="home-version-info">SSHCP V18.0b</span>
         </button>
 
       </div>
@@ -10164,7 +10647,11 @@ button.sshcp-button-pressed-v172{
             <span class="control-center-skins-box" aria-hidden="true">✓</span>
             <span>SKINS</span>
           </label>
-          <button id="controlCenterGeekModeButton" class="control-center-nav-button" type="button">GEEK MODE</button>
+          <label id="controlCenterGeekModeToggle" class="control-center-nav-button control-center-geek-toggle">
+            <input id="controlCenterGeekModeCheck" type="checkbox">
+            <span class="control-center-geek-box" aria-hidden="true">✓</span>
+            <span>GEEK MODE</span>
+          </label>
           <button id="controlCenterTeamsButton" class="control-center-nav-button" type="button">TEAMS</button>
         </div>
 
@@ -10446,6 +10933,9 @@ button.sshcp-button-pressed-v172{
 
       controlCenterSkinsCheck:
         document.getElementById('controlCenterSkinsCheck'),
+
+      controlCenterGeekModeCheck:
+        document.getElementById('controlCenterGeekModeCheck'),
 
       teamsPopupOverlay:
         document.getElementById('teamsPopupOverlay'),
@@ -12256,7 +12746,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.11 CONTROL CENTER LOG',
+        'SSHCP V18.0b CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -16955,6 +17445,787 @@ let scoreTimingDetail =
 
 
 
+
+    /* =========================================================
+       SSHCP V18.0b — GEEK MODE FIRST DRAFT + TEST DIAGNOSTICS
+       CF V2.0 is read-only and is called ONLY from the visible GEEK MODE action.
+       No scorecard/startup/background request is added here.
+       ========================================================= */
+
+    const GEEK_ENABLED_KEY_V180 = 'sshcpGeekModeEnabledV180';
+    let geekDataV180 = null;
+    let geekSelectedCategoriesV180 = new Set([
+      'SCORING',
+      'FIELD',
+      'MOMENTUM',
+      'CONSISTENCY',
+      'HOLE TYPES'
+    ]);
+    let geekScrollTopV180 = 0;
+
+    const GEEK_CATEGORY_ORDER_V180 = [
+      'SCORING',
+      'FIELD',
+      'MOMENTUM',
+      'CONSISTENCY',
+      'HOLE TYPES'
+    ];
+
+    /* V18.0b — temporary compact diagnostics. No additional request is ever
+       made: COPY compresses the already-loaded CF V2.0 response and current
+       Geek filter/tap state into a tiny paste intended for ChatGPT testing. */
+    let geekDiagnosticActiveV180b = false;
+    let geekDiagnosticStartedAtV180b = 0;
+    let geekDiagnosticErrorV180b = '';
+    let geekLastTapStatV180b = '';
+
+    const GEEK_LOG_CODES_V180B = {
+      'Eagles':'EAG', 'Birdies':'BRD', 'Pars':'PAR', 'Bogeys':'BOG',
+      'Eagle %':'EAGP', 'Birdie %':'BRDP', 'Par-or-Better %':'POBP',
+      'Bogey-or-Worse %':'BOWP', 'Front 9 vs Par':'F9', 'Back 9 vs Par':'B9',
+      'Hardest Hole':'HH', 'Easiest Hole':'EH', 'Most Eagles':'MEAG',
+      'Most Birdies':'MBRD', 'Fewest Bogeys':'FBOG', 'Par-3 Rank':'P3R',
+      'Par-4 Rank':'P4R', 'Par-5 Rank':'P5R', 'Best Hole vs Field':'BHF',
+      'Worst Hole vs Field':'WHF', 'Best 9-Hole Stretch':'B9S',
+      'Worst 9-Hole Stretch':'W9S', 'Back-9 Comeback':'B9C',
+      'Closing Hole Birdies':'CHB', 'Score Variance':'VAR', 'Score Range':'RNG',
+      'Highest Hole Score':'HI', 'Lowest Hole Score':'LO',
+      'Longest E/Under Streak':'STK', 'Par-3 vs Par':'P3V', 'Par-4 vs Par':'P4V',
+      'Par-5 vs Par':'P5V', 'Par-3 Birdie Rate':'P3B', 'Par-5 Birdie Rate':'P5B',
+      'Par-5 Eagle Rate':'P5E', '9 Easy Holes vs Par':'E9',
+      '9 Hard Holes vs Par':'H9'
+    };
+
+    const GEEK_LOG_CATEGORY_CODES_V180B = {
+      'SCORING':'SC', 'FIELD':'FI', 'MOMENTUM':'MO',
+      'CONSISTENCY':'CO', 'HOLE TYPES':'HT'
+    };
+
+    const GEEK_DESCRIPTIONS_V180 = {
+      'Eagles': 'Most eagles made during the round.',
+      'Birdies': 'Most birdies made during the round.',
+      'Pars': 'Most pars made during the round.',
+      'Bogeys': 'Fewest bogeys made during the round.',
+      'Eagle %': 'Highest percentage of played holes finished two strokes under par.',
+      'Birdie %': 'Highest percentage of played holes finished one stroke under par.',
+      'Par-or-Better %': 'Highest percentage of played holes finished at par or better.',
+      'Bogey-or-Worse %': 'Lowest percentage of played holes finished bogey or worse.',
+      'Front 9 vs Par': 'Best score versus par on course holes 1 through 9.',
+      'Back 9 vs Par': 'Best score versus par on course holes 10 through 18.',
+      'Hardest Hole': 'Lowest score recorded on the #1 handicap hole.',
+      'Easiest Hole': 'Lowest score recorded on the #18 handicap hole.',
+      'Most Eagles': 'Most eagles made during the round.',
+      'Most Birdies': 'Most birdies made during the round.',
+      'Fewest Bogeys': 'Fewest bogeys made during the round.',
+      'Par-3 Rank': 'Best total score versus par on all par-3 holes.',
+      'Par-4 Rank': 'Best total score versus par on all par-4 holes.',
+      'Par-5 Rank': 'Best total score versus par on all par-5 holes.',
+      'Best Hole vs Field': 'Largest single-hole advantage compared with the field average.',
+      'Worst Hole vs Field': 'Largest single-hole disadvantage compared with the field average.',
+      'Best 9-Hole Stretch': 'Best score versus par over any consecutive nine holes in actual play order.',
+      'Worst 9-Hole Stretch': 'Worst score versus par over any consecutive nine holes in actual play order.',
+      'Back-9 Comeback': 'Biggest improvement from the first nine played to the second nine played.',
+      'Closing Hole Birdies': 'Most birdies made over the final three holes played.',
+      'Score Variance': 'Lowest hole-to-hole scoring variance relative to par.',
+      'Score Range': 'Smallest difference between a team’s highest and lowest hole scores.',
+      'Highest Hole Score': 'Highest single-hole score recorded during the round.',
+      'Lowest Hole Score': 'Lowest single-hole score recorded during the round.',
+      'Longest E/Under Streak': 'Longest consecutive streak of holes played at even par or better.',
+      'Par-3 vs Par': 'Best total score versus par on all par-3 holes.',
+      'Par-4 vs Par': 'Best total score versus par on all par-4 holes.',
+      'Par-5 vs Par': 'Best total score versus par on all par-5 holes.',
+      'Par-3 Birdie Rate': 'Highest birdie rate on par-3 holes.',
+      'Par-5 Birdie Rate': 'Highest birdie rate on par-5 holes.',
+      'Par-5 Eagle Rate': 'Highest eagle rate on par-5 holes.',
+      '9 Easy Holes vs Par': 'Best score versus par on handicap holes 10 through 18.',
+      '9 Hard Holes vs Par': 'Best score versus par on handicap holes 1 through 9.'
+    };
+
+    function geekEnabledV180() {
+      return localStorage.getItem(GEEK_ENABLED_KEY_V180) === '1';
+    }
+
+    function setGeekEnabledV180(enabled) {
+      localStorage.setItem(GEEK_ENABLED_KEY_V180, enabled ? '1' : '0');
+      if (els.controlCenterGeekModeCheck) {
+        els.controlCenterGeekModeCheck.checked = Boolean(enabled);
+      }
+
+      if (enabled) startGeekDiagnosticV180b();
+      else stopGeekDiagnosticV180b();
+
+      addTestLog(
+        'GEEK MODE',
+        enabled ? 'ON' : 'OFF',
+        '—',
+        'Summary button ' + (enabled ? 'shown' : 'hidden')
+      );
+    }
+
+    function geekAuthorizedTeamV180() {
+      return normalizeName(getAuthorizedTeam());
+    }
+
+    function geekOwnsStatV180(stat) {
+      const authorized = geekAuthorizedTeamV180();
+      if (!authorized || !stat || !Array.isArray(stat.teams)) return false;
+      return stat.teams.some(item =>
+        normalizeName(item && item.team) === authorized
+      );
+    }
+
+    function geekTeamLabelV180(stat) {
+      if (!stat || !Array.isArray(stat.teams) || !stat.teams.length) return '—';
+      if (stat.teams.length === 1) {
+        return String(stat.teams[0].team || '').trim() || '—';
+      }
+      return String(stat.teams.length) + ' TIED';
+    }
+
+    function geekDescriptionV180(statName) {
+      return GEEK_DESCRIPTIONS_V180[String(statName || '').trim()] ||
+        'Tournament result calculated from the live scorecard.';
+    }
+
+    function startGeekDiagnosticV180b() {
+      geekDiagnosticActiveV180b = true;
+      geekDiagnosticStartedAtV180b = Date.now();
+      geekDiagnosticErrorV180b = '';
+      geekLastTapStatV180b = '';
+    }
+
+    function stopGeekDiagnosticV180b() {
+      geekDiagnosticActiveV180b = false;
+      geekDiagnosticStartedAtV180b = 0;
+      geekDiagnosticErrorV180b = '';
+      geekLastTapStatV180b = '';
+    }
+
+    function geekLogCodeV180b(statName) {
+      const name = String(statName || '').trim();
+      return GEEK_LOG_CODES_V180B[name] ||
+        name.toUpperCase().replace(/[^A-Z0-9]+/g, '').slice(0, 8) || 'STAT';
+    }
+
+    function geekLogOwnerSlotsV180b(stat) {
+      if (!stat || !Array.isArray(stat.teams) || !stat.teams.length) return '-';
+      return stat.teams.map(item => {
+        const slot = Number(item && item.slot);
+        if (Number.isInteger(slot) && slot > 0) return 'T' + slot;
+        return String(item && item.team || '').trim().replace(/\s+/g, '').slice(0, 12) || '?';
+      }).join(',');
+    }
+
+    function geekLogDetailV180b(stat) {
+      if (!stat || !Array.isArray(stat.teams) || !stat.teams.length) return '';
+      const detail = stat.teams[0] && stat.teams[0].detail ? stat.teams[0].detail : {};
+      const name = String(stat.stat || '');
+
+      if ((name === 'Hardest Hole' || name === 'Easiest Hole' ||
+           name === 'Best Hole vs Field' || name === 'Worst Hole vs Field') && detail.hole) {
+        return '@H' + String(detail.hole);
+      }
+      if ((name === 'Best 9-Hole Stretch' || name === 'Worst 9-Hole Stretch') && detail.startHole) {
+        return '@S' + String(detail.startHole);
+      }
+      if (name === 'Back-9 Comeback') {
+        const first = Number(detail.firstNine);
+        const back = Number(detail.backNine);
+        if (Number.isFinite(first) && Number.isFinite(back)) {
+          return '[' + formatGolfScore(first) + '>' + formatGolfScore(back) + ']';
+        }
+      }
+      return '';
+    }
+
+    function geekAuthorizedLogLabelV180b() {
+      const authorized = geekAuthorizedTeamV180();
+      if (!authorized) return '-';
+
+      if (geekDataV180 && Array.isArray(geekDataV180.categories)) {
+        for (const category of geekDataV180.categories) {
+          for (const stat of (Array.isArray(category && category.stats) ? category.stats : [])) {
+            for (const item of (Array.isArray(stat && stat.results) ? stat.results : [])) {
+              if (normalizeName(item && item.team) === authorized) {
+                const slot = Number(item && item.slot);
+                if (Number.isInteger(slot) && slot > 0) return 'T' + slot;
+              }
+            }
+          }
+        }
+      }
+
+      return String(getAuthorizedTeam() || '').trim().replace(/\s+/g, '').slice(0, 18) || '-';
+    }
+
+    function geekFilterLogLabelV180b() {
+      if (geekAllSelectedV180()) return 'ALL';
+      if (!geekSelectedCategoriesV180.size) return 'NONE';
+      return GEEK_CATEGORY_ORDER_V180
+        .filter(category => geekSelectedCategoriesV180.has(category))
+        .map(category => GEEK_LOG_CATEGORY_CODES_V180B[category] || category.slice(0, 2))
+        .join(',');
+    }
+
+    function buildGeekCompactLogV180b() {
+      const data = geekDataV180;
+      const categories = data && Array.isArray(data.categories) ? data.categories : [];
+      const statCount = categories.reduce((sum, category) =>
+        sum + (Array.isArray(category && category.stats) ? category.stats.length : 0), 0);
+      const timing = data && data.timing ? data.timing : {};
+      const total = Number(timing.totalMs);
+      const auth = Number(timing.authMs);
+      const read = Number(timing.readMs);
+
+      const timingCode = [total, auth, read]
+        .map(value => Number.isFinite(value) ? String(Math.round(value)) : '-')
+        .join('/');
+
+      const lines = [
+        'G18b A=' + geekAuthorizedLogLabelV180b() +
+        ' T=' + timingCode +
+        ' C=' + categories.length +
+        ' S=' + statCount
+      ];
+
+      categories.forEach(category => {
+        const name = String(category && category.category || '').trim().toUpperCase();
+        const code = GEEK_LOG_CATEGORY_CODES_V180B[name] || name.slice(0, 2);
+        const stats = Array.isArray(category && category.stats) ? category.stats : [];
+        const parts = stats.map(stat =>
+          geekLogCodeV180b(stat && stat.stat) + '=' +
+          String(stat && stat.value != null ? stat.value : '') +
+          geekLogDetailV180b(stat) + ':' +
+          geekLogOwnerSlotsV180b(stat)
+        );
+        lines.push(code + ':' + parts.join(';'));
+      });
+
+      lines.push(
+        'F=' + geekFilterLogLabelV180b() +
+        (geekLastTapStatV180b ? ' TAP=' + geekLogCodeV180b(geekLastTapStatV180b) : '') +
+        (geekDiagnosticErrorV180b ? ' ERR=' + geekDiagnosticErrorV180b.replace(/\s+/g, '_').slice(0, 80) : '')
+      );
+
+      if (!data && !geekDiagnosticErrorV180b) {
+        lines.push('STATE=' + (geekDiagnosticActiveV180b ? 'READY' : 'OFF'));
+      }
+
+      return lines.join('\n');
+    }
+
+    async function copyGeekCompactLogV180b() {
+      if (!geekDiagnosticActiveV180b) return;
+      const report = buildGeekCompactLogV180b();
+      let copied = false;
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(report);
+          copied = true;
+        }
+      } catch (_) {}
+
+      if (!copied) {
+        const textarea = document.createElement('textarea');
+        textarea.value = report;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try { copied = document.execCommand('copy'); } catch (_) { copied = false; }
+        textarea.remove();
+      }
+
+      if (!copied) geekDiagnosticErrorV180b = 'COPY_UNAVAILABLE';
+    }
+
+    function installGeekCopyButtonV180b() {
+      const box = els.modalBox;
+      if (!box || !geekDiagnosticActiveV180b) return;
+      const existing = box.querySelector('.geek-copy-v180b');
+      if (existing) existing.remove();
+
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.className = 'geek-copy-v180b';
+      copy.textContent = 'COPY';
+      copy.setAttribute('aria-label', 'Copy compact Geek diagnostic log');
+      copy.addEventListener('click', copyGeekCompactLogV180b);
+      box.appendChild(copy);
+    }
+
+    function geekDetailResultV180(stat) {
+      const name = String(stat && stat.stat || '').trim();
+      const value = String(stat && stat.value != null ? stat.value : '').trim();
+      const first = stat && Array.isArray(stat.teams) && stat.teams.length
+        ? stat.teams[0]
+        : null;
+      const detail = first && first.detail ? first.detail : {};
+
+      switch (name) {
+        case 'Eagles':
+        case 'Most Eagles':
+          return value + ' Eagles';
+        case 'Birdies':
+        case 'Most Birdies':
+          return value + ' Birdies';
+        case 'Pars':
+          return value + ' Pars';
+        case 'Bogeys':
+        case 'Fewest Bogeys':
+          return value + ' Bogeys';
+        case 'Eagle %':
+          return value + ' Eagle Rate';
+        case 'Birdie %':
+          return value + ' Birdie Rate';
+        case 'Par-or-Better %':
+          return value + ' Par-or-Better';
+        case 'Bogey-or-Worse %':
+          return value + ' Bogey-or-Worse';
+        case 'Front 9 vs Par':
+          return value + ' on Front 9';
+        case 'Back 9 vs Par':
+          return value + ' on Back 9';
+        case 'Hardest Hole':
+        case 'Easiest Hole':
+          return value + (detail.hole ? ' on Hole ' + detail.hole : '');
+        case 'Par-3 Rank':
+        case 'Par-3 vs Par':
+          return value + ' on Par-3s';
+        case 'Par-4 Rank':
+        case 'Par-4 vs Par':
+          return value + ' on Par-4s';
+        case 'Par-5 Rank':
+        case 'Par-5 vs Par':
+          return value + ' on Par-5s';
+        case 'Best Hole vs Field':
+        case 'Worst Hole vs Field':
+          return value + ' vs Field' + (detail.hole ? ' on Hole ' + detail.hole : '');
+        case 'Best 9-Hole Stretch':
+          return value + ' over 9 Holes' + (detail.startHole ? ' (Starts Hole ' + detail.startHole + ')' : '');
+        case 'Worst 9-Hole Stretch':
+          return value + ' over 9 Holes' + (detail.startHole ? ' (Starts Hole ' + detail.startHole + ')' : '');
+        case 'Back-9 Comeback': {
+          const firstNine = Number(detail.firstNine);
+          const backNine = Number(detail.backNine);
+          const improvement = Number(stat && stat.rawValue);
+          const count = Number.isFinite(improvement)
+            ? Math.abs(improvement)
+            : Math.abs(Number(value));
+          const label = Number.isFinite(count)
+            ? String(count).replace(/\.0+$/, '') + '-Stroke Improvement'
+            : value + ' Improvement';
+          if (Number.isFinite(firstNine) && Number.isFinite(backNine)) {
+            return label + ' (' + formatGolfScore(firstNine) + ' → ' + formatGolfScore(backNine) + ')';
+          }
+          return label;
+        }
+        case 'Closing Hole Birdies':
+          return value + ' Birdies in Final 3 Holes';
+        case 'Score Variance':
+          return value + ' Variance';
+        case 'Score Range':
+          return value + '-Stroke Range';
+        case 'Highest Hole Score':
+        case 'Lowest Hole Score':
+          return value + ' Strokes';
+        case 'Longest E/Under Streak':
+          return value + ' Holes';
+        case 'Par-3 Birdie Rate':
+          return value + ' on Par-3s';
+        case 'Par-5 Birdie Rate':
+          return value + ' on Par-5s';
+        case 'Par-5 Eagle Rate':
+          return value + ' on Par-5s';
+        case '9 Easy Holes vs Par':
+          return value + ' on Easiest 9';
+        case '9 Hard Holes vs Par':
+          return value + ' on Hardest 9';
+        default:
+          return value || '—';
+      }
+    }
+
+    function geekAllSelectedV180() {
+      return GEEK_CATEGORY_ORDER_V180.every(category =>
+        geekSelectedCategoriesV180.has(category)
+      );
+    }
+
+    function geekSetAllV180(enabled) {
+      geekSelectedCategoriesV180 = enabled
+        ? new Set(GEEK_CATEGORY_ORDER_V180)
+        : new Set();
+    }
+
+    function fitGeekTextNodeV180(node, targetPx, minPx, horizontalPad = 4) {
+      if (!node) return;
+      node.style.removeProperty('font-size');
+
+      const available = Math.max(1, node.clientWidth - horizontalPad);
+      let size = targetPx;
+      node.style.setProperty('font-size', size + 'px', 'important');
+
+      if (node.scrollWidth <= available + 0.5) return;
+
+      let low = minPx;
+      let high = targetPx;
+      let best = minPx;
+
+      for (let i = 0; i < 10; i++) {
+        const mid = (low + high) / 2;
+        node.style.setProperty('font-size', mid + 'px', 'important');
+        if (node.scrollWidth <= available + 0.5) {
+          best = mid;
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+
+      node.style.setProperty('font-size', best + 'px', 'important');
+    }
+
+    function fitGeekTableTextV180() {
+      const shell = els.modalBody.querySelector('.geek-table-shell-v180');
+      if (!shell) return;
+
+      const rowHeight =
+        parseFloat(getComputedStyle(shell).getPropertyValue('--geek-row-h-v180')) ||
+        44;
+
+      const statTarget = Math.min(18, rowHeight * 0.34);
+      const resultTarget = Math.min(18, rowHeight * 0.36);
+      const teamTarget = Math.min(17, rowHeight * 0.31);
+
+      shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
+        fitGeekTextNodeV180(
+          row.querySelector('.geek-stat-cell-v180'),
+          statTarget,
+          9,
+          18
+        );
+        fitGeekTextNodeV180(
+          row.querySelector('.geek-result-cell-v180'),
+          resultTarget,
+          10,
+          10
+        );
+        fitGeekTextNodeV180(
+          row.querySelector('.geek-team-button-v180'),
+          teamTarget,
+          8,
+          10
+        );
+      });
+    }
+
+    function fitGeekRowsV180() {
+      if (!els.modalOverlay.classList.contains('geek-mode-v180')) return;
+      const shell = els.modalBody.querySelector('.geek-table-shell-v180');
+      if (!shell) return;
+      const height = shell.getBoundingClientRect().height;
+      if (!(height > 0)) return;
+      const rowHeight = Math.max(32, height / 11);
+      shell.style.setProperty('--geek-row-h-v180', rowHeight + 'px');
+      requestAnimationFrame(fitGeekTableTextV180);
+    }
+
+    function renderGeekTableV180() {
+      const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
+      if (!scroll) return;
+
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) {
+        scroll.innerHTML = '<div class="geek-empty-v180">GEEK MODE DATA UNAVAILABLE</div>';
+        return;
+      }
+
+      let html = '';
+      geekDataV180.categories.forEach(categoryBlock => {
+        const category = String(categoryBlock && categoryBlock.category || '').trim().toUpperCase();
+        if (!geekSelectedCategoriesV180.has(category)) return;
+
+        const stats = Array.isArray(categoryBlock.stats)
+          ? categoryBlock.stats.filter(stat => stat && stat.supported !== false)
+          : [];
+        if (!stats.length) return;
+
+        html +=
+          '<div class="geek-row-v180 category">' +
+          '<div class="geek-cell-v180">' + escapeHtml(category) + '</div>' +
+          '</div>';
+
+        stats.forEach(stat => {
+          const label = geekTeamLabelV180(stat);
+          const owns = geekOwnsStatV180(stat);
+          const encodedCategory = encodeURIComponent(category);
+          const encodedStat = encodeURIComponent(String(stat.stat || ''));
+
+          html +=
+            '<div class="geek-row-v180 stat">' +
+              '<div class="geek-cell-v180 geek-stat-cell-v180">' + escapeHtml(String(stat.stat || '')) + '</div>' +
+              '<div class="geek-cell-v180 geek-result-cell-v180">' + escapeHtml(String(stat.value ?? '')) + '</div>' +
+              '<div class="geek-cell-v180 geek-team-cell-v180">' +
+                '<button class="geek-team-button-v180' + (owns ? ' authorized-owner' : '') + '" type="button"' +
+                ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
+                ' data-geek-stat="' + escapeHtml(encodedStat) + '">' +
+                escapeHtml(label) +
+                '</button>' +
+              '</div>' +
+            '</div>';
+        });
+      });
+
+      if (!html) {
+        html = '<div class="geek-empty-v180">NO CATEGORIES SELECTED</div>';
+      }
+
+      scroll.innerHTML = html;
+
+      scroll.querySelectorAll('.geek-team-button-v180').forEach(button => {
+        button.addEventListener('click', () => {
+          const category = decodeURIComponent(button.dataset.geekCategory || '');
+          const statName = decodeURIComponent(button.dataset.geekStat || '');
+          const block = geekDataV180.categories.find(item =>
+            String(item && item.category || '').trim().toUpperCase() === category
+          );
+          const stat = block && Array.isArray(block.stats)
+            ? block.stats.find(item => String(item && item.stat || '') === statName)
+            : null;
+          if (stat) {
+            if (geekDiagnosticActiveV180b) geekLastTapStatV180b = String(stat.stat || '');
+            showGeekDetailV180(stat);
+          }
+        });
+      });
+
+      requestAnimationFrame(fitGeekRowsV180);
+    }
+
+    function syncGeekFilterChecksV180(panel) {
+      if (!panel) return;
+      const all = panel.querySelector('input[data-geek-filter="ALL"]');
+      if (all) all.checked = geekAllSelectedV180();
+      GEEK_CATEGORY_ORDER_V180.forEach(category => {
+        const input = panel.querySelector('input[data-geek-filter="' + category + '"]');
+        if (input) input.checked = geekSelectedCategoriesV180.has(category);
+      });
+    }
+
+    function buildGeekFilterPanelV180() {
+      const panel = document.createElement('div');
+      panel.className = 'geek-filter-panel-v180';
+
+      const labels = ['ALL', ...GEEK_CATEGORY_ORDER_V180];
+      panel.innerHTML = labels.map(label =>
+        '<label class="geek-filter-label-v180">' +
+          '<input type="checkbox" data-geek-filter="' + escapeHtml(label) + '">' +
+          '<span>' + escapeHtml(label) + '</span>' +
+        '</label>'
+      ).join('');
+
+      syncGeekFilterChecksV180(panel);
+
+      panel.addEventListener('change', event => {
+        const input = event.target.closest('input[data-geek-filter]');
+        if (!input) return;
+        const key = input.dataset.geekFilter;
+
+        if (key === 'ALL') {
+          if (geekAllSelectedV180()) geekSetAllV180(false);
+          else geekSetAllV180(true);
+        } else {
+          if (input.checked) geekSelectedCategoriesV180.add(key);
+          else geekSelectedCategoriesV180.delete(key);
+        }
+
+        syncGeekFilterChecksV180(panel);
+        geekScrollTopV180 = 0;
+        renderGeekTableV180();
+        const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
+        if (scroll) scroll.scrollTop = 0;
+      });
+
+      return panel;
+    }
+
+    function renderGeekMainShellV180() {
+      els.modalOverlay.classList.add('geek-mode-v180');
+      els.modalTitle.textContent = 'GEEK MODE';
+      els.modalTitle.classList.remove('testing');
+      els.modalInput.style.display = 'none';
+
+      els.modalBody.innerHTML =
+        '<div class="geek-main-v180">' +
+          '<div class="geek-table-shell-v180">' +
+            '<div class="geek-row-v180 header">' +
+              '<div class="geek-cell-v180">STAT</div>' +
+              '<div class="geek-cell-v180">RESULT</div>' +
+              '<div class="geek-cell-v180">TEAM</div>' +
+            '</div>' +
+            '<div class="geek-table-scroll-v180"></div>' +
+          '</div>' +
+          '<div class="geek-load-shield-v180">' +
+            '<div class="geek-load-label-v180">LOADING GEEK MODE</div>' +
+          '</div>' +
+        '</div>';
+
+      const back = makeModalButton('BACK', 'geek-back-v180', showTournamentSummary);
+      const filterPanel = buildGeekFilterPanelV180();
+      els.modalActions.className = 'modal-actions geek-actions-v180';
+      els.modalActions.replaceChildren(back, filterPanel);
+      els.modalOverlay.classList.add('open');
+      installGeekCopyButtonV180b();
+
+      const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
+      if (scroll) {
+        scroll.addEventListener('scroll', () => {
+          geekScrollTopV180 = scroll.scrollTop || 0;
+        }, { passive:true });
+      }
+
+      requestAnimationFrame(() => {
+        fitGeekRowsV180();
+        if (scroll) scroll.scrollTop = geekScrollTopV180;
+      });
+    }
+
+    async function openGeekModeV180() {
+      /* This function is the ONLY CF V2.0 Geek read entry point.
+         No startup/scorecard/leaderboard/background Geek request exists. */
+      geekScrollTopV180 = 0;
+      geekSetAllV180(true);
+      geekDataV180 = null;
+
+      closeModal();
+      renderGeekMainShellV180();
+
+      const started = timerStart();
+
+      try {
+        const response = await fetch(
+          CLOUDFLARE_API_URL +
+          '?action=geekMode' +
+          '&refresh=' + Date.now(),
+          { cache:'no-store' }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data || data.ok !== true || data.action !== 'geekMode') {
+          throw new Error((data && data.error) || 'GEEK MODE data unavailable.');
+        }
+
+        geekDataV180 = data;
+        if (geekDiagnosticActiveV180b) geekDiagnosticErrorV180b = '';
+        renderGeekTableV180();
+
+        const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
+        if (scroll) scroll.scrollTop = 0;
+
+        const shield = els.modalBody.querySelector('.geek-load-shield-v180');
+        if (shield) {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              shield.classList.add('reveal');
+              window.setTimeout(() => {
+                if (shield && shield.parentNode) shield.parentNode.removeChild(shield);
+              }, 540);
+            });
+          });
+        }
+
+        addTestLog(
+          'GEEK MODE LOAD',
+          'OK',
+          timerSeconds(started) + 's',
+          data.timing && Number.isFinite(Number(data.timing.totalMs))
+            ? (Number(data.timing.totalMs) / 1000).toFixed(3) + 's CF'
+            : ''
+        );
+      }
+      catch (error) {
+        if (geekDiagnosticActiveV180b) {
+          geekDiagnosticErrorV180b = String(error && error.message || 'REQUEST_FAILED');
+        }
+        addTestLog(
+          'GEEK MODE LOAD',
+          'FAILED',
+          timerSeconds(started) + 's',
+          String(error && error.message || 'Request failed')
+        );
+
+        const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
+        if (scroll) {
+          scroll.innerHTML = '<div class="geek-empty-v180">GEEK MODE DATA UNAVAILABLE</div>';
+        }
+
+        const shield = els.modalBody.querySelector('.geek-load-shield-v180');
+        if (shield) {
+          shield.classList.add('reveal');
+          window.setTimeout(() => {
+            if (shield && shield.parentNode) shield.parentNode.removeChild(shield);
+          }, 540);
+        }
+      }
+    }
+
+    function returnToGeekModeV180() {
+      closeModal();
+      renderGeekMainShellV180();
+      renderGeekTableV180();
+      const shield = els.modalBody.querySelector('.geek-load-shield-v180');
+      if (shield && shield.parentNode) shield.parentNode.removeChild(shield);
+      const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
+      requestAnimationFrame(() => {
+        fitGeekRowsV180();
+        if (scroll) scroll.scrollTop = geekScrollTopV180;
+      });
+    }
+
+    function showGeekDetailV180(stat) {
+      const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
+      if (scroll) geekScrollTopV180 = scroll.scrollTop || 0;
+
+      closeModal();
+      els.modalOverlay.classList.add('geek-detail-v180');
+      els.modalTitle.textContent = String(stat && stat.stat || 'GEEK MODE');
+      els.modalTitle.classList.remove('testing');
+      els.modalInput.style.display = 'none';
+
+      const authorized = geekAuthorizedTeamV180();
+      const owners = stat && Array.isArray(stat.teams) ? stat.teams : [];
+      const teamItems = owners.map(item => {
+        const isAuthorized = authorized &&
+          normalizeName(item && item.team) === authorized;
+        return '<li class="' + (isAuthorized ? 'authorized' : '') + '">' +
+          escapeHtml(String(item && item.team || '')) +
+          '</li>';
+      }).join('');
+
+      els.modalBody.innerHTML =
+        '<div class="geek-detail-description-v180">' +
+          escapeHtml(geekDescriptionV180(stat && stat.stat)) +
+        '</div>' +
+        '<div class="geek-detail-section-v180">RESULT</div>' +
+        '<div class="geek-detail-result-v180">' +
+          escapeHtml(geekDetailResultV180(stat)) +
+        '</div>' +
+        '<div class="geek-detail-section-v180">TEAMS</div>' +
+        '<ul class="geek-detail-teams-v180">' +
+          (teamItems || '<li>—</li>') +
+        '</ul>';
+
+      const back = makeModalButton('BACK', '', returnToGeekModeV180);
+      els.modalActions.className = 'modal-actions single';
+      els.modalActions.replaceChildren(back);
+      els.modalOverlay.classList.add('open');
+      installGeekCopyButtonV180b();
+    }
+
+
     /* =========================================================
        SSHCP V16.27 — SKINS FIRST PASS
        Gross skins only. Assigned OFFICIAL teams are eligible. For each actual
@@ -17225,19 +18496,25 @@ let scoreTimingDetail =
       html += '</div>';
 
       els.modalBody.innerHTML = html;
-      const geekReserve = makeModalButton('GEEK MODE', 'summary-action-placeholder-v1627', () => {});
-      geekReserve.tabIndex = -1;
-      geekReserve.setAttribute('aria-hidden', 'true');
+      let geekAction;
+      if (geekEnabledV180()) {
+        geekAction = makeModalButton('GEEK MODE', 'summary-geek-button-v180', openGeekModeV180);
+      } else {
+        geekAction = makeModalButton('GEEK MODE', 'summary-action-placeholder-v1627', () => {});
+        geekAction.tabIndex = -1;
+        geekAction.setAttribute('aria-hidden', 'true');
+      }
+
       const back = makeModalButton('BACK', '', closeModal);
       els.modalActions.className = 'modal-actions tournament-summary-actions-v1627';
       if (skinsEnabledV1627()) {
         const skins = makeModalButton('SKINS', 'summary-skins-button-v1627', showSkinsPopupV1627);
-        els.modalActions.replaceChildren(geekReserve, back, skins);
+        els.modalActions.replaceChildren(geekAction, back, skins);
       } else {
         const skinsReserve = makeModalButton('SKINS', 'summary-action-placeholder-v1627', () => {});
         skinsReserve.tabIndex = -1;
         skinsReserve.setAttribute('aria-hidden', 'true');
-        els.modalActions.replaceChildren(geekReserve, back, skinsReserve);
+        els.modalActions.replaceChildren(geekAction, back, skinsReserve);
       }
       els.modalOverlay.classList.add('open');
       const summaryRevealShieldV177 = beginDataRevealShieldV177('summary', [els.modalBody], '#fff', false, 5100);
@@ -18709,6 +19986,8 @@ let scoreTimingDetail =
           'tournament-result',
           'tournament-summary',
           'skins-results-v1627',
+          'geek-mode-v180',
+          'geek-detail-v180',
           'score-save-warning'
         );
 
@@ -18743,6 +20022,9 @@ let scoreTimingDetail =
 
       els.modalActions.className =
         'modal-actions';
+
+      const geekCopyV180b = els.modalBox && els.modalBox.querySelector('.geek-copy-v180b');
+      if (geekCopyV180b) geekCopyV180b.remove();
 
     }
 
@@ -18795,7 +20077,8 @@ let scoreTimingDetail =
         '.home-team-option,' +
         '.score-team-option,' +
         '.passkey-team-button,' +
-        '.passkey-team-option'
+        '.passkey-team-option,' +
+        '.geek-copy-v180b'
       );
     }
 
@@ -18986,6 +20269,12 @@ let scoreTimingDetail =
       ) {
         requestAnimationFrame(fitTeamsPopupGeometry);
       }
+      if (
+        els.modalOverlay &&
+        els.modalOverlay.classList.contains('geek-mode-v180')
+      ) {
+        requestAnimationFrame(fitGeekRowsV180);
+      }
     });
 
 
@@ -19028,6 +20317,13 @@ let scoreTimingDetail =
       els.controlCenterSkinsCheck.checked = skinsEnabledV1627();
       els.controlCenterSkinsCheck.addEventListener('change', event => {
         setSkinsEnabledV1627(Boolean(event.target.checked));
+        fitTestPageButtonText();
+      });
+    }
+    if (els.controlCenterGeekModeCheck) {
+      els.controlCenterGeekModeCheck.checked = geekEnabledV180();
+      els.controlCenterGeekModeCheck.addEventListener('change', event => {
+        setGeekEnabledV180(Boolean(event.target.checked));
         fitTestPageButtonText();
       });
     }
@@ -19357,6 +20653,7 @@ let scoreTimingDetail =
       }
       document.documentElement.classList.remove('sshcp-qr-welcome-v170');
       window.__sshcpIncomingQrWelcomeV170 = false;
+      window.__sshcpWelcomeModeV180b = '';
     }
 
     function dismissQrWelcomeAnimatedV172() {
@@ -19415,9 +20712,29 @@ let scoreTimingDetail =
       const team = document.getElementById('qrWelcomeTeamV170');
       if (!overlay || !team) return;
 
-      /* V16.31 auth remains authoritative. Invalid/unassigned/MASTER incoming
-         links do not receive the assigned-team Welcome continuation. */
-      if (!(isTeamQr() && getQrTeam())) {
+      const mode = String(window.__sshcpWelcomeModeV180b || 'QR');
+      let displayLabel = '';
+
+      if (mode === 'QR') {
+        /* V16.31 auth remains authoritative. Invalid/unassigned/MASTER incoming
+           links do not receive the assigned-team Welcome continuation. */
+        if (!(isTeamQr() && getQrTeam())) {
+          dismissQrWelcomeV170();
+          return;
+        }
+        displayLabel = qrWelcomeDisplayTeamV170(getQrTeam());
+      }
+      else if (mode === 'COMPETITOR') {
+        /* The startup auth/state check has now completed. If authorization
+           exists after that check, plain-entry Welcome disappears permanently
+           for this device. Otherwise COMPETITOR owns the normal TEAM slot. */
+        if (getQrPasskey() || isTeamQr() || isMasterQr() || getAuthorizedTeam()) {
+          dismissQrWelcomeV170();
+          return;
+        }
+        displayLabel = 'COMPETITOR';
+      }
+      else {
         dismissQrWelcomeV170();
         return;
       }
@@ -19426,22 +20743,20 @@ let scoreTimingDetail =
       const now = (window.performance && performance.now) ? performance.now() : Date.now();
       const elapsed = Math.max(0, now - started);
 
-      /* V17.4 adds a .6s clean startup pause, then WELCOME owns a 1.5s fade
-         + 1.0s fully-visible hold. Authorization may finish earlier, but TEAM
-         cannot begin before 3.1s. If authorization finishes later, TEAM begins
-         only after authorization has actually won. */
+      /* Same proven timing slot as QR TEAM: never before 3.1s, and never before
+         startup authorization resolution. COMPETITOR therefore feels identical
+         to TEAM without adding a second auth request. */
       const waitForTeam = Math.max(0, 3100 - elapsed);
 
       window.setTimeout(() => {
         if (!window.__sshcpIncomingQrWelcomeV170) return;
-        team.textContent = qrWelcomeDisplayTeamV170(getQrTeam());
+        team.textContent = displayLabel;
 
         const revealTeam = () => {
           if (!window.__sshcpIncomingQrWelcomeV170) return;
           fitQrWelcomeTeamV170();
           overlay.classList.add('show-team');
 
-          /* TEAM gets its own .8s reveal before the action group begins. */
           window.setTimeout(() => {
             if (window.__sshcpIncomingQrWelcomeV170) {
               overlay.classList.add('show-actions');
@@ -19449,8 +20764,6 @@ let scoreTimingDetail =
           }, 800);
         };
 
-        /* Fit with the real webfont before the TEAM fade so the text does not
-           resize visibly after it has appeared. */
         if (document.fonts && document.fonts.ready) {
           document.fonts.ready.then(revealTeam).catch(revealTeam);
         } else {
@@ -19524,6 +20837,7 @@ let scoreTimingDetail =
 
       setupQrWelcomeV170();
       await initializeQrAuthorization();
+      if (geekEnabledV180()) startGeekDiagnosticV180b();
       revealQrWelcomeAfterAuthV170();
       if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
       syncTestAuthorizationToggle();
@@ -19721,5 +21035,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
