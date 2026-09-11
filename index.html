@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.30-J4T8QH | BUILD KEY: 16.31-LIRB0G -->
+<!-- SSHCP | BASE KEY: 16.31-LIRB0G | BUILD KEY: 16.32-N5Q8TX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9250,7 +9250,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V16.31 — QR TEAM WELCOME
+   SSHCP V16.32 — QR TEAM WELCOME
    - Incoming assigned TEAM QR only; stored-auth refreshes skip it.
    - Full white standalone entry screen (intentionally not HOME-styled).
    - WELCOME fades for .5s while QR auth is resolving.
@@ -9484,7 +9484,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.31</span>
+          <span class="home-version-info">SSHCP V16.32</span>
         </button>
 
       </div>
@@ -10799,12 +10799,22 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V16.31 — QR TEAM WELCOME
+       SSHCP V16.32 — QR TEAM WELCOME
        ========================================================= */
     let qrWelcomeActiveV1631 = false;
     let qrWelcomeStartedAtV1631 = 0;
     let qrWelcomeTeamTimerV1631 = 0;
     let qrWelcomeActionsTimerV1631 = 0;
+    let qrWelcomePasskeyV1632 = '';
+
+    function clearIncomingQrFromUrlV1632(){
+      const params = new URLSearchParams(window.location.search);
+      if(!params.has('passkey') && !params.has('key')) return;
+      params.delete('passkey');
+      params.delete('key');
+      const q = params.toString();
+      history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
+    }
 
     function clearQrWelcomeTimersV1631(){
       if(qrWelcomeTeamTimerV1631) window.clearTimeout(qrWelcomeTeamTimerV1631);
@@ -10874,7 +10884,24 @@ let scoreTimingDetail =
       });
     }
     if(els.qrWelcomeEnterV1631){
-      els.qrWelcomeEnterV1631.addEventListener('click',()=>{
+      els.qrWelcomeEnterV1631.addEventListener('click',async()=>{
+        /* V16.32 — ENTER is a hard authorization gate. Never dismiss the
+           QR welcome into the app unless the assigned TEAM authorization is
+           actually present in localStorage. If anything disturbed the first
+           auth request, revalidate the still-preserved QR passkey here. */
+        let authorized = isTeamQr() && !!getQrTeam() && !!getQrPasskey();
+        if(!authorized && qrWelcomePasskeyV1632){
+          startLoadingLine();
+          authorized = await validateQrPasskey(qrWelcomePasskeyV1632,true);
+          completeLoadingLine();
+          authorized = authorized && isTeamQr() && !!getQrTeam() && !!getQrPasskey();
+          if(authorized){
+            revealQrWelcomeTeamV1631(getQrTeam());
+          }
+        }
+        if(!authorized) return;
+        clearIncomingQrFromUrlV1632();
+        qrWelcomePasskeyV1632 = '';
         closeQrWelcomeV1631();
         showHome();
       });
@@ -11164,21 +11191,25 @@ let scoreTimingDetail =
       const params=new URLSearchParams(window.location.search);
       const incoming=params.get('passkey') || params.get('key') || '';
       if(incoming){
-        /* Start the standalone white WELCOME immediately while the Worker
-           validates the QR. The team identity is never guessed. */
+        /* V16.32 — preserve the incoming QR in the URL until ENTER. This makes
+           the welcome a true boot gate: a reload/interruption cannot strand the
+           golfer inside the app with the QR already removed and no TEAM auth. */
+        qrWelcomePasskeyV1632 = String(incoming).trim();
         openQrWelcomeV1631();
-        const incomingOk = await validateQrPasskey(incoming,true);
+        const incomingOk = await validateQrPasskey(qrWelcomePasskeyV1632,true);
 
-        if(incomingOk && isTeamQr() && getQrTeam()){
+        if(incomingOk && isTeamQr() && getQrTeam() && getQrPasskey()){
           revealQrWelcomeTeamV1631(getQrTeam());
-        }else{
-          /* MASTER / invalid / unassigned QR follows the established app flow. */
-          closeQrWelcomeV1631();
+          return;
         }
 
-        params.delete('passkey'); params.delete('key');
-        const q=params.toString();
-        history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
+        /* MASTER / invalid / unassigned QR keeps the established flow. Team QR
+           failures do not silently consume the URL; refresh can retry it. */
+        closeQrWelcomeV1631();
+        if(incomingOk){
+          clearIncomingQrFromUrlV1632();
+          qrWelcomePasskeyV1632 = '';
+        }
       }else if(getQrPasskey()){
         const storedOk = await validateQrPasskey(getQrPasskey(),false);
         if (!storedOk) {
@@ -12001,7 +12032,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.31 CONTROL CENTER LOG',
+        'SSHCP V16.32 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -18698,8 +18729,9 @@ let scoreTimingDetail =
       syncTeamQrLockedUi();
       updateHomeScorecardAccess();
 
-      /* V16.31 — a fresh assigned-team QR always lands on the standalone
-         welcome experience, with HOME prepared underneath for ENTER. */
+      /* V16.32 — a fresh assigned-team QR remains hard-gated by the standalone
+         welcome experience. HOME may be prepared underneath, but ENTER alone
+         can dismiss the gate after confirmed TEAM authorization. */
       if (qrWelcomeActiveV1631) {
         showHome();
         return;
