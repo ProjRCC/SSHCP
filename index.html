@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 16.29-P7D4XM | BUILD KEY: 16.30-J4T8QH -->
+<!-- SSHCP | BASE KEY: 16.30-J4T8QH | BUILD KEY: 16.31-LIRB0G -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9248,6 +9248,115 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
   color:var(--accent)!important;
 }
 
+
+/* =========================================================
+   SSHCP V16.31 — QR TEAM WELCOME
+   - Incoming assigned TEAM QR only; stored-auth refreshes skip it.
+   - Full white standalone entry screen (intentionally not HOME-styled).
+   - WELCOME fades for .5s while QR auth is resolving.
+   - Team identity then fades for .5s.
+   - QUICK GUIDE / ENTER pop in after the team reveal.
+   ========================================================= */
+.qr-welcome-v1631{
+  position:fixed;
+  inset:0;
+  z-index:4500;
+  display:none;
+  overflow:hidden;
+  background:#fff;
+  color:var(--accent);
+}
+.qr-welcome-v1631.open{display:block}
+.qr-welcome-inner-v1631{
+  width:min(760px,100%);
+  height:100%;
+  margin:0 auto;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(28px,5dvh,64px) var(--v16-rail,24px);
+  transform:translateY(-2dvh);
+}
+.qr-welcome-title-v1631{
+  margin:0;
+  color:var(--accent);
+  font-family:'Oswald',Arial,sans-serif;
+  font-size:clamp(58px,14vw,110px);
+  font-weight:400;
+  line-height:.98;
+  letter-spacing:.01em;
+  text-align:center;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .5s ease,transform .5s ease;
+}
+.qr-welcome-title-v1631.visible{opacity:1;transform:translateY(0)}
+.qr-welcome-team-v1631{
+  width:94%;
+  margin:clamp(22px,3.5dvh,44px) 0 0;
+  color:var(--accent);
+  font-family:'Oswald',Arial,sans-serif;
+  font-size:clamp(64px,16vw,132px);
+  font-weight:700;
+  line-height:.95;
+  letter-spacing:0;
+  text-align:center;
+  white-space:nowrap;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .5s ease,transform .5s ease;
+}
+.qr-welcome-team-v1631.visible{opacity:1;transform:translateY(0)}
+.qr-welcome-actions-v1631{
+  width:100%;
+  margin-top:clamp(38px,6dvh,72px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(18px,2.2dvh,28px);
+  opacity:0;
+  transform:translateY(12px) scale(.965);
+  pointer-events:none;
+  transition:opacity .24s ease,transform .24s cubic-bezier(.2,.75,.25,1.15);
+}
+.qr-welcome-actions-v1631.visible{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  pointer-events:auto;
+}
+.qr-welcome-btn-v1631{
+  height:clamp(54px,7dvh,72px);
+  box-sizing:border-box;
+  border-radius:9px;
+  font-family:'Oswald',Arial,sans-serif;
+  font-size:clamp(25px,6vw,42px);
+  font-weight:600;
+  line-height:1;
+  letter-spacing:.015em;
+  text-align:center;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.qr-welcome-guide-v1631{
+  width:min(56%,430px);
+  min-width:220px;
+  border:2px solid var(--accent);
+  background:#fff;
+  color:var(--accent);
+}
+.qr-welcome-enter-v1631{
+  width:min(36%,280px);
+  min-width:150px;
+  border:2px solid var(--accent);
+  background:var(--accent);
+  color:var(--on-accent);
+}
+@media (prefers-reduced-motion:reduce){
+  .qr-welcome-title-v1631,.qr-welcome-team-v1631,.qr-welcome-actions-v1631{transition-duration:.01ms!important}
+}
+
 </style>
 </head>
 
@@ -9269,6 +9378,18 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
   <div class="rotate-portrait-overlay" aria-hidden="true">
     <div class="rotate-portrait-box">ROTATE TO PORTRAIT</div>
   </div>
+
+  <!-- V16.31 — assigned QR welcome screen -->
+  <section id="qrWelcomeV1631" class="qr-welcome-v1631" aria-hidden="true">
+    <div class="qr-welcome-inner-v1631">
+      <div id="qrWelcomeTitleV1631" class="qr-welcome-title-v1631">WELCOME</div>
+      <div id="qrWelcomeTeamV1631" class="qr-welcome-team-v1631" aria-live="polite"></div>
+      <div id="qrWelcomeActionsV1631" class="qr-welcome-actions-v1631">
+        <button id="qrWelcomeGuideV1631" class="qr-welcome-btn-v1631 qr-welcome-guide-v1631" type="button">QUICK GUIDE</button>
+        <button id="qrWelcomeEnterV1631" class="qr-welcome-btn-v1631 qr-welcome-enter-v1631" type="button">ENTER</button>
+      </div>
+    </div>
+  </section>
 
 
   <!-- =======================================================
@@ -9363,7 +9484,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.30</span>
+          <span class="home-version-info">SSHCP V16.31</span>
         </button>
 
       </div>
@@ -9985,6 +10106,24 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
       topLoading:
         document.getElementById('topLoading'),
+
+      qrWelcomeV1631:
+        document.getElementById('qrWelcomeV1631'),
+
+      qrWelcomeTitleV1631:
+        document.getElementById('qrWelcomeTitleV1631'),
+
+      qrWelcomeTeamV1631:
+        document.getElementById('qrWelcomeTeamV1631'),
+
+      qrWelcomeActionsV1631:
+        document.getElementById('qrWelcomeActionsV1631'),
+
+      qrWelcomeGuideV1631:
+        document.getElementById('qrWelcomeGuideV1631'),
+
+      qrWelcomeEnterV1631:
+        document.getElementById('qrWelcomeEnterV1631'),
 
       homeView:
         document.getElementById('homeView'),
@@ -10660,6 +10799,91 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
+       SSHCP V16.31 — QR TEAM WELCOME
+       ========================================================= */
+    let qrWelcomeActiveV1631 = false;
+    let qrWelcomeStartedAtV1631 = 0;
+    let qrWelcomeTeamTimerV1631 = 0;
+    let qrWelcomeActionsTimerV1631 = 0;
+
+    function clearQrWelcomeTimersV1631(){
+      if(qrWelcomeTeamTimerV1631) window.clearTimeout(qrWelcomeTeamTimerV1631);
+      if(qrWelcomeActionsTimerV1631) window.clearTimeout(qrWelcomeActionsTimerV1631);
+      qrWelcomeTeamTimerV1631 = 0;
+      qrWelcomeActionsTimerV1631 = 0;
+    }
+
+    function fitQrWelcomeTeamV1631(){
+      const node = els.qrWelcomeTeamV1631;
+      if(!node || !node.textContent) return;
+      const maxWidth = Math.max(1, node.clientWidth);
+      const viewport = Math.max(320, window.innerWidth || 320);
+      let size = Math.min(132, Math.max(64, viewport * 0.16));
+      const min = 32;
+      node.style.fontSize = size + 'px';
+      while(size > min && node.scrollWidth > maxWidth){
+        size -= 1;
+        node.style.fontSize = size + 'px';
+      }
+    }
+
+    function openQrWelcomeV1631(){
+      if(!els.qrWelcomeV1631) return;
+      clearQrWelcomeTimersV1631();
+      qrWelcomeActiveV1631 = true;
+      qrWelcomeStartedAtV1631 = performance.now();
+      els.qrWelcomeTeamV1631.textContent = '';
+      els.qrWelcomeTitleV1631.classList.remove('visible');
+      els.qrWelcomeTeamV1631.classList.remove('visible');
+      els.qrWelcomeActionsV1631.classList.remove('visible');
+      els.qrWelcomeV1631.classList.add('open');
+      els.qrWelcomeV1631.setAttribute('aria-hidden','false');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        if(qrWelcomeActiveV1631) els.qrWelcomeTitleV1631.classList.add('visible');
+      }));
+    }
+
+    function revealQrWelcomeTeamV1631(teamName){
+      if(!qrWelcomeActiveV1631 || !els.qrWelcomeTeamV1631) return;
+      const elapsed = performance.now() - qrWelcomeStartedAtV1631;
+      const wait = Math.max(0, 500 - elapsed);
+      qrWelcomeTeamTimerV1631 = window.setTimeout(()=>{
+        if(!qrWelcomeActiveV1631) return;
+        els.qrWelcomeTeamV1631.textContent = compactTestAuthTeamLabel(teamName);
+        fitQrWelcomeTeamV1631();
+        requestAnimationFrame(()=>{
+          if(qrWelcomeActiveV1631) els.qrWelcomeTeamV1631.classList.add('visible');
+        });
+        qrWelcomeActionsTimerV1631 = window.setTimeout(()=>{
+          if(qrWelcomeActiveV1631) els.qrWelcomeActionsV1631.classList.add('visible');
+        },500);
+      },wait);
+    }
+
+    function closeQrWelcomeV1631(){
+      clearQrWelcomeTimersV1631();
+      qrWelcomeActiveV1631 = false;
+      if(!els.qrWelcomeV1631) return;
+      els.qrWelcomeV1631.classList.remove('open');
+      els.qrWelcomeV1631.setAttribute('aria-hidden','true');
+    }
+
+    if(els.qrWelcomeGuideV1631){
+      els.qrWelcomeGuideV1631.addEventListener('click',()=>{
+        showQuickGuide();
+      });
+    }
+    if(els.qrWelcomeEnterV1631){
+      els.qrWelcomeEnterV1631.addEventListener('click',()=>{
+        closeQrWelcomeV1631();
+        showHome();
+      });
+    }
+    window.addEventListener('resize',()=>{
+      if(qrWelcomeActiveV1631) requestAnimationFrame(fitQrWelcomeTeamV1631);
+    },{passive:true});
+
+    /* =========================================================
        SSHCP V5.2 — QR AUTHORIZATION
        Worker remains the final authority for every score write.
        ========================================================= */
@@ -10940,7 +11164,18 @@ let scoreTimingDetail =
       const params=new URLSearchParams(window.location.search);
       const incoming=params.get('passkey') || params.get('key') || '';
       if(incoming){
-        await validateQrPasskey(incoming,true);
+        /* Start the standalone white WELCOME immediately while the Worker
+           validates the QR. The team identity is never guessed. */
+        openQrWelcomeV1631();
+        const incomingOk = await validateQrPasskey(incoming,true);
+
+        if(incomingOk && isTeamQr() && getQrTeam()){
+          revealQrWelcomeTeamV1631(getQrTeam());
+        }else{
+          /* MASTER / invalid / unassigned QR follows the established app flow. */
+          closeQrWelcomeV1631();
+        }
+
         params.delete('passkey'); params.delete('key');
         const q=params.toString();
         history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
@@ -11766,7 +12001,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.26 CONTROL CENTER LOG',
+        'SSHCP V16.31 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -18463,6 +18698,13 @@ let scoreTimingDetail =
       syncTeamQrLockedUi();
       updateHomeScorecardAccess();
 
+      /* V16.31 — a fresh assigned-team QR always lands on the standalone
+         welcome experience, with HOME prepared underneath for ENTER. */
+      if (qrWelcomeActiveV1631) {
+        showHome();
+        return;
+      }
+
       /* V16.26 — browser refresh while TEAMS is open returns directly to the
          TEAMS workspace (and restores its table scroll position) instead of
          falling through to HOME. */
@@ -18654,5 +18896,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
