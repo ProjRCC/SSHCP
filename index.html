@@ -1,13 +1,14 @@
-<!-- SSHCP | BASE KEY: 17.7-M4Q8ZX | BUILD KEY: 17.8-T6K3PV -->
+<!-- SSHCP | BASE KEY: 17.8-T6K3PV | BUILD KEY: 17.9-L5N7QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.8 — based directly on exact V17.7, which branched from Golden V17.5. The V17.6
-           table-geometry experiment is intentionally NOT inherited. V16.31
-           authorization remains authoritative and V16.37 remains Welcome-formatting donor only. */
+        /* SSHCP V17.9 — based directly on exact V17.8, which remains on the Golden V17.5 lineage.
+           V17.9 changes only the data-reveal timing/scroll sequencing: reveal fade is .5s, and
+           Scorecard/Leaderboard automatic positioning waits until that reveal is fully complete.
+           V16.31 authorization remains authoritative and V16.37 remains Welcome-formatting donor only. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -9610,7 +9611,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 /* V17.7 — universal data reveal shields, branched from Golden V17.5.
    Scorecard / Leaderboard / Scramble Summary use white over only their data
    region. SKINS uses a full-viewport black shield so its dynamic popup can
-   build completely underneath. Every finished view is revealed in .7s. */
+   build completely underneath. Every finished view is revealed in .5s. */
 .sshcp-data-reveal-shield-v177{
   position:fixed!important;
   z-index:4900!important;
@@ -9621,7 +9622,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   background:#fff!important;
   opacity:1!important;
   pointer-events:auto!important;
-  transition:opacity .7s ease-out!important;
+  transition:opacity .5s ease-out!important;
   will-change:opacity;
 }
 .sshcp-data-reveal-shield-v177.is-revealing-v177{
@@ -9783,7 +9784,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.8</span>
+          <span class="home-version-info">SSHCP V17.9</span>
         </button>
 
       </div>
@@ -12254,7 +12255,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.8 CONTROL CENTER LOG',
+        'SSHCP V17.9 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13299,28 +13300,54 @@ let scoreTimingDetail =
       return shield;
     }
 
+    /* V17.9 — the reveal itself is now the sequencing gate. Callers that need
+       automatic positioning can await this promise instead of guessing with a
+       parallel timer. The timeout is only a transitionend safety fallback. */
     function revealDataShieldV177(key, shield) {
-      if (!shield || !shield.isConnected) {
-        if (sshcpRevealShieldsV177.get(key) === shield) sshcpRevealShieldsV177.delete(key);
-        return;
-      }
-      shield.classList.add('is-revealing-v177');
-      window.setTimeout(() => removeDataRevealShieldV177(key, shield), 730);
+      return new Promise(resolve => {
+        if (!shield || !shield.isConnected) {
+          if (sshcpRevealShieldsV177.get(key) === shield) sshcpRevealShieldsV177.delete(key);
+          resolve();
+          return;
+        }
+
+        let finished = false;
+        const finish = () => {
+          if (finished) return;
+          finished = true;
+          shield.removeEventListener('transitionend', onTransitionEnd);
+          removeDataRevealShieldV177(key, shield);
+          resolve();
+        };
+        const onTransitionEnd = event => {
+          if (!event || event.propertyName === 'opacity') finish();
+        };
+
+        shield.addEventListener('transitionend', onTransitionEnd);
+        shield.classList.add('is-revealing-v177');
+        window.setTimeout(finish, 560);
+      });
     }
 
     function revealDataShieldAfterLayoutV177(key, shield, frames = 2, elements = null) {
-      if (!shield) return;
-      let remaining = Math.max(1, Number(frames) || 1);
-      const step = () => {
-        if (elements) syncDataRevealShieldGeometryV177(shield, elements);
-        remaining -= 1;
-        if (remaining <= 0) {
-          revealDataShieldV177(key, shield);
+      return new Promise(resolve => {
+        if (!shield) {
+          resolve();
           return;
         }
+
+        let remaining = Math.max(1, Number(frames) || 1);
+        const step = () => {
+          if (elements) syncDataRevealShieldGeometryV177(shield, elements);
+          remaining -= 1;
+          if (remaining <= 0) {
+            revealDataShieldV177(key, shield).then(resolve);
+            return;
+          }
+          requestAnimationFrame(step);
+        };
         requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
+      });
     }
 
     function beginScorecardRevealV177() {
@@ -13537,7 +13564,12 @@ let scoreTimingDetail =
         buildTeamSelect();
         restoreOrSelectTeam();
         renderScorecard();
-        revealDataShieldAfterLayoutV177('scorecard', scorecardRevealShieldV177, 2, [els.scorecardView && els.scorecardView.querySelector('.score-table-head'), els.scoreScroll]);
+        const scorecardRevealDoneV179 = revealDataShieldAfterLayoutV177(
+          'scorecard',
+          scorecardRevealShieldV177,
+          2,
+          [els.scorecardView && els.scorecardView.querySelector('.score-table-head'), els.scoreScroll]
+        );
 
         const renderedAt =
           timerStart();
@@ -13579,6 +13611,11 @@ let scoreTimingDetail =
             0
           );
         }
+
+        /* V17.9: showScorecard() performs its active-hole positioning only
+           after loadScorecard() returns. Hold that return until the .5s white
+           reveal is completely finished, so reveal and scroll never overlap. */
+        await scorecardRevealDoneV179;
 
       }
       catch (error) {
@@ -15911,11 +15948,18 @@ let scoreTimingDetail =
             );
         }
 
+        /* V17.9: render/sizing can complete under the shield, but do not start
+           the authorized-team auto-scroll timer until the shield is gone. */
         renderLeaderboard(
           rows,
-          autoPositionAuthorized
+          false
         );
-        revealDataShieldAfterLayoutV177('leaderboard', leaderboardRevealShieldV177, 2, [els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head'), els.leaderContent]);
+        const leaderboardRevealDoneV179 = revealDataShieldAfterLayoutV177(
+          'leaderboard',
+          leaderboardRevealShieldV177,
+          2,
+          [els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head'), els.leaderContent]
+        );
         updateTournamentFinishState(
           rows
         );
@@ -15960,6 +16004,14 @@ let scoreTimingDetail =
           'Tap REFRESH for latest standings';
 
         completeLoadingLine();
+
+        /* V17.9: explicit sequencing — finished data -> .5s reveal -> only
+           then begin the existing 1.5s authorized-team auto-position delay.
+           Manual REFRESH still passes false and therefore never auto-scrolls. */
+        await leaderboardRevealDoneV179;
+        if (autoPositionAuthorized) {
+          scheduleLeaderboardAutoScroll();
+        }
 
 
       }
