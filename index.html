@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.0b-N6R4QK | BUILD KEY: 18.1-K7M4QX -->
+<!-- SSHCP | BASE KEY: 18.1-K7M4QX | BUILD KEY: 18.2-P9K4VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.1 — based directly on exact V18.0b (BUILD 18.0b-N6R4QK).
-           V18.0b Welcome, Geek diagnostics, V17.11 Scorecard/Leaderboard geometry, V16.31 authorization,
-           scoring, save, leaderboard data, Summary standings, and SKINS scoring remain authoritative.
-           V18.1 adds the locked Geek typography/column rules, global uppercase presentation except Quick Guide,
-           completed-HOME direct Scramble Summary routing, Summary HOME overlay, and SKINS BACK-only cleanup. */
+        /* SSHCP V18.2 — based directly on exact V18.1 (BUILD 18.1-K7M4QX).
+           V18.1 Welcome, Geek diagnostics, uppercase presentation, V17.11 Scorecard/Leaderboard geometry,
+           V16.31 authorization, scoring/save verification, leaderboard data, Summary standings, and SKINS
+           scoring remain authoritative. V18.2 is a narrow refinement pass: Geek table/detail typography,
+           Summary navigation overlays/header fit, and silent Scorecard-to-HOME completion-state refresh. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -10228,6 +10228,92 @@ body option{
   justify-self:center!important;
 }
 
+
+/* =========================================================
+   SSHCP V18.2 — GEEK POLISH + SUMMARY NAVIGATION
+   Narrow presentation refinements only. Existing row/button geometry is
+   preserved unless explicitly overridden below.
+   ========================================================= */
+
+/* Main GEEK actions: primary Blue/white BACK and slightly larger filter copy. */
+.geek-back-v180{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  border-color:var(--accent)!important;
+}
+.geek-filter-label-v180{
+  font-size:11px!important;
+}
+
+/* Summary GEEK MODE is a primary action like SKINS. */
+.modal-overlay.tournament-summary .summary-geek-button-v180{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  border-color:var(--accent)!important;
+}
+
+/* GEEK detail: keep established spacing/button geometry; typography fitting is
+   finalized by JS from viewport/available-space measurements. */
+.geek-detail-description-v180{
+  font-size:3dvh!important;
+  line-height:1.05!important;
+  overflow:hidden!important;
+}
+.geek-detail-result-v180{
+  font-size:3dvh!important;
+  line-height:1!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+.geek-detail-teams-v180,
+.geek-detail-tie-summary-v182{
+  font-size:3dvh!important;
+}
+.geek-detail-teams-v180 li{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+.geek-detail-tie-summary-v182{
+  margin:0!important;
+  padding:0!important;
+  line-height:1.2!important;
+}
+.modal-overlay.geek-detail-v180 .modal-actions .modal-btn{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  border-color:var(--accent)!important;
+}
+
+/* Scramble Summary navigation is an overlay band: it consumes no layout row.
+   JS centers HOME / RESULTS-or-TOP-10 / LEADERBOARD from actual table/title
+   geometry on every fit pass. */
+.modal-overlay.tournament-summary .summary-nav-overlay-v182{
+  position:absolute!important;
+  z-index:24!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0 6px!important;
+  box-sizing:border-box!important;
+  border:2px solid var(--accent)!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:var(--accent)!important;
+  font-family:'Oswald',Arial,sans-serif!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+/* NET STROKES is always one line. NET +/- keeps its established behavior. */
+.modal-overlay.tournament-summary .tournament-summary-row.header > div:nth-child(3){
+  white-space:nowrap!important;
+  line-height:1!important;
+}
+
+
 </style>
 </head>
 
@@ -10355,7 +10441,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.1</span>
+          <span class="home-version-info">SSHCP V18.2</span>
         </button>
 
       </div>
@@ -12833,7 +12919,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.1 CONTROL CENTER LOG',
+        'SSHCP V18.2 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -16433,7 +16519,8 @@ let scoreTimingDetail =
 
     async function loadLeaderboard(
       showErrorIfEmpty,
-      autoPositionAuthorized = false
+      autoPositionAuthorized = false,
+      silentV182 = false
     ) {
 
       if (
@@ -16466,7 +16553,7 @@ let scoreTimingDetail =
           ? 'Refreshing leaderboard...'
           : 'Loading leaderboard...';
 
-      startLoadingLine();
+      if (!silentV182) startLoadingLine();
 
       try {
 
@@ -16624,7 +16711,7 @@ let scoreTimingDetail =
         els.leaderUpdateNote.textContent =
           'Tap REFRESH for latest standings';
 
-        completeLoadingLine();
+        if (!silentV182) completeLoadingLine();
 
         /* V17.9 sequencing retained in V17.11: finished data -> .5s reveal -> only
            then begin the existing 1.5s authorized-team auto-position delay.
@@ -16659,7 +16746,7 @@ let scoreTimingDetail =
 
         updateLeaderboardTiming();
         addTestLog(wasAlreadyLoaded ? 'LEADERBOARD REFRESH' : 'LEADERBOARD LOAD', 'FAILED', seconds + 's', String(error && error.message ? error.message : 'Request failed'));
-        stopLoadingLine();
+        if (!silentV182) stopLoadingLine();
         revealDataShieldAfterLayoutV177('leaderboard', leaderboardRevealShieldV177, 1);
 
         if (
@@ -17432,7 +17519,7 @@ let scoreTimingDetail =
       const header = topGrid.querySelector('.tournament-summary-row.header');
       if (header) {
         Array.from(header.children).forEach((cell, index) => {
-          const mayWrap = index === 2 || index === 3;
+          const mayWrap = index === 3;
           fitTextToBoxV5(cell, cell, cell.clientHeight * 0.50, 10, {
             horizontalPad: 6,
             verticalPad: 4,
@@ -17528,6 +17615,7 @@ let scoreTimingDetail =
       });
 
       document.documentElement.style.setProperty('--v5-summary-note-font', '13px');
+      requestAnimationFrame(positionSummaryNavigationV182);
     }
 
 
@@ -17999,48 +18087,53 @@ let scoreTimingDetail =
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
       if (headerCells.length !== 3) return;
 
-      const widths = headerCells.map(cell => cell.getBoundingClientRect().width);
-      if (widths.some(width => !(width > 0))) return;
+      /* V18.2: every data cell owns its own one-line fit. Short controlled
+         values remain at the cap; only an unusually long value shrinks.
+         STAT 45%, RESULT 50%, TEAM 45% of row height. */
+      shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
+        const stat = row.querySelector('.geek-stat-cell-v180');
+        const result = row.querySelector('.geek-result-cell-v180');
+        const team = row.querySelector('.geek-team-button-v180');
+        const h = row.getBoundingClientRect().height || rowHeight;
 
-      const stats = allGeekStatsV181();
-      const statTexts = stats.map(stat => String(stat.stat || ''));
-      const resultTexts = stats.map(stat => String(stat.value ?? ''));
-      const teamTexts = stats.map(stat => geekTeamLabelV180(stat));
+        if (stat) {
+          fitTextToBoxV5(stat, stat, h * 0.45, 8, {
+            horizontalPad: 20,
+            verticalPad: 6,
+            wrap: false,
+            lineHeight: 1
+          });
+          stat.style.setProperty('text-align', 'left', 'important');
+        }
+        if (result) {
+          fitTextToBoxV5(result, result, h * 0.50, 8, {
+            horizontalPad: 12,
+            verticalPad: 6,
+            wrap: false,
+            lineHeight: 1
+          });
+        }
+        if (team) {
+          fitTextToBoxV5(team, team, h * 0.45, 8, {
+            horizontalPad: 10,
+            verticalPad: 6,
+            wrap: false,
+            lineHeight: 1
+          });
+        }
+      });
 
-      /* V18.1 locked targets: STAT 60%, RESULT 70%, TEAM 60% of row height.
-         One shared fitted size per column is calculated from the most
-         restrictive value across ALL Geek data, so filters never cause text
-         size to jump. */
-      const statSize = measureGeekSharedFontV181(
-        statTexts, rowHeight * 0.60, 8, widths[0] - 20, 600
-      );
-      const resultSize = measureGeekSharedFontV181(
-        resultTexts, rowHeight * 0.70, 8, widths[1] - 12, 800
-      );
-      const teamSize = measureGeekSharedFontV181(
-        teamTexts, rowHeight * 0.60, 8, widths[2] - 20, 700
-      );
-
-      shell.querySelectorAll('.geek-stat-cell-v180').forEach(node =>
-        node.style.setProperty('font-size', statSize.toFixed(2) + 'px', 'important')
-      );
-      shell.querySelectorAll('.geek-result-cell-v180').forEach(node =>
-        node.style.setProperty('font-size', resultSize.toFixed(2) + 'px', 'important')
-      );
-      shell.querySelectorAll('.geek-team-button-v180').forEach(node =>
-        node.style.setProperty('font-size', teamSize.toFixed(2) + 'px', 'important')
-      );
-
-      /* Header: 60% row-height target, but STAT / RESULT / TEAM all receive the
-         same final size, governed by whichever header cell is most restrictive. */
-      const headerTarget = rowHeight * 0.60;
-      const headerFits = ['STAT', 'RESULT', 'TEAM'].map((label, index) =>
-        measureGeekSharedFontV181([label], headerTarget, 8, widths[index] - 12, 800)
-      );
-      const headerSize = Math.min(...headerFits);
-      headerCells.forEach(node =>
-        node.style.setProperty('font-size', headerSize.toFixed(2) + 'px', 'important')
-      );
+      /* Header keeps the same one-line rule. STAT and TEAM target 60% of
+         header-row height; RESULT starts 10% smaller (54%). */
+      const headerTargets = [0.60, 0.54, 0.60];
+      headerCells.forEach((cell, index) => {
+        fitTextToBoxV5(cell, cell, rowHeight * headerTargets[index], 8, {
+          horizontalPad: 12,
+          verticalPad: 5,
+          wrap: false,
+          lineHeight: 1
+        });
+      });
     }
 
     function fitGeekRowsV180() {
@@ -18051,7 +18144,19 @@ let scoreTimingDetail =
       if (!(height > 0)) return;
       const rowHeight = Math.max(32, height / 11);
       shell.style.setProperty('--geek-row-h-v180', rowHeight + 'px');
-      requestAnimationFrame(fitGeekTableTextV180);
+      requestAnimationFrame(() => {
+        fitGeekTableTextV180();
+        const back = els.modalActions.querySelector('.geek-back-v180');
+        if (back) {
+          const h = back.getBoundingClientRect().height || 58;
+          fitTextToBoxV5(back, back, h * 0.50, 12, {
+            horizontalPad: 10,
+            verticalPad: 6,
+            wrap: false,
+            lineHeight: 1
+          });
+        }
+      });
     }
 
     function renderGeekTableV180() {
@@ -18306,6 +18411,99 @@ let scoreTimingDetail =
       });
     }
 
+    function fitGeekDetailV182() {
+      if (!els.modalOverlay.classList.contains('geek-detail-v180')) return;
+      if (!els.modalBox) return;
+
+      const vh = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 1);
+      const title = els.modalTitle;
+      const description = els.modalBody.querySelector('.geek-detail-description-v180');
+      const result = els.modalBody.querySelector('.geek-detail-result-v180');
+      const teams = els.modalBody.querySelector('.geek-detail-teams-v180');
+      const tieSummary = els.modalBody.querySelector('.geek-detail-tie-summary-v182');
+      const back = els.modalActions.querySelector('.modal-btn');
+
+      if (title) {
+        fitTextToBoxV5(title, title, vh * 0.05, 12, {
+          horizontalPad: 20,
+          verticalPad: 0,
+          wrap: false,
+          lineHeight: 1,
+          ignoreHeight: true
+        });
+      }
+
+      /* Description targets 3% viewport height and may use at most two lines.
+         Shrink only this description if its natural wrapping needs a third. */
+      if (description) {
+        let size = vh * 0.03;
+        const minimum = 10;
+        description.style.setProperty('white-space', 'normal', 'important');
+        description.style.setProperty('line-height', '1.05', 'important');
+        description.style.setProperty('overflow', 'hidden', 'important');
+        while (size > minimum) {
+          description.style.setProperty('font-size', size + 'px', 'important');
+          const maxTwoLines = (size * 1.05 * 2) + 1.5;
+          if (description.getBoundingClientRect().height <= maxTwoLines) break;
+          size -= 0.5;
+        }
+        description.style.setProperty('font-size', Math.max(minimum, size) + 'px', 'important');
+      }
+
+      /* RESULT is centered, capped at 3% viewport height, and always one line. */
+      if (result) {
+        fitTextToBoxV5(result, result, vh * 0.03, 10, {
+          horizontalPad: 10,
+          verticalPad: 0,
+          wrap: false,
+          lineHeight: 1,
+          ignoreHeight: true
+        });
+        result.style.setProperty('text-align', 'center', 'important');
+      }
+
+      /* Team names keep the approved look. Use one common fitted size for the
+         visible list and reduce only as necessary to keep the entire card,
+         including BACK, inside the popup. */
+      const teamContainer = teams || tieSummary;
+      if (teamContainer) {
+        let teamSize = vh * 0.03;
+        const minimumTeam = 9;
+        const teamNodes = teams ? [...teams.querySelectorAll('li')] : [tieSummary];
+
+        teamNodes.forEach(node => {
+          const fitted = fitTextToBoxV5(node, node, teamSize, minimumTeam, {
+            horizontalPad: teams ? 6 : 0,
+            verticalPad: 0,
+            wrap: false,
+            lineHeight: 1.2,
+            ignoreHeight: true
+          });
+          teamSize = Math.min(teamSize, fitted);
+        });
+        teamContainer.style.setProperty('font-size', teamSize + 'px', 'important');
+        teamNodes.forEach(node => node.style.setProperty('font-size', teamSize + 'px', 'important'));
+
+        let guard = 0;
+        while (els.modalBox.scrollHeight > els.modalBox.clientHeight + 1 && teamSize > minimumTeam && guard < 80) {
+          teamSize -= 0.5;
+          teamContainer.style.setProperty('font-size', teamSize + 'px', 'important');
+          teamNodes.forEach(node => node.style.setProperty('font-size', teamSize + 'px', 'important'));
+          guard += 1;
+        }
+      }
+
+      if (back) {
+        const h = back.getBoundingClientRect().height || 52;
+        fitTextToBoxV5(back, back, h * 0.50, 12, {
+          horizontalPad: 12,
+          verticalPad: 6,
+          wrap: false,
+          lineHeight: 1
+        });
+      }
+    }
+
     function showGeekDetailV180(stat) {
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) geekScrollTopV180 = scroll.scrollTop || 0;
@@ -18325,6 +18523,9 @@ let scoreTimingDetail =
           escapeHtml(String(item && item.team || '')) +
           '</li>';
       }).join('');
+      const teamsHtml = owners.length > 10
+        ? '<div class="geek-detail-tie-summary-v182">10 TEAMS TIED</div>'
+        : '<ul class="geek-detail-teams-v180">' + (teamItems || '<li>—</li>') + '</ul>';
 
       els.modalBody.innerHTML =
         '<div class="geek-detail-description-v180">' +
@@ -18335,15 +18536,17 @@ let scoreTimingDetail =
           escapeHtml(geekDetailResultV180(stat)) +
         '</div>' +
         '<div class="geek-detail-section-v180">TEAMS</div>' +
-        '<ul class="geek-detail-teams-v180">' +
-          (teamItems || '<li>—</li>') +
-        '</ul>';
+        teamsHtml;
 
-      const back = makeModalButton('BACK', '', returnToGeekModeV180);
+      const back = makeModalButton('BACK', 'geek-detail-back-v182', returnToGeekModeV180);
       els.modalActions.className = 'modal-actions single';
       els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
       installGeekCopyButtonV180b();
+      requestAnimationFrame(fitGeekDetailV182);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => requestAnimationFrame(fitGeekDetailV182)).catch(() => {});
+      }
     }
 
 
@@ -18530,27 +18733,72 @@ let scoreTimingDetail =
       }
     }
 
-    function installSummaryHomeOverlayV181() {
-      if (!els.modalBox) return;
-      const existing = els.modalBox.querySelector('.summary-home-overlay-v181');
-      if (existing) existing.remove();
+    function positionSummaryNavigationV182() {
+      if (!els.modalOverlay.classList.contains('tournament-summary')) return;
+      if (!els.modalBox || !els.modalTitle || !els.modalBody) return;
 
-      const home = document.createElement('button');
-      home.type = 'button';
-      home.className = 'nav-button summary-home-overlay-v181';
-      home.textContent = 'HOME';
-      home.addEventListener('click', showHome);
-      els.modalBox.appendChild(home);
+      const subtitle = els.modalBody.querySelector('.tournament-summary-subtitle');
+      const table = els.modalBody.querySelector('.tournament-summary-grid');
+      const home = els.modalBox.querySelector('.summary-home-overlay-v182');
+      const leaderboard = els.modalBox.querySelector('.summary-leaderboard-overlay-v182');
+      if (!subtitle || !table || !home || !leaderboard) return;
 
-      requestAnimationFrame(() => {
-        const height = home.getBoundingClientRect().height || 39;
-        fitTextToBoxV5(home, home, height * 0.52, 12, {
-          horizontalPad: 8,
-          verticalPad: 4,
+      /* Measure from unshifted subtitle so repeated ResizeObserver passes do not
+         accumulate transforms. Center RESULTS/TOP 10 exactly between the bottom
+         of SCRAMBLE SUMMARY and the top of the standings table. */
+      subtitle.style.setProperty('transform', 'none', 'important');
+      const titleRect = els.modalTitle.getBoundingClientRect();
+      const tableRect = table.getBoundingClientRect();
+      const subtitleRect = subtitle.getBoundingClientRect();
+      const boxRect = els.modalBox.getBoundingClientRect();
+      if (!(tableRect.width > 0) || !(boxRect.width > 0)) return;
+
+      const centerY = (titleRect.bottom + tableRect.top) / 2;
+      const subtitleCenterY = subtitleRect.top + (subtitleRect.height / 2);
+      const subtitleShift = centerY - subtitleCenterY;
+      subtitle.style.setProperty('transform', 'translateY(' + subtitleShift.toFixed(2) + 'px)', 'important');
+
+      const centerX = boxRect.left + (boxRect.width / 2);
+      const homeCenterX = (tableRect.left + centerX) / 2;
+      const leaderboardCenterX = (centerX + tableRect.right) / 2;
+      const footerBack = els.modalActions.querySelector('.modal-btn');
+      const buttonH = footerBack ? (footerBack.getBoundingClientRect().height || 40) : 40;
+      const halfRegion = Math.max(1, (tableRect.width / 2));
+      const buttonW = Math.max(64, Math.min(halfRegion * 0.68, 150));
+
+      [[home, homeCenterX], [leaderboard, leaderboardCenterX]].forEach(([button, x]) => {
+        button.style.setProperty('width', buttonW + 'px', 'important');
+        button.style.setProperty('height', buttonH + 'px', 'important');
+        button.style.setProperty('left', (x - boxRect.left - buttonW / 2) + 'px', 'important');
+        button.style.setProperty('top', (centerY - boxRect.top - buttonH / 2) + 'px', 'important');
+        fitTextToBoxV5(button, button, buttonH * 0.50, 10, {
+          horizontalPad: 12,
+          verticalPad: 6,
           wrap: false,
           lineHeight: 1
         });
       });
+    }
+
+    function installSummaryNavigationV182() {
+      if (!els.modalBox) return;
+      els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182').forEach(node => node.remove());
+
+      const home = document.createElement('button');
+      home.type = 'button';
+      home.className = 'summary-nav-overlay-v182 summary-home-overlay-v182';
+      home.textContent = 'HOME';
+      home.addEventListener('click', showHome);
+
+      const leaderboard = document.createElement('button');
+      leaderboard.type = 'button';
+      leaderboard.className = 'summary-nav-overlay-v182 summary-leaderboard-overlay-v182';
+      leaderboard.textContent = 'LEADERBOARD';
+      leaderboard.addEventListener('click', showLeaderboard);
+
+      els.modalBox.appendChild(home);
+      els.modalBox.appendChild(leaderboard);
+      requestAnimationFrame(positionSummaryNavigationV182);
     }
 
     function showTournamentSummary() {
@@ -18657,7 +18905,7 @@ let scoreTimingDetail =
         els.modalActions.replaceChildren(geekAction, back, skinsReserve);
       }
       els.modalOverlay.classList.add('open');
-      installSummaryHomeOverlayV181();
+      installSummaryNavigationV182();
       const summaryRevealShieldV177 = beginDataRevealShieldV177('summary', [els.modalBody], '#fff', false, 5100);
 
       if (tournamentSummaryResizeObserver) {
@@ -20167,8 +20415,9 @@ let scoreTimingDetail =
       const geekCopyV180b = els.modalBox && els.modalBox.querySelector('.geek-copy-v180b');
       if (geekCopyV180b) geekCopyV180b.remove();
 
-      const summaryHomeV181 = els.modalBox && els.modalBox.querySelector('.summary-home-overlay-v181');
-      if (summaryHomeV181) summaryHomeV181.remove();
+      if (els.modalBox) {
+        els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182').forEach(node => node.remove());
+      }
 
     }
 
@@ -20524,10 +20773,45 @@ let scoreTimingDetail =
       );
 
 
+    async function waitForScoreSaveChainV182() {
+      let guard = 0;
+      let stableIdleChecks = 0;
+      while (guard < 600) {
+        if (saveInProgress || saveQueued) {
+          stableIdleChecks = 0;
+        } else {
+          stableIdleChecks += 1;
+          /* A queued save is launched with setTimeout(0) after the prior save's
+             finally block. Require a few consecutive idle checks so that tiny
+             handoff window cannot make HOME race the next verified write. */
+          if (stableIdleChecks >= 3) break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 25));
+        guard += 1;
+      }
+    }
+
+    async function scorecardHomeV182() {
+      /* Testing/safety path: HOME from Scorecard quietly resolves the current
+         verified save chain, then performs the same fresh Leaderboard read that
+         owns tournament-complete state. No popup, no reveal shield, no visible
+         Leaderboard detour. */
+      await waitForScoreSaveChainV182();
+
+      let guard = 0;
+      while (leaderboardLoadInProgress && guard < 400) {
+        await new Promise(resolve => setTimeout(resolve, 25));
+        guard += 1;
+      }
+
+      await loadLeaderboard(false, false, true);
+      showHome();
+    }
+
     els.scoreHomeButton
       .addEventListener(
         'click',
-        showHome
+        scorecardHomeV182
       );
 
 
@@ -21197,6 +21481,12 @@ let scoreTimingDetail =
     window.addEventListener('resize', () => {
       if (els.modalOverlay.classList.contains('tournament-summary')) {
         requestAnimationFrame(fitTournamentSummaryRemaining);
+      }
+      if (els.modalOverlay.classList.contains('geek-mode-v180')) {
+        requestAnimationFrame(fitGeekRowsV180);
+      }
+      if (els.modalOverlay.classList.contains('geek-detail-v180')) {
+        requestAnimationFrame(fitGeekDetailV182);
       }
     });
 
