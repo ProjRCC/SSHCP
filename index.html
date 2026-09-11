@@ -1,22 +1,23 @@
-<!-- SSHCP | BASE KEY: 16.31-R2K8MV | BUILD KEY: 16.31-H9Q4ZT -->
+<!-- SSHCP | BASE KEY: 16.31-H9Q4ZT | BUILD KEY: 17.0-K6M9QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V16.31 — clean restart from exact V16.30. A fresh QR URL
-           gets a presentation-only Welcome layer immediately. The existing
-           V16.30 authorization flow remains the only authorization path. */
+        /* SSHCP V17.0 — mainline from exact V16.31. Fresh assigned-team QR
+           entry gets the Welcome presentation layer. V16.31 authorization
+           remains the only authorization path; V16.37 contributed Welcome
+           formatting/positioning only, never startup/auth state. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
         );
-        window.__sshcpIncomingQrWelcomeV1631 = hasIncomingQrWelcome;
-        window.__sshcpQrWelcomeStartedAtV1631 =
+        window.__sshcpIncomingQrWelcomeV170 = hasIncomingQrWelcome;
+        window.__sshcpQrWelcomeStartedAtV170 =
           (window.performance && performance.now) ? performance.now() : Date.now();
         if (hasIncomingQrWelcome) {
-          document.documentElement.classList.add('sshcp-qr-welcome-v1631');
+          document.documentElement.classList.add('sshcp-qr-welcome-v170');
         }
 
         var rememberedView = sessionStorage.getItem('rotbCurrentView') || 'home';
@@ -9265,31 +9266,45 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V16.31 — CLEAN QR WELCOME OVERLAY
-   Built directly from V16.30. Presentation only: it never starts a second
-   auth request and ENTER only removes this layer.
+   SSHCP V17.0 — FRESH TEAM QR WELCOME OVERLAY
+   Mainline is exact V16.31. V16.37 is donor-only for the approved Welcome
+   formatting/positioning. Presentation only: no second auth request; ENTER
+   only dismisses this layer.
+
+   Timing contract:
+   0.0–1.5s  WELCOME fades in.
+   1.5–2.5s  WELCOME holds.
+   >=2.5s    only after assigned-team authorization, TEAM fades in over .8s.
+   then       QUICK GUIDE + ENTER fade in over 1.5s.
    ========================================================= */
-.qr-welcome-overlay-v1631{
+.qr-welcome-overlay-v170{
   position:fixed;
   inset:0;
   z-index:4900;
   display:none;
   box-sizing:border-box;
+  padding:0;
   background:#fff;
   color:var(--accent);
   text-align:center;
   overflow:hidden;
 }
-html.sshcp-qr-welcome-v1631 .qr-welcome-overlay-v1631{
+html.sshcp-qr-welcome-v170 .qr-welcome-overlay-v170{
   display:block;
 }
-.qr-welcome-title-v1631{
+.qr-welcome-inner-v170{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.qr-welcome-title-v170{
   position:absolute;
   left:50%;
   top:25%;
   width:100%;
-  transform:translate(-50%,-50%);
   margin:0;
+  transform:translate(-50%,-50%);
   color:var(--accent);
   font-family:Oswald,Arial Narrow,Arial,sans-serif;
   font-size:clamp(62px,15vw,116px);
@@ -9299,52 +9314,49 @@ html.sshcp-qr-welcome-v1631 .qr-welcome-overlay-v1631{
   white-space:nowrap;
   opacity:0;
 }
-html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631{
-  animation:sshcpQrWelcomeFadeV1631 .5s ease-out forwards;
+html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
+  animation:sshcpQrWelcomeFadeV170 1.5s ease-out forwards;
 }
-.qr-welcome-team-v1631{
+.qr-welcome-team-v170{
   position:absolute;
   left:50%;
-  bottom:50%;
-  width:80vw;
-  max-width:80vw;
-  transform:translateX(-50%);
+  top:50%;
+  width:90vw;
+  max-width:90vw;
   margin:0;
+  transform:translate(-50%,-100%);
   color:var(--accent);
   font-family:Oswald,Arial Narrow,Arial,sans-serif;
+  font-size:clamp(74px,18vw,142px);
   font-weight:700;
   line-height:.92;
   letter-spacing:.005em;
   white-space:nowrap;
-  overflow:visible;
+  overflow:hidden;
   opacity:0;
 }
-.qr-welcome-team-v1631 > span{
-  display:inline-block;
-  white-space:nowrap;
+.qr-welcome-overlay-v170.show-team .qr-welcome-team-v170{
+  animation:sshcpQrWelcomeTeamV170 .8s ease-out forwards;
 }
-.qr-welcome-overlay-v1631.show-team .qr-welcome-team-v1631{
-  animation:sshcpQrWelcomeTeamV1631 .5s ease-out forwards;
-}
-.qr-welcome-actions-v1631{
+.qr-welcome-actions-v170{
   position:absolute;
   left:50%;
   top:70%;
   width:min(76vw,440px);
-  transform:translate(-50%,-50%) scale(.965);
   margin:0;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:clamp(16px,2.2dvh,24px);
   opacity:0;
+  transform:translate(-50%,-50%) scale(.965);
   pointer-events:none;
 }
-.qr-welcome-overlay-v1631.show-actions .qr-welcome-actions-v1631{
-  animation:sshcpQrWelcomeActionsV1631 .24s ease-out forwards;
+.qr-welcome-overlay-v170.show-actions .qr-welcome-actions-v170{
+  animation:sshcpQrWelcomeActionsV170 1.5s ease-out forwards;
   pointer-events:auto;
 }
-.qr-welcome-button-v1631{
+.qr-welcome-button-v170{
   height:clamp(54px,7.2dvh,70px);
   border-radius:9px;
   font-family:Oswald,Arial Narrow,Arial,sans-serif;
@@ -9355,29 +9367,37 @@ html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631{
   -webkit-appearance:none;
   appearance:none;
 }
-.qr-welcome-guide-v1631{
+.qr-welcome-guide-v170{
   width:100%;
   border:3px solid var(--accent);
   background:#fff;
   color:var(--accent);
 }
-.qr-welcome-enter-v1631{
+.qr-welcome-enter-v170{
   width:64%;
   border:3px solid var(--accent);
   background:var(--accent);
   color:var(--on-accent);
 }
-.qr-welcome-button-v1631:active{filter:brightness(.92)}
-@keyframes sshcpQrWelcomeFadeV1631{from{opacity:0}to{opacity:1}}
-@keyframes sshcpQrWelcomeTeamV1631{from{opacity:0}to{opacity:1}}
-@keyframes sshcpQrWelcomeActionsV1631{
+.qr-welcome-button-v170:active{
+  filter:brightness(.92);
+}
+@keyframes sshcpQrWelcomeFadeV170{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes sshcpQrWelcomeTeamV170{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes sshcpQrWelcomeActionsV170{
   from{opacity:0;transform:translate(-50%,-50%) scale(.965)}
   to{opacity:1;transform:translate(-50%,-50%) scale(1)}
 }
 @media (prefers-reduced-motion:reduce){
-  html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631,
-  .qr-welcome-overlay-v1631.show-team .qr-welcome-team-v1631,
-  .qr-welcome-overlay-v1631.show-actions .qr-welcome-actions-v1631{
+  html.sshcp-qr-welcome-v170 .qr-welcome-title-v170,
+  .qr-welcome-overlay-v170.show-team .qr-welcome-team-v170,
+  .qr-welcome-overlay-v170.show-actions .qr-welcome-actions-v170{
     animation-duration:.01ms!important;
   }
 }
@@ -9388,13 +9408,15 @@ html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631{
 
 <body>
 
-  <!-- SSHCP V16.31 — clean fresh-QR Welcome presentation layer. -->
-  <div id="qrWelcomeOverlayV1631" class="qr-welcome-overlay-v1631" aria-hidden="true">
-    <div class="qr-welcome-title-v1631">WELCOME</div>
-    <div id="qrWelcomeTeamV1631" class="qr-welcome-team-v1631"><span id="qrWelcomeTeamTextV1631"></span></div>
-    <div class="qr-welcome-actions-v1631">
-      <button id="qrWelcomeGuideV1631" class="qr-welcome-button-v1631 qr-welcome-guide-v1631" type="button">QUICK GUIDE</button>
-      <button id="qrWelcomeEnterV1631" class="qr-welcome-button-v1631 qr-welcome-enter-v1631" type="button">ENTER</button>
+  <!-- SSHCP V17.0 — fresh QR presentation layer; V16.37 donor geometry only. -->
+  <div id="qrWelcomeOverlayV170" class="qr-welcome-overlay-v170" aria-hidden="true">
+    <div class="qr-welcome-inner-v170">
+      <div class="qr-welcome-title-v170">WELCOME</div>
+      <div id="qrWelcomeTeamV170" class="qr-welcome-team-v170"></div>
+      <div class="qr-welcome-actions-v170">
+        <button id="qrWelcomeGuideV170" class="qr-welcome-button-v170 qr-welcome-guide-v170" type="button">QUICK GUIDE</button>
+        <button id="qrWelcomeEnterV170" class="qr-welcome-button-v170 qr-welcome-enter-v170" type="button">ENTER</button>
+      </div>
     </div>
   </div>
 
@@ -9507,7 +9529,7 @@ html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.31</span>
+          <span class="home-version-info">SSHCP V17.0</span>
         </button>
 
       </div>
@@ -9857,7 +9879,7 @@ html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631{
 
 
   <!-- =======================================================
-       CONTROL CENTER — SSHCP V16.17
+       CONTROL CENTER — CURRENT SSHCP V17.0
        Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
@@ -9923,7 +9945,7 @@ html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631{
 
 
   <!-- =======================================================
-       CONTROL CENTER — TEAMS POPUP (SSHCP V16.26)
+       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.0)
        ======================================================= -->
   <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
     <div class="teams-popup-box" role="dialog" aria-label="Teams">
@@ -11978,7 +12000,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V16.26 CONTROL CENTER LOG',
+        'SSHCP V17.0 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -18612,96 +18634,111 @@ let scoreTimingDetail =
        ========================================================= */
 
 
-    function dismissQrWelcomeV1631() {
-      const overlay = document.getElementById('qrWelcomeOverlayV1631');
-      if (overlay) {
-        overlay.classList.remove('show-team','show-actions');
-        overlay.setAttribute('aria-hidden','true');
-      }
-      document.documentElement.classList.remove('sshcp-qr-welcome-v1631');
-      window.__sshcpIncomingQrWelcomeV1631 = false;
+    function qrWelcomeDisplayTeamV170(name) {
+      /* Exact authoritative assigned-team name. No shortened TEAM n alias. */
+      return String(name || '').trim().toUpperCase();
     }
 
-    function fitQrWelcomeTeamV1631() {
-      const box = document.getElementById('qrWelcomeTeamV1631');
-      const span = document.getElementById('qrWelcomeTeamTextV1631');
-      if (!box || !span || !span.textContent) return;
+    function fitQrWelcomeTeamV170() {
+      const team = document.getElementById('qrWelcomeTeamV170');
+      if (!team || !team.textContent) return;
 
-      /* Width is the governing dimension. Measure the actual rendered name and
-         choose whatever font height is required for the text itself to occupy
-         80% of the viewport width on one line. */
+      /* V16.37 donor rule: horizontal fill governs TEAM sizing. Measure the
+         authoritative name itself and size it to 80% of viewport width while
+         CSS anchors the finished line with its bottom edge at 50% viewport. */
       const targetWidth = Math.max(1, window.innerWidth * 0.80);
-      span.style.fontSize = '100px';
-      const measured = span.getBoundingClientRect().width;
-      if (!(measured > 0)) return;
+      const probeSize = 100;
+      const minimum = 18;
 
-      let size = 100 * targetWidth / measured;
-      size = Math.max(12, size);
-      span.style.fontSize = size.toFixed(2) + 'px';
+      team.style.width = 'max-content';
+      team.style.maxWidth = 'none';
+      team.style.fontSize = probeSize + 'px';
 
-      /* One correction pass accounts for font rounding / letter spacing. */
-      const corrected = span.getBoundingClientRect().width;
-      if (corrected > 0) {
-        size *= targetWidth / corrected;
-        span.style.fontSize = Math.max(12, size).toFixed(2) + 'px';
-      }
+      const measuredWidth = team.getBoundingClientRect().width;
+      let size = measuredWidth > 0
+        ? probeSize * (targetWidth / measuredWidth)
+        : probeSize;
+      size = Math.max(minimum, size);
+
+      team.style.fontSize = size.toFixed(2) + 'px';
+      team.style.width = '90vw';
+      team.style.maxWidth = '90vw';
     }
 
-    function setupQrWelcomeV1631() {
-      if (!window.__sshcpIncomingQrWelcomeV1631) return;
-      const overlay = document.getElementById('qrWelcomeOverlayV1631');
-      const guide = document.getElementById('qrWelcomeGuideV1631');
-      const enter = document.getElementById('qrWelcomeEnterV1631');
+    function dismissQrWelcomeV170() {
+      const overlay = document.getElementById('qrWelcomeOverlayV170');
+      if (overlay) {
+        overlay.classList.remove('show-team', 'show-actions');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+      document.documentElement.classList.remove('sshcp-qr-welcome-v170');
+      window.__sshcpIncomingQrWelcomeV170 = false;
+    }
+
+    function setupQrWelcomeV170() {
+      if (!window.__sshcpIncomingQrWelcomeV170) return;
+      const overlay = document.getElementById('qrWelcomeOverlayV170');
+      const guide = document.getElementById('qrWelcomeGuideV170');
+      const enter = document.getElementById('qrWelcomeEnterV170');
       if (!overlay) return;
 
-      overlay.setAttribute('aria-hidden','false');
+      overlay.setAttribute('aria-hidden', 'false');
       if (guide) guide.addEventListener('click', showQuickGuide, { once:false });
-      if (enter) enter.addEventListener('click', dismissQrWelcomeV1631, { once:true });
+      if (enter) enter.addEventListener('click', dismissQrWelcomeV170, { once:true });
     }
 
-    function revealQrWelcomeAfterAuthV1631() {
-      if (!window.__sshcpIncomingQrWelcomeV1631) return;
-      const overlay = document.getElementById('qrWelcomeOverlayV1631');
-      const span = document.getElementById('qrWelcomeTeamTextV1631');
-      if (!overlay || !span) return;
+    function revealQrWelcomeAfterAuthV170() {
+      if (!window.__sshcpIncomingQrWelcomeV170) return;
+      const overlay = document.getElementById('qrWelcomeOverlayV170');
+      const team = document.getElementById('qrWelcomeTeamV170');
+      if (!overlay || !team) return;
 
-      /* Only an assigned TEAM QR receives the Welcome continuation. Invalid,
-         unassigned, or MASTER links fall back to normal V16.30 behavior. */
+      /* V16.31 auth remains authoritative. Invalid/unassigned/MASTER incoming
+         links do not receive the assigned-team Welcome continuation. */
       if (!(isTeamQr() && getQrTeam())) {
-        dismissQrWelcomeV1631();
+        dismissQrWelcomeV170();
         return;
       }
 
-      const started = Number(window.__sshcpQrWelcomeStartedAtV1631) || 0;
+      const started = Number(window.__sshcpQrWelcomeStartedAtV170) || 0;
       const now = (window.performance && performance.now) ? performance.now() : Date.now();
-      const wait = Math.max(0, 500 - Math.max(0, now - started));
+      const elapsed = Math.max(0, now - started);
+
+      /* WELCOME owns 1.5s fade + 1.0s fully-visible hold. Authorization may
+         finish earlier, but TEAM cannot begin before 2.5s. If authorization
+         finishes later, TEAM begins only after authorization has actually won. */
+      const waitForTeam = Math.max(0, 2500 - elapsed);
 
       window.setTimeout(() => {
-        if (!window.__sshcpIncomingQrWelcomeV1631) return;
-        span.textContent = String(getQrTeam() || '').trim().toUpperCase();
+        if (!window.__sshcpIncomingQrWelcomeV170) return;
+        team.textContent = qrWelcomeDisplayTeamV170(getQrTeam());
 
         const revealTeam = () => {
-          if (!window.__sshcpIncomingQrWelcomeV1631) return;
-          fitQrWelcomeTeamV1631();
+          if (!window.__sshcpIncomingQrWelcomeV170) return;
+          fitQrWelcomeTeamV170();
           overlay.classList.add('show-team');
+
+          /* TEAM gets its own .8s reveal before the action group begins. */
           window.setTimeout(() => {
-            if (window.__sshcpIncomingQrWelcomeV1631) overlay.classList.add('show-actions');
-          }, 500);
+            if (window.__sshcpIncomingQrWelcomeV170) {
+              overlay.classList.add('show-actions');
+            }
+          }, 800);
         };
 
-        /* Fit before the fade whenever the real font is available so the team
-           name does not visibly resize after it appears. */
+        /* Fit with the real webfont before the TEAM fade so the text does not
+           resize visibly after it has appeared. */
         if (document.fonts && document.fonts.ready) {
           document.fonts.ready.then(revealTeam).catch(revealTeam);
         } else {
           revealTeam();
         }
-      }, wait);
+      }, waitForTeam);
     }
 
     window.addEventListener('resize', () => {
-      if (window.__sshcpIncomingQrWelcomeV1631) {
-        requestAnimationFrame(fitQrWelcomeTeamV1631);
+      if (window.__sshcpIncomingQrWelcomeV170) {
+        requestAnimationFrame(fitQrWelcomeTeamV170);
       }
     });
 
@@ -18762,15 +18799,15 @@ let scoreTimingDetail =
         hydrateLeaderboardSnapshotV53();
       }
 
-      setupQrWelcomeV1631();
+      setupQrWelcomeV170();
       await initializeQrAuthorization();
-      revealQrWelcomeAfterAuthV1631();
+      revealQrWelcomeAfterAuthV170();
       if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
       syncTestAuthorizationToggle();
       syncTeamQrLockedUi();
       updateHomeScorecardAccess();
 
-      /* V16.26 — browser refresh while TEAMS is open returns directly to the
+      /* V17.0 — retained behavior: browser refresh while TEAMS is open returns directly to the
          TEAMS workspace (and restores its table scroll position) instead of
          falling through to HOME. */
       if (restoreTeamsPopupV1626) {
@@ -18961,5 +18998,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
