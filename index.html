@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 17.3-N5R8TZ | BUILD KEY: 17.4-C6V2PR -->
+<!-- SSHCP | BASE KEY: 17.4-C6V2PR | BUILD KEY: 17.5-B7K3NW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.4 — chained from exact V17.3. V17.1 remains the protected Golden
+        /* SSHCP V17.5 — chained from exact V17.4. V17.1 remains the protected Golden
            recovery point; V16.31 authorization remains the authoritative path
            and V16.37 remains Welcome-formatting donor only. */
         var initialQrParams = new URLSearchParams(window.location.search);
@@ -9265,7 +9265,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V17.4 — FRESH TEAM QR WELCOME OVERLAY
+   SSHCP V17.5 — FRESH TEAM QR WELCOME OVERLAY
    Mainline is exact V16.31. V16.37 is donor-only for the approved Welcome
    formatting/positioning. Presentation only: no second auth request; ENTER
    only dismisses this layer.
@@ -9419,7 +9419,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 
 
 /* =========================================================
-   SSHCP V17.4 — POLISH PASS FROM GOLDEN V17.1
+   SSHCP V17.5 — QUICK GUIDE REFINEMENT FROM V17.4
    - Literal-button black cleanup: any remaining BLACK text/border/background
      on action buttons is normalized to the tournament accent, while danger,
      score tiles and dropdown/select controls keep their established semantics.
@@ -9473,7 +9473,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   height:80dvh!important;
   max-height:80dvh!important;
   overflow:hidden!important;
-  padding:35px 28px 35px!important;
+  padding:22px 28px 22px!important;
   display:flex!important;
   flex-direction:column!important;
 }
@@ -9525,6 +9525,20 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   white-space:nowrap!important;
   overflow:hidden!important;
   line-height:1!important;
+}
+
+/* V17.5 — Welcome-screen QUICK GUIDE is intentionally unique: one centered
+   GOT IT control using the same physical button height as the normal footer. */
+.modal-overlay.quick-guide .quick-guide-welcome-actions-v175{
+  display:flex!important;
+  grid-template-columns:none!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+.modal-overlay.quick-guide .quick-guide-got-it-v175{
+  flex:0 0 25%!important;
+  width:25%!important;
+  min-width:0!important;
 }
 
 /* V17.3 Quick Guide destinations: matched outer pair, primary accent fill.
@@ -9598,7 +9612,7 @@ button.sshcp-button-pressed-v172{
 
 <body>
 
-  <!-- SSHCP V17.4 — Welcome presentation inherited from Golden V17.1; V16.37 donor geometry only. -->
+  <!-- SSHCP V17.5 — Welcome presentation inherited from Golden V17.1; V16.37 donor geometry only. -->
   <div id="qrWelcomeOverlayV170" class="qr-welcome-overlay-v170" aria-hidden="true">
     <div class="qr-welcome-inner-v170">
       <div class="qr-welcome-title-v170">WELCOME</div>
@@ -9719,7 +9733,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.4</span>
+          <span class="home-version-info">SSHCP V17.5</span>
         </button>
 
       </div>
@@ -10069,7 +10083,7 @@ button.sshcp-button-pressed-v172{
 
 
   <!-- =======================================================
-       CONTROL CENTER — CURRENT SSHCP V17.4
+       CONTROL CENTER — CURRENT SSHCP V17.5
        Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
@@ -10135,7 +10149,7 @@ button.sshcp-button-pressed-v172{
 
 
   <!-- =======================================================
-       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.4)
+       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.5)
        ======================================================= -->
   <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
     <div class="teams-popup-box" role="dialog" aria-label="Teams">
@@ -12190,7 +12204,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.4 CONTROL CENTER LOG',
+        'SSHCP V17.5 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -18322,6 +18336,50 @@ let scoreTimingDetail =
       els.modalInput.style.display =
         'none';
 
+      /* V17.5: when QUICK GUIDE is opened from the presentation-only Welcome
+         layer, it has one centered GOT IT control and returns to that exact
+         Welcome state. The in-app guide keeps the full destination footer. */
+      const welcomeOverlay = document.getElementById('qrWelcomeOverlayV170');
+      const welcomeGuide = !!(
+        window.__sshcpIncomingQrWelcomeV170 &&
+        welcomeOverlay &&
+        welcomeOverlay.getAttribute('aria-hidden') !== 'true'
+      );
+
+      if (welcomeGuide) {
+        const gotIt =
+          makeModalButton(
+            'GOT IT',
+            '',
+            closeModal
+          );
+
+        gotIt.classList.add(
+          'quick-guide-back-v173',
+          'quick-guide-got-it-v175'
+        );
+
+        els.modalActions.className =
+          'modal-actions quick-guide-actions-v172 quick-guide-welcome-actions-v175';
+
+        els.modalActions.replaceChildren(gotIt);
+
+        els.modalOverlay
+          .classList
+          .add(
+            'open'
+          );
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const target = Math.max(12, Math.floor(gotIt.clientHeight * 0.50));
+            fitQuickGuideButtonTextV173(gotIt, target);
+          });
+        });
+
+        return;
+      }
+
       const leaderboard =
         makeModalButton(
           'LEADERBOARD',
@@ -18382,6 +18440,7 @@ let scoreTimingDetail =
       });
 
     }
+
 
 
     function closeModal() {
@@ -18474,7 +18533,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V17.4 — LITERAL BUTTON PRESS FEEDBACK
+       SSHCP V17.5 — LITERAL BUTTON PRESS FEEDBACK
        Score tiles and dropdown choices are intentionally excluded; the team
        selector trigger buttons themselves participate.
        ========================================================= */
@@ -18485,6 +18544,7 @@ let scoreTimingDetail =
     function isExcludedPressButtonV172(button) {
       return !button || button.matches(
         '.score-button,' +
+        '.score-team-select-button,' +
         '.home-team-option,' +
         '.score-team-option,' +
         '.passkey-team-button,' +
@@ -18518,7 +18578,7 @@ let scoreTimingDetail =
 
       endLiteralButtonPressV172();
 
-      /* V17.4: HOME's MASTER team selector is visually one split control.
+      /* V17.5: HOME's MASTER team selector remains one visual split control.
          Pressing either the main face or arrow face darkens the entire split
          and fires only one 7ms haptic. Dropdown choices themselves remain
          excluded by isExcludedPressButtonV172(). */
