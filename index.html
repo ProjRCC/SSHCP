@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.1-K7M4QX | BUILD KEY: 18.2-P9K4VX -->
+<!-- SSHCP | BASE KEY: 18.2-P9K4VX | BUILD KEY: 18.3-T6R9KM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.2 — based directly on exact V18.1 (BUILD 18.1-K7M4QX).
+        /* SSHCP V18.3 — based directly on exact V18.2 (BUILD 18.2-P9K4VX).
            V18.1 Welcome, Geek diagnostics, uppercase presentation, V17.11 Scorecard/Leaderboard geometry,
            V16.31 authorization, scoring/save verification, leaderboard data, Summary standings, and SKINS
-           scoring remain authoritative. V18.2 is a narrow refinement pass: Geek table/detail typography,
-           Summary navigation overlays/header fit, and silent Scorecard-to-HOME completion-state refresh. */
+           scoring remain authoritative. V18.3 is a surgical cleanup pass: Geek row/detail presentation, Summary navigation alignment,
+           Summary header one-line fitting, and whole-row Geek detail access. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -10307,10 +10307,67 @@ body option{
   overflow:hidden!important;
 }
 
-/* NET STROKES is always one line. NET +/- keeps its established behavior. */
+/* V18.2 baseline: NET STROKES one-line rule; V18.3 extends the same treatment to NET +/-. */
 .modal-overlay.tournament-summary .tournament-summary-row.header > div:nth-child(3){
   white-space:nowrap!important;
   line-height:1!important;
+}
+
+
+
+/* =========================================================
+   SSHCP V18.3 — FINAL GEEK / SUMMARY CLEANUP
+   Presentation/navigation only. No scoring, save, verification, Worker,
+   authorization, Welcome, Quick Guide, or SKINS calculation changes.
+   ========================================================= */
+
+/* Primary Geek controls: beat the high-specificity generic secondary modal
+   rule so Blue buttons always render genuinely white labels. */
+.modal-overlay.geek-mode-v180 .modal-actions > .modal-btn.geek-back-v180,
+.modal-overlay.geek-detail-v180 .modal-actions > .modal-btn.geek-detail-back-v182{
+  border-color:var(--accent)!important;
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  opacity:1!important;
+}
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-geek-button-v180{
+  border-color:var(--accent)!important;
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+
+/* Whole-result ownership is now a row treatment. */
+.geek-row-v180.stat{
+  cursor:pointer!important;
+}
+.geek-row-v180.stat.authorized-owner-row,
+.geek-row-v180.stat.authorized-owner-row .geek-cell-v180,
+.geek-row-v180.stat.authorized-owner-row .geek-team-button-v180{
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+.geek-row-v180.stat.authorized-owner-row .geek-cell-v180{
+  border-right-color:rgba(255,255,255,.55)!important;
+  border-bottom-color:rgba(255,255,255,.55)!important;
+}
+.geek-team-button-v180.tie-owner{
+  font-style:italic!important;
+}
+
+/* Detail section labels are centered; established spacing remains intact. */
+.geek-detail-section-v180{
+  text-align:center!important;
+}
+
+/* Summary header: both long NET headings are one-line local shrink-to-fit. */
+.modal-overlay.tournament-summary .tournament-summary-row.header > div:nth-child(3),
+.modal-overlay.tournament-summary .tournament-summary-row.header > div:nth-child(4){
+  white-space:nowrap!important;
+  line-height:1!important;
+  overflow:hidden!important;
 }
 
 
@@ -10441,7 +10498,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.2</span>
+          <span class="home-version-info">SSHCP V18.3</span>
         </button>
 
       </div>
@@ -12919,7 +12976,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.2 CONTROL CENTER LOG',
+        'SSHCP V18.3 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -17518,13 +17575,12 @@ let scoreTimingDetail =
 
       const header = topGrid.querySelector('.tournament-summary-row.header');
       if (header) {
-        Array.from(header.children).forEach((cell, index) => {
-          const mayWrap = index === 3;
+        Array.from(header.children).forEach(cell => {
           fitTextToBoxV5(cell, cell, cell.clientHeight * 0.50, 10, {
             horizontalPad: 6,
             verticalPad: 4,
-            wrap: mayWrap,
-            lineHeight: mayWrap ? 0.94 : 1
+            wrap: false,
+            lineHeight: 1
           });
         });
       }
@@ -17754,7 +17810,7 @@ let scoreTimingDetail =
       if (stat.teams.length === 1) {
         return String(stat.teams[0].team || '').trim() || '—';
       }
-      return String(stat.teams.length) + ' TIED';
+      return String(stat.teams.length) + ' TEAMS TIED';
     }
 
     function geekDescriptionV180(statName) {
@@ -18087,9 +18143,8 @@ let scoreTimingDetail =
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
       if (headerCells.length !== 3) return;
 
-      /* V18.2: every data cell owns its own one-line fit. Short controlled
-         values remain at the cap; only an unusually long value shrinks.
-         STAT 45%, RESULT 50%, TEAM 45% of row height. */
+      /* V18.3: data rows keep the V18.2 local one-line fit rule but reduce the
+         caps by exactly 10%: STAT 40.5%, RESULT 45%, TEAM 40.5%. */
       shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
         const stat = row.querySelector('.geek-stat-cell-v180');
         const result = row.querySelector('.geek-result-cell-v180');
@@ -18097,7 +18152,7 @@ let scoreTimingDetail =
         const h = row.getBoundingClientRect().height || rowHeight;
 
         if (stat) {
-          fitTextToBoxV5(stat, stat, h * 0.45, 8, {
+          fitTextToBoxV5(stat, stat, h * 0.405, 8, {
             horizontalPad: 20,
             verticalPad: 6,
             wrap: false,
@@ -18106,7 +18161,7 @@ let scoreTimingDetail =
           stat.style.setProperty('text-align', 'left', 'important');
         }
         if (result) {
-          fitTextToBoxV5(result, result, h * 0.50, 8, {
+          fitTextToBoxV5(result, result, h * 0.45, 8, {
             horizontalPad: 12,
             verticalPad: 6,
             wrap: false,
@@ -18114,7 +18169,7 @@ let scoreTimingDetail =
           });
         }
         if (team) {
-          fitTextToBoxV5(team, team, h * 0.45, 8, {
+          fitTextToBoxV5(team, team, h * 0.405, 8, {
             horizontalPad: 10,
             verticalPad: 6,
             wrap: false,
@@ -18123,16 +18178,36 @@ let scoreTimingDetail =
         }
       });
 
-      /* Header keeps the same one-line rule. STAT and TEAM target 60% of
-         header-row height; RESULT starts 10% smaller (54%). */
-      const headerTargets = [0.60, 0.54, 0.60];
-      headerCells.forEach((cell, index) => {
-        fitTextToBoxV5(cell, cell, rowHeight * headerTargets[index], 8, {
+      /* Category labels are deliberately stronger: 50% of the gray row height. */
+      shell.querySelectorAll('.geek-row-v180.category .geek-cell-v180').forEach(cell => {
+        const row = cell.closest('.geek-row-v180.category');
+        const h = row ? (row.getBoundingClientRect().height || rowHeight) : rowHeight;
+        fitTextToBoxV5(cell, cell, h * 0.50, 8, {
           horizontalPad: 12,
-          verticalPad: 5,
+          verticalPad: 4,
           wrap: false,
           lineHeight: 1
         });
+      });
+
+      /* Header does NOT receive the 10% data-row reduction. RESULT remains the
+         limiting header because its 20% column is tight: it starts at 90% of
+         the 60% header target (54%), and that one fitted size is then applied
+         identically to STAT, RESULT and TEAM. */
+      const headerRow = headerCells[0].closest('.geek-row-v180.header');
+      const headerH = headerRow ? (headerRow.getBoundingClientRect().height || rowHeight) : rowHeight;
+      const sharedHeaderSize = fitTextToBoxV5(headerCells[1], headerCells[1], headerH * 0.54, 8, {
+        horizontalPad: 12,
+        verticalPad: 5,
+        wrap: false,
+        lineHeight: 1
+      });
+      headerCells.forEach(cell => {
+        cell.style.setProperty('font-size', sharedHeaderSize + 'px', 'important');
+        cell.style.setProperty('line-height', '1', 'important');
+        cell.style.setProperty('white-space', 'nowrap', 'important');
+        cell.style.setProperty('overflow', 'hidden', 'important');
+        cell.style.setProperty('text-align', 'center', 'important');
       });
     }
 
@@ -18186,17 +18261,19 @@ let scoreTimingDetail =
         stats.forEach(stat => {
           const label = geekTeamLabelV180(stat);
           const owns = geekOwnsStatV180(stat);
+          const isTie = Array.isArray(stat && stat.teams) && stat.teams.length > 1;
           const encodedCategory = encodeURIComponent(category);
           const encodedStat = encodeURIComponent(String(stat.stat || ''));
 
           html +=
-            '<div class="geek-row-v180 stat">' +
+            '<div class="geek-row-v180 stat' + (owns ? ' authorized-owner-row' : '') + '"' +
+              ' role="button" tabindex="0"' +
+              ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
+              ' data-geek-stat="' + escapeHtml(encodedStat) + '">' +
               '<div class="geek-cell-v180 geek-stat-cell-v180">' + escapeHtml(String(stat.stat || '')) + '</div>' +
               '<div class="geek-cell-v180 geek-result-cell-v180">' + escapeHtml(String(stat.value ?? '')) + '</div>' +
               '<div class="geek-cell-v180 geek-team-cell-v180">' +
-                '<button class="geek-team-button-v180' + (owns ? ' authorized-owner' : '') + '" type="button"' +
-                ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
-                ' data-geek-stat="' + escapeHtml(encodedStat) + '">' +
+                '<button class="geek-team-button-v180' + (owns ? ' authorized-owner' : '') + (isTie ? ' tie-owner' : '') + '" type="button" tabindex="-1">' +
                 escapeHtml(label) +
                 '</button>' +
               '</div>' +
@@ -18210,19 +18287,29 @@ let scoreTimingDetail =
 
       scroll.innerHTML = html;
 
-      scroll.querySelectorAll('.geek-team-button-v180').forEach(button => {
-        button.addEventListener('click', () => {
-          const category = decodeURIComponent(button.dataset.geekCategory || '');
-          const statName = decodeURIComponent(button.dataset.geekStat || '');
-          const block = geekDataV180.categories.find(item =>
-            String(item && item.category || '').trim().toUpperCase() === category
-          );
-          const stat = block && Array.isArray(block.stats)
-            ? block.stats.find(item => String(item && item.stat || '') === statName)
-            : null;
-          if (stat) {
-            if (geekDiagnosticActiveV180b) geekLastTapStatV180b = String(stat.stat || '');
-            showGeekDetailV180(stat);
+      const openDetailFromRow = row => {
+        const category = decodeURIComponent(row.dataset.geekCategory || '');
+        const statName = decodeURIComponent(row.dataset.geekStat || '');
+        const block = geekDataV180.categories.find(item =>
+          String(item && item.category || '').trim().toUpperCase() === category
+        );
+        const stat = block && Array.isArray(block.stats)
+          ? block.stats.find(item => String(item && item.stat || '') === statName)
+          : null;
+        if (stat) {
+          if (geekDiagnosticActiveV180b) geekLastTapStatV180b = String(stat.stat || '');
+          showGeekDetailV180(stat);
+        }
+      };
+
+      /* V18.3: the entire STAT/RESULT/TEAM row opens the explanation popup,
+         not only the TEAM cell. */
+      scroll.querySelectorAll('.geek-row-v180.stat').forEach(row => {
+        row.addEventListener('click', () => openDetailFromRow(row));
+        row.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openDetailFromRow(row);
           }
         });
       });
@@ -18743,9 +18830,10 @@ let scoreTimingDetail =
       const leaderboard = els.modalBox.querySelector('.summary-leaderboard-overlay-v182');
       if (!subtitle || !table || !home || !leaderboard) return;
 
-      /* Measure from unshifted subtitle so repeated ResizeObserver passes do not
-         accumulate transforms. Center RESULTS/TOP 10 exactly between the bottom
-         of SCRAMBLE SUMMARY and the top of the standings table. */
+      /* RESULTS/TOP 10 remains centered vertically between SCRAMBLE SUMMARY and
+         the table. HOME/LEADERBOARD share that centerline, but V18.3 uses the
+         table edges as the outer limits and the subtitle itself as the inner
+         limit so the three controls can never collide. */
       subtitle.style.setProperty('transform', 'none', 'important');
       const titleRect = els.modalTitle.getBoundingClientRect();
       const tableRect = table.getBoundingClientRect();
@@ -18758,19 +18846,29 @@ let scoreTimingDetail =
       const subtitleShift = centerY - subtitleCenterY;
       subtitle.style.setProperty('transform', 'translateY(' + subtitleShift.toFixed(2) + 'px)', 'important');
 
-      const centerX = boxRect.left + (boxRect.width / 2);
-      const homeCenterX = (tableRect.left + centerX) / 2;
-      const leaderboardCenterX = (centerX + tableRect.right) / 2;
+      const centeredSubtitleLeft = boxRect.left + (boxRect.width / 2) - (subtitleRect.width / 2);
+      const centeredSubtitleRight = centeredSubtitleLeft + subtitleRect.width;
+      const gap = 8;
+      const leftRegionWidth = Math.max(1, centeredSubtitleLeft - gap - tableRect.left);
+      const rightRegionWidth = Math.max(1, tableRect.right - (centeredSubtitleRight + gap));
       const footerBack = els.modalActions.querySelector('.modal-btn');
-      const buttonH = footerBack ? (footerBack.getBoundingClientRect().height || 40) : 40;
-      const halfRegion = Math.max(1, (tableRect.width / 2));
-      const buttonW = Math.max(64, Math.min(halfRegion * 0.68, 150));
+      const backRect = footerBack ? footerBack.getBoundingClientRect() : null;
+      const buttonH = backRect ? (backRect.height || 40) : 40;
+      const desiredW = backRect ? (backRect.width || 96) : 96;
+      const homeW = Math.max(56, Math.min(desiredW, leftRegionWidth));
+      const leaderW = Math.max(56, Math.min(desiredW, rightRegionWidth));
 
-      [[home, homeCenterX], [leaderboard, leaderboardCenterX]].forEach(([button, x]) => {
-        button.style.setProperty('width', buttonW + 'px', 'important');
-        button.style.setProperty('height', buttonH + 'px', 'important');
-        button.style.setProperty('left', (x - boxRect.left - buttonW / 2) + 'px', 'important');
-        button.style.setProperty('top', (centerY - boxRect.top - buttonH / 2) + 'px', 'important');
+      home.style.setProperty('width', homeW + 'px', 'important');
+      home.style.setProperty('height', buttonH + 'px', 'important');
+      home.style.setProperty('left', (tableRect.left - boxRect.left) + 'px', 'important');
+      home.style.setProperty('top', (centerY - boxRect.top - buttonH / 2) + 'px', 'important');
+
+      leaderboard.style.setProperty('width', leaderW + 'px', 'important');
+      leaderboard.style.setProperty('height', buttonH + 'px', 'important');
+      leaderboard.style.setProperty('left', (tableRect.right - boxRect.left - leaderW) + 'px', 'important');
+      leaderboard.style.setProperty('top', (centerY - boxRect.top - buttonH / 2) + 'px', 'important');
+
+      [[home, homeW], [leaderboard, leaderW]].forEach(([button]) => {
         fitTextToBoxV5(button, button, buttonH * 0.50, 10, {
           horizontalPad: 12,
           verticalPad: 6,
