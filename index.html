@@ -1,13 +1,14 @@
-<!-- SSHCP | BASE KEY: 17.8-T6K3PV | BUILD KEY: 17.9-L5N7QX -->
+<!-- SSHCP | BASE KEY: 17.9-L5N7QX | BUILD KEY: 17.10-V6R2KH -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.9 — based directly on exact V17.8, which remains on the Golden V17.5 lineage.
-           V17.9 changes only the data-reveal timing/scroll sequencing: reveal fade is .5s, and
-           Scorecard/Leaderboard automatic positioning waits until that reveal is fully complete.
+        /* SSHCP V17.10 — based directly on exact V17.9, with V17.5 still protected Golden.
+           V17.10 changes only the main Scorecard/Leaderboard reveal-shield geometry: those two
+           page shields are edge-to-edge and anchor from the table-header boundary to the buffer
+           above the fixed bottom controls. Popup reveal geometry is deliberately unchanged.
            V16.31 authorization remains authoritative and V16.37 remains Welcome-formatting donor only. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
@@ -9784,7 +9785,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.9</span>
+          <span class="home-version-info">SSHCP V17.10</span>
         </button>
 
       </div>
@@ -12255,7 +12256,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.9 CONTROL CENTER LOG',
+        'SSHCP V17.10 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13262,8 +13263,53 @@ let scoreTimingDetail =
       if (!shield || active === shield) sshcpRevealShieldsV177.delete(key);
     }
 
+    /* V17.10 — main-page Scorecard / Leaderboard shields no longer inherit
+       whatever size the table happens to have during first paint. Their bounds
+       come from permanent page anchors instead: full viewport width, top at the
+       table-header boundary, bottom at the start of the fixed bottom controls.
+       Popup shields deliberately do NOT use this path. */
+    function syncMainPageRevealGeometryV1710(shield, mode) {
+      if (!shield) return false;
+
+      let topAnchor = null;
+      let bottomAnchor = null;
+
+      if (mode === 'scorecard') {
+        topAnchor = els.scorecardView && els.scorecardView.querySelector('.score-table-head');
+        bottomAnchor = els.scorecardView && els.scorecardView.querySelector('.score-fixed-bottom');
+      } else if (mode === 'leaderboard') {
+        topAnchor = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
+        bottomAnchor = els.leaderboardView && els.leaderboardView.querySelector('.leader-bottom');
+      }
+
+      if (!topAnchor || !bottomAnchor) return false;
+
+      const topRect = topAnchor.getBoundingClientRect();
+      const bottomRect = bottomAnchor.getBoundingClientRect();
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+
+      if (!(viewportWidth > 0) || !(viewportHeight > 0)) return false;
+
+      /* Two pixels upward safely eats the clean buffer above the table without
+         intruding into the actual header controls. Bottom stops exactly where
+         the fixed bottom-control region begins. */
+      const top = Math.max(0, Math.floor(topRect.top) - 2);
+      const bottom = Math.min(viewportHeight, Math.ceil(bottomRect.top));
+      if (bottom <= top) return false;
+
+      shield.style.left = '0px';
+      shield.style.top = top + 'px';
+      shield.style.width = Math.ceil(viewportWidth) + 'px';
+      shield.style.height = Math.max(1, bottom - top) + 'px';
+      return true;
+    }
+
     function syncDataRevealShieldGeometryV177(shield, elements) {
       if (!shield || shield.classList.contains('full-screen-v177')) return true;
+
+      const mainMode = shield.dataset.mainPageGeometryV1710 || '';
+      if (mainMode) return syncMainPageRevealGeometryV1710(shield, mainMode);
 
       const rects = (Array.isArray(elements) ? elements : [elements])
         .filter(Boolean)
@@ -13284,12 +13330,13 @@ let scoreTimingDetail =
       return true;
     }
 
-    function beginDataRevealShieldV177(key, elements, color = '#fff', fullScreen = false, zIndex = 4900) {
+    function beginDataRevealShieldV177(key, elements, color = '#fff', fullScreen = false, zIndex = 4900, mainPageGeometryV1710 = '') {
       removeDataRevealShieldV177(key);
 
       const shield = document.createElement('div');
       shield.className = 'sshcp-data-reveal-shield-v177' + (fullScreen ? ' full-screen-v177' : '');
       shield.setAttribute('aria-hidden', 'true');
+      if (mainPageGeometryV1710) shield.dataset.mainPageGeometryV1710 = mainPageGeometryV1710;
       shield.style.background = color;
       shield.style.setProperty('z-index', String(zIndex), 'important');
 
@@ -13300,7 +13347,7 @@ let scoreTimingDetail =
       return shield;
     }
 
-    /* V17.9 — the reveal itself is now the sequencing gate. Callers that need
+    /* V17.9 sequencing retained in V17.10 — the reveal itself is the gate. Callers that need
        automatic positioning can await this promise instead of guessing with a
        parallel timer. The timeout is only a transitionend safety fallback. */
     function revealDataShieldV177(key, shield) {
@@ -13353,13 +13400,13 @@ let scoreTimingDetail =
     function beginScorecardRevealV177() {
       if (currentView !== 'scorecard') return null;
       const header = els.scorecardView && els.scorecardView.querySelector('.score-table-head');
-      return beginDataRevealShieldV177('scorecard', [header, els.scoreScroll], '#fff', false);
+      return beginDataRevealShieldV177('scorecard', [header, els.scoreScroll], '#fff', false, 4900, 'scorecard');
     }
 
     function beginLeaderboardRevealV177() {
       if (currentView !== 'leaderboard') return null;
       const header = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
-      return beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false);
+      return beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false, 4900, 'leaderboard');
     }
 
     async function showScorecard() {
@@ -13612,7 +13659,7 @@ let scoreTimingDetail =
           );
         }
 
-        /* V17.9: showScorecard() performs its active-hole positioning only
+        /* V17.9 sequencing retained in V17.10: showScorecard() performs its active-hole positioning only
            after loadScorecard() returns. Hold that return until the .5s white
            reveal is completely finished, so reveal and scroll never overlap. */
         await scorecardRevealDoneV179;
@@ -15948,7 +15995,7 @@ let scoreTimingDetail =
             );
         }
 
-        /* V17.9: render/sizing can complete under the shield, but do not start
+        /* V17.9 sequencing retained in V17.10: render/sizing can complete under the shield, but do not start
            the authorized-team auto-scroll timer until the shield is gone. */
         renderLeaderboard(
           rows,
@@ -16005,7 +16052,7 @@ let scoreTimingDetail =
 
         completeLoadingLine();
 
-        /* V17.9: explicit sequencing — finished data -> .5s reveal -> only
+        /* V17.9 sequencing retained in V17.10: finished data -> .5s reveal -> only
            then begin the existing 1.5s authorized-team auto-position delay.
            Manual REFRESH still passes false and therefore never auto-scrolls. */
         await leaderboardRevealDoneV179;
