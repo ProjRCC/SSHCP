@@ -1,13 +1,13 @@
-<!-- SSHCP | BASE KEY: 17.4-C6V2PR | BUILD KEY: 17.5-B7K3NW -->
+<!-- SSHCP | BASE KEY: 17.5-B7K3NW | BUILD KEY: 17.7-M4Q8ZX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.5 — chained from exact V17.4. V17.1 remains the protected Golden
-           recovery point; V16.31 authorization remains the authoritative path
-           and V16.37 remains Welcome-formatting donor only. */
+        /* SSHCP V17.7 — branched directly from exact Golden V17.5. The V17.6
+           table-geometry experiment is intentionally NOT inherited. V16.31
+           authorization remains authoritative and V16.37 remains Welcome-formatting donor only. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -9539,6 +9539,11 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   flex:0 0 25%!important;
   width:25%!important;
   min-width:0!important;
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  opacity:1!important;
 }
 
 /* V17.3 Quick Guide destinations: matched outer pair, primary accent fill.
@@ -9584,6 +9589,35 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-scorecard-arrow::after{
   border-left-color:#fff!important;
   border-top-color:#fff!important;
+}
+
+/* V17.7 — universal data reveal shields, branched from Golden V17.5.
+   Scorecard / Leaderboard / Scramble Summary use white over only their data
+   region. SKINS uses a full-viewport black shield so its dynamic popup can
+   build completely underneath. Every finished view is revealed in .2s. */
+.sshcp-data-reveal-shield-v177{
+  position:fixed!important;
+  z-index:4900!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#fff!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  transition:opacity .2s ease-out!important;
+  will-change:opacity;
+}
+.sshcp-data-reveal-shield-v177.is-revealing-v177{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.sshcp-data-reveal-shield-v177.full-screen-v177{
+  inset:0!important;
+  width:auto!important;
+  height:auto!important;
+  z-index:6100!important;
+  background:#000!important;
 }
 
 /* Welcome exit: presentation-only whole-layer dissolve. */
@@ -9733,7 +9767,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.5</span>
+          <span class="home-version-info">SSHCP V17.7</span>
         </button>
 
       </div>
@@ -12204,7 +12238,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.5 CONTROL CENTER LOG',
+        'SSHCP V17.7 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13197,6 +13231,94 @@ let scoreTimingDetail =
     }
 
 
+    /* =========================================================
+       SSHCP V17.7 — DATA REVEAL SHIELDS
+       Presentation only. No read/write/auth logic is changed.
+       ========================================================= */
+
+    const sshcpRevealShieldsV177 = new Map();
+
+    function removeDataRevealShieldV177(key, shield) {
+      const active = sshcpRevealShieldsV177.get(key);
+      const target = shield || active;
+      if (target && target.parentNode) target.parentNode.removeChild(target);
+      if (!shield || active === shield) sshcpRevealShieldsV177.delete(key);
+    }
+
+    function syncDataRevealShieldGeometryV177(shield, elements) {
+      if (!shield || shield.classList.contains('full-screen-v177')) return true;
+
+      const rects = (Array.isArray(elements) ? elements : [elements])
+        .filter(Boolean)
+        .map(el => el.getBoundingClientRect())
+        .filter(rect => rect.width > 0 && rect.height >= 0);
+
+      if (!rects.length) return false;
+
+      const left = Math.max(0, Math.min(...rects.map(rect => rect.left)));
+      const top = Math.max(0, Math.min(...rects.map(rect => rect.top)));
+      const right = Math.min(window.innerWidth || document.documentElement.clientWidth || 0, Math.max(...rects.map(rect => rect.right)));
+      const bottom = Math.min(window.innerHeight || document.documentElement.clientHeight || 0, Math.max(...rects.map(rect => rect.bottom)));
+
+      shield.style.left = Math.floor(left) + 'px';
+      shield.style.top = Math.floor(top) + 'px';
+      shield.style.width = Math.max(1, Math.ceil(right - left)) + 'px';
+      shield.style.height = Math.max(1, Math.ceil(bottom - top)) + 'px';
+      return true;
+    }
+
+    function beginDataRevealShieldV177(key, elements, color = '#fff', fullScreen = false, zIndex = 4900) {
+      removeDataRevealShieldV177(key);
+
+      const shield = document.createElement('div');
+      shield.className = 'sshcp-data-reveal-shield-v177' + (fullScreen ? ' full-screen-v177' : '');
+      shield.setAttribute('aria-hidden', 'true');
+      shield.style.background = color;
+      shield.style.setProperty('z-index', String(zIndex), 'important');
+
+      if (!fullScreen && !syncDataRevealShieldGeometryV177(shield, elements)) return null;
+
+      document.body.appendChild(shield);
+      sshcpRevealShieldsV177.set(key, shield);
+      return shield;
+    }
+
+    function revealDataShieldV177(key, shield) {
+      if (!shield || !shield.isConnected) {
+        if (sshcpRevealShieldsV177.get(key) === shield) sshcpRevealShieldsV177.delete(key);
+        return;
+      }
+      shield.classList.add('is-revealing-v177');
+      window.setTimeout(() => removeDataRevealShieldV177(key, shield), 230);
+    }
+
+    function revealDataShieldAfterLayoutV177(key, shield, frames = 2, elements = null) {
+      if (!shield) return;
+      let remaining = Math.max(1, Number(frames) || 1);
+      const step = () => {
+        if (elements) syncDataRevealShieldGeometryV177(shield, elements);
+        remaining -= 1;
+        if (remaining <= 0) {
+          revealDataShieldV177(key, shield);
+          return;
+        }
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    function beginScorecardRevealV177() {
+      if (currentView !== 'scorecard') return null;
+      const header = els.scorecardView && els.scorecardView.querySelector('.score-table-head');
+      return beginDataRevealShieldV177('scorecard', [header, els.scoreScroll], '#fff', false);
+    }
+
+    function beginLeaderboardRevealV177() {
+      if (currentView !== 'leaderboard') return null;
+      const header = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
+      return beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false);
+    }
+
     async function showScorecard() {
 
       const preserveHydratedPosition = scorecardHydratedFromSnapshotV53;
@@ -13321,6 +13443,8 @@ let scoreTimingDetail =
         els.scoreRows &&
         els.scoreRows.children.length > 0;
 
+      const scorecardRevealShieldV177 = beginScorecardRevealV177();
+
       scorecardLoadInProgress =
         true;
 
@@ -13397,6 +13521,7 @@ let scoreTimingDetail =
         buildTeamSelect();
         restoreOrSelectTeam();
         renderScorecard();
+        revealDataShieldAfterLayoutV177('scorecard', scorecardRevealShieldV177, 2, [els.scorecardView && els.scorecardView.querySelector('.score-table-head'), els.scoreScroll]);
 
         const renderedAt =
           timerStart();
@@ -13453,6 +13578,7 @@ let scoreTimingDetail =
         updateScoreTiming();
         addTestLog('SCORECARD LOAD', 'FAILED', scorecardLoadSeconds + 's', 'Request failed');
         stopLoadingLine();
+        revealDataShieldAfterLayoutV177('scorecard', scorecardRevealShieldV177, 1);
 
         if (!hadExistingScorecard) {
           showLoadError(
@@ -15645,6 +15771,8 @@ let scoreTimingDetail =
       leaderboardLoadInProgress =
         true;
 
+      const leaderboardRevealShieldV177 = beginLeaderboardRevealV177();
+
       stopLeaderboardRefreshCycleV57();
 
       /* V4.3 — refresh data without visually reverting the existing shell.
@@ -15771,6 +15899,7 @@ let scoreTimingDetail =
           rows,
           autoPositionAuthorized
         );
+        revealDataShieldAfterLayoutV177('leaderboard', leaderboardRevealShieldV177, 2, [els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head'), els.leaderContent]);
         updateTournamentFinishState(
           rows
         );
@@ -15842,6 +15971,7 @@ let scoreTimingDetail =
         updateLeaderboardTiming();
         addTestLog(wasAlreadyLoaded ? 'LEADERBOARD REFRESH' : 'LEADERBOARD LOAD', 'FAILED', seconds + 's', String(error && error.message ? error.message : 'Request failed'));
         stopLoadingLine();
+        revealDataShieldAfterLayoutV177('leaderboard', leaderboardRevealShieldV177, 1);
 
         if (
           leaderboardHasLoaded
@@ -16877,12 +17007,14 @@ let scoreTimingDetail =
 
     async function showSkinsPopupV1627() {
       if (!skinsEnabledV1627()) return;
+      const skinsRevealShieldV177 = beginDataRevealShieldV177('skins', [], '#000', true, 6100);
       startLoadingLine();
       try {
         const source = await fetchSkinsSourceV1627();
         const results = buildSkinsResultsV1627(source.teams, source.holes);
         completeLoadingLine();
         renderSkinsPopupV1627(results);
+        revealDataShieldAfterLayoutV177('skins', skinsRevealShieldV177, 2);
       } catch (error) {
         completeLoadingLine();
         addTestLog('SKINS LOAD', 'FAILED', '—', String(error && error.message || 'Request failed'));
@@ -16894,6 +17026,7 @@ let scoreTimingDetail =
         els.modalActions.className = 'modal-actions single';
         els.modalActions.replaceChildren(back);
         els.modalOverlay.classList.add('open');
+        revealDataShieldAfterLayoutV177('skins', skinsRevealShieldV177, 2);
       }
     }
 
@@ -16995,6 +17128,7 @@ let scoreTimingDetail =
         els.modalActions.replaceChildren(geekReserve, back, skinsReserve);
       }
       els.modalOverlay.classList.add('open');
+      const summaryRevealShieldV177 = beginDataRevealShieldV177('summary', [els.modalBody], '#fff', false, 5100);
 
       if (tournamentSummaryResizeObserver) {
         tournamentSummaryResizeObserver.disconnect();
@@ -17010,6 +17144,7 @@ let scoreTimingDetail =
       tournamentSummaryResizeObserver.observe(els.modalBox);
 
       requestAnimationFrame(fitTournamentSummaryRemaining);
+      revealDataShieldAfterLayoutV177('summary', summaryRevealShieldV177, 2, [els.modalBody]);
     }
 
     function handleLeaderboardFinalAction() {
@@ -18336,9 +18471,9 @@ let scoreTimingDetail =
       els.modalInput.style.display =
         'none';
 
-      /* V17.5: when QUICK GUIDE is opened from the presentation-only Welcome
-         layer, it has one centered GOT IT control and returns to that exact
-         Welcome state. The in-app guide keeps the full destination footer. */
+      /* V17.7: Welcome QUICK GUIDE keeps V17.5's unique single GOT IT footer.
+         GOT IT is now a true primary accent action with a larger label; it still
+         returns to the exact Welcome state. In-app guide destinations are unchanged. */
       const welcomeOverlay = document.getElementById('qrWelcomeOverlayV170');
       const welcomeGuide = !!(
         window.__sshcpIncomingQrWelcomeV170 &&
@@ -18372,7 +18507,7 @@ let scoreTimingDetail =
 
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            const target = Math.max(12, Math.floor(gotIt.clientHeight * 0.50));
+            const target = Math.max(12, Math.floor(gotIt.clientHeight * 0.60));
             fitQuickGuideButtonTextV173(gotIt, target);
           });
         });
