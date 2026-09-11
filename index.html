@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 17.2-Q8M4LX | BUILD KEY: 17.3-N5R8TZ -->
+<!-- SSHCP | BASE KEY: 17.3-N5R8TZ | BUILD KEY: 17.4-C6V2PR -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V17.3 — chained from exact V17.2. V17.1 remains the protected Golden
+        /* SSHCP V17.4 — chained from exact V17.3. V17.1 remains the protected Golden
            recovery point; V16.31 authorization remains the authoritative path
            and V16.37 remains Welcome-formatting donor only. */
         var initialQrParams = new URLSearchParams(window.location.search);
@@ -9265,15 +9265,16 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V17.3 — FRESH TEAM QR WELCOME OVERLAY
+   SSHCP V17.4 — FRESH TEAM QR WELCOME OVERLAY
    Mainline is exact V16.31. V16.37 is donor-only for the approved Welcome
    formatting/positioning. Presentation only: no second auth request; ENTER
    only dismisses this layer.
 
    Timing contract:
-   0.0–1.5s  WELCOME fades in.
-   1.5–2.5s  WELCOME holds.
-   >=2.5s    only after assigned-team authorization, TEAM fades in over .8s.
+   0.0–0.6s  clean white startup pause.
+   0.6–2.1s  WELCOME fades in.
+   2.1–3.1s  WELCOME holds.
+   >=3.1s    only after assigned-team authorization, TEAM fades in over .8s.
    then       QUICK GUIDE + ENTER fade in over 1.5s.
    ========================================================= */
 .qr-welcome-overlay-v170{
@@ -9315,6 +9316,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-overlay-v170{
 }
 html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   animation:sshcpQrWelcomeFadeV170 1.5s ease-out forwards;
+  animation-delay:.6s;
 }
 .qr-welcome-team-v170{
   position:absolute;
@@ -9417,7 +9419,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 
 
 /* =========================================================
-   SSHCP V17.3 — POLISH PASS FROM GOLDEN V17.1
+   SSHCP V17.4 — POLISH PASS FROM GOLDEN V17.1
    - Literal-button black cleanup: any remaining BLACK text/border/background
      on action buttons is normalized to the tournament accent, while danger,
      score tiles and dropdown/select controls keep their established semantics.
@@ -9425,7 +9427,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
      left-aligned body, symmetrical 35px breathing room and 3/2/3 footer.
    - Literal buttons receive momentary light/dark press feedback. Haptics are
      progressive enhancement only; unsupported browsers silently do nothing.
-   - ENTER on the Welcome presentation dissolves the entire layer over 1.0s.
+   - ENTER on the Welcome presentation dissolves the entire layer over .5s.
    ========================================================= */
 
 /* Remaining visible BLACK action-button treatments -> accent. */
@@ -9538,10 +9540,42 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   font-size:27px;
 }
 
+/* V17.4 — Quick Guide primary destinations: explicit white label paint.
+   -webkit-text-fill-color closes the Chrome/WebKit inheritance path that could
+   leave the label accent-colored on the accent background. */
+.modal-overlay.quick-guide .quick-guide-destination-v173{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  opacity:1!important;
+}
+
+/* V17.4 — MASTER HOME team selector behaves as one physical split control
+   during press feedback: main face + arrow face + divider/icon all move to the
+   agreed dark-gray press state together. */
+body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-scorecard-split,
+body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-scorecard-main,
+body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-scorecard-arrow{
+  background:#333!important;
+  border-color:#333!important;
+  color:#fff!important;
+  filter:none!important;
+}
+body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-scorecard-arrow{
+  border-left-color:#fff!important;
+}
+body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-scorecard-action,
+body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-scorecard-team{
+  color:#fff!important;
+}
+body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-scorecard-arrow::after{
+  border-left-color:#fff!important;
+  border-top-color:#fff!important;
+}
+
 /* Welcome exit: presentation-only whole-layer dissolve. */
 .qr-welcome-overlay-v170.sshcp-welcome-exit-v172{
   pointer-events:none!important;
-  transition:opacity 1s ease-out!important;
+  transition:opacity .5s ease-out!important;
   opacity:1;
 }
 .qr-welcome-overlay-v170.sshcp-welcome-exit-v172.fade-v172{
@@ -9564,7 +9598,7 @@ button.sshcp-button-pressed-v172{
 
 <body>
 
-  <!-- SSHCP V17.3 — Welcome presentation inherited from Golden V17.1; V16.37 donor geometry only. -->
+  <!-- SSHCP V17.4 — Welcome presentation inherited from Golden V17.1; V16.37 donor geometry only. -->
   <div id="qrWelcomeOverlayV170" class="qr-welcome-overlay-v170" aria-hidden="true">
     <div class="qr-welcome-inner-v170">
       <div class="qr-welcome-title-v170">WELCOME</div>
@@ -9685,7 +9719,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V17.3</span>
+          <span class="home-version-info">SSHCP V17.4</span>
         </button>
 
       </div>
@@ -10035,7 +10069,7 @@ button.sshcp-button-pressed-v172{
 
 
   <!-- =======================================================
-       CONTROL CENTER — CURRENT SSHCP V17.3
+       CONTROL CENTER — CURRENT SSHCP V17.4
        Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
@@ -10101,7 +10135,7 @@ button.sshcp-button-pressed-v172{
 
 
   <!-- =======================================================
-       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.3)
+       CONTROL CENTER — TEAMS POPUP (CURRENT SSHCP V17.4)
        ======================================================= -->
   <div id="teamsPopupOverlay" class="teams-popup-overlay" aria-hidden="true">
     <div class="teams-popup-box" role="dialog" aria-label="Teams">
@@ -12156,7 +12190,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V17.3 CONTROL CENTER LOG',
+        'SSHCP V17.4 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -18440,8 +18474,9 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V17.3 — LITERAL BUTTON PRESS FEEDBACK
-       Score tiles and dropdown/select controls are intentionally excluded.
+       SSHCP V17.4 — LITERAL BUTTON PRESS FEEDBACK
+       Score tiles and dropdown choices are intentionally excluded; the team
+       selector trigger buttons themselves participate.
        ========================================================= */
 
     let sshcpPressedButtonV172 = null;
@@ -18450,8 +18485,6 @@ let scoreTimingDetail =
     function isExcludedPressButtonV172(button) {
       return !button || button.matches(
         '.score-button,' +
-        '.score-team-select-button,' +
-        '.home-scorecard-arrow,' +
         '.home-team-option,' +
         '.score-team-option,' +
         '.passkey-team-button,' +
@@ -18484,6 +18517,29 @@ let scoreTimingDetail =
       if (button.disabled || isExcludedPressButtonV172(button)) return;
 
       endLiteralButtonPressV172();
+
+      /* V17.4: HOME's MASTER team selector is visually one split control.
+         Pressing either the main face or arrow face darkens the entire split
+         and fires only one 7ms haptic. Dropdown choices themselves remain
+         excluded by isExcludedPressButtonV172(). */
+      const homeMasterSelectorPress =
+        isMasterQr() &&
+        (button.id === 'homeScorecardButton' || button.id === 'homeTeamArrowButton');
+
+      if (homeMasterSelectorPress) {
+        const access = document.getElementById('homeScorecardAccess');
+        if (access) access.classList.add('sshcp-team-selector-pressed-v174');
+        sshcpPressedButtonV172 = button;
+        sshcpPressedRestoreV172 = { group: access };
+
+        if (
+          event && event.pointerType === 'touch' &&
+          navigator && typeof navigator.vibrate === 'function'
+        ) {
+          try { navigator.vibrate(7); } catch (_) {}
+        }
+        return;
+      }
 
       const computed = getComputedStyle(button);
       const prior = {
@@ -18525,10 +18581,14 @@ let scoreTimingDetail =
       const prior = sshcpPressedRestoreV172;
       if (!button) return;
 
-      button.classList.remove('sshcp-button-pressed-v172');
-      button.style.removeProperty('--sshcp-press-bg-v172');
-      button.style.removeProperty('--sshcp-press-fg-v172');
-      button.style.removeProperty('--sshcp-press-border-v172');
+      if (prior && prior.group) {
+        prior.group.classList.remove('sshcp-team-selector-pressed-v174');
+      } else {
+        button.classList.remove('sshcp-button-pressed-v172');
+        button.style.removeProperty('--sshcp-press-bg-v172');
+        button.style.removeProperty('--sshcp-press-fg-v172');
+        button.style.removeProperty('--sshcp-press-border-v172');
+      }
 
       sshcpPressedButtonV172 = null;
       sshcpPressedRestoreV172 = null;
@@ -19027,7 +19087,7 @@ let scoreTimingDetail =
         overlay.style.removeProperty('opacity');
         overlay.style.removeProperty('transition');
         dismissQrWelcomeV170();
-      }, 1020);
+      }, 520);
     }
 
     function setupQrWelcomeV170() {
@@ -19059,10 +19119,11 @@ let scoreTimingDetail =
       const now = (window.performance && performance.now) ? performance.now() : Date.now();
       const elapsed = Math.max(0, now - started);
 
-      /* WELCOME owns 1.5s fade + 1.0s fully-visible hold. Authorization may
-         finish earlier, but TEAM cannot begin before 2.5s. If authorization
-         finishes later, TEAM begins only after authorization has actually won. */
-      const waitForTeam = Math.max(0, 2500 - elapsed);
+      /* V17.4 adds a .6s clean startup pause, then WELCOME owns a 1.5s fade
+         + 1.0s fully-visible hold. Authorization may finish earlier, but TEAM
+         cannot begin before 3.1s. If authorization finishes later, TEAM begins
+         only after authorization has actually won. */
+      const waitForTeam = Math.max(0, 3100 - elapsed);
 
       window.setTimeout(() => {
         if (!window.__sshcpIncomingQrWelcomeV170) return;
