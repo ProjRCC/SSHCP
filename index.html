@@ -1,24 +1,10 @@
-<!-- SSHCP | BASE KEY: 16.36-R8M4VK | BUILD KEY: 16.37-K3N8QF -->
+<!-- SSHCP | BASE KEY: 16.29-P7D4XM | BUILD KEY: 16.30-J4T8QH -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V16.37 — exact authorized-team naming correction only. A fresh incoming
-           QR URL paints a full-screen white overlay immediately. The normal
-           V16.30 app/auth startup continues underneath unchanged. */
-        var initialQrParams = new URLSearchParams(window.location.search);
-        var hasIncomingQrWelcome = !!(
-          initialQrParams.get('passkey') || initialQrParams.get('key')
-        );
-        window.__sshcpIncomingQrWelcome = hasIncomingQrWelcome;
-        window.__sshcpQrWelcomeStartedAt =
-          (window.performance && performance.now) ? performance.now() : Date.now();
-        if (hasIncomingQrWelcome) {
-          document.documentElement.classList.add('sshcp-qr-welcome');
-        }
-
         var rememberedView = sessionStorage.getItem('rotbCurrentView') || 'home';
         window.__sshcpBootView = rememberedView;
         if (rememberedView === 'scorecard' || rememberedView === 'leaderboard') {
@@ -9262,153 +9248,11 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
   color:var(--accent)!important;
 }
 
-
-/* =========================================================
-   SSHCP V16.36 — FRESH TEAM QR WELCOME OVERLAY
-   Presentation-only layer over the untouched V16.30 startup/auth flow.
-   ========================================================= */
-.qr-welcome-overlay-v1633{
-  position:fixed;
-  inset:0;
-  z-index:4900;
-  display:none;
-  box-sizing:border-box;
-  padding:0;
-  background:#fff;
-  color:var(--accent);
-  text-align:center;
-  overflow:hidden;
-}
-html.sshcp-qr-welcome .qr-welcome-overlay-v1633{
-  display:block;
-}
-.qr-welcome-inner-v1633{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-}
-.qr-welcome-title-v1633{
-  position:absolute;
-  left:50%;
-  top:25%;
-  width:100%;
-  margin:0;
-  transform:translate(-50%,-50%);
-  color:var(--accent);
-  font-family:Oswald,Arial Narrow,Arial,sans-serif;
-  font-size:clamp(62px,15vw,116px);
-  font-weight:400;
-  line-height:.95;
-  letter-spacing:.015em;
-  opacity:0;
-}
-html.sshcp-qr-welcome .qr-welcome-title-v1633{
-  animation:sshcpQrWelcomeFadeV1633 .5s ease-out forwards;
-}
-.qr-welcome-team-v1633{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:90vw;
-  max-width:90vw;
-  margin:0;
-  transform:translate(-50%,-100%);
-  color:var(--accent);
-  font-family:Oswald,Arial Narrow,Arial,sans-serif;
-  font-size:clamp(74px,18vw,142px);
-  font-weight:700;
-  line-height:.92;
-  letter-spacing:.005em;
-  white-space:nowrap;
-  overflow:hidden;
-  opacity:0;
-}
-.qr-welcome-overlay-v1633.show-team .qr-welcome-team-v1633{
-  animation:sshcpQrWelcomeTeamV1633 .5s ease-out forwards;
-}
-.qr-welcome-actions-v1633{
-  position:absolute;
-  left:50%;
-  top:70%;
-  width:min(76vw,440px);
-  margin:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:clamp(16px,2.2dvh,24px);
-  opacity:0;
-  transform:translate(-50%,-50%) scale(.965);
-  pointer-events:none;
-}
-.qr-welcome-overlay-v1633.show-actions .qr-welcome-actions-v1633{
-  animation:sshcpQrWelcomeActionsV1633 .24s ease-out forwards;
-  pointer-events:auto;
-}
-.qr-welcome-button-v1633{
-  height:clamp(54px,7.2dvh,70px);
-  border-radius:9px;
-  font-family:Oswald,Arial Narrow,Arial,sans-serif;
-  font-size:clamp(24px,6vw,36px);
-  font-weight:700;
-  line-height:1;
-  letter-spacing:.02em;
-  -webkit-appearance:none;
-  appearance:none;
-}
-.qr-welcome-guide-v1633{
-  width:100%;
-  border:3px solid var(--accent);
-  background:#fff;
-  color:var(--accent);
-}
-.qr-welcome-enter-v1633{
-  width:64%;
-  border:3px solid var(--accent);
-  background:var(--accent);
-  color:var(--on-accent);
-}
-.qr-welcome-button-v1633:active{
-  filter:brightness(.92);
-}
-@keyframes sshcpQrWelcomeFadeV1633{
-  from{opacity:0}
-  to{opacity:1}
-}
-@keyframes sshcpQrWelcomeTeamV1633{
-  from{opacity:0}
-  to{opacity:1}
-}
-@keyframes sshcpQrWelcomeActionsV1633{
-  from{opacity:0;transform:translate(-50%,-50%) scale(.965)}
-  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
-}
-@media (prefers-reduced-motion:reduce){
-  html.sshcp-qr-welcome .qr-welcome-title-v1633,
-  .qr-welcome-overlay-v1633.show-team .qr-welcome-team-v1633,
-  .qr-welcome-overlay-v1633.show-actions .qr-welcome-actions-v1633{
-    animation-duration:.01ms!important;
-  }
-}
-
 </style>
 </head>
 
 
 <body>
-
-  <!-- SSHCP V16.36 — fresh QR presentation layer only. The normal app
-       initializes underneath; ENTER simply removes this white overlay. -->
-  <div id="qrWelcomeOverlayV1633" class="qr-welcome-overlay-v1633" aria-hidden="true">
-    <div class="qr-welcome-inner-v1633">
-      <div class="qr-welcome-title-v1633">WELCOME</div>
-      <div id="qrWelcomeTeamV1633" class="qr-welcome-team-v1633"></div>
-      <div class="qr-welcome-actions-v1633">
-        <button id="qrWelcomeGuideV1633" class="qr-welcome-button-v1633 qr-welcome-guide-v1633" type="button">QUICK GUIDE</button>
-        <button id="qrWelcomeEnterV1633" class="qr-welcome-button-v1633 qr-welcome-enter-v1633" type="button">ENTER</button>
-      </div>
-    </div>
-  </div>
 
   <div
     id="topLoading"
@@ -9519,7 +9363,7 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.36</span>
+          <span class="home-version-info">SSHCP V16.30</span>
         </button>
 
       </div>
@@ -10874,10 +10718,10 @@ let scoreTimingDetail =
       }
     }
     function compactTestAuthTeamLabel(name) {
-      /* V16.37 — authorization controls must show the exact linked team name.
-         Do not shorten ROTB TEAM 4 to TEAM 4. Existing responsive fitting will
-         shrink the button text if the full name needs additional width. */
-      return String(name || '').trim().toUpperCase() || 'TEAM';
+      const text = String(name || '').trim().toUpperCase();
+      const match = text.match(/\bTEAM\s*#?\s*(\d{1,2})\b/i);
+      if (match) return 'TEAM ' + match[1];
+      return text || 'TEAM';
     }
 
     function syncTestAuthorizationToggle(){
@@ -18556,112 +18400,6 @@ let scoreTimingDetail =
        ========================================================= */
 
 
-    function qrWelcomeDisplayTeamV1633(name) {
-      /* V16.36: show the exact linked team name. Standard assigned teams remain
-         ROTB TEAM n rather than being visually shortened to TEAM n. */
-      return String(name || '').trim().toUpperCase();
-    }
-
-    function fitQrWelcomeTeamV1634() {
-      const team = document.getElementById('qrWelcomeTeamV1633');
-      if (!team || !team.textContent) return;
-
-      /* V16.36: TEAM sizing is driven by horizontal fill, not vertical height.
-         Measure the exact linked team name and size it so the rendered text
-         itself occupies 80% of the viewport width. The resulting line box stays
-         anchored by CSS with its bottom edge exactly at 50% viewport height. */
-      const targetWidth = Math.max(1, window.innerWidth * 0.80);
-      const probeSize = 100;
-      const minimum = 18;
-
-      team.style.width = 'max-content';
-      team.style.maxWidth = 'none';
-      team.style.fontSize = probeSize + 'px';
-
-      const measuredWidth = team.getBoundingClientRect().width;
-      let size = measuredWidth > 0
-        ? probeSize * (targetWidth / measuredWidth)
-        : probeSize;
-      size = Math.max(minimum, size);
-
-      team.style.fontSize = size.toFixed(2) + 'px';
-      team.style.width = '90vw';
-      team.style.maxWidth = '90vw';
-    }
-
-    function dismissQrWelcomeV1633() {
-      const overlay = document.getElementById('qrWelcomeOverlayV1633');
-      if (overlay) {
-        overlay.classList.remove('show-team', 'show-actions');
-        overlay.setAttribute('aria-hidden', 'true');
-      }
-      document.documentElement.classList.remove('sshcp-qr-welcome');
-      window.__sshcpIncomingQrWelcome = false;
-    }
-
-    function setupQrWelcomeControlsV1633() {
-      const overlay = document.getElementById('qrWelcomeOverlayV1633');
-      const guide = document.getElementById('qrWelcomeGuideV1633');
-      const enter = document.getElementById('qrWelcomeEnterV1633');
-      if (!overlay || !window.__sshcpIncomingQrWelcome) return;
-
-      overlay.setAttribute('aria-hidden', 'false');
-
-      if (guide && !guide.dataset.boundV1633) {
-        guide.dataset.boundV1633 = '1';
-        guide.addEventListener('click', showQuickGuide);
-      }
-
-      if (enter && !enter.dataset.boundV1633) {
-        enter.dataset.boundV1633 = '1';
-        enter.addEventListener('click', dismissQrWelcomeV1633);
-      }
-    }
-
-    function revealQrWelcomeAfterAuthV1633() {
-      if (!window.__sshcpIncomingQrWelcome) return;
-
-      const overlay = document.getElementById('qrWelcomeOverlayV1633');
-      const team = document.getElementById('qrWelcomeTeamV1633');
-      if (!overlay || !team) return;
-
-      /* The existing V16.30 auth flow remains authoritative. If the incoming
-         QR did not resolve to an assigned TEAM QR, remove only the presentation
-         layer so the existing invalid/unassigned/MASTER behavior is visible. */
-      if (!(isTeamQr() && getQrTeam())) {
-        dismissQrWelcomeV1633();
-        return;
-      }
-
-      const started = Number(window.__sshcpQrWelcomeStartedAt) || 0;
-      const now = (window.performance && performance.now) ? performance.now() : Date.now();
-      const elapsed = Math.max(0, now - started);
-      const waitForWelcome = Math.max(0, 500 - elapsed);
-
-      window.setTimeout(() => {
-        if (!window.__sshcpIncomingQrWelcome) return;
-        team.textContent = qrWelcomeDisplayTeamV1633(getQrTeam());
-        fitQrWelcomeTeamV1634();
-        if (document.fonts && document.fonts.ready) {
-          document.fonts.ready.then(() => {
-            if (window.__sshcpIncomingQrWelcome) fitQrWelcomeTeamV1634();
-          }).catch(() => {});
-        }
-        overlay.classList.add('show-team');
-
-        window.setTimeout(() => {
-          if (!window.__sshcpIncomingQrWelcome) return;
-          overlay.classList.add('show-actions');
-        }, 500);
-      }, waitForWelcome);
-    }
-
-    window.addEventListener('resize', () => {
-      if (window.__sshcpIncomingQrWelcome) {
-        requestAnimationFrame(fitQrWelcomeTeamV1634);
-      }
-    });
-
     async function initialize() {
 
 
@@ -18719,9 +18457,7 @@ let scoreTimingDetail =
         hydrateLeaderboardSnapshotV53();
       }
 
-      setupQrWelcomeControlsV1633();
       await initializeQrAuthorization();
-      revealQrWelcomeAfterAuthV1633();
       if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
       syncTestAuthorizationToggle();
       syncTeamQrLockedUi();
@@ -18895,9 +18631,6 @@ let scoreTimingDetail =
         });
       }).catch(() => {});
     }
-
-    /* SSHCP V16.37 — full-screen fresh-QR welcome is an overlay only;
-       V16.30 startup/auth/navigation remain the underlying behavior. */
 
     initialize()
       .catch(error => {
