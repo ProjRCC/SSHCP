@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 16.34-WVRMN0 | BUILD KEY: 16.35-HT7Q2M -->
+<!-- SSHCP | BASE KEY: 16.35-HT7Q2M | BUILD KEY: 16.36-R8M4VK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V16.35 — QR WELCOME anchor/fill refinement only. A fresh incoming
+        /* SSHCP V16.36 — QR WELCOME exact linked-name / 80% fill refinement only. A fresh incoming
            QR URL paints a full-screen white overlay immediately. The normal
            V16.30 app/auth startup continues underneath unchanged. */
         var initialQrParams = new URLSearchParams(window.location.search);
@@ -9264,7 +9264,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V16.35 — FRESH TEAM QR WELCOME OVERLAY
+   SSHCP V16.36 — FRESH TEAM QR WELCOME OVERLAY
    Presentation-only layer over the untouched V16.30 startup/auth flow.
    ========================================================= */
 .qr-welcome-overlay-v1633{
@@ -9310,8 +9310,8 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
   position:absolute;
   left:50%;
   top:50%;
-  width:80vw;
-  max-width:80vw;
+  width:90vw;
+  max-width:90vw;
   margin:0;
   transform:translate(-50%,-100%);
   color:var(--accent);
@@ -9330,7 +9330,7 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
 .qr-welcome-actions-v1633{
   position:absolute;
   left:50%;
-  top:75%;
+  top:70%;
   width:min(76vw,440px);
   margin:0;
   display:flex;
@@ -9397,7 +9397,7 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
 
 <body>
 
-  <!-- SSHCP V16.35 — fresh QR presentation layer only. The normal app
+  <!-- SSHCP V16.36 — fresh QR presentation layer only. The normal app
        initializes underneath; ENTER simply removes this white overlay. -->
   <div id="qrWelcomeOverlayV1633" class="qr-welcome-overlay-v1633" aria-hidden="true">
     <div class="qr-welcome-inner-v1633">
@@ -9519,7 +9519,7 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.35</span>
+          <span class="home-version-info">SSHCP V16.36</span>
         </button>
 
       </div>
@@ -18557,20 +18557,20 @@ let scoreTimingDetail =
 
 
     function qrWelcomeDisplayTeamV1633(name) {
-      const text = String(name || '').trim().toUpperCase();
-      const match = text.match(/^ROTB\s+TEAM\s+(\d+)$/i);
-      return match ? ('TEAM ' + match[1]) : text;
+      /* V16.36: show the exact linked team name. Standard assigned teams remain
+         ROTB TEAM n rather than being visually shortened to TEAM n. */
+      return String(name || '').trim().toUpperCase();
     }
 
     function fitQrWelcomeTeamV1634() {
       const team = document.getElementById('qrWelcomeTeamV1633');
       if (!team || !team.textContent) return;
 
-      /* V16.35: TEAM sizing is driven by horizontal fill, not vertical height.
-         Measure the actual linked team text and size it so the rendered text
-         itself occupies 70% of the viewport width. The resulting line box is
-         then anchored by CSS with its bottom edge exactly at 50% viewport height. */
-      const targetWidth = Math.max(1, window.innerWidth * 0.70);
+      /* V16.36: TEAM sizing is driven by horizontal fill, not vertical height.
+         Measure the exact linked team name and size it so the rendered text
+         itself occupies 80% of the viewport width. The resulting line box stays
+         anchored by CSS with its bottom edge exactly at 50% viewport height. */
+      const targetWidth = Math.max(1, window.innerWidth * 0.80);
       const probeSize = 100;
       const minimum = 18;
 
@@ -18585,8 +18585,8 @@ let scoreTimingDetail =
       size = Math.max(minimum, size);
 
       team.style.fontSize = size.toFixed(2) + 'px';
-      team.style.width = '80vw';
-      team.style.maxWidth = '80vw';
+      team.style.width = '90vw';
+      team.style.maxWidth = '90vw';
     }
 
     function dismissQrWelcomeV1633() {
