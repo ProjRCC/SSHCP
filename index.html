@@ -1,10 +1,24 @@
-<!-- SSHCP | BASE KEY: 16.29-P7D4XM | BUILD KEY: 16.30-J4T8QH -->
+<!-- SSHCP | BASE KEY: 16.30-J4T8QH | BUILD KEY: 16.31-R2K8MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
+        /* SSHCP V16.31 — clean restart from exact V16.30. A fresh QR URL
+           gets a presentation-only Welcome layer immediately. The existing
+           V16.30 authorization flow remains the only authorization path. */
+        var initialQrParams = new URLSearchParams(window.location.search);
+        var hasIncomingQrWelcome = !!(
+          initialQrParams.get('passkey') || initialQrParams.get('key')
+        );
+        window.__sshcpIncomingQrWelcomeV1631 = hasIncomingQrWelcome;
+        window.__sshcpQrWelcomeStartedAtV1631 =
+          (window.performance && performance.now) ? performance.now() : Date.now();
+        if (hasIncomingQrWelcome) {
+          document.documentElement.classList.add('sshcp-qr-welcome-v1631');
+        }
+
         var rememberedView = sessionStorage.getItem('rotbCurrentView') || 'home';
         window.__sshcpBootView = rememberedView;
         if (rememberedView === 'scorecard' || rememberedView === 'leaderboard') {
@@ -9248,11 +9262,141 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
   color:var(--accent)!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V16.31 — CLEAN QR WELCOME OVERLAY
+   Built directly from V16.30. Presentation only: it never starts a second
+   auth request and ENTER only removes this layer.
+   ========================================================= */
+.qr-welcome-overlay-v1631{
+  position:fixed;
+  inset:0;
+  z-index:4900;
+  display:none;
+  box-sizing:border-box;
+  background:#fff;
+  color:var(--accent);
+  text-align:center;
+  overflow:hidden;
+}
+html.sshcp-qr-welcome-v1631 .qr-welcome-overlay-v1631{
+  display:block;
+}
+.qr-welcome-title-v1631{
+  position:absolute;
+  left:50%;
+  top:25%;
+  width:100%;
+  transform:translate(-50%,-50%);
+  margin:0;
+  color:var(--accent);
+  font-family:Oswald,Arial Narrow,Arial,sans-serif;
+  font-size:clamp(62px,15vw,116px);
+  font-weight:400;
+  line-height:.95;
+  letter-spacing:.015em;
+  white-space:nowrap;
+  opacity:0;
+}
+html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631{
+  animation:sshcpQrWelcomeFadeV1631 .5s ease-out forwards;
+}
+.qr-welcome-team-v1631{
+  position:absolute;
+  left:50%;
+  bottom:50%;
+  width:80vw;
+  max-width:80vw;
+  transform:translateX(-50%);
+  margin:0;
+  color:var(--accent);
+  font-family:Oswald,Arial Narrow,Arial,sans-serif;
+  font-weight:700;
+  line-height:.92;
+  letter-spacing:.005em;
+  white-space:nowrap;
+  overflow:visible;
+  opacity:0;
+}
+.qr-welcome-team-v1631 > span{
+  display:inline-block;
+  white-space:nowrap;
+}
+.qr-welcome-overlay-v1631.show-team .qr-welcome-team-v1631{
+  animation:sshcpQrWelcomeTeamV1631 .5s ease-out forwards;
+}
+.qr-welcome-actions-v1631{
+  position:absolute;
+  left:50%;
+  top:70%;
+  width:min(76vw,440px);
+  transform:translate(-50%,-50%) scale(.965);
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(16px,2.2dvh,24px);
+  opacity:0;
+  pointer-events:none;
+}
+.qr-welcome-overlay-v1631.show-actions .qr-welcome-actions-v1631{
+  animation:sshcpQrWelcomeActionsV1631 .24s ease-out forwards;
+  pointer-events:auto;
+}
+.qr-welcome-button-v1631{
+  height:clamp(54px,7.2dvh,70px);
+  border-radius:9px;
+  font-family:Oswald,Arial Narrow,Arial,sans-serif;
+  font-size:clamp(24px,6vw,36px);
+  font-weight:700;
+  line-height:1;
+  letter-spacing:.02em;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.qr-welcome-guide-v1631{
+  width:100%;
+  border:3px solid var(--accent);
+  background:#fff;
+  color:var(--accent);
+}
+.qr-welcome-enter-v1631{
+  width:64%;
+  border:3px solid var(--accent);
+  background:var(--accent);
+  color:var(--on-accent);
+}
+.qr-welcome-button-v1631:active{filter:brightness(.92)}
+@keyframes sshcpQrWelcomeFadeV1631{from{opacity:0}to{opacity:1}}
+@keyframes sshcpQrWelcomeTeamV1631{from{opacity:0}to{opacity:1}}
+@keyframes sshcpQrWelcomeActionsV1631{
+  from{opacity:0;transform:translate(-50%,-50%) scale(.965)}
+  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+@media (prefers-reduced-motion:reduce){
+  html.sshcp-qr-welcome-v1631 .qr-welcome-title-v1631,
+  .qr-welcome-overlay-v1631.show-team .qr-welcome-team-v1631,
+  .qr-welcome-overlay-v1631.show-actions .qr-welcome-actions-v1631{
+    animation-duration:.01ms!important;
+  }
+}
+
 </style>
 </head>
 
 
 <body>
+
+  <!-- SSHCP V16.31 — clean fresh-QR Welcome presentation layer. -->
+  <div id="qrWelcomeOverlayV1631" class="qr-welcome-overlay-v1631" aria-hidden="true">
+    <div class="qr-welcome-title-v1631">WELCOME</div>
+    <div id="qrWelcomeTeamV1631" class="qr-welcome-team-v1631"><span id="qrWelcomeTeamTextV1631"></span></div>
+    <div class="qr-welcome-actions-v1631">
+      <button id="qrWelcomeGuideV1631" class="qr-welcome-button-v1631 qr-welcome-guide-v1631" type="button">QUICK GUIDE</button>
+      <button id="qrWelcomeEnterV1631" class="qr-welcome-button-v1631 qr-welcome-enter-v1631" type="button">ENTER</button>
+    </div>
+  </div>
 
   <div
     id="topLoading"
@@ -10672,6 +10816,39 @@ let scoreTimingDetail =
     const SSHCP_TEAM_AUTH_KEY = 'sshcpTeamAuthorization';
     const SSHCP_MASTER_TEST_KEY = 'glmNnV63TWS42fcRB8z2yldF';
 
+    /* V16.31 — one QR-auth owner at a time. This fixes the latent V16.30
+       race where a slow, older request could finish after REMOVE AUTH and
+       write authorization back into storage. */
+    const SSHCP_QR_AUTH_REQUEST_KEY_V1631 = 'sshcpQrAuthActiveRequestV1631';
+    let sshcpQrAuthControllerV1631 = null;
+
+    function makeQrAuthRequestTokenV1631() {
+      return String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+    }
+
+    function beginQrAuthRequestV1631() {
+      if (sshcpQrAuthControllerV1631) {
+        try { sshcpQrAuthControllerV1631.abort(); } catch (_) {}
+      }
+      const token = makeQrAuthRequestTokenV1631();
+      localStorage.setItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631, token);
+      const controller = typeof AbortController === 'function' ? new AbortController() : null;
+      sshcpQrAuthControllerV1631 = controller;
+      return { token, controller };
+    }
+
+    function invalidateQrAuthRequestsV1631() {
+      localStorage.setItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631, 'REMOVED-' + makeQrAuthRequestTokenV1631());
+      if (sshcpQrAuthControllerV1631) {
+        try { sshcpQrAuthControllerV1631.abort(); } catch (_) {}
+      }
+      sshcpQrAuthControllerV1631 = null;
+    }
+
+    function qrAuthRequestIsCurrentV1631(token) {
+      return localStorage.getItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631) === token;
+    }
+
     /* CF V1.3 now supplies the complete TEST/admin QR directory in one
        read-only request. No permanent passkey list is hard-coded here. */
     const SSHCP_TEST_QR_CACHE_KEY = 'sshcpTestQrDirectoryCacheV20';
@@ -10718,10 +10895,9 @@ let scoreTimingDetail =
       }
     }
     function compactTestAuthTeamLabel(name) {
-      const text = String(name || '').trim().toUpperCase();
-      const match = text.match(/\bTEAM\s*#?\s*(\d{1,2})\b/i);
-      if (match) return 'TEAM ' + match[1];
-      return text || 'TEAM';
+      /* V16.31 — display the authoritative TEAM name exactly; button fitting
+         already shrinks long labels when needed. */
+      return String(name || '').trim().toUpperCase() || 'TEAM';
     }
 
     function syncTestAuthorizationToggle(){
@@ -10766,6 +10942,7 @@ let scoreTimingDetail =
       syncTeamQrLockedUi();
     }
     function removeQrAuthorization(){
+      invalidateQrAuthRequestsV1631();
       clearQrAuthorization();
       localStorage.removeItem('rotbAuthorizedTeam');
       scorecardHasLoaded = false;
@@ -10830,6 +11007,7 @@ let scoreTimingDetail =
       const clean=String(passkey||'').trim();
 
       if(!clean){
+        invalidateQrAuthRequestsV1631();
         clearQrAuthorization();
         localStorage.removeItem('rotbAuthorizedTeam');
         syncTestAuthorizationToggle();
@@ -10839,15 +11017,24 @@ let scoreTimingDetail =
         return false;
       }
 
+      const request = beginQrAuthRequestV1631();
+      const requestToken = request.token;
       const started = timerStart();
 
       try{
+        const fetchOptions = {cache:'no-store'};
+        if (request.controller) fetchOptions.signal = request.controller.signal;
+
         const response=await fetch(
           CLOUDFLARE_API_URL+
           '?action=qrAuth&passkey='+encodeURIComponent(clean)+
           '&refresh='+Date.now(),
-          {cache:'no-store'}
+          fetchOptions
         );
+
+        /* A newer auth or REMOVE AUTH owns state now. Ignore this response
+           completely — no storage write, no failure popup, no stale log. */
+        if(!qrAuthRequestIsCurrentV1631(requestToken)) return null;
 
         const httpStatus=response.status;
         let data;
@@ -10855,6 +11042,7 @@ let scoreTimingDetail =
         try{
           data=await response.json();
         }catch(_){
+          if(!qrAuthRequestIsCurrentV1631(requestToken)) return null;
           addTestLog(
             'QR AUTH CHECK',
             'FAILED',
@@ -10864,6 +11052,8 @@ let scoreTimingDetail =
           if(showFailure) showAuthorizationCheckFailed(clean);
           return false;
         }
+
+        if(!qrAuthRequestIsCurrentV1631(requestToken)) return null;
 
         if(!response.ok || !data || data.ok!==true){
           addTestLog(
@@ -10907,6 +11097,8 @@ let scoreTimingDetail =
           return false;
         }
 
+        if(!qrAuthRequestIsCurrentV1631(requestToken)) return null;
+
         saveQrAuthorization(data,clean);
         syncTestAuthorizationToggle();
         updateHomeScorecardAccess();
@@ -10925,6 +11117,13 @@ let scoreTimingDetail =
 
         return true;
       }catch(error){
+        if(
+          !qrAuthRequestIsCurrentV1631(requestToken) ||
+          (error && error.name === 'AbortError')
+        ){
+          return null;
+        }
+
         addTestLog(
           'QR AUTH CHECK',
           'FAILED',
@@ -10933,6 +11132,13 @@ let scoreTimingDetail =
         );
         if(showFailure) showAuthorizationCheckFailed(clean);
         return false;
+      }finally{
+        if(
+          sshcpQrAuthControllerV1631 === request.controller &&
+          qrAuthRequestIsCurrentV1631(requestToken)
+        ){
+          sshcpQrAuthControllerV1631 = null;
+        }
       }
     }
 
@@ -10946,7 +11152,7 @@ let scoreTimingDetail =
         history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
       }else if(getQrPasskey()){
         const storedOk = await validateQrPasskey(getQrPasskey(),false);
-        if (!storedOk) {
+        if (storedOk === false) {
           clearQrAuthorization();
           localStorage.removeItem('rotbAuthorizedTeam');
         }
@@ -11134,9 +11340,15 @@ let scoreTimingDetail =
       const assigned = (directory || [])
         .filter(item => item.qrId !== 'MASTER' && item.assigned && item.team)
         .sort((a, b) => {
-          const as = Number((String(a.team).match(/\d+/) || [999])[0]);
-          const bs = Number((String(b.team).match(/\d+/) || [999])[0]);
-          return as - bs || String(a.team).localeCompare(String(b.team));
+          /* V16.31 — QR directory order follows the authoritative QR ID/slot,
+             so custom names such as SUPERDUPER LONGNAME remain Team 2. */
+          const as = Number(a.qrId);
+          const bs = Number(b.qrId);
+          const aNum = Number.isFinite(as);
+          const bNum = Number.isFinite(bs);
+          if (aNum && bNum && as !== bs) return as - bs;
+          if (aNum !== bNum) return aNum ? -1 : 1;
+          return String(a.qrId).localeCompare(String(b.qrId), undefined, { numeric:true });
         });
 
       menu.innerHTML =
@@ -18400,6 +18612,99 @@ let scoreTimingDetail =
        ========================================================= */
 
 
+    function dismissQrWelcomeV1631() {
+      const overlay = document.getElementById('qrWelcomeOverlayV1631');
+      if (overlay) {
+        overlay.classList.remove('show-team','show-actions');
+        overlay.setAttribute('aria-hidden','true');
+      }
+      document.documentElement.classList.remove('sshcp-qr-welcome-v1631');
+      window.__sshcpIncomingQrWelcomeV1631 = false;
+    }
+
+    function fitQrWelcomeTeamV1631() {
+      const box = document.getElementById('qrWelcomeTeamV1631');
+      const span = document.getElementById('qrWelcomeTeamTextV1631');
+      if (!box || !span || !span.textContent) return;
+
+      /* Width is the governing dimension. Measure the actual rendered name and
+         choose whatever font height is required for the text itself to occupy
+         80% of the viewport width on one line. */
+      const targetWidth = Math.max(1, window.innerWidth * 0.80);
+      span.style.fontSize = '100px';
+      const measured = span.getBoundingClientRect().width;
+      if (!(measured > 0)) return;
+
+      let size = 100 * targetWidth / measured;
+      size = Math.max(12, size);
+      span.style.fontSize = size.toFixed(2) + 'px';
+
+      /* One correction pass accounts for font rounding / letter spacing. */
+      const corrected = span.getBoundingClientRect().width;
+      if (corrected > 0) {
+        size *= targetWidth / corrected;
+        span.style.fontSize = Math.max(12, size).toFixed(2) + 'px';
+      }
+    }
+
+    function setupQrWelcomeV1631() {
+      if (!window.__sshcpIncomingQrWelcomeV1631) return;
+      const overlay = document.getElementById('qrWelcomeOverlayV1631');
+      const guide = document.getElementById('qrWelcomeGuideV1631');
+      const enter = document.getElementById('qrWelcomeEnterV1631');
+      if (!overlay) return;
+
+      overlay.setAttribute('aria-hidden','false');
+      if (guide) guide.addEventListener('click', showQuickGuide, { once:false });
+      if (enter) enter.addEventListener('click', dismissQrWelcomeV1631, { once:true });
+    }
+
+    function revealQrWelcomeAfterAuthV1631() {
+      if (!window.__sshcpIncomingQrWelcomeV1631) return;
+      const overlay = document.getElementById('qrWelcomeOverlayV1631');
+      const span = document.getElementById('qrWelcomeTeamTextV1631');
+      if (!overlay || !span) return;
+
+      /* Only an assigned TEAM QR receives the Welcome continuation. Invalid,
+         unassigned, or MASTER links fall back to normal V16.30 behavior. */
+      if (!(isTeamQr() && getQrTeam())) {
+        dismissQrWelcomeV1631();
+        return;
+      }
+
+      const started = Number(window.__sshcpQrWelcomeStartedAtV1631) || 0;
+      const now = (window.performance && performance.now) ? performance.now() : Date.now();
+      const wait = Math.max(0, 500 - Math.max(0, now - started));
+
+      window.setTimeout(() => {
+        if (!window.__sshcpIncomingQrWelcomeV1631) return;
+        span.textContent = String(getQrTeam() || '').trim().toUpperCase();
+
+        const revealTeam = () => {
+          if (!window.__sshcpIncomingQrWelcomeV1631) return;
+          fitQrWelcomeTeamV1631();
+          overlay.classList.add('show-team');
+          window.setTimeout(() => {
+            if (window.__sshcpIncomingQrWelcomeV1631) overlay.classList.add('show-actions');
+          }, 500);
+        };
+
+        /* Fit before the fade whenever the real font is available so the team
+           name does not visibly resize after it appears. */
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(revealTeam).catch(revealTeam);
+        } else {
+          revealTeam();
+        }
+      }, wait);
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.__sshcpIncomingQrWelcomeV1631) {
+        requestAnimationFrame(fitQrWelcomeTeamV1631);
+      }
+    });
+
     async function initialize() {
 
 
@@ -18457,7 +18762,9 @@ let scoreTimingDetail =
         hydrateLeaderboardSnapshotV53();
       }
 
+      setupQrWelcomeV1631();
       await initializeQrAuthorization();
+      revealQrWelcomeAfterAuthV1631();
       if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
       syncTestAuthorizationToggle();
       syncTeamQrLockedUi();
