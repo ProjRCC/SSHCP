@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 16.35-HT7Q2M | BUILD KEY: 16.36-R8M4VK -->
+<!-- SSHCP | BASE KEY: 16.36-R8M4VK | BUILD KEY: 16.37-K3N8QF -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V16.36 — QR WELCOME exact linked-name / 80% fill refinement only. A fresh incoming
+        /* SSHCP V16.37 — exact authorized-team naming correction only. A fresh incoming
            QR URL paints a full-screen white overlay immediately. The normal
            V16.30 app/auth startup continues underneath unchanged. */
         var initialQrParams = new URLSearchParams(window.location.search);
@@ -10874,10 +10874,10 @@ let scoreTimingDetail =
       }
     }
     function compactTestAuthTeamLabel(name) {
-      const text = String(name || '').trim().toUpperCase();
-      const match = text.match(/\bTEAM\s*#?\s*(\d{1,2})\b/i);
-      if (match) return 'TEAM ' + match[1];
-      return text || 'TEAM';
+      /* V16.37 — authorization controls must show the exact linked team name.
+         Do not shorten ROTB TEAM 4 to TEAM 4. Existing responsive fitting will
+         shrink the button text if the full name needs additional width. */
+      return String(name || '').trim().toUpperCase() || 'TEAM';
     }
 
     function syncTestAuthorizationToggle(){
@@ -18896,7 +18896,7 @@ let scoreTimingDetail =
       }).catch(() => {});
     }
 
-    /* SSHCP V16.35 — full-screen fresh-QR welcome is an overlay only;
+    /* SSHCP V16.37 — full-screen fresh-QR welcome is an overlay only;
        V16.30 startup/auth/navigation remain the underlying behavior. */
 
     initialize()
@@ -18921,4 +18921,5 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
 
