@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.0-G7P4XN | BUILD KEY: 18.0b-N6R4QK -->
+<!-- SSHCP | BASE KEY: 18.0b-N6R4QK | BUILD KEY: 18.1-K7M4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.0b — based directly on exact V18.0 first GEEK MODE draft.
-           V18.0 Geek UI/data behavior, V17.11 Scorecard/Leaderboard geometry, V16.31 authorization,
-           scoring, save, leaderboard, Summary, and SKINS remain authoritative and unchanged.
-           V18.0b adds only the unauthenticated COMPETITOR Welcome path and temporary compact
-           GEEK diagnostic COPY logging. GEEK data is still requested only when GEEK MODE is tapped. */
+        /* SSHCP V18.1 — based directly on exact V18.0b (BUILD 18.0b-N6R4QK).
+           V18.0b Welcome, Geek diagnostics, V17.11 Scorecard/Leaderboard geometry, V16.31 authorization,
+           scoring, save, leaderboard data, Summary standings, and SKINS scoring remain authoritative.
+           V18.1 adds the locked Geek typography/column rules, global uppercase presentation except Quick Guide,
+           completed-HOME direct Scramble Summary routing, Summary HOME overlay, and SKINS BACK-only cleanup. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -10141,6 +10141,93 @@ button.sshcp-button-pressed-v172{
   }
 }
 
+/* =========================================================
+   SSHCP V18.1 — LOCKED PRESENTATION / POST-ROUND NAVIGATION
+   ========================================================= */
+
+/* Presentation only: golfer-facing app text is uppercase everywhere except
+   the Quick Guide, whose mixed-case instructional copy remains untouched. */
+body,
+body button,
+body input,
+body select,
+body textarea,
+body option{
+  text-transform:uppercase;
+}
+.modal-overlay.quick-guide,
+.modal-overlay.quick-guide *{
+  text-transform:none!important;
+}
+
+/* GEEK table geometry: STAT 35 / RESULT 20 / TEAM 45. */
+.geek-row-v180.header,
+.geek-row-v180.stat{
+  grid-template-columns:35fr 20fr 45fr!important;
+}
+
+/* Slightly larger GEEK filter checks; footer/button height remains locked. */
+.geek-filter-label-v180 input{
+  width:16px!important;
+  height:16px!important;
+  min-width:16px!important;
+}
+
+/* GEEK detail typography is viewport-height based; spacing and button heights
+   remain exactly where V18.0b put them. */
+.modal-overlay.geek-detail-v180 .modal-title{
+  font-size:5dvh!important;
+  text-transform:uppercase!important;
+}
+.modal-overlay.geek-detail-v180 .modal-text{
+  font-size:3dvh!important;
+}
+.geek-detail-description-v180{
+  font-size:3.5dvh!important;
+}
+.geek-detail-section-v180{
+  font-size:3dvh!important;
+}
+.geek-detail-result-v180{
+  font-size:4dvh!important;
+}
+.geek-detail-teams-v180{
+  font-size:3dvh!important;
+}
+.modal-overlay.geek-detail-v180 .modal-actions .modal-btn{
+  font-size:3dvh!important;
+}
+
+/* Scramble Summary HOME is an overlay, not a layout row. It uses the same
+   nav-button language and V16 shell offsets/dimensions as Scorecard/Leaderboard. */
+.modal-overlay.tournament-summary .summary-home-overlay-v181{
+  position:absolute!important;
+  top:var(--v16-top-inset,7px)!important;
+  left:var(--v16-rail,12px)!important;
+  z-index:20!important;
+  width:var(--v16-nav-w,70px)!important;
+  height:var(--v16-nav-h,39px)!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+/* SKINS keeps its existing button height/style, but HOME is removed and the
+   one remaining BACK button occupies the same half-width footprint, centered. */
+.modal-overlay.skins-results-v1627 .modal-actions.skins-back-only-v181{
+  grid-template-columns:1fr!important;
+  justify-items:center!important;
+}
+.modal-overlay.skins-results-v1627 .modal-actions.skins-back-only-v181 .modal-btn{
+  width:calc((100% - 10px) / 2)!important;
+  justify-self:center!important;
+}
+
 </style>
 </head>
 
@@ -10213,7 +10300,7 @@ button.sshcp-button-pressed-v172{
             try {
               if (window.__sshcpBootTournamentComplete === true) {
                 var homeLeaderboard = document.getElementById('homeLeaderboardButton');
-                if (homeLeaderboard) homeLeaderboard.textContent = 'FINAL RESULTS';
+                if (homeLeaderboard) homeLeaderboard.textContent = 'SCRAMBLE SUMMARY';
               }
             } catch (_) {}
           })();
@@ -10268,7 +10355,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.0b</span>
+          <span class="home-version-info">SSHCP V18.1</span>
         </button>
 
       </div>
@@ -12746,7 +12833,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.0b CONTROL CENTER LOG',
+        'SSHCP V18.1 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -16834,7 +16921,7 @@ let scoreTimingDetail =
       document.documentElement.classList.toggle('sshcp-tournament-complete', isComplete);
       if (els.homeLeaderboardButton) {
         els.homeLeaderboardButton.textContent = isComplete
-          ? 'FINAL RESULTS'
+          ? 'SCRAMBLE SUMMARY'
           : 'VIEW LIVE LEADERBOARD';
       }
     }
@@ -17860,32 +17947,46 @@ let scoreTimingDetail =
         : new Set();
     }
 
-    function fitGeekTextNodeV180(node, targetPx, minPx, horizontalPad = 4) {
-      if (!node) return;
-      node.style.removeProperty('font-size');
+    function measureGeekSharedFontV181(texts, targetPx, minPx, availablePx, fontWeight) {
+      const target = Math.max(minPx, Number(targetPx) || minPx);
+      const available = Math.max(1, Number(availablePx) || 1);
+      const probe = document.createElement('span');
+      probe.setAttribute('aria-hidden', 'true');
+      probe.style.position = 'fixed';
+      probe.style.left = '-10000px';
+      probe.style.top = '-10000px';
+      probe.style.width = 'max-content';
+      probe.style.height = 'auto';
+      probe.style.visibility = 'hidden';
+      probe.style.pointerEvents = 'none';
+      probe.style.whiteSpace = 'nowrap';
+      probe.style.fontFamily = "'Oswald', Arial, sans-serif";
+      probe.style.fontWeight = String(fontWeight || 600);
+      probe.style.lineHeight = '1';
+      probe.style.textTransform = 'uppercase';
+      probe.style.fontSize = target + 'px';
+      document.body.appendChild(probe);
 
-      const available = Math.max(1, node.clientWidth - horizontalPad);
-      let size = targetPx;
-      node.style.setProperty('font-size', size + 'px', 'important');
-
-      if (node.scrollWidth <= available + 0.5) return;
-
-      let low = minPx;
-      let high = targetPx;
-      let best = minPx;
-
-      for (let i = 0; i < 10; i++) {
-        const mid = (low + high) / 2;
-        node.style.setProperty('font-size', mid + 'px', 'important');
-        if (node.scrollWidth <= available + 0.5) {
-          best = mid;
-          low = mid;
-        } else {
-          high = mid;
+      let shared = target;
+      (Array.isArray(texts) ? texts : []).forEach(value => {
+        probe.textContent = String(value ?? '');
+        const width = probe.getBoundingClientRect().width;
+        if (width > available && width > 0) {
+          shared = Math.min(shared, target * (available / width));
         }
-      }
+      });
 
-      node.style.setProperty('font-size', best + 'px', 'important');
+      probe.remove();
+      return Math.max(minPx, Math.min(target, shared * 0.985));
+    }
+
+    function allGeekStatsV181() {
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return [];
+      return geekDataV180.categories.flatMap(categoryBlock =>
+        Array.isArray(categoryBlock && categoryBlock.stats)
+          ? categoryBlock.stats.filter(stat => stat && stat.supported !== false)
+          : []
+      );
     }
 
     function fitGeekTableTextV180() {
@@ -17895,31 +17996,51 @@ let scoreTimingDetail =
       const rowHeight =
         parseFloat(getComputedStyle(shell).getPropertyValue('--geek-row-h-v180')) ||
         44;
+      const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
+      if (headerCells.length !== 3) return;
 
-      const statTarget = Math.min(18, rowHeight * 0.34);
-      const resultTarget = Math.min(18, rowHeight * 0.36);
-      const teamTarget = Math.min(17, rowHeight * 0.31);
+      const widths = headerCells.map(cell => cell.getBoundingClientRect().width);
+      if (widths.some(width => !(width > 0))) return;
 
-      shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
-        fitGeekTextNodeV180(
-          row.querySelector('.geek-stat-cell-v180'),
-          statTarget,
-          9,
-          18
-        );
-        fitGeekTextNodeV180(
-          row.querySelector('.geek-result-cell-v180'),
-          resultTarget,
-          10,
-          10
-        );
-        fitGeekTextNodeV180(
-          row.querySelector('.geek-team-button-v180'),
-          teamTarget,
-          8,
-          10
-        );
-      });
+      const stats = allGeekStatsV181();
+      const statTexts = stats.map(stat => String(stat.stat || ''));
+      const resultTexts = stats.map(stat => String(stat.value ?? ''));
+      const teamTexts = stats.map(stat => geekTeamLabelV180(stat));
+
+      /* V18.1 locked targets: STAT 60%, RESULT 70%, TEAM 60% of row height.
+         One shared fitted size per column is calculated from the most
+         restrictive value across ALL Geek data, so filters never cause text
+         size to jump. */
+      const statSize = measureGeekSharedFontV181(
+        statTexts, rowHeight * 0.60, 8, widths[0] - 20, 600
+      );
+      const resultSize = measureGeekSharedFontV181(
+        resultTexts, rowHeight * 0.70, 8, widths[1] - 12, 800
+      );
+      const teamSize = measureGeekSharedFontV181(
+        teamTexts, rowHeight * 0.60, 8, widths[2] - 20, 700
+      );
+
+      shell.querySelectorAll('.geek-stat-cell-v180').forEach(node =>
+        node.style.setProperty('font-size', statSize.toFixed(2) + 'px', 'important')
+      );
+      shell.querySelectorAll('.geek-result-cell-v180').forEach(node =>
+        node.style.setProperty('font-size', resultSize.toFixed(2) + 'px', 'important')
+      );
+      shell.querySelectorAll('.geek-team-button-v180').forEach(node =>
+        node.style.setProperty('font-size', teamSize.toFixed(2) + 'px', 'important')
+      );
+
+      /* Header: 60% row-height target, but STAT / RESULT / TEAM all receive the
+         same final size, governed by whichever header cell is most restrictive. */
+      const headerTarget = rowHeight * 0.60;
+      const headerFits = ['STAT', 'RESULT', 'TEAM'].map((label, index) =>
+        measureGeekSharedFontV181([label], headerTarget, 8, widths[index] - 12, 800)
+      );
+      const headerSize = Math.min(...headerFits);
+      headerCells.forEach(node =>
+        node.style.setProperty('font-size', headerSize.toFixed(2) + 'px', 'important')
+      );
     }
 
     function fitGeekRowsV180() {
@@ -18191,7 +18312,7 @@ let scoreTimingDetail =
 
       closeModal();
       els.modalOverlay.classList.add('geek-detail-v180');
-      els.modalTitle.textContent = String(stat && stat.stat || 'GEEK MODE');
+      els.modalTitle.textContent = String(stat && stat.stat || 'GEEK MODE').toUpperCase();
       els.modalTitle.classList.remove('testing');
       els.modalInput.style.display = 'none';
 
@@ -18375,15 +18496,11 @@ let scoreTimingDetail =
         els.modalBody.replaceChildren(frame);
       }
 
-      const home = makeModalButton('HOME', '', () => {
-        closeModal();
-        showHome();
-      });
       const back = makeModalButton('BACK', '', () => {
         showTournamentSummary();
       });
-      els.modalActions.className = 'modal-actions';
-      els.modalActions.replaceChildren(home, back);
+      els.modalActions.className = 'modal-actions single skins-back-only-v181';
+      els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
       requestAnimationFrame(fitSkinsTableTextV1627);
     }
@@ -18411,6 +18528,29 @@ let scoreTimingDetail =
         els.modalOverlay.classList.add('open');
         revealDataShieldAfterLayoutV177('skins', skinsRevealShieldV177, 2);
       }
+    }
+
+    function installSummaryHomeOverlayV181() {
+      if (!els.modalBox) return;
+      const existing = els.modalBox.querySelector('.summary-home-overlay-v181');
+      if (existing) existing.remove();
+
+      const home = document.createElement('button');
+      home.type = 'button';
+      home.className = 'nav-button summary-home-overlay-v181';
+      home.textContent = 'HOME';
+      home.addEventListener('click', showHome);
+      els.modalBox.appendChild(home);
+
+      requestAnimationFrame(() => {
+        const height = home.getBoundingClientRect().height || 39;
+        fitTextToBoxV5(home, home, height * 0.52, 12, {
+          horizontalPad: 8,
+          verticalPad: 4,
+          wrap: false,
+          lineHeight: 1
+        });
+      });
     }
 
     function showTournamentSummary() {
@@ -18517,6 +18657,7 @@ let scoreTimingDetail =
         els.modalActions.replaceChildren(geekAction, back, skinsReserve);
       }
       els.modalOverlay.classList.add('open');
+      installSummaryHomeOverlayV181();
       const summaryRevealShieldV177 = beginDataRevealShieldV177('summary', [els.modalBody], '#fff', false, 5100);
 
       if (tournamentSummaryResizeObserver) {
@@ -20026,6 +20167,9 @@ let scoreTimingDetail =
       const geekCopyV180b = els.modalBox && els.modalBox.querySelector('.geek-copy-v180b');
       if (geekCopyV180b) geekCopyV180b.remove();
 
+      const summaryHomeV181 = els.modalBox && els.modalBox.querySelector('.summary-home-overlay-v181');
+      if (summaryHomeV181) summaryHomeV181.remove();
+
     }
 
 
@@ -20348,10 +20492,35 @@ let scoreTimingDetail =
     els.testDeleteAllButton.addEventListener('click', () => showTestScoreWarning('clear', 'all'));
 
 
+    async function openHomePrimaryV181() {
+      const completeHint =
+        sessionStorage.getItem('sshcpTournamentComplete') === '1' ||
+        document.documentElement.classList.contains('sshcp-tournament-complete');
+
+      if (!completeHint) {
+        await showLeaderboard();
+        return;
+      }
+
+      /* HOME can be the underlying view for Summary. If this page load has not
+         yet populated leaderboard rows, refresh the hidden Leaderboard DOM/data
+         in place; do not switch views or flash the Leaderboard first. */
+      if (!tournamentIsComplete(lastLeaderboardRows) && !leaderboardLoadInProgress) {
+        await loadLeaderboard(false, false);
+      }
+
+      if (tournamentIsComplete(lastLeaderboardRows)) {
+        showTournamentSummary();
+        return;
+      }
+
+      await showLeaderboard();
+    }
+
     els.homeLeaderboardButton
       .addEventListener(
         'click',
-        showLeaderboard
+        openHomePrimaryV181
       );
 
 
