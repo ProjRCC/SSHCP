@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 16.30-J4T8QH | BUILD KEY: 16.33-X4N7PV -->
+<!-- SSHCP | BASE KEY: 16.33-X4N7PV | BUILD KEY: 16.34-WVRMN0 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V16.33 — QR WELCOME is presentation only. A fresh incoming
+        /* SSHCP V16.34 — QR WELCOME positioning refinement only. A fresh incoming
            QR URL paints a full-screen white overlay immediately. The normal
            V16.30 app/auth startup continues underneath unchanged. */
         var initialQrParams = new URLSearchParams(window.location.search);
@@ -9264,7 +9264,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 /* =========================================================
-   SSHCP V16.33 — FRESH TEAM QR WELCOME OVERLAY
+   SSHCP V16.34 — FRESH TEAM QR WELCOME OVERLAY
    Presentation-only layer over the untouched V16.30 startup/auth flow.
    ========================================================= */
 .qr-welcome-overlay-v1633{
@@ -9272,30 +9272,29 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
   inset:0;
   z-index:4900;
   display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
   box-sizing:border-box;
-  padding:clamp(24px,5vw,44px);
+  padding:0;
   background:#fff;
   color:var(--accent);
   text-align:center;
   overflow:hidden;
 }
 html.sshcp-qr-welcome .qr-welcome-overlay-v1633{
-  display:flex;
+  display:block;
 }
 .qr-welcome-inner-v1633{
-  width:min(92vw,720px);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  transform:translateY(-1.5dvh);
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
 }
 .qr-welcome-title-v1633{
+  position:absolute;
+  left:50%;
+  top:30%;
   width:100%;
   margin:0;
+  transform:translate(-50%,-50%);
   color:var(--accent);
   font-family:Oswald,Arial Narrow,Arial,sans-serif;
   font-size:clamp(62px,15vw,116px);
@@ -9308,30 +9307,38 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
   animation:sshcpQrWelcomeFadeV1633 .5s ease-out forwards;
 }
 .qr-welcome-team-v1633{
-  width:100%;
-  margin:clamp(34px,5.5dvh,62px) 0 0;
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:80vw;
+  max-width:80vw;
+  margin:0;
+  transform:translate(-50%,-50%);
   color:var(--accent);
   font-family:Oswald,Arial Narrow,Arial,sans-serif;
   font-size:clamp(74px,18vw,142px);
   font-weight:700;
   line-height:.92;
   letter-spacing:.005em;
-  overflow-wrap:anywhere;
+  white-space:nowrap;
+  overflow:hidden;
   opacity:0;
-  transform:translateY(8px);
 }
 .qr-welcome-overlay-v1633.show-team .qr-welcome-team-v1633{
   animation:sshcpQrWelcomeTeamV1633 .5s ease-out forwards;
 }
 .qr-welcome-actions-v1633{
+  position:absolute;
+  left:50%;
+  top:70%;
   width:min(76vw,440px);
-  margin-top:clamp(44px,6dvh,72px);
+  margin:0;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:clamp(16px,2.2dvh,24px);
   opacity:0;
-  transform:scale(.965);
+  transform:translate(-50%,-50%) scale(.965);
   pointer-events:none;
 }
 .qr-welcome-overlay-v1633.show-actions .qr-welcome-actions-v1633{
@@ -9365,16 +9372,16 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
   filter:brightness(.92);
 }
 @keyframes sshcpQrWelcomeFadeV1633{
-  from{opacity:0;transform:translateY(5px)}
-  to{opacity:1;transform:translateY(0)}
+  from{opacity:0}
+  to{opacity:1}
 }
 @keyframes sshcpQrWelcomeTeamV1633{
-  from{opacity:0;transform:translateY(8px)}
-  to{opacity:1;transform:translateY(0)}
+  from{opacity:0}
+  to{opacity:1}
 }
 @keyframes sshcpQrWelcomeActionsV1633{
-  from{opacity:0;transform:scale(.965)}
-  to{opacity:1;transform:scale(1)}
+  from{opacity:0;transform:translate(-50%,-50%) scale(.965)}
+  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
 }
 @media (prefers-reduced-motion:reduce){
   html.sshcp-qr-welcome .qr-welcome-title-v1633,
@@ -9390,7 +9397,7 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
 
 <body>
 
-  <!-- SSHCP V16.33 — fresh QR presentation layer only. The normal app
+  <!-- SSHCP V16.34 — fresh QR presentation layer only. The normal app
        initializes underneath; ENTER simply removes this white overlay. -->
   <div id="qrWelcomeOverlayV1633" class="qr-welcome-overlay-v1633" aria-hidden="true">
     <div class="qr-welcome-inner-v1633">
@@ -9512,7 +9519,7 @@ html.sshcp-qr-welcome .qr-welcome-title-v1633{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V16.33</span>
+          <span class="home-version-info">SSHCP V16.34</span>
         </button>
 
       </div>
@@ -18555,6 +18562,24 @@ let scoreTimingDetail =
       return match ? ('TEAM ' + match[1]) : text;
     }
 
+    function fitQrWelcomeTeamV1634() {
+      const team = document.getElementById('qrWelcomeTeamV1633');
+      if (!team || !team.textContent) return;
+
+      /* V16.34: preserve the V16.33 target size for normal names, but keep
+         every linked team name on one line inside an exact 80vw slot. */
+      team.style.fontSize = '';
+      let size = parseFloat(window.getComputedStyle(team).fontSize) || 74;
+      const minimum = 18;
+      const available = Math.max(1, team.clientWidth);
+
+      team.style.fontSize = size + 'px';
+      while (team.scrollWidth > available + 0.5 && size > minimum) {
+        size = Math.max(minimum, size - 0.5);
+        team.style.fontSize = size + 'px';
+      }
+    }
+
     function dismissQrWelcomeV1633() {
       const overlay = document.getElementById('qrWelcomeOverlayV1633');
       if (overlay) {
@@ -18607,6 +18632,12 @@ let scoreTimingDetail =
       window.setTimeout(() => {
         if (!window.__sshcpIncomingQrWelcome) return;
         team.textContent = qrWelcomeDisplayTeamV1633(getQrTeam());
+        fitQrWelcomeTeamV1634();
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => {
+            if (window.__sshcpIncomingQrWelcome) fitQrWelcomeTeamV1634();
+          }).catch(() => {});
+        }
         overlay.classList.add('show-team');
 
         window.setTimeout(() => {
@@ -18615,6 +18646,12 @@ let scoreTimingDetail =
         }, 500);
       }, waitForWelcome);
     }
+
+    window.addEventListener('resize', () => {
+      if (window.__sshcpIncomingQrWelcome) {
+        requestAnimationFrame(fitQrWelcomeTeamV1634);
+      }
+    });
 
     async function initialize() {
 
@@ -18850,7 +18887,7 @@ let scoreTimingDetail =
       }).catch(() => {});
     }
 
-    /* SSHCP V16.33 — full-screen fresh-QR welcome is an overlay only;
+    /* SSHCP V16.34 — full-screen fresh-QR welcome is an overlay only;
        V16.30 startup/auth/navigation remain the underlying behavior. */
 
     initialize()
@@ -18875,5 +18912,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
