@@ -1,16 +1,16 @@
-<!-- SSHCP | BASE KEY: 18.5-M4Q8TZ | BUILD KEY: 18.6-H2M7QK -->
+<!-- SSHCP | BASE KEY: 18.6-H2M7QK | BUILD KEY: 18.7-P7N4KD -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.6 — based directly on exact V18.5 (BUILD 18.5-M4Q8TZ).
-           V18.5 Welcome, authorization, scoring/save verification, Leaderboard data, Summary/SKINS,
-           site-wide 10ms button/checkbox haptic + press feedback, and all protected geometry remain authoritative.
-           V18.6 implements only the locked Geek redesign (38-stat CF V2.1 payload, 15 visible rows,
-           classification dots, anchored staged FILTERS panel, WACKY virtual group) plus the surgical
-           Leaderboard reveal-shield top correction. Scorecard shield and scoring logic remain untouched. */
+        /* SSHCP V18.7 — based directly on exact V18.6 (BUILD 18.6-H2M7QK).
+           V18.6 Geek/CF behavior, Welcome, authorization, scoring/save verification, Leaderboard data,
+           Summary/SKINS calculations, site-wide haptics, and protected HOME/INFO top-shell geometry remain authoritative.
+           V18.7 surgically normalizes post-round/table header and footer geometry, restores native Geek scrolling,
+           centers Geek-detail teams/removes detail COPY, adds the SKINS no-winner row, and preserves the
+           Leaderboard reveal shield from below HOME/INFO through the viewport bottom. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -194,7 +194,7 @@
               '--v16-context-table-gap': v16Py(12),
               '--v16-score-table-footer-gap': v16Py(18),
               '--v16-leader-table-footer-gap': v16Py(28),
-              '--v16-footer-h': v16Py(113),
+              '--v16-footer-h': v16Py(60),
               '--v16-bottom-gap': v16Py(18),
               '--v16-internal-gap': v16Px(28)
             };
@@ -205,12 +205,24 @@
           }
 
           var v16RootStyle = document.documentElement.style;
+          var v187BootSy = Math.max(0.40, Math.min(0.68, Math.max(1, v16NowH) / 1423));
+          /* V18.7: the shared vertical system is recomputed even if this session
+             hydrated older saved geometry from V18.6. HOME/INFO variables are untouched. */
+          bootV16Vars['--v16-footer-h'] = Math.max(1, 60 * v187BootSy);
           Object.keys(bootV16Vars).forEach(function (name) {
             var value = Number(bootV16Vars[name]);
             if (Number.isFinite(value)) {
               v16RootStyle.setProperty(name, value + 'px');
             }
           });
+          v16RootStyle.setProperty('--v187-table-header-h', Math.max(1, 50 * v187BootSy) + 'px');
+          v16RootStyle.setProperty('--v187-post-button-h', Math.max(1, 55 * v187BootSy) + 'px');
+          v16RootStyle.setProperty('--v187-skins-row-h', Math.max(1, 50 * v187BootSy) + 'px');
+          v16RootStyle.setProperty('--v187-skins-font-h', Math.max(1, 25 * v187BootSy) + 'px');
+          v16RootStyle.setProperty('--v187-skins-mark-h', Math.max(1, 34 * v187BootSy) + 'px');
+          v16RootStyle.setProperty('--v187-main-button-h', Math.max(1, 60 * v187BootSy) + 'px');
+          v16RootStyle.setProperty('--v5-score-head-h', Math.max(1, 50 * v187BootSy) + 'px');
+          v16RootStyle.setProperty('--v5-leader-head-h', Math.max(1, 50 * v187BootSy) + 'px');
         } catch (e) {}
       } catch (e) {
         window.__sshcpBootTeam = '';
@@ -10636,6 +10648,119 @@ body option{
   }
 }
 
+
+/* =========================================================
+   SSHCP V18.7 — SHARED TABLE / FOOTER GEOMETRY NORMALIZATION
+   - HOME/INFO/top-shell geometry is intentionally untouched.
+   - Table headers: fixed 50px × existing vertical device multiplier.
+   - Post-round bottom buttons: 55px × multiplier, text fitted at 40%.
+   - Scorecard/Leaderboard bottom buttons: 60px × multiplier, text fitted at 40%.
+   - Summary/Geek/Leaderboard/SKINS header text targets 38%; Scorecard keeps
+     its established per-cell text ratios.
+   ========================================================= */
+
+/* Shared static table-header appearance. */
+#scorecardView .score-table-head,
+#leaderboardView .leader-table-head,
+.modal-overlay.tournament-summary .tournament-summary-row.header,
+.modal-overlay.geek-mode-v180 .geek-row-v180.header,
+.modal-overlay.skins-results-v1627 .skins-row-v1627.header{
+  background:var(--sshcp-static-header-gray-v185,#444)!important;
+  color:#fff!important;
+}
+#scorecardView .score-table-head > div,
+#scorecardView .score-table-head > .score-running-header > span,
+#leaderboardView .leader-table-head > div,
+#leaderboardView .leader-table-head > div > span,
+.modal-overlay.tournament-summary .tournament-summary-row.header > div,
+.modal-overlay.geek-mode-v180 .geek-row-v180.header .geek-cell-v180,
+.modal-overlay.skins-results-v1627 .skins-row-v1627.header .skins-cell-v1627{
+  background:var(--sshcp-static-header-gray-v185,#444)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  border-color:rgba(255,255,255,.48)!important;
+}
+#leaderboardView .leader-table-head .leader-hcp-header span{
+  font-size:inherit!important;
+  transform:none!important;
+}
+
+/* Fixed post-round table headers. Summary's actual grid track is assigned by JS. */
+.modal-overlay.tournament-summary .tournament-summary-row.header,
+.modal-overlay.geek-mode-v180 .geek-row-v180.header,
+.modal-overlay.skins-results-v1627 .skins-row-v1627.header{
+  height:var(--v187-table-header-h,34px)!important;
+  min-height:var(--v187-table-header-h,34px)!important;
+  max-height:var(--v187-table-header-h,34px)!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.header{
+  flex:0 0 var(--v187-table-header-h,34px)!important;
+}
+
+/* SKINS keeps its established visual proportions, now tied to device scaling. */
+.modal-overlay.skins-results-v1627 .skins-row-v1627{
+  height:var(--v187-skins-row-h,34px)!important;
+  min-height:var(--v187-skins-row-h,34px)!important;
+  max-height:var(--v187-skins-row-h,34px)!important;
+}
+.modal-overlay.skins-results-v1627 .skins-cell-v1627{
+  font-size:var(--v187-skins-font-h,17px)!important;
+}
+.modal-overlay.skins-results-v1627 .skins-score-mark-v1627{
+  width:var(--v187-skins-mark-h,23px)!important;
+  height:var(--v187-skins-mark-h,23px)!important;
+  font-size:var(--v187-skins-font-h,17px)!important;
+}
+.modal-overlay.skins-results-v1627 .skins-no-skins-row-v187{
+  grid-template-columns:1fr!important;
+}
+.modal-overlay.skins-results-v1627 .skins-no-skins-cell-v187{
+  grid-column:1 / -1!important;
+  border-right:0!important;
+  font-weight:700!important;
+  text-align:center!important;
+}
+
+/* Post-round bottom rails: shared 55px baseline × multiplier. */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn,
+.modal-overlay.skins-results-v1627 .modal-actions.skins-back-only-v181 .modal-btn,
+.modal-overlay.geek-mode-v180 .modal-actions > .modal-btn,
+.modal-overlay.geek-detail-v180 .modal-actions .modal-btn,
+.modal-overlay.geek-mode-v180 .geek-filter-anchor-v186,
+.modal-overlay.geek-mode-v180 .geek-filter-button-v186{
+  height:var(--v187-post-button-h,37px)!important;
+  min-height:var(--v187-post-button-h,37px)!important;
+  max-height:var(--v187-post-button-h,37px)!important;
+}
+.modal-overlay.geek-mode-v180 .modal-actions{
+  min-height:var(--v187-post-button-h,37px)!important;
+}
+
+/* Geek scroll matches the proven native Scorecard/Leaderboard model. */
+.modal-overlay.geek-mode-v180 .geek-table-scroll-v180{
+  scroll-snap-type:none!important;
+  overscroll-behavior-y:contain!important;
+}
+.modal-overlay.geek-mode-v180 .geek-table-scroll-v180 .geek-row-v180{
+  scroll-snap-align:none!important;
+  scroll-snap-stop:normal!important;
+}
+
+/* Geek detail team lines center independently. */
+.modal-overlay.geek-detail-v180 .geek-detail-teams-v180{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  padding-left:0!important;
+  text-align:center!important;
+}
+.modal-overlay.geek-detail-v180 .geek-detail-teams-v180 li{
+  width:100%!important;
+  text-align:center!important;
+}
+
 </style>
 </head>
 
@@ -10763,7 +10888,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.6</span>
+          <span class="home-version-info">SSHCP V18.7</span>
         </button>
 
       </div>
@@ -13241,7 +13366,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.6 CONTROL CENTER LOG',
+        'SSHCP V18.7 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -15383,6 +15508,30 @@ let scoreTimingDetail =
     }
 
 
+    function syncSharedGeometryV187() {
+      const height = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 1);
+      const sy = Math.max(0.40, Math.min(0.68, height / 1423));
+      const scaled = value => Math.max(1, value * sy);
+      const values = {
+        sy,
+        tableHeader: scaled(50),
+        postButton: scaled(55),
+        skinsRow: scaled(50),
+        skinsFont: scaled(25),
+        skinsMark: scaled(34),
+        mainButton: scaled(60)
+      };
+      const root = document.documentElement.style;
+      root.setProperty('--v187-table-header-h', values.tableHeader + 'px');
+      root.setProperty('--v187-post-button-h', values.postButton + 'px');
+      root.setProperty('--v187-skins-row-h', values.skinsRow + 'px');
+      root.setProperty('--v187-skins-font-h', values.skinsFont + 'px');
+      root.setProperty('--v187-skins-mark-h', values.skinsMark + 'px');
+      root.setProperty('--v187-main-button-h', values.mainButton + 'px');
+      return values;
+    }
+
+
     function applyV16ShellGeometry(view) {
       if (!view) return null;
 
@@ -15402,6 +15551,8 @@ let scoreTimingDetail =
       const px = value => Math.max(1, value * sx);
       const py = value => Math.max(1, value * sy);
 
+      const sharedV187 = syncSharedGeometryV187();
+
       const vars = {
         '--v16-rail': px(24),
         '--v16-nav-w': px(141),
@@ -15412,7 +15563,7 @@ let scoreTimingDetail =
         '--v16-context-table-gap': py(12),
         '--v16-score-table-footer-gap': py(18),
         '--v16-leader-table-footer-gap': py(28),
-        '--v16-footer-h': py(113),
+        '--v16-footer-h': py(60),
         '--v16-bottom-gap': py(18),
         '--v16-internal-gap': px(28)
       };
@@ -15428,6 +15579,12 @@ let scoreTimingDetail =
       Object.entries(vars).forEach(([name, value]) => {
         view.style.setProperty(name, value + 'px');
       });
+      document.documentElement.style.setProperty('--v187-table-header-h', sharedV187.tableHeader + 'px');
+      document.documentElement.style.setProperty('--v187-post-button-h', sharedV187.postButton + 'px');
+      document.documentElement.style.setProperty('--v187-skins-row-h', sharedV187.skinsRow + 'px');
+      document.documentElement.style.setProperty('--v187-skins-font-h', sharedV187.skinsFont + 'px');
+      document.documentElement.style.setProperty('--v187-skins-mark-h', sharedV187.skinsMark + 'px');
+      document.documentElement.style.setProperty('--v187-main-button-h', sharedV187.mainButton + 'px');
 
       try {
         sessionStorage.setItem(
@@ -15489,15 +15646,15 @@ let scoreTimingDetail =
       const bottomHeight = bottom.getBoundingClientRect().height;
       if (!Number.isFinite(screenHeight) || screenHeight <= 0) return;
 
-      /* V16: anchors/buffers define one table rectangle. The table merely fills it.
-         Header = 0.85x; nine visible score rows = 9x. The tiny nine-hole divider
-         is taken out first so it cannot distort the agreed 0.85 : 1 row ratio. */
+      /* V18.7: shell first, then data. The Scorecard table header is a fixed
+         50px × existing vertical multiplier and no longer participates in the
+         nine-row equation. The tiny 9/10 divider remains a separate allowance. */
       const fixedShellWithoutHeader = Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
       const tableBudget = Math.max(1, screenHeight - fixedShellWithoutHeader);
+      const headerHeight = Math.max(1, 50 * geometry.sy);
       const divider = Math.max(2, Math.min(4, tableBudget * 0.004));
-      const scoreTableBudget = Math.max(1, tableBudget - divider);
-      const rowHeight = Math.max(1, scoreTableBudget / 9.85);
-      const headerHeight = rowHeight * 0.85;
+      const scoreTableBudget = Math.max(1, tableBudget - headerHeight - divider);
+      const rowHeight = Math.max(1, scoreTableBudget / 9);
 
       els.scorecardView.style.setProperty('--v5-score-row-h', rowHeight + 'px');
       els.scorecardView.style.setProperty('--v5-score-head-h', headerHeight + 'px');
@@ -15573,7 +15730,7 @@ let scoreTimingDetail =
 
       const footerButton = els.scorecardView.querySelector('.score-bottom-actions .leaderboard-button');
       if (footerButton) {
-        fitTextToBoxV5(footerButton, footerButton, footerButton.clientHeight * 0.35, 13, {
+        fitTextToBoxV5(footerButton, footerButton, footerButton.clientHeight * 0.40, 13, {
           horizontalPad: 12,
           verticalPad: 6,
           wrap: false,
@@ -17324,7 +17481,7 @@ let scoreTimingDetail =
         const actionHeight = action.getBoundingClientRect().height;
         if (actionHeight <= 0) return;
 
-        fitTextToBoxV5(action, action, actionHeight * 0.34, 11, {
+        fitTextToBoxV5(action, action, actionHeight * 0.40, 11, {
           horizontalPad: 12,
           verticalPad: 5,
           wrap: false,
@@ -17731,9 +17888,9 @@ let scoreTimingDetail =
            - lower table -> BACK = 15px (modal-actions top padding)
            - no tie notes = one 15px separator buffer
            - 1-3 tie notes = 8px above + 15px per line + 8px below
-         Weighted row equation is unchanged from V16.10:
-           header 1.1x + 1st 2x + 2nd 1.5x + 3rd 1.5x
-           + up to seven lower rows at 1x each. */
+         V18.7 removes the header from the weighted equation:
+           fixed header = 50px × vertical multiplier
+           1st 2x + 2nd 1.5x + 3rd 1.5x + up to seven lower rows at 1x each. */
       const resultsBuffer = 15;
       const noTieBuffer = 15;
       const tieBuffer = 8;
@@ -17746,12 +17903,13 @@ let scoreTimingDetail =
         ? tieBuffer + (noteCount * tieLineH) + tieBuffer
         : noTieBuffer;
 
-      const fixedSpace = subtitleBlockH + noteSectionH;
+      const sharedV187 = syncSharedGeometryV187();
+      const headerH = sharedV187.tableHeader;
+      const fixedSpace = subtitleBlockH + noteSectionH + headerH;
       const weightedSpace = Math.max(1, bodyHeight - fixedSpace);
-      const weight = 1.1 + 2 + 1.5 + 1.5 + lowerCount;
+      const weight = 2 + 1.5 + 1.5 + lowerCount;
       const x = Math.max(1, weightedSpace / Math.max(1, weight));
 
-      const headerH = 1.1 * x;
       const place1 = 2 * x;
       const place2 = 1.5 * x;
       const place3 = 1.5 * x;
@@ -17850,7 +18008,7 @@ let scoreTimingDetail =
       const header = topGrid.querySelector('.tournament-summary-row.header');
       if (header) {
         Array.from(header.children).forEach(cell => {
-          fitTextToBoxV5(cell, cell, cell.clientHeight * 0.50, 10, {
+          fitTextToBoxV5(cell, cell, cell.clientHeight * 0.38, 10, {
             horizontalPad: 6,
             verticalPad: 4,
             wrap: false,
@@ -17945,6 +18103,18 @@ let scoreTimingDetail =
       });
 
       document.documentElement.style.setProperty('--v5-summary-note-font', '13px');
+
+      [...els.modalActions.querySelectorAll('.modal-btn')].forEach(button => {
+        if (button.classList.contains('summary-action-placeholder-v1627')) return;
+        const h = button.getBoundingClientRect().height || syncSharedGeometryV187().postButton;
+        fitTextToBoxV5(button, button, h * 0.40, 10, {
+          horizontalPad: 8,
+          verticalPad: 4,
+          wrap: false,
+          lineHeight: 1
+        });
+      });
+
       requestAnimationFrame(positionSummaryNavigationV182);
     }
 
@@ -18468,9 +18638,9 @@ let scoreTimingDetail =
       const headerH = headerRow
         ? (headerRow.getBoundingClientRect().height || (rowHeight * 0.75))
         : (rowHeight * 0.75);
-      let sharedHeaderSize = headerH * 0.40;
+      let sharedHeaderSize = headerH * 0.38;
       headerCells.forEach(cell => {
-        const fitted = fitTextToBoxV5(cell, cell, headerH * 0.40, 8, {
+        const fitted = fitTextToBoxV5(cell, cell, headerH * 0.38, 8, {
           horizontalPad: 12,
           verticalPad: 4,
           wrap: false,
@@ -18494,9 +18664,11 @@ let scoreTimingDetail =
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
 
-      /* V18.6: one 0.75x header plus fifteen complete normal row-heights. */
-      const rowHeight = Math.max(18, height / 15.75);
-      const headerHeight = rowHeight * 0.75;
+      /* V18.7: fixed 50px × multiplier header, then fifteen complete
+         data/category row-heights share the remaining table shell. */
+      const sharedV187 = syncSharedGeometryV187();
+      const headerHeight = sharedV187.tableHeader;
+      const rowHeight = Math.max(18, (height - headerHeight) / 15);
       shell.style.setProperty('--geek-row-h-v180', rowHeight + 'px');
       shell.style.setProperty('--geek-header-h-v185', headerHeight + 'px');
 
@@ -18506,7 +18678,7 @@ let scoreTimingDetail =
         const filters = els.modalActions.querySelector('.geek-filter-button-v186');
         [back, filters].filter(Boolean).forEach(button => {
           const h = button.getBoundingClientRect().height || 58;
-          fitTextToBoxV5(button, button, h * 0.50, 12, {
+          fitTextToBoxV5(button, button, h * 0.40, 12, {
             horizontalPad: 10,
             verticalPad: 6,
             wrap: false,
@@ -18801,6 +18973,7 @@ let scoreTimingDetail =
     }
 
     async function openGeekModeV180() {
+      syncSharedGeometryV187();
       /* This function remains the ONLY CF V2.1 Geek read entry point.
          No startup/scorecard/leaderboard/background Geek request exists. */
       geekScrollTopV180 = 0;
@@ -18897,6 +19070,7 @@ let scoreTimingDetail =
 
     function fitGeekDetailV182() {
       if (!els.modalOverlay.classList.contains('geek-detail-v180')) return;
+      syncSharedGeometryV187();
       if (!els.modalBox) return;
 
       const vh = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 1);
@@ -18968,7 +19142,7 @@ let scoreTimingDetail =
         teamContainer.style.setProperty('font-size', teamSize + 'px', 'important');
         teamNodes.forEach(node => {
           node.style.setProperty('font-size', teamSize + 'px', 'important');
-          if (teams) node.style.setProperty('text-align', 'left', 'important');
+          if (teams) node.style.setProperty('text-align', 'center', 'important');
         });
 
         let guard = 0;
@@ -18977,7 +19151,7 @@ let scoreTimingDetail =
           teamContainer.style.setProperty('font-size', teamSize + 'px', 'important');
           teamNodes.forEach(node => {
             node.style.setProperty('font-size', teamSize + 'px', 'important');
-            if (teams) node.style.setProperty('text-align', 'left', 'important');
+            if (teams) node.style.setProperty('text-align', 'center', 'important');
           });
           guard += 1;
         }
@@ -18985,7 +19159,7 @@ let scoreTimingDetail =
 
       if (back) {
         const h = back.getBoundingClientRect().height || 52;
-        fitTextToBoxV5(back, back, h * 0.50, 12, {
+        fitTextToBoxV5(back, back, h * 0.40, 12, {
           horizontalPad: 12,
           verticalPad: 6,
           wrap: false,
@@ -19032,7 +19206,6 @@ let scoreTimingDetail =
       els.modalActions.className = 'modal-actions single';
       els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
-      installGeekCopyButtonV180b();
       requestAnimationFrame(fitGeekDetailV182);
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => requestAnimationFrame(fitGeekDetailV182)).catch(() => {});
@@ -19107,13 +19280,41 @@ let scoreTimingDetail =
     }
 
     function fitSkinsTableTextV1627() {
+      if (!els.modalOverlay.classList.contains('skins-results-v1627')) return;
+      const sharedV187 = syncSharedGeometryV187();
+      const scroll = els.modalBody.querySelector('.skins-table-scroll-v1627');
+      if (scroll) {
+        const rowCount = Math.max(2, scroll.querySelectorAll('.skins-row-v1627').length);
+        const desiredTableHeight = rowCount * sharedV187.skinsRow;
+        const maxTableHeight = Math.max(sharedV187.skinsRow * 2, Math.floor((window.innerHeight || 800) * 0.62));
+        scroll.style.height = Math.min(desiredTableHeight, maxTableHeight) + 'px';
+      }
+
+      const headerCells = els.modalBody.querySelectorAll('.skins-row-v1627.header .skins-cell-v1627');
+      headerCells.forEach(cell => {
+        fitTextToBoxV5(cell, cell, sharedV187.tableHeader * 0.38, 8, {
+          horizontalPad:8, verticalPad:4, wrap:false, lineHeight:1
+        });
+      });
+
       const rows = els.modalBody.querySelectorAll('.skins-row-v1627:not(.header)');
       rows.forEach(row => {
+        const rowH = row.getBoundingClientRect().height || sharedV187.skinsRow;
         const teamCell = row.querySelector('.skins-team-v1627');
         const holeCell = row.querySelector('.skins-hole-v1627');
-        if (teamCell) fitTextToBoxV5(teamCell, teamCell, 25, 10, { horizontalPad:10, verticalPad:5, wrap:false, lineHeight:1 });
-        if (holeCell) fitTextToBoxV5(holeCell, holeCell, 25, 12, { horizontalPad:8, verticalPad:5, wrap:false, lineHeight:1 });
+        const emptyCell = row.querySelector('.skins-no-skins-cell-v187');
+        if (teamCell) fitTextToBoxV5(teamCell, teamCell, rowH * 0.50, 10, { horizontalPad:10, verticalPad:5, wrap:false, lineHeight:1 });
+        if (holeCell) fitTextToBoxV5(holeCell, holeCell, rowH * 0.50, 12, { horizontalPad:8, verticalPad:5, wrap:false, lineHeight:1 });
+        if (emptyCell) fitTextToBoxV5(emptyCell, emptyCell, rowH * 0.50, 10, { horizontalPad:10, verticalPad:5, wrap:false, lineHeight:1 });
       });
+
+      const back = els.modalActions.querySelector('.modal-btn');
+      if (back) {
+        const h = back.getBoundingClientRect().height || sharedV187.postButton;
+        fitTextToBoxV5(back, back, h * 0.40, 10, {
+          horizontalPad:10, verticalPad:4, wrap:false, lineHeight:1
+        });
+      }
     }
 
     async function fetchSkinsSourceV1627() {
@@ -19138,33 +19339,42 @@ let scoreTimingDetail =
     }
 
     function renderSkinsPopupV1627(results) {
+      syncSharedGeometryV187();
       closeModal();
       els.modalOverlay.classList.add('skins-results-v1627');
       els.modalTitle.textContent = 'SKINS';
       els.modalInput.style.display = 'none';
 
+      const sharedV187 = syncSharedGeometryV187();
+      const frame = document.createElement('div');
+      frame.className = 'skins-table-frame-v1627';
+      const scroll = document.createElement('div');
+      scroll.className = 'skins-table-scroll-v1627';
+
+      const visibleBodyRows = Math.max(1, results.length);
+      const desiredTableHeight = (visibleBodyRows + 1) * sharedV187.skinsRow;
+      const maxTableHeight = Math.max(sharedV187.skinsRow * 2, Math.floor((window.innerHeight || 800) * 0.62));
+      scroll.style.height = Math.min(desiredTableHeight, maxTableHeight) + 'px';
+
+      const header = document.createElement('div');
+      header.className = 'skins-row-v1627 header';
+      ['TEAM','HOLE','SCORE'].forEach(label => {
+        const cell = document.createElement('div');
+        cell.className = 'skins-cell-v1627';
+        cell.textContent = label;
+        header.appendChild(cell);
+      });
+      scroll.appendChild(header);
+
       if (!results.length) {
-        els.modalBody.innerHTML = '<div class="skins-empty-v1627">NO SKINS WON</div>';
+        const emptyRow = document.createElement('div');
+        emptyRow.className = 'skins-row-v1627 skins-no-skins-row-v187';
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'skins-cell-v1627 skins-no-skins-cell-v187';
+        emptyCell.textContent = 'NO SKINS';
+        emptyRow.appendChild(emptyCell);
+        scroll.appendChild(emptyRow);
       } else {
-        const frame = document.createElement('div');
-        frame.className = 'skins-table-frame-v1627';
-        const scroll = document.createElement('div');
-        scroll.className = 'skins-table-scroll-v1627';
-
-        const desiredTableHeight = (results.length + 1) * 50;
-        const maxTableHeight = Math.max(100, Math.floor((window.innerHeight || 800) * 0.62));
-        scroll.style.height = Math.min(desiredTableHeight, maxTableHeight) + 'px';
-
-        const header = document.createElement('div');
-        header.className = 'skins-row-v1627 header';
-        ['TEAM','HOLE','SCORE'].forEach(label => {
-          const cell = document.createElement('div');
-          cell.className = 'skins-cell-v1627';
-          cell.textContent = label;
-          header.appendChild(cell);
-        });
-        scroll.appendChild(header);
-
         results.forEach(item => {
           const row = document.createElement('div');
           row.className = 'skins-row-v1627';
@@ -19184,10 +19394,10 @@ let scoreTimingDetail =
           row.append(team, hole, score);
           scroll.appendChild(row);
         });
-
-        frame.appendChild(scroll);
-        els.modalBody.replaceChildren(frame);
       }
+
+      frame.appendChild(scroll);
+      els.modalBody.replaceChildren(frame);
 
       const back = makeModalButton('BACK', '', () => {
         showTournamentSummary();
@@ -19302,6 +19512,7 @@ let scoreTimingDetail =
     }
 
     function showTournamentSummary() {
+      syncSharedGeometryV187();
       if (!tournamentIsComplete(lastLeaderboardRows)) {
         closeModal();
         return;
@@ -20156,7 +20367,7 @@ let scoreTimingDetail =
         fitTextToBoxV5(
           cell,
           target,
-          headerHeight * 0.375,
+          headerHeight * 0.38,
           8,
           { horizontalPad: 6, verticalPad: 4 }
         );
@@ -20261,10 +20472,11 @@ let scoreTimingDetail =
         Math.min(8, els.leaderRows ? els.leaderRows.querySelectorAll('.leader-row').length : 1)
       );
 
-      /* V16: the anchored shell defines the table rectangle first.
-         HEADER = 0.85x and N visible team rows = N*x, N capped at 8. */
-      const rowHeightInitial = Math.max(1, tableBudget / (rowCount + 0.85));
-      const headerHeight = rowHeightInitial * 0.85;
+      /* V18.7: anchored shell first. The Leaderboard header is fixed at
+         50px × vertical multiplier and removed from the N-row equation.
+         N remains capped at 8; additional teams extend below and scroll. */
+      const headerHeight = Math.max(1, 50 * geometry.sy);
+      const rowHeightInitial = Math.max(1, (tableBudget - headerHeight) / rowCount);
 
       els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
       els.leaderContent.style.setProperty('--leader-row-height', rowHeightInitial + 'px');
@@ -20302,7 +20514,7 @@ let scoreTimingDetail =
 
         const footerButtons = els.leaderboardView.querySelectorAll('.leader-bottom button');
         footerButtons.forEach(button => {
-          fitTextToBoxV5(button, button, button.clientHeight * 0.34, 11, {
+          fitTextToBoxV5(button, button, button.clientHeight * 0.40, 11, {
             horizontalPad: 10,
             verticalPad: 5,
             wrap: false,
@@ -21998,6 +22210,9 @@ let scoreTimingDetail =
       }
       if (els.modalOverlay.classList.contains('geek-detail-v180')) {
         requestAnimationFrame(fitGeekDetailV182);
+      }
+      if (els.modalOverlay.classList.contains('skins-results-v1627')) {
+        requestAnimationFrame(fitSkinsTableTextV1627);
       }
     });
 
