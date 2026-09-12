@@ -1,16 +1,17 @@
-<!-- SSHCP | BASE KEY: 18.14-R7M2QK | BUILD KEY: 18.15-K4T9QX -->
+<!-- SSHCP | BASE KEY: 18.15-K4T9QX | BUILD KEY: 18.16-P7M4XZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.15 — built directly from V18.14 (BUILD 18.14-R7M2QK).
-           V18.13 remains the declared GOLDEN rollback. V18.15 is a surgical candidate only:
-           Geek columns 32/18/18/32 with all data text at 45% row height; STAT titles always bold,
-           US/ALL/TEAM regular unless the authorized team owns/shares the best result, then the whole row is bold;
-           FILTER APPLY is fully contained inside the gray panel; Scorecard removes the 9/10 divider and uses
-           exact nine-row geometry, with Hole 9 and Hole 18 given a very-light-gray base row. */
+        /* SSHCP V18.16 — built directly from V18.15 (BUILD 18.15-K4T9QX).
+           V18.13 remains the declared GOLDEN rollback. V18.16 is a surgical polish candidate only:
+           FILTER APPLY track follows the scaled button height so it stays inside the gray panel;
+           Quick Guide body copy uses 16px at the S25 baseline multiplied by the device/viewport multiplier;
+           Scramble Summary NET STROKES uses one common size equal to 40% of the narrowest result row;
+           Hole 9 and Hole 18 use a slightly darker gray base row; Geek Detail BACK uses the same white
+           cover + 0.5s reveal concept as FILTER to hide the main Geek table resize/reflow. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11165,6 +11166,61 @@ body option{
   border-bottom:1px solid var(--line)!important;
 }
 
+
+/* =========================================================
+   SSHCP V18.16 — RESPONSIVE POLISH / RETURN MASK
+   ========================================================= */
+
+/* FILTER stays in the approved position. Its APPLY track must follow the
+   actual scaled footer-family button height, so the button can never protrude
+   below the gray popover on taller desktop viewports. */
+.modal-overlay.geek-mode-v180 .geek-filter-grid-v186{
+  grid-template-rows:
+    50px
+    44px
+    44px
+    44px
+    var(--v187-post-button-h,50px)!important;
+}
+
+/* Quick Guide body copy: exact S25 baseline is 16px at multiplier 1.000.
+   JS updates this variable from the same visual-viewport / 724 multiplier. */
+.modal-overlay.quick-guide .modal-text{
+  font-size:var(--v1816-quick-guide-body-font,16px)!important;
+}
+
+/* End-of-nine base rows remain passive background layers, just a little darker
+   than V18.15. Score-state boxes/marks still paint above the row background. */
+#scorecardView .score-row.nine-end-row-v1815{
+  background:#e8e8e8!important;
+}
+
+/* Returning from Geek Detail uses the same visual treatment as FILTER:
+   GEEK MODE title remains visible while everything below it is shielded in
+   white; after the table is fully laid out, the shield fades over 0.5s. */
+.modal-overlay.geek-mode-v180 .modal-box.geek-detail-return-cover-v1816::after{
+  content:"";
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:var(--v1816-geek-return-cover-top,58px)!important;
+  bottom:0!important;
+  z-index:150!important;
+  background:#fff!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  border-radius:0 0 16px 16px!important;
+  transition:opacity .5s ease-out!important;
+  will-change:opacity;
+}
+.modal-overlay.geek-mode-v180 .modal-box.geek-detail-return-cover-v1816.geek-detail-return-reveal-v1816::after{
+  opacity:0!important;
+}
+.modal-overlay.geek-mode-v180 .modal-box.geek-detail-return-cover-v1816 > .modal-title{
+  position:relative!important;
+  z-index:160!important;
+}
+
 </style>
 </head>
 
@@ -11292,7 +11348,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.15</span>
+          <span class="home-version-info">SSHCP V18.16</span>
         </button>
 
       </div>
@@ -14464,7 +14520,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.15 RESULT LOG',
+        'SSHCP V18.16 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14527,7 +14583,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.15 CONTROL CENTER LOG',
+        'SSHCP V18.16 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -19367,17 +19423,24 @@ let scoreTimingDetail =
 
       fitUniform(lowerNet, 0.48, 12, 6);
 
-      /* V5.7: every NET STROKES cell, 1st through 10th, uses the exact
-         same one-line notation and one common fitted size. Start at the
-         approved 17px target; if any row cannot meet it, all ten settle at
-         the smallest size needed so the column stays visually consistent. */
+      /* V18.16: every NET STROKES cell, 1st through 10th, uses one common
+         target derived from the narrowest/shortest result row. The target is
+         exactly 40% of that narrowest row height; width fitting may reduce the
+         common size only if a NET STROKES value cannot fit its own cell. */
       const allStrokes = [
         ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
         ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-strokes'))
       ];
-      let strokesSize = 17;
+      const strokeRowHeights = allStrokes
+        .map(cell => cell.getBoundingClientRect().height || cell.clientHeight || 0)
+        .filter(height => height > 0);
+      const narrowestStrokeRow = strokeRowHeights.length
+        ? Math.min(...strokeRowHeights)
+        : 42;
+      const strokesTarget = Math.max(8, narrowestStrokeRow * 0.40);
+      let strokesSize = strokesTarget;
       allStrokes.forEach(cell => {
-        strokesSize = Math.min(strokesSize, fitTextToBoxV5(cell, cell, 17, 8, {
+        strokesSize = Math.min(strokesSize, fitTextToBoxV5(cell, cell, strokesTarget, 8, {
           horizontalPad: 4,
           verticalPad: 4,
           wrap: false,
@@ -20481,16 +20544,67 @@ let scoreTimingDetail =
       }
     }
 
+    function installGeekDetailReturnCoverV1816() {
+      if (!els.modalBox) return;
+      if (els.modalTitle) {
+        const boxRect = els.modalBox.getBoundingClientRect();
+        const titleRect = els.modalTitle.getBoundingClientRect();
+        const coverTop = Math.max(0, Math.round(titleRect.bottom - boxRect.top));
+        els.modalBox.style.setProperty(
+          '--v1816-geek-return-cover-top',
+          coverTop + 'px'
+        );
+      }
+      els.modalBox.classList.remove('geek-detail-return-reveal-v1816');
+      els.modalBox.classList.add('geek-detail-return-cover-v1816');
+    }
+
+    function revealGeekDetailReturnCoverV1816() {
+      if (
+        !els.modalBox ||
+        !els.modalBox.classList.contains('geek-detail-return-cover-v1816')
+      ) return;
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (els.modalBox) {
+            els.modalBox.classList.add('geek-detail-return-reveal-v1816');
+          }
+        });
+      });
+
+      window.setTimeout(() => {
+        if (!els.modalBox) return;
+        els.modalBox.classList.remove(
+          'geek-detail-return-cover-v1816',
+          'geek-detail-return-reveal-v1816'
+        );
+        els.modalBox.style.removeProperty('--v1816-geek-return-cover-top');
+      }, 540);
+    }
+
     function returnToGeekModeV180() {
       closeModal();
       renderGeekMainShellV180();
       renderGeekTableV180();
-      const shield = els.modalBody.querySelector('.geek-load-shield-v180');
-      if (shield && shield.parentNode) shield.parentNode.removeChild(shield);
+
+      const loadShield = els.modalBody.querySelector('.geek-load-shield-v180');
+      if (loadShield && loadShield.parentNode) {
+        loadShield.parentNode.removeChild(loadShield);
+      }
+
+      installGeekDetailReturnCoverV1816();
+
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       requestAnimationFrame(() => {
         fitGeekRowsV180();
         if (scroll) scroll.scrollTop = geekScrollTopV180;
+
+        /* fitGeekRowsV180 schedules its text fitting on the next frame.
+           Wait through that pass before beginning the 0.5s white reveal. */
+        requestAnimationFrame(() => {
+          requestAnimationFrame(revealGeekDetailReturnCoverV1816);
+        });
       });
     }
 
@@ -22332,6 +22446,16 @@ let scoreTimingDetail =
     }
 
 
+    function syncQuickGuideBodyFontV1816() {
+      const metrics = getVerticalMetricsV188();
+      const size = Math.max(1, 16 * metrics.multiplier);
+      document.documentElement.style.setProperty(
+        '--v1816-quick-guide-body-font',
+        size.toFixed(2) + 'px'
+      );
+      return size;
+    }
+
     function fitQuickGuideButtonTextV173(button, startPx) {
       if (!button) return startPx;
       const computed = getComputedStyle(button);
@@ -22363,6 +22487,7 @@ let scoreTimingDetail =
 
     function showQuickGuide() {
 
+      syncQuickGuideBodyFontV1816();
       closeModal();
 
       els.modalOverlay.classList.add(
@@ -23230,6 +23355,9 @@ let scoreTimingDetail =
             if (currentView === 'leaderboard') {
               sizeLeaderboardRows();
             }
+            if (els.modalOverlay.classList.contains('quick-guide')) {
+              syncQuickGuideBodyFontV1816();
+            }
           }
         );
 
@@ -23671,6 +23799,9 @@ let scoreTimingDetail =
       }
       if (els.modalOverlay.classList.contains('skins-results-v1627')) {
         requestAnimationFrame(fitSkinsTableTextV1627);
+      }
+      if (els.modalOverlay.classList.contains('quick-guide')) {
+        syncQuickGuideBodyFontV1816();
       }
     });
 
