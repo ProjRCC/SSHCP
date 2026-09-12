@@ -1,17 +1,16 @@
-<!-- SSHCP | BASE KEY: 18.15-K4T9QX | BUILD KEY: 18.16-P7M4XZ -->
+<!-- SSHCP | BASE KEY: 18.17-H6R2NV | BUILD KEY: 18.18-J7Q4MX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.16 — built directly from V18.15 (BUILD 18.15-K4T9QX).
-           V18.13 remains the declared GOLDEN rollback. V18.16 is a surgical polish candidate only:
-           FILTER APPLY track follows the scaled button height so it stays inside the gray panel;
-           Quick Guide body copy uses 16px at the S25 baseline multiplied by the device/viewport multiplier;
-           Scramble Summary NET STROKES uses one common size equal to 40% of the narrowest result row;
-           Hole 9 and Hole 18 use a slightly darker gray base row; Geek Detail BACK uses the same white
-           cover + 0.5s reveal concept as FILTER to hide the main Geek table resize/reflow. */
+        /* SSHCP V18.18 — built directly from V18.17 (BUILD 18.17-H6R2NV).
+           V18.16 remains the declared GOLDEN rollback. V18.18 preserves the V18.17 typography candidate
+           and makes only two leaderboard presentation corrections: during any leaderboard refresh, the
+           white reveal shield anchors to the exact bottom of the full HOME / event / INFO nav row; and
+           during LIVE LEADERBOARD only, REFRESH keeps its existing secondary-button presentation but uses
+           the tournament accent border. FINAL RESULTS footer/button styling is intentionally untouched. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11168,7 +11167,7 @@ body option{
 
 
 /* =========================================================
-   SSHCP V18.16 — RESPONSIVE POLISH / RETURN MASK
+   SSHCP V18.17 — PROPORTIONAL TEAM TYPOGRAPHY
    ========================================================= */
 
 /* FILTER stays in the approved position. Its APPLY track must follow the
@@ -11219,6 +11218,19 @@ body option{
 .modal-overlay.geek-mode-v180 .modal-box.geek-detail-return-cover-v1816 > .modal-title{
   position:relative!important;
   z-index:160!important;
+}
+
+
+/* =========================================================
+   SSHCP V18.18 — LIVE LEADERBOARD REFRESH POLISH
+   Presentation only. FINAL RESULTS buttons remain unchanged.
+   ========================================================= */
+
+/* During play, REFRESH is the secondary footer action. Keep its established
+   white/button treatment and change only the border to the tournament accent.
+   The :not(.tournament-complete) guard deliberately excludes FINAL RESULTS. */
+#leaderboardView .leaderboard-screen:not(.tournament-complete) .leader-bottom .leader-refresh-button{
+  border:2px solid var(--accent)!important;
 }
 
 </style>
@@ -11348,7 +11360,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.16</span>
+          <span class="home-version-info">SSHCP V18.18</span>
         </button>
 
       </div>
@@ -14520,7 +14532,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.16 RESULT LOG',
+        'SSHCP V18.18 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14583,7 +14595,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.16 CONTROL CENTER LOG',
+        'SSHCP V18.18 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -15627,20 +15639,14 @@ let scoreTimingDetail =
         const topRect = topAnchor.getBoundingClientRect();
         top = Math.ceil(topRect.bottom);
       } else if (mode === 'leaderboard') {
-        /* V18.6: Leaderboard only. Anchor the white shield a few pixels below
-           the lower rendered HOME/INFO button bottom so no refresh/loading strip
-           can peek through above the mutable page content on any viewport. */
+        /* V18.18: Leaderboard refresh protection starts at the exact bottom of
+           the complete HOME / event / INFO nav row and covers the entire viewport
+           below it. No mutable LIVE LEADERBOARD / FINAL RESULTS title, loading
+           strip, table or footer geometry is allowed above the shield boundary. */
         const nav = els.leaderboardView && els.leaderboardView.querySelector('.leader-nav');
         if (!nav) return false;
-        const buttons = [...nav.querySelectorAll('.nav-button')]
-          .filter(Boolean)
-          .map(button => button.getBoundingClientRect())
-          .filter(rect => rect.height > 0);
         const navRect = nav.getBoundingClientRect();
-        const lowerButtonBottom = buttons.length
-          ? Math.max(...buttons.map(rect => rect.bottom))
-          : navRect.bottom;
-        top = Math.floor(lowerButtonBottom);
+        top = Math.floor(navRect.bottom);
       } else {
         return false;
       }
@@ -19360,6 +19366,16 @@ let scoreTimingDetail =
         });
       }
 
+      /* V18.17 Scramble Summary TEAM hierarchy:
+         - Every tier has a one-line ceiling of 45% of its OWN actual row height.
+         - Two-line names are allowed, but the complete two-line block may use
+           at most 80% of that row height.
+         - The ACTUAL fitted per-line font size cascades downward at 90%:
+           1st -> 2nd -> 3rd -> one shared size for 4th-10th.
+         - 15px is the absolute TEAM-name floor. There are no pixel maximums. */
+      const summaryTeamMinimumV1817 = 15;
+      let previousPodiumTeamSizeV1817 = null;
+
       [1,2,3].forEach((place, index) => {
         const row = topGrid.querySelector('.tournament-summary-row.place-' + place);
         if (!row) return;
@@ -19370,18 +19386,34 @@ let scoreTimingDetail =
         const net = row.querySelector('.tournament-summary-net');
 
         if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 9, {horizontalPad:4,verticalPad:5});
+
         if (team && teamText) {
-          fitTwoLineTeamTextV58(
+          const ownRowCeiling = row.clientHeight * 0.45;
+          const cascadeCeiling = Number.isFinite(previousPodiumTeamSizeV1817)
+            ? previousPodiumTeamSizeV1817 * 0.90
+            : ownRowCeiling;
+          const targetSize = Math.max(
+            summaryTeamMinimumV1817,
+            Math.min(ownRowCeiling, cascadeCeiling)
+          );
+          const fittedTeam = fitTwoLineTeamTextV58(
             team,
             teamAnchor,
             teamText,
             row.clientHeight,
-            Math.min(32, row.clientHeight * ([0.47,0.43,0.40][index])),
-            13,
-            22
+            targetSize,
+            summaryTeamMinimumV1817,
+            22,
+            0.80
           );
+          previousPodiumTeamSizeV1817 = fittedTeam && Number.isFinite(fittedTeam.size)
+            ? fittedTeam.size
+            : targetSize;
         }
-        if (net) fitTextToBoxV5(net, net, Math.min(46, row.clientHeight * ([0.60,0.55,0.50][index])), 12, {horizontalPad:6,verticalPad:5});
+
+        /* Keep the approved 60/55/50% podium NET +/- hierarchy, but remove
+           the old 46px hard maximum so it remains proportional to the row. */
+        if (net) fitTextToBoxV5(net, net, row.clientHeight * ([0.60,0.55,0.50][index]), 12, {horizontalPad:6,verticalPad:5});
       });
 
       const lowerPlace = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.place'));
@@ -19404,22 +19436,59 @@ let scoreTimingDetail =
 
       fitUniform(lowerPlace, 0.34, 9, 4);
 
-      lowerTeam.forEach(teamCell => {
-        const anchor = teamCell.querySelector('.summary-team-anchor');
-        const teamText = teamCell.querySelector('.summary-team-text');
-        if (!teamText) return;
-
-        const rowHeight = teamCell.clientHeight;
-        fitTwoLineTeamTextV58(
-          teamCell,
-          anchor,
-          teamText,
-          rowHeight,
-          Math.min(28, rowHeight * 0.40),
-          13,
-          10
+      if (lowerTeam.length) {
+        const lowerRowHeights = lowerTeam
+          .map(cell => cell.clientHeight || cell.getBoundingClientRect().height || 0)
+          .filter(height => height > 0);
+        const shortestLowerRow = lowerRowHeights.length ? Math.min(...lowerRowHeights) : 1;
+        const ownLowerRowCeiling = shortestLowerRow * 0.45;
+        const cascadeLowerCeiling = Number.isFinite(previousPodiumTeamSizeV1817)
+          ? previousPodiumTeamSizeV1817 * 0.90
+          : ownLowerRowCeiling;
+        const sharedLowerTarget = Math.max(
+          summaryTeamMinimumV1817,
+          Math.min(ownLowerRowCeiling, cascadeLowerCeiling)
         );
-      });
+
+        /* First pass discovers the smallest actual fit required by any of
+           places 4-10. Second pass applies that one exact size to all of them. */
+        let sharedLowerActual = sharedLowerTarget;
+        lowerTeam.forEach(teamCell => {
+          const anchor = teamCell.querySelector('.summary-team-anchor');
+          const teamText = teamCell.querySelector('.summary-team-text');
+          if (!teamText) return;
+          const fitted = fitTwoLineTeamTextV58(
+            teamCell,
+            anchor,
+            teamText,
+            teamCell.clientHeight,
+            sharedLowerTarget,
+            summaryTeamMinimumV1817,
+            10,
+            0.80
+          );
+          if (fitted && Number.isFinite(fitted.size)) {
+            sharedLowerActual = Math.min(sharedLowerActual, fitted.size);
+          }
+        });
+
+        sharedLowerActual = Math.max(summaryTeamMinimumV1817, sharedLowerActual);
+        lowerTeam.forEach(teamCell => {
+          const anchor = teamCell.querySelector('.summary-team-anchor');
+          const teamText = teamCell.querySelector('.summary-team-text');
+          if (!teamText) return;
+          fitTwoLineTeamTextV58(
+            teamCell,
+            anchor,
+            teamText,
+            teamCell.clientHeight,
+            sharedLowerActual,
+            summaryTeamMinimumV1817,
+            10,
+            0.80
+          );
+        });
+      }
 
       fitUniform(lowerNet, 0.48, 12, 6);
 
@@ -21782,7 +21851,7 @@ let scoreTimingDetail =
       };
     }
 
-    function fitTwoLineTeamTextV58(container, anchor, textEl, rowHeight, targetSize, minSize, horizontalPad) {
+    function fitTwoLineTeamTextV58(container, anchor, textEl, rowHeight, targetSize, minSize, horizontalPad, twoLineHeightRatio = 0.80) {
       if (!container || !textEl) return;
 
       const original = String(
@@ -21805,7 +21874,8 @@ let scoreTimingDetail =
         1,
         container.clientWidth - Math.max(0, Number(horizontalPad) || 0)
       );
-      const availableTwoLineHeight = Math.max(1, rowHeight * 0.80);
+      const safeTwoLineRatio = Math.max(0.10, Math.min(1, Number(twoLineHeightRatio) || 0.80));
+      const availableTwoLineHeight = Math.max(1, rowHeight * safeTwoLineRatio);
       const minimum = Math.max(5, Number(minSize) || 8);
       const target = Math.max(minimum, Number(targetSize) || minimum);
 
@@ -21888,7 +21958,10 @@ let scoreTimingDetail =
     function fitLeaderboardTeamV55(teamCell, teamAnchor, team, rowHeight) {
       if (!teamCell || !team) return;
 
-      const targetSize = Math.min(36, rowHeight * 0.475);
+      /* V18.17: fully proportional TEAM typography. Start at 40% of the
+         actual row height. One line is preferred; if two lines are needed,
+         the complete block may consume at most 75% of the row height. */
+      const targetSize = rowHeight * 0.40;
       fitTwoLineTeamTextV58(
         teamCell,
         teamAnchor,
@@ -21896,7 +21969,8 @@ let scoreTimingDetail =
         rowHeight,
         targetSize,
         13,
-        14
+        14,
+        0.75
       );
     }
 
