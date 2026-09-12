@@ -1,19 +1,17 @@
-<!-- SSHCP | BASE KEY: 18.7-P7N4KD | BUILD KEY: 18.8-K7M4QX -->
+<!-- SSHCP | BASE KEY: 18.8-K7M4QX | BUILD KEY: 18.9-R5T8WN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.8 — based directly on exact V18.7 (BUILD 18.7-P7N4KD).
-           V18.8 performs one coordinated vertical-geometry migration: the old .68 conversion
-           is baked into the approved Scorecard/Leaderboard HEADER shell baselines once, then
-           every vertical value uses one separate device-height multiplier with the Samsung S25
-           as the 1.00 reference. Scorecard and Leaderboard share HEADER/FOOTER geometry;
-           TABLES consume the remaining space. Shared bottom buttons are 70px on the S25,
-           SKINS header/data rows are 70px on the S25, table row pixels are distributed with
-           no unallocated remainder, Control Center reports live viewport metrics and owns the
-           GEEK/RESULTS checks, and the Leaderboard reveal shield covers everything below nav. */
+        /* SSHCP V18.9 — based directly on exact V18.8 (BUILD 18.8-K7M4QX).
+           V18.9 locks the Samsung S25 visual viewport (724 CSS px) as multiplier 1.000,
+           compacts the approved Scorecard/Leaderboard shell to 35/40/46/46, applies the
+           shared 46px table-header/footer family to post-round views, compacts SKINS to
+           38px data rows with 50% text, anchors/blur-isolates the GEEK filter panel, restores
+           the 10ms Score Box haptic, and adds an independent accumulated RESULT LOG derived
+           from raw authoritative score data and checked against the rendered Scramble Summary. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -188,15 +186,13 @@
             Math.abs(v188PhysShort - 1080) <= 140 &&
             Math.abs(v188PhysLong - 2340) <= 180;
           var v188ScreenLong = Math.max(v188ScreenW, v188ScreenH);
-          var v188S25ScreenLong = Number(localStorage.getItem('sshcpV188S25ScreenCssHeight') || 0);
-          if (v188LikelyS25 && v188ScreenLong > 0) {
-            v188S25ScreenLong = v188ScreenLong;
-            localStorage.setItem('sshcpV188S25ScreenCssHeight', String(v188S25ScreenLong));
-          }
-          if (!(v188S25ScreenLong > 0)) v188S25ScreenLong = 832;
+          var v189BootVisualH = Math.max(1, Number(window.visualViewport && window.visualViewport.height) || v16NowH);
+          /* This script runs before the viewport meta tag. Preserve an exact
+             S25 first paint from physical-device detection; all normal runtime
+             passes use the post-meta visual viewport / 724 formula below. */
           var v188BootMultiplier = v188LikelyS25
             ? 1.00
-            : Math.max(0.70, Math.min(1.20, v188ScreenLong / v188S25ScreenLong));
+            : Math.max(0.70, Math.min(1.30, v189BootVisualH / 724));
           var v188RoundY = function (value) {
             return Math.max(1, Math.round(value * v188BootMultiplier));
           };
@@ -212,14 +208,14 @@
             bootV16Vars = {
               '--v16-rail': v16Px(24),
               '--v16-nav-w': v16Px(141),
-              '--v16-nav-h': v188RoundY(53.04),
+              '--v16-nav-h': v188RoundY(35),
               '--v16-top-inset': v188RoundY(9.52),
               '--v16-nav-context-gap': v188RoundY(8.16),
-              '--v16-context-h': v188RoundY(59.84),
+              '--v16-context-h': v188RoundY(40),
               '--v16-context-table-gap': v188RoundY(8.16),
               '--v16-score-table-footer-gap': v188RoundY(12.24),
               '--v16-leader-table-footer-gap': v188RoundY(12.24),
-              '--v16-footer-h': v188RoundY(70),
+              '--v16-footer-h': v188RoundY(46),
               '--v16-bottom-gap': v188RoundY(12.24),
               '--v16-internal-gap': v16Px(28)
             };
@@ -228,7 +224,7 @@
               (bootV16Vars['--v16-rail'] / 3) +
               ((bootV16Vars['--v16-internal-gap'] * 2) / 3);
           } else {
-            bootV16Vars['--v16-footer-h'] = v188RoundY(70);
+            bootV16Vars['--v16-footer-h'] = v188RoundY(46);
             bootV16Vars['--v16-score-table-footer-gap'] = v188RoundY(12.24);
             bootV16Vars['--v16-leader-table-footer-gap'] = v188RoundY(12.24);
           }
@@ -240,15 +236,15 @@
               v16RootStyle.setProperty(name, value + 'px');
             }
           });
-          v16RootStyle.setProperty('--v187-table-header-h', v188RoundY(50) + 'px');
-          v16RootStyle.setProperty('--v188-skins-header-h', v188RoundY(70) + 'px');
-          v16RootStyle.setProperty('--v187-post-button-h', v188RoundY(70) + 'px');
-          v16RootStyle.setProperty('--v187-skins-row-h', v188RoundY(70) + 'px');
-          v16RootStyle.setProperty('--v187-skins-font-h', v188RoundY(35) + 'px');
-          v16RootStyle.setProperty('--v187-skins-mark-h', v188RoundY(47.6) + 'px');
-          v16RootStyle.setProperty('--v187-main-button-h', v188RoundY(70) + 'px');
-          v16RootStyle.setProperty('--v5-score-head-h', v188RoundY(50) + 'px');
-          v16RootStyle.setProperty('--v5-leader-head-h', v188RoundY(50) + 'px');
+          v16RootStyle.setProperty('--v187-table-header-h', v188RoundY(46) + 'px');
+          v16RootStyle.setProperty('--v188-skins-header-h', v188RoundY(46) + 'px');
+          v16RootStyle.setProperty('--v187-post-button-h', v188RoundY(46) + 'px');
+          v16RootStyle.setProperty('--v187-skins-row-h', v188RoundY(38) + 'px');
+          v16RootStyle.setProperty('--v187-skins-font-h', v188RoundY(19) + 'px');
+          v16RootStyle.setProperty('--v187-skins-mark-h', v188RoundY(25.84) + 'px');
+          v16RootStyle.setProperty('--v187-main-button-h', v188RoundY(46) + 'px');
+          v16RootStyle.setProperty('--v5-score-head-h', v188RoundY(46) + 'px');
+          v16RootStyle.setProperty('--v5-leader-head-h', v188RoundY(46) + 'px');
         } catch (e) {}
       } catch (e) {
         window.__sshcpBootTeam = '';
@@ -10746,7 +10742,7 @@ body option{
   text-align:center!important;
 }
 
-/* V18.8 bottom-button family: 70px S25 baseline × device multiplier. */
+/* V18.9 supersedes this family at 46px S25 baseline × device multiplier. */
 .modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn,
 .modal-overlay.skins-results-v1627 .modal-actions.skins-back-only-v181 .modal-btn,
 .modal-overlay.geek-mode-v180 .modal-actions > .modal-btn,
@@ -10790,7 +10786,7 @@ body option{
    SSHCP V18.8 — CLEAN S25 VERTICAL BASELINE + CONTROL CENTER QA
    ========================================================= */
 
-/* SKINS intentionally uses the new 70px S25 header/body row family. */
+/* V18.9 supersedes SKINS with a 46px header / 38px body-row family. */
 .modal-overlay.skins-results-v1627 .skins-row-v1627.header{
   height:var(--v188-skins-header-h,70px)!important;
   min-height:var(--v188-skins-header-h,70px)!important;
@@ -10837,6 +10833,118 @@ body option{
   color:var(--accent)!important;
   font-weight:800!important;
   line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+
+/* =========================================================
+   SSHCP V18.9 — FINAL S25-NORMALIZED GEOMETRY / GEEK FILTER
+   S25 visual viewport 724 CSS px = multiplier 1.000.
+   ========================================================= */
+
+/* Explicit fallbacks mirror the V18.9 runtime values. Horizontal geometry,
+   approved gaps/buffers and borders remain untouched. */
+#scorecardView .score-nav,
+#leaderboardView .leader-nav{
+  height:var(--v16-nav-h,35px)!important;
+  min-height:var(--v16-nav-h,35px)!important;
+  max-height:var(--v16-nav-h,35px)!important;
+}
+#scorecardView .team-select-wrap,
+#leaderboardView .leader-title-bar,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
+  height:var(--v16-context-h,40px)!important;
+  min-height:var(--v16-context-h,40px)!important;
+  max-height:var(--v16-context-h,40px)!important;
+}
+#scorecardView .bottom-action,
+#scorecardView .score-bottom-actions .leaderboard-button,
+#leaderboardView .leader-bottom .access-scorecard,
+#leaderboardView .leader-bottom .leader-refresh-button,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
+  height:var(--v16-footer-h,46px)!important;
+  min-height:var(--v16-footer-h,46px)!important;
+  max-height:var(--v16-footer-h,46px)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+.modal-overlay.tournament-summary .tournament-summary-row.header,
+.modal-overlay.geek-mode-v180 .geek-row-v180.header,
+.modal-overlay.skins-results-v1627 .skins-row-v1627.header{
+  height:var(--v187-table-header-h,46px)!important;
+  min-height:var(--v187-table-header-h,46px)!important;
+  max-height:var(--v187-table-header-h,46px)!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.header{
+  flex:0 0 var(--v187-table-header-h,46px)!important;
+}
+
+.modal-overlay.skins-results-v1627 .skins-row-v1627:not(.header){
+  height:var(--v187-skins-row-h,38px)!important;
+  min-height:var(--v187-skins-row-h,38px)!important;
+  max-height:var(--v187-skins-row-h,38px)!important;
+}
+.modal-overlay.skins-results-v1627 .skins-row-v1627:not(.header) .skins-cell-v1627{
+  font-size:var(--v187-skins-font-h,19px)!important;
+}
+.modal-overlay.skins-results-v1627 .skins-score-mark-v1627{
+  width:var(--v187-skins-mark-h,26px)!important;
+  height:var(--v187-skins-mark-h,26px)!important;
+  max-width:calc(var(--v187-skins-row-h,38px) - 6px)!important;
+  max-height:calc(var(--v187-skins-row-h,38px) - 6px)!important;
+  font-size:var(--v187-skins-font-h,19px)!important;
+}
+
+/* Bottom-button family only. Summary top navigation is intentionally excluded
+   and is sized from its own open vertical band in JS. */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn,
+.modal-overlay.skins-results-v1627 .modal-actions.skins-back-only-v181 .modal-btn,
+.modal-overlay.geek-mode-v180 .modal-actions > .modal-btn,
+.modal-overlay.geek-detail-v180 .modal-actions .modal-btn,
+.modal-overlay.geek-mode-v180 .geek-filter-anchor-v186,
+.modal-overlay.geek-mode-v180 .geek-filter-button-v186{
+  height:var(--v187-post-button-h,46px)!important;
+  min-height:var(--v187-post-button-h,46px)!important;
+  max-height:var(--v187-post-button-h,46px)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+.modal-overlay.geek-mode-v180 .modal-actions{
+  min-height:var(--v187-post-button-h,46px)!important;
+}
+
+/* FILTER popup spans exactly from BACK's lower-left corner to FILTERS'
+   lower-right corner. A separate overlay blurs only the underlying main Geek
+   card; the FILTER popup itself stays crisp above it. */
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v189 .modal-actions.geek-actions-v186{
+  position:relative!important;
+  z-index:70!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-anchor-v186{
+  z-index:75!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-popover-v186{
+  z-index:90!important;
+  max-width:none!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-blur-v189{
+  position:absolute!important;
+  inset:0!important;
+  z-index:60!important;
+  pointer-events:none!important;
+  border-radius:inherit!important;
+  background:rgba(255,255,255,.08)!important;
+  -webkit-backdrop-filter:blur(7px)!important;
+  backdrop-filter:blur(7px)!important;
+}
+
+/* Summary top nav is isolated from bottom-family selectors and may shrink only
+   inside its own title-to-table band. */
+.modal-overlay.tournament-summary .summary-nav-overlay-v182{
+  max-height:none!important;
   white-space:nowrap!important;
   overflow:hidden!important;
 }
@@ -10968,7 +11076,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.8</span>
+          <span class="home-version-info">SSHCP V18.9</span>
         </button>
 
       </div>
@@ -11347,7 +11455,7 @@ body option{
 
         <div class="control-center-checks-v188" aria-label="Control Center checks">
           <button id="controlCenterGeekCheckButtonV188" class="control-center-check-v188" type="button">GEEK CHECK</button>
-          <button id="controlCenterResultsCheckButtonV188" class="control-center-check-v188" type="button">RESULTS CHECK</button>
+          <button id="controlCenterResultsCheckButtonV188" class="control-center-check-v188" type="button">COPY RESULT LOG</button>
         </div>
 
         <div class="control-center-nav" aria-label="Control Center sections">
@@ -13725,6 +13833,464 @@ let scoreTimingDetail =
       requestAnimationFrame(fitTestPageButtonText);
     }
 
+
+    /* =========================================================
+       SSHCP V18.9 — INDEPENDENT ACCUMULATED RESULT AUDIT
+       The expected Scramble Summary is derived from raw authoritative score
+       data + raw handicap/tiebreak configuration. It intentionally does NOT
+       call buildTournamentPodium(), resolveTieContenders(), or reuse the app's
+       displayed ordering. The rendered Summary is snapshotted separately and
+       compared only after the independent answer exists.
+       ========================================================= */
+    const RESULT_AUDIT_LOG_KEY_V189 = 'sshcpResultAuditLogV189';
+    let resultAuditEpochV189 = 0;
+    const pendingResultAuditsV189 = new Set();
+
+    function getResultAuditLogV189() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(RESULT_AUDIT_LOG_KEY_V189) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function resetResultAuditLogV189() {
+      resultAuditEpochV189 += 1;
+      localStorage.removeItem(RESULT_AUDIT_LOG_KEY_V189);
+    }
+
+    function normalizeAuditTextV189(value) {
+      return String(value == null ? '' : value)
+        .replace(/\u00a0/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function auditGolfScoreV189(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return '';
+      if (number === 0) return 'E';
+      return number > 0 ? '+' + number : String(number);
+    }
+
+    function auditHandicapV189(team, rawLeaderRow) {
+      const candidates = [
+        team && team.handicap,
+        team && team.hcp,
+        rawLeaderRow && rawLeaderRow.handicap,
+        rawLeaderRow && rawLeaderRow.hcp,
+        rawLeaderRow && rawLeaderRow.teamHandicap,
+        rawLeaderRow && rawLeaderRow.teamHcp
+      ];
+      for (const value of candidates) {
+        if (value === '' || value === null || value === undefined) continue;
+        const number = Number(value);
+        if (Number.isFinite(number)) return Math.abs(number);
+      }
+      return null;
+    }
+
+    function auditOrdinalV189(number) {
+      const n = Number(number);
+      if (n === 1) return '1st';
+      if (n === 2) return '2nd';
+      if (n === 3) return '3rd';
+      return String(n) + 'th';
+    }
+
+    function snapshotRenderedSummaryV189() {
+      if (!els.modalOverlay.classList.contains('tournament-summary')) return null;
+      const body = els.modalBody;
+      if (!body) return null;
+      const rows = [];
+
+      body.querySelectorAll('.tournament-summary-grid .tournament-summary-row:not(.header)').forEach(row => {
+        rows.push({
+          place: normalizeAuditTextV189(row.querySelector('.tournament-summary-place')?.textContent),
+          team: normalizeAuditTextV189(row.querySelector('.tournament-summary-team')?.textContent),
+          strokes: normalizeAuditTextV189(row.querySelector('.tournament-summary-strokes')?.textContent),
+          net: normalizeAuditTextV189(row.querySelector('.tournament-summary-net')?.textContent)
+        });
+      });
+
+      body.querySelectorAll('.tournament-summary-remaining-row').forEach(row => {
+        const cells = row.querySelectorAll('.tournament-summary-remaining-cell');
+        rows.push({
+          place: normalizeAuditTextV189(cells[0]?.textContent),
+          team: normalizeAuditTextV189(cells[1]?.textContent),
+          strokes: normalizeAuditTextV189(cells[2]?.textContent),
+          net: normalizeAuditTextV189(cells[3]?.textContent)
+        });
+      });
+
+      const notes = [...body.querySelectorAll('.tournament-summary-note')]
+        .map(node => normalizeAuditTextV189(node.textContent))
+        .filter(Boolean);
+
+      return { rows, notes };
+    }
+
+    function rawTiebreakOrderV189(rawLeaderRows) {
+      const rows = Array.isArray(rawLeaderRows) ? rawLeaderRows : [];
+      for (const row of rows) {
+        if (!Array.isArray(row && row.tiebreakHoles) || !row.tiebreakHoles.length) continue;
+        const order = row.tiebreakHoles
+          .map(value => Number(value))
+          .filter(value => Number.isInteger(value) && value >= 1 && value <= 18);
+        if (order.length) return order;
+      }
+      return [];
+    }
+
+    function independentlyResolveTieV189(group, tiebreakOrder) {
+      let contenders = [...group];
+      for (let index = 0; index < tiebreakOrder.length && contenders.length > 1; index++) {
+        const actualHole = Number(tiebreakOrder[index]);
+        const scored = contenders.map(team => ({
+          team,
+          score: Number(team.scores[actualHole - 1])
+        }));
+        if (scored.some(item => !Number.isFinite(item.score) || item.score <= 0)) {
+          return { winner:null, decidingIndex:null, unresolved:true, actualHole, contenders };
+        }
+        const low = Math.min(...scored.map(item => item.score));
+        contenders = scored.filter(item => item.score === low).map(item => item.team);
+        if (contenders.length === 1) {
+          return {
+            winner: contenders[0],
+            decidingIndex: index,
+            actualHole,
+            winningScore: low,
+            unresolved: false,
+            entering: scored
+          };
+        }
+      }
+      return { winner:null, decidingIndex:null, unresolved:true, contenders };
+    }
+
+    function independentExpectedSummaryV189(scoreData, rawLeaderRows) {
+      const sourceHoles = Array.isArray(scoreData && scoreData.course && scoreData.course.holes)
+        ? scoreData.course.holes.slice(0, 18)
+        : [];
+      const sourceTeams = Array.isArray(scoreData && scoreData.teams)
+        ? scoreData.teams.filter(team => team && String(team.name || '').trim() !== '')
+        : [];
+      if (sourceHoles.length !== 18) throw new Error('RAW COURSE != 18 HOLES');
+      if (!sourceTeams.length) throw new Error('NO RAW OFFICIAL TEAMS');
+
+      const pars = sourceHoles.map(hole => Number(hole && hole.par));
+      if (pars.some(par => !Number.isFinite(par) || par <= 0)) throw new Error('RAW PAR DATA INVALID');
+      const parTotal = pars.reduce((sum, value) => sum + value, 0);
+      const rawRowsBySlot = new Map(
+        (Array.isArray(rawLeaderRows) ? rawLeaderRows : []).map(row => [Number(row && row.slot), row])
+      );
+      const tiebreakOrder = rawTiebreakOrderV189(rawLeaderRows);
+      if (!tiebreakOrder.length) throw new Error('RAW TIEBREAK ORDER MISSING');
+
+      const teams = sourceTeams.map(team => {
+        const slot = Number(team && team.slot);
+        const scores = Array.isArray(team && team.scores)
+          ? team.scores.slice(0, 18).map(value => Number(value))
+          : [];
+        if (scores.length !== 18 || scores.some(value => !Number.isFinite(value) || value <= 0)) {
+          throw new Error('T' + slot + ' RAW ROUND INCOMPLETE');
+        }
+        const handicap = auditHandicapV189(team, rawRowsBySlot.get(slot));
+        if (!Number.isFinite(handicap)) throw new Error('T' + slot + ' RAW HCP MISSING');
+        const grossStrokes = scores.reduce((sum, value) => sum + value, 0);
+        const netStrokes = grossStrokes - handicap;
+        const netToPar = netStrokes - parTotal;
+        return {
+          slot,
+          team: String(team.name || '').trim(),
+          handicap,
+          scores,
+          grossStrokes,
+          netStrokes,
+          netToPar
+        };
+      });
+
+      const byNetThenSlot = (a, b) =>
+        (a.netStrokes - b.netStrokes) ||
+        ((Number.isFinite(a.slot) ? a.slot : 9999) - (Number.isFinite(b.slot) ? b.slot : 9999)) ||
+        a.team.localeCompare(b.team);
+
+      const remaining = [...teams].sort(byNetThenSlot);
+      const podium = [];
+      const notes = [];
+      const traces = [];
+
+      for (let place = 1; place <= 3 && remaining.length; place++) {
+        const bestNet = remaining[0].netStrokes;
+        const tied = remaining.filter(team => team.netStrokes === bestNet);
+        let winner = tied[0];
+
+        if (tied.length > 1) {
+          const resolution = independentlyResolveTieV189(tied, tiebreakOrder);
+          if (resolution && resolution.winner) {
+            winner = resolution.winner;
+            const note = '• ' + auditOrdinalV189(place) + ' Place Won on ' +
+              (resolution.decidingIndex + 1) + ' HCP Hole (Hole ' + resolution.actualHole + ')';
+            notes.push(note);
+            traces.push(
+              auditOrdinalV189(place) + ' PLACE: ' +
+              tied.map(item => 'T' + item.slot).join('/') +
+              ' -> HCP ' + (resolution.decidingIndex + 1) +
+              ' / HOLE ' + resolution.actualHole +
+              ' -> T' + winner.slot
+            );
+          } else {
+            traces.push(auditOrdinalV189(place) + ' PLACE: UNRESOLVED TIE ' + tied.map(item => 'T' + item.slot).join('/'));
+          }
+        }
+
+        podium.push(winner);
+        const removeAt = remaining.indexOf(winner);
+        if (removeAt >= 0) remaining.splice(removeAt, 1);
+      }
+
+      remaining.sort(byNetThenSlot);
+      const ordered = [...podium, ...remaining].slice(0, 10);
+      const expectedRows = ordered.map((team, index) => {
+        let place;
+        if (index < 3) {
+          place = String(index + 1);
+        } else {
+          const currentNet = team.netStrokes;
+          const priorSame = ordered.slice(3, index).some(item => item.netStrokes === currentNet);
+          const laterSame = ordered.slice(index + 1).some(item => item.netStrokes === currentNet);
+          let unresolvedPlace = 4;
+          for (let i = 3; i < index; i++) {
+            if (ordered[i].netStrokes < currentNet) unresolvedPlace += 1;
+          }
+          place = (priorSame || laterSame) ? 'T' + unresolvedPlace : String(unresolvedPlace);
+        }
+        return {
+          place,
+          team: normalizeAuditTextV189(team.team),
+          strokes: String(team.netStrokes) + ' (HCP ' + team.handicap + ')',
+          net: auditGolfScoreV189(team.netToPar),
+          slot: team.slot
+        };
+      });
+
+      return { parTotal, teams, tiebreakOrder, expectedRows, notes, traces };
+    }
+
+    function compareExpectedToRenderedSummaryV189(expected, actual) {
+      const mismatches = [];
+      if (!actual) return ['SCRAMBLE SUMMARY SNAPSHOT MISSING'];
+      if (actual.rows.length !== expected.expectedRows.length) {
+        mismatches.push('ROW COUNT ' + actual.rows.length + '!=' + expected.expectedRows.length);
+      }
+
+      const count = Math.min(actual.rows.length, expected.expectedRows.length);
+      for (let index = 0; index < count; index++) {
+        const e = expected.expectedRows[index];
+        const a = actual.rows[index];
+        const prefix = 'ROW ' + (index + 1) + ' / T' + e.slot;
+        if (normalizeAuditTextV189(a.place).toUpperCase() !== normalizeAuditTextV189(e.place).toUpperCase()) {
+          mismatches.push(prefix + ' PLACE ' + a.place + '!=' + e.place);
+        }
+        if (normalizeAuditTextV189(a.team).toUpperCase() !== normalizeAuditTextV189(e.team).toUpperCase()) {
+          mismatches.push(prefix + ' TEAM ' + a.team + '!=' + e.team);
+        }
+        if (normalizeAuditTextV189(a.strokes) !== normalizeAuditTextV189(e.strokes)) {
+          mismatches.push(prefix + ' NET STROKES ' + a.strokes + '!=' + e.strokes);
+        }
+        if (normalizeAuditTextV189(a.net).toUpperCase() !== normalizeAuditTextV189(e.net).toUpperCase()) {
+          mismatches.push(prefix + ' NET +/- ' + a.net + '!=' + e.net);
+        }
+      }
+
+      const expectedNotes = expected.notes.map(normalizeAuditTextV189);
+      const actualNotes = actual.notes.map(normalizeAuditTextV189);
+      if (expectedNotes.length !== actualNotes.length || expectedNotes.some((note, i) => note !== actualNotes[i])) {
+        mismatches.push(
+          'TIEBREAK NOTES [' + (actualNotes.join(' || ') || 'NONE') + '] != [' +
+          (expectedNotes.join(' || ') || 'NONE') + ']'
+        );
+      }
+      return mismatches;
+    }
+
+    function resultAuditFingerprintV189(expected) {
+      return expected.teams
+        .slice()
+        .sort((a,b) => a.slot - b.slot)
+        .map(team => [team.slot, team.handicap, ...team.scores].join(','))
+        .join('|') + '::TB=' + expected.tiebreakOrder.join(',');
+    }
+
+    function appendResultAuditV189(entry) {
+      const log = getResultAuditLogV189();
+      if (entry.fingerprint && log.some(item => item && item.fingerprint === entry.fingerprint)) return false;
+      log.push(entry);
+      localStorage.setItem(RESULT_AUDIT_LOG_KEY_V189, JSON.stringify(log));
+      return true;
+    }
+
+    function formatResultAuditEntryV189(entry, index) {
+      const lines = [
+        '=== TEST ' + (index + 1) + ' — ' + (entry.ok ? 'OK' : 'FAILED') + ' ===',
+        'TIME ' + (entry.timestamp || ''),
+        'PAR ' + entry.parTotal,
+        'TB ORDER ' + (entry.tiebreakOrder || []).map((hole, i) => (i + 1) + ':H' + hole).join(' '),
+        'RAW OFFICIAL'
+      ];
+      (entry.rawTeams || []).forEach(team => {
+        lines.push(
+          'T' + team.slot + ' | ' + team.team +
+          ' | HCP ' + team.handicap +
+          ' | SCORES ' + team.scores.join(',') +
+          ' | GROSS ' + team.grossStrokes +
+          ' | NET ' + team.netStrokes +
+          ' | NET+/- ' + auditGolfScoreV189(team.netToPar)
+        );
+      });
+      lines.push('EXPECTED SUMMARY');
+      (entry.expectedRows || []).forEach(row => {
+        lines.push(row.place + ' | ' + row.team + ' | ' + row.strokes + ' | ' + row.net);
+      });
+      lines.push('EXPECTED TIEBREAK ' + ((entry.expectedNotes || []).join(' || ') || 'NONE'));
+      if (entry.traces && entry.traces.length) lines.push('TIE TRACE ' + entry.traces.join(' || '));
+      lines.push('APP SUMMARY');
+      (entry.actualRows || []).forEach(row => {
+        lines.push(row.place + ' | ' + row.team + ' | ' + row.strokes + ' | ' + row.net);
+      });
+      lines.push('APP TIEBREAK ' + ((entry.actualNotes || []).join(' || ') || 'NONE'));
+      lines.push('CHECK ' + (entry.ok ? 'OK — RAW DATA MATCHES SCRAMBLE SUMMARY / TIEBREAK' : 'FAILED — ' + (entry.mismatches || []).join(' • ')));
+      return lines.join('\n');
+    }
+
+    async function runSummaryResultAuditV189(renderedSnapshot, epochAtStart) {
+      try {
+        const stamp = Date.now();
+        const [scoreResponse, leaderResponse] = await Promise.all([
+          fetch(CLOUDFLARE_API_URL + '?refresh=' + stamp + '-summary-audit', { cache:'no-store' }),
+          fetch(CLOUDFLARE_API_URL + '?action=leaderboard&refresh=' + stamp + '-summary-audit', { cache:'no-store' })
+        ]);
+        const [scoreData, leaderData] = await Promise.all([scoreResponse.json(), leaderResponse.json()]);
+        if (epochAtStart !== resultAuditEpochV189) return;
+        if (!scoreResponse.ok || !scoreData || scoreData.ok !== true) throw new Error('RAW OFFICIAL READ FAILED');
+        if (!leaderResponse.ok || !leaderData || leaderData.ok !== true) throw new Error('RAW LEADERBOARD READ FAILED');
+
+        const rawLeaderRows = Array.isArray(leaderData.leaderboard) ? leaderData.leaderboard : [];
+        const expected = independentExpectedSummaryV189(scoreData, rawLeaderRows);
+        const fingerprint = resultAuditFingerprintV189(expected);
+        if (getResultAuditLogV189().some(item => item && item.fingerprint === fingerprint)) return;
+        const mismatches = compareExpectedToRenderedSummaryV189(expected, renderedSnapshot);
+        const entry = {
+          timestamp: new Date().toISOString(),
+          fingerprint,
+          ok: mismatches.length === 0,
+          parTotal: expected.parTotal,
+          tiebreakOrder: expected.tiebreakOrder,
+          rawTeams: expected.teams,
+          expectedRows: expected.expectedRows,
+          expectedNotes: expected.notes,
+          traces: expected.traces,
+          actualRows: renderedSnapshot ? renderedSnapshot.rows : [],
+          actualNotes: renderedSnapshot ? renderedSnapshot.notes : [],
+          mismatches
+        };
+        if (epochAtStart !== resultAuditEpochV189) return;
+        if (appendResultAuditV189(entry)) {
+          const testNumber = getResultAuditLogV189().length;
+          addTestLog(
+            'RESULT AUDIT',
+            entry.ok ? 'OK' : 'FAILED',
+            'TEST ' + testNumber,
+            entry.ok
+              ? 'RAW DATA MATCHES SCRAMBLE SUMMARY / TIEBREAK'
+              : mismatches.slice(0, 3).join(' • ')
+          );
+        }
+      } catch (error) {
+        if (epochAtStart !== resultAuditEpochV189) return;
+        const entry = {
+          timestamp: new Date().toISOString(),
+          fingerprint: '',
+          ok: false,
+          parTotal: '—',
+          tiebreakOrder: [],
+          rawTeams: [],
+          expectedRows: [],
+          expectedNotes: [],
+          traces: [],
+          actualRows: renderedSnapshot ? renderedSnapshot.rows : [],
+          actualNotes: renderedSnapshot ? renderedSnapshot.notes : [],
+          mismatches: [String(error && error.message || 'RESULT AUDIT FAILED')]
+        };
+        appendResultAuditV189(entry);
+        addTestLog('RESULT AUDIT', 'FAILED', '—', entry.mismatches[0]);
+      }
+    }
+
+    function captureTournamentSummaryAuditV189() {
+      const renderedSnapshot = snapshotRenderedSummaryV189();
+      if (!renderedSnapshot) return;
+      const epochAtStart = resultAuditEpochV189;
+      const promise = runSummaryResultAuditV189(renderedSnapshot, epochAtStart);
+      pendingResultAuditsV189.add(promise);
+      promise.finally(() => pendingResultAuditsV189.delete(promise));
+    }
+
+    function buildResultAuditReportV189() {
+      const log = getResultAuditLogV189();
+      const lines = [
+        'SSHCP V18.9 RESULT LOG',
+        'Generated: ' + new Date().toISOString(),
+        'Tests: ' + log.length,
+        ''
+      ];
+      log.forEach((entry, index) => {
+        lines.push(formatResultAuditEntryV189(entry, index));
+        lines.push('');
+      });
+      if (!log.length) lines.push('NO RESULT TESTS RECORDED');
+      return lines.join('\n');
+    }
+
+    async function copyResultAuditLogV189() {
+      if (pendingResultAuditsV189.size) {
+        await Promise.allSettled([...pendingResultAuditsV189]);
+      }
+      const report = buildResultAuditReportV189();
+      let copied = false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(report);
+          copied = true;
+        }
+      } catch (_) {}
+      if (!copied) {
+        const textarea = document.createElement('textarea');
+        textarea.value = report;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try { copied = document.execCommand('copy'); } catch (_) { copied = false; }
+        textarea.remove();
+      }
+      if (els.controlCenterResultsCheckButtonV188) {
+        const original = 'COPY RESULT LOG';
+        els.controlCenterResultsCheckButtonV188.textContent = copied ? 'COPIED' : 'COPY FAILED';
+        setTimeout(() => {
+          if (els.controlCenterResultsCheckButtonV188) {
+            els.controlCenterResultsCheckButtonV188.textContent = original;
+            requestAnimationFrame(fitTestPageButtonText);
+          }
+        }, 1200);
+      }
+      if (!copied) addTestLog('COPY RESULT LOG', 'FAILED', '—', 'CLIPBOARD UNAVAILABLE');
+    }
+
     function buildTestLogReport() {
       const log = getTestLog();
       const directory = readStoredTestQrDirectory() || [];
@@ -13739,7 +14305,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.8 CONTROL CENTER LOG',
+        'SSHCP V18.9 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -14119,6 +14685,7 @@ let scoreTimingDetail =
 
     function resetTestLog() {
       localStorage.removeItem(TEST_LOG_KEY);
+      resetResultAuditLogV189();
       renderTestLog();
     }
 
@@ -15896,6 +16463,7 @@ let scoreTimingDetail =
     const V188_S25_PHYSICAL_W = 1080;
     const V188_S25_PHYSICAL_H = 2340;
     const V188_S25_SCREEN_CSS_FALLBACK_H = 832;
+    const V189_S25_VISUAL_VIEWPORT_H = 724;
 
     function getVerticalMetricsV188() {
       const innerWidth = Math.max(1, window.innerWidth || document.documentElement.clientWidth || 1);
@@ -15927,9 +16495,12 @@ let scoreTimingDetail =
       }
       if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
 
-      const multiplier = isS25
-        ? 1.00
-        : Math.max(0.70, Math.min(1.20, screenLong / s25ScreenLong));
+      /* V18.9: device multiplier is based only on the app's visible browser
+         viewport. Samsung S25 measured visual viewport = 724 CSS px = 1.000. */
+      const multiplier = Math.max(
+        0.70,
+        Math.min(1.30, visualHeight / V189_S25_VISUAL_VIEWPORT_H)
+      );
 
       return {
         innerWidth,
@@ -15955,13 +16526,13 @@ let scoreTimingDetail =
         sy: metrics.multiplier,
         multiplier: metrics.multiplier,
         metrics,
-        tableHeader: scaled(50),
-        skinsHeader: scaled(70),
-        postButton: scaled(70),
-        skinsRow: scaled(70),
-        skinsFont: scaled(35),
-        skinsMark: scaled(47.6),
-        mainButton: scaled(70)
+        tableHeader: scaled(46),
+        skinsHeader: scaled(46),
+        postButton: scaled(46),
+        skinsRow: scaled(38),
+        skinsFont: scaled(19),
+        skinsMark: scaled(25.84),
+        mainButton: scaled(46)
       };
       const root = document.documentElement.style;
       root.setProperty('--v187-table-header-h', values.tableHeader + 'px');
@@ -16031,14 +16602,14 @@ let scoreTimingDetail =
       const vars = {
         '--v16-rail': px(24),
         '--v16-nav-w': px(141),
-        '--v16-nav-h': py(53.04),
+        '--v16-nav-h': py(35),
         '--v16-top-inset': py(9.52),
         '--v16-nav-context-gap': py(8.16),
-        '--v16-context-h': py(59.84),
+        '--v16-context-h': py(40),
         '--v16-context-table-gap': py(8.16),
         '--v16-score-table-footer-gap': py(12.24),
         '--v16-leader-table-footer-gap': py(12.24),
-        '--v16-footer-h': py(70),
+        '--v16-footer-h': py(46),
         '--v16-bottom-gap': py(12.24),
         '--v16-internal-gap': px(28)
       };
@@ -16124,13 +16695,13 @@ let scoreTimingDetail =
       if (!Number.isFinite(screenHeight) || screenHeight <= 0) return;
 
       /* V18.8: HEADER + FOOTER are fixed first; TABLE gets the exact remainder.
-         The table-header row is 50px on the S25 × device multiplier. The
+         The table-header row is 46px on the S25 × device multiplier. The
          remaining integer pixel budget is divided across exactly nine visible
          score rows, with any remainder deliberately distributed so there is
          never an unallocated gap at the bottom of the viewport. */
       const fixedShellWithoutHeader = Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
       const tableBudget = Math.max(1, Math.round(screenHeight - fixedShellWithoutHeader));
-      const headerHeight = Math.max(1, Math.round(50 * geometry.sy));
+      const headerHeight = syncSharedGeometryV187().tableHeader;
       const divider = Math.max(2, Math.min(4, Math.round(tableBudget * 0.004)));
       const scoreTableBudget = Math.max(9, tableBudget - headerHeight - divider);
       const scoreRowPixels = distributeIntegerPixelsV188(scoreTableBudget, 9);
@@ -16504,6 +17075,12 @@ let scoreTimingDetail =
 
             }
 
+
+            /* V18.9: Score Boxes use the same 10ms tactile confirmation as
+               the rest of the app. The global literal-button path keeps the
+               visual press; this local pointerdown guarantees the Score Box
+               haptic without waiting for click. */
+            button.addEventListener('pointerdown', () => triggerHapticV185(10), { passive:true });
 
             button.addEventListener(
               'click',
@@ -19160,7 +19737,7 @@ let scoreTimingDetail =
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
 
-      /* V18.8: fixed 50px S25 table-header row × device multiplier.
+      /* V18.9: fixed 46px S25 table-header row × device multiplier.
          Fifteen visible Geek rows consume every remaining integer pixel.
          The 15-row pattern repeats through the scroll list so there is never
          a fractional remainder/gap at the bottom of the table viewport. */
@@ -19322,6 +19899,7 @@ let scoreTimingDetail =
     function fitGeekFilterPanelV186() {
       const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
       if (!panel || !panel.classList.contains('open')) return;
+      syncGeekFilterPopoverGeometryV189();
 
       const allLabel = panel.querySelector('.geek-filter-all-v186 .geek-filter-text-v186');
       const normalLabels = [...panel.querySelectorAll('.geek-filter-choice-v186:not(.geek-filter-all-v186) .geek-filter-text-v186')];
@@ -19349,6 +19927,41 @@ let scoreTimingDetail =
       }
     }
 
+
+    function syncGeekFilterPopoverGeometryV189() {
+      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      const back = els.modalActions.querySelector('.geek-back-v180');
+      const filters = els.modalActions.querySelector('.geek-filter-button-v186');
+      const anchor = els.modalActions.querySelector('.geek-filter-anchor-v186');
+      if (!panel || !back || !filters || !anchor || !panel.classList.contains('open')) return;
+      const backRect = back.getBoundingClientRect();
+      const filterRect = filters.getBoundingClientRect();
+      const width = Math.max(1, Math.round(filterRect.right - backRect.left));
+      panel.style.setProperty('width', width + 'px', 'important');
+      panel.style.setProperty('max-width', 'none', 'important');
+      panel.style.setProperty('right', '0px', 'important');
+      panel.style.setProperty('bottom', '0px', 'important');
+    }
+
+    function installGeekFilterBlurV189() {
+      if (!els.modalBox) return;
+      let blur = els.modalBox.querySelector('.geek-filter-blur-v189');
+      if (!blur) {
+        blur = document.createElement('div');
+        blur.className = 'geek-filter-blur-v189';
+        blur.setAttribute('aria-hidden', 'true');
+        els.modalBox.appendChild(blur);
+      }
+      els.modalBox.classList.add('geek-filter-open-v189');
+    }
+
+    function removeGeekFilterBlurV189() {
+      if (!els.modalBox) return;
+      els.modalBox.classList.remove('geek-filter-open-v189');
+      const blur = els.modalBox.querySelector('.geek-filter-blur-v189');
+      if (blur) blur.remove();
+    }
+
     function closeGeekFilterPanelV186() {
       const anchor = els.modalActions.querySelector('.geek-filter-anchor-v186');
       const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
@@ -19356,6 +19969,7 @@ let scoreTimingDetail =
       if (panel) panel.classList.remove('open');
       if (anchor) anchor.classList.remove('open');
       if (button) button.setAttribute('aria-expanded', 'false');
+      removeGeekFilterBlurV189();
     }
 
     function openGeekFilterPanelV186() {
@@ -19368,7 +19982,11 @@ let scoreTimingDetail =
       panel.classList.add('open');
       anchor.classList.add('open');
       button.setAttribute('aria-expanded', 'true');
-      requestAnimationFrame(fitGeekFilterPanelV186);
+      installGeekFilterBlurV189();
+      requestAnimationFrame(() => {
+        syncGeekFilterPopoverGeometryV189();
+        fitGeekFilterPanelV186();
+      });
     }
 
     function toggleGeekFilterPanelV186() {
@@ -19792,9 +20410,9 @@ let scoreTimingDetail =
       const sharedV187 = syncSharedGeometryV187();
       const scroll = els.modalBody.querySelector('.skins-table-scroll-v1627');
       if (scroll) {
-        const rowCount = Math.max(2, scroll.querySelectorAll('.skins-row-v1627').length);
-        const desiredTableHeight = rowCount * sharedV187.skinsRow;
-        const maxTableHeight = Math.max(sharedV187.skinsRow * 2, Math.floor((window.innerHeight || 800) * 0.62));
+        const bodyRowCount = Math.max(1, scroll.querySelectorAll('.skins-row-v1627:not(.header)').length);
+        const desiredTableHeight = sharedV187.skinsHeader + (bodyRowCount * sharedV187.skinsRow);
+        const maxTableHeight = Math.max(sharedV187.skinsHeader + sharedV187.skinsRow, Math.floor((window.innerHeight || 800) * 0.62));
         scroll.style.height = Math.min(desiredTableHeight, maxTableHeight) + 'px';
       }
 
@@ -19860,8 +20478,8 @@ let scoreTimingDetail =
       scroll.className = 'skins-table-scroll-v1627';
 
       const visibleBodyRows = Math.max(1, results.length);
-      const desiredTableHeight = (visibleBodyRows + 1) * sharedV187.skinsRow;
-      const maxTableHeight = Math.max(sharedV187.skinsRow * 2, Math.floor((window.innerHeight || 800) * 0.62));
+      const desiredTableHeight = sharedV187.skinsHeader + (visibleBodyRows * sharedV187.skinsRow);
+      const maxTableHeight = Math.max(sharedV187.skinsHeader + sharedV187.skinsRow, Math.floor((window.innerHeight || 800) * 0.62));
       scroll.style.height = Math.min(desiredTableHeight, maxTableHeight) + 'px';
 
       const header = document.createElement('div');
@@ -19970,9 +20588,20 @@ let scoreTimingDetail =
         'important'
       );
 
-      const footerBack = els.modalActions.querySelector('.modal-btn');
-      const backRect = footerBack ? footerBack.getBoundingClientRect() : null;
-      const buttonH = backRect ? (backRect.height || 40) : 40;
+      /* V18.9: Summary top navigation is NOT part of the bottom-button family.
+         It owns only the open band between the title and TABLE HEADER ROW,
+         preserving a small buffer on both sides and shrinking locally if the
+         band is tighter on another device. */
+      const sharedV189 = syncSharedGeometryV187();
+      const navBand = Math.max(1, tableRect.top - titleRect.bottom);
+      const navBuffer = Math.max(2, Math.round(4 * sharedV189.multiplier));
+      const buttonH = Math.max(
+        20,
+        Math.min(
+          Math.round(46 * sharedV189.multiplier),
+          Math.floor(navBand - (navBuffer * 2))
+        )
+      );
       const buttonW = Math.max(1, tableRect.width * 0.25);
       const tableLeftInBox = tableRect.left - boxRect.left;
       const tableRightInBox = tableRect.right - boxRect.left;
@@ -19989,7 +20618,7 @@ let scoreTimingDetail =
       leaderboard.style.setProperty('top', top + 'px', 'important');
 
       [home, leaderboard].forEach(button => {
-        fitTextToBoxV5(button, button, buttonH * 0.50, 9, {
+        fitTextToBoxV5(button, button, buttonH * 0.40, 9, {
           horizontalPad: 12,
           verticalPad: 6,
           wrap: false,
@@ -20141,6 +20770,7 @@ let scoreTimingDetail =
       tournamentSummaryResizeObserver.observe(els.modalBox);
 
       requestAnimationFrame(fitTournamentSummaryRemaining);
+      requestAnimationFrame(() => captureTournamentSummaryAuditV189());
       revealDataShieldAfterLayoutV177('summary', summaryRevealShieldV177, 2, [els.modalBody]);
     }
 
@@ -20980,11 +21610,11 @@ let scoreTimingDetail =
         Math.min(8, els.leaderRows ? els.leaderRows.querySelectorAll('.leader-row').length : 1)
       );
 
-      /* V18.8: Scorecard and Leaderboard share the same fixed TABLE HEADER
+      /* V18.9: Scorecard and Leaderboard share the same fixed 46px TABLE HEADER
          baseline. The Leaderboard viewport then distributes every remaining
          integer pixel across the visible rows (max 8). The repeating pattern
          means each full visible block consumes the viewport exactly. */
-      const headerHeight = Math.max(1, Math.round(50 * geometry.sy));
+      const headerHeight = syncSharedGeometryV187().tableHeader;
       const rowHeightInitial = Math.max(1, Math.floor((Math.max(rowCount, Math.round(tableBudget - headerHeight))) / rowCount));
 
       els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
@@ -21640,6 +22270,7 @@ let scoreTimingDetail =
 
       if (els.modalBox) {
         els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182').forEach(node => node.remove());
+        removeGeekFilterBlurV189();
       }
 
     }
@@ -21764,9 +22395,10 @@ let scoreTimingDetail =
       sshcpPressedButtonV172 = button;
       sshcpPressedRestoreV172 = prior;
 
-      /* V18.5 test-strength haptic. Intentionally 10ms so missed controls are
-         obvious during the site-wide interaction audit. */
-      triggerHapticV185(10);
+      /* V18.9: Score Boxes own their explicit 10ms pointerdown haptic so
+         they cannot double-buzz. Every other enabled literal button keeps the
+         existing 10ms global tactile confirmation. */
+      if (!button.classList.contains('score-button')) triggerHapticV185(10);
     }
 
     function endLiteralButtonPressV172() {
@@ -21940,7 +22572,7 @@ let scoreTimingDetail =
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
     if (els.controlCenterGeekCheckButtonV188) els.controlCenterGeekCheckButtonV188.addEventListener('click', runControlCenterGeekCheckV188);
-    if (els.controlCenterResultsCheckButtonV188) els.controlCenterResultsCheckButtonV188.addEventListener('click', runControlCenterResultsCheckV188);
+    if (els.controlCenterResultsCheckButtonV188) els.controlCenterResultsCheckButtonV188.addEventListener('click', copyResultAuditLogV189);
     if (els.controlCenterTeamsButton) els.controlCenterTeamsButton.addEventListener('click', openTeamsPopup);
     if (els.controlCenterSkinsCheck) {
       els.controlCenterSkinsCheck.checked = skinsEnabledV1627();
