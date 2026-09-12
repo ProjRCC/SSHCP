@@ -1,16 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.19-T8K5QW | BUILD KEY: 18.20-K7M4QZ -->
+<!-- SSHCP | BASE KEY: 18.20-K7M4QZ | BUILD KEY: 18.21-R5N8QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.20 — built directly from V18.19 (BUILD 18.19-T8K5QW).
-           V18.16 remains the declared GOLDEN rollback. V18.20 preserves all V18.19 behavior and makes
-           only three presentation refinements: Geek STAT labels may use up to two lines within 80% of
-           their row while the semantic status dot stays centered; Quick Guide body copy moves from the
-           16px S25 baseline to 19px times the device multiplier; and the Welcome assigned-team name may
-           use 90% of viewport width before shrinking instead of 80%. */
+        /* SSHCP V18.21 — built directly from V18.20 (BUILD 18.20-K7M4QZ).
+           V18.16 remains the declared GOLDEN rollback. V18.21 preserves all V18.20 behavior and makes
+           only three presentation refinements: Geek STAT two-line fitting may also break immediately
+           after a hyphen while the semantic status dot stays centered; Geek shows 12 visible rows instead
+           of 15; and the Welcome assigned-team name uses 85% of viewport width instead of 90%. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -10488,7 +10487,7 @@ body option{
    Scorecard shield, authorization, Welcome, Summary and SKINS stay protected.
    ========================================================= */
 
-/* 15-row Geek density with locked 35 / 25 / 40 columns. */
+/* Geek density with locked 35 / 25 / 40 columns. */
 .geek-row-v180.header,
 .geek-row-v180.stat{
   grid-template-columns:35fr 25fr 40fr!important;
@@ -11402,7 +11401,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.20</span>
+          <span class="home-version-info">SSHCP V18.21</span>
         </button>
 
       </div>
@@ -14574,7 +14573,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.20 RESULT LOG',
+        'SSHCP V18.21 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14637,7 +14636,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.20 CONTROL CENTER LOG',
+        'SSHCP V18.21 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -20106,7 +20105,8 @@ let scoreTimingDetail =
             h * 0.45,
             8,
             38,
-            0.80
+            0.80,
+            splitGeekStatTwoLinesV1821
           );
           statCell.style.setProperty('text-align', 'left', 'important');
           statLabel.style.setProperty('text-align', 'left', 'important');
@@ -20178,21 +20178,21 @@ let scoreTimingDetail =
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
 
-      /* V18.9: fixed 46px S25 table-header row × device multiplier.
-         Fifteen visible Geek rows consume every remaining integer pixel.
-         The 15-row pattern repeats through the scroll list so there is never
+      /* V18.21: fixed 46px S25 table-header row × device multiplier.
+         Twelve visible Geek rows consume every remaining integer pixel.
+         The 12-row pattern repeats through the scroll list so there is never
          a fractional remainder/gap at the bottom of the table viewport. */
       const sharedV187 = syncSharedGeometryV187();
       const headerHeight = sharedV187.tableHeader;
-      const dataPixels = Math.max(15 * 18, Math.round(height - headerHeight));
-      const rowPixelsV188 = distributeIntegerPixelsV188(dataPixels, 15);
-      const rowHeight = rowPixelsV188.reduce((sum, value) => sum + value, 0) / 15;
+      const dataPixels = Math.max(12 * 18, Math.round(height - headerHeight));
+      const rowPixelsV188 = distributeIntegerPixelsV188(dataPixels, 12);
+      const rowHeight = rowPixelsV188.reduce((sum, value) => sum + value, 0) / 12;
       shell.style.setProperty('--geek-row-h-v180', Math.floor(rowHeight) + 'px');
       shell.style.setProperty('--geek-header-h-v185', headerHeight + 'px');
 
       const geekRowsV188 = shell.querySelectorAll('.geek-table-scroll-v180 .geek-row-v180');
       geekRowsV188.forEach((row, index) => {
-        const exactHeight = rowPixelsV188[index % 15];
+        const exactHeight = rowPixelsV188[index % 12];
         row.style.setProperty('height', exactHeight + 'px', 'important');
         row.style.setProperty('min-height', exactHeight + 'px', 'important');
         row.style.setProperty('max-height', exactHeight + 'px', 'important');
@@ -21786,6 +21786,36 @@ let scoreTimingDetail =
       return splitLeaderboardTeamTwoLinesV55(text);
     }
 
+    function splitGeekStatTwoLinesV1821(text) {
+      const value = String(text || '').trim();
+      if (!value) return ['', ''];
+
+      const midpoint = value.length / 2;
+      const cuts = [];
+
+      /* V18.21: Geek STAT labels may break at normal spaces or immediately
+         AFTER a hyphen. The hyphen remains at the end of line 1. */
+      for (let i = 1; i < value.length - 1; i++) {
+        if (value[i] === ' ') cuts.push({ cut:i, skip:1 });
+        else if (value[i] === '-') cuts.push({ cut:i + 1, skip:0 });
+      }
+
+      if (cuts.length) {
+        const best = cuts.reduce((chosen, candidate) =>
+          Math.abs(candidate.cut - midpoint) < Math.abs(chosen.cut - midpoint)
+            ? candidate
+            : chosen
+        , cuts[0]);
+        return [
+          value.slice(0, best.cut).trim(),
+          value.slice(best.cut + best.skip).trim()
+        ];
+      }
+
+      const cut = Math.max(1, Math.min(value.length - 1, Math.round(midpoint)));
+      return [value.slice(0, cut), value.slice(cut)];
+    }
+
     function measureTeamLineWidthV58(target, text, fontSize) {
       if (!target) return Infinity;
 
@@ -21888,8 +21918,15 @@ let scoreTimingDetail =
       textEl.classList.add('two-line');
     }
 
-    function twoLineTeamFitsV58(textEl, value, fontSize, availableWidth, availableHeight) {
-      const [line1, line2] = splitLeaderboardTeamTwoLinesV58(value);
+    function twoLineTeamFitsV58(
+      textEl,
+      value,
+      fontSize,
+      availableWidth,
+      availableHeight,
+      splitter = splitLeaderboardTeamTwoLinesV58
+    ) {
+      const [line1, line2] = splitter(value);
       const width1 = measureTeamLineWidthV58(textEl, line1, fontSize);
       const width2 = measureTeamLineWidthV58(textEl, line2, fontSize);
       const height = fontSize * 1.02 * 2;
@@ -21900,7 +21937,17 @@ let scoreTimingDetail =
       };
     }
 
-    function fitTwoLineTeamTextV58(container, anchor, textEl, rowHeight, targetSize, minSize, horizontalPad, twoLineHeightRatio = 0.80) {
+    function fitTwoLineTeamTextV58(
+      container,
+      anchor,
+      textEl,
+      rowHeight,
+      targetSize,
+      minSize,
+      horizontalPad,
+      twoLineHeightRatio = 0.80,
+      splitter = splitLeaderboardTeamTwoLinesV58
+    ) {
       if (!container || !textEl) return;
 
       const original = String(
@@ -21947,7 +21994,8 @@ let scoreTimingDetail =
         original,
         target,
         availableWidth,
-        availableTwoLineHeight
+        availableTwoLineHeight,
+        splitter
       );
       renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
       textEl.style.setProperty('font-size', target + 'px', 'important');
@@ -21968,7 +22016,8 @@ let scoreTimingDetail =
           original,
           size,
           availableWidth,
-          availableTwoLineHeight
+          availableTwoLineHeight,
+          splitter
         );
         renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
         textEl.style.setProperty('font-size', size + 'px', 'important');
@@ -21988,7 +22037,8 @@ let scoreTimingDetail =
           candidate,
           minimum,
           availableWidth,
-          availableTwoLineHeight
+          availableTwoLineHeight,
+          splitter
         );
         if (!candidateFit.fits) continue;
 
@@ -23508,10 +23558,10 @@ let scoreTimingDetail =
       const team = document.getElementById('qrWelcomeTeamV170');
       if (!team || !team.textContent) return;
 
-      /* V18.20: horizontal fill governs TEAM sizing. Measure the authoritative
-         name itself and size it to 90% of viewport width so longer names can
-         remain larger while CSS keeps the finished line centered at 50% viewport. */
-      const targetWidth = Math.max(1, window.innerWidth * 0.90);
+      /* V18.21: horizontal fill governs TEAM sizing. Measure the authoritative
+         name itself and size it to 85% of viewport width so longer names can
+         remain large while retaining a little more side margin than V18.20. */
+      const targetWidth = Math.max(1, window.innerWidth * 0.85);
       const probeSize = 100;
       const minimum = 18;
 
@@ -23526,8 +23576,8 @@ let scoreTimingDetail =
       size = Math.max(minimum, size);
 
       team.style.fontSize = size.toFixed(2) + 'px';
-      team.style.width = '90vw';
-      team.style.maxWidth = '90vw';
+      team.style.width = '85vw';
+      team.style.maxWidth = '85vw';
     }
 
     function dismissQrWelcomeV170() {
