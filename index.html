@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.9-R5T8WN | BUILD KEY: 18.10-V4K7QM -->
+<!-- SSHCP | BASE KEY: 18.10-V4K7QM | BUILD KEY: 18.11-F6Q2XR -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.10 — based directly on exact V18.9 (BUILD 18.9-R5T8WN).
-           V18.10 keeps the S25 visual viewport (724 CSS px) as multiplier 1.000, changes the
+        /* SSHCP V18.11 — based directly on exact Golden V18.10 (BUILD 18.10-V4K7QM).
+           V18.11 keeps the S25 visual viewport (724 CSS px) as multiplier 1.000, preserves the
            shared bottom-button family to 50px, standardizes Summary/SKINS/GEEK title top inset
-           to 12px, makes the GEEK FILTERS panel a true crisp second popup over the blurred
-           Geek popup, and canonicalizes team names in the independent RESULT AUDIT. */
+           to 12px, keeps the GEEK FILTERS panel as a true crisp second popup over a solid white
+           table cover, and canonicalizes team names in the independent RESULT AUDIT. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11018,6 +11018,50 @@ body option{
   max-height:var(--v187-post-button-h,50px)!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V18.11 — GOLDEN V18.10 MINOR POLISH
+   - Summary top-nav gains 6px S25 breathing room above/below.
+   - Summary + Tie Break footer labels use a 35% text target.
+   - Geek FILTERS uses a solid white cover below the GEEK MODE title; APPLY
+     reveals the rebuilt table over the established .5s transparency fade.
+   ========================================================= */
+
+/* V18.11 replaces the V18.10 blur treatment completely. */
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-title,
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-text,
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-actions,
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .geek-copy-v180b{
+  filter:none!important;
+  -webkit-filter:none!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-cover-v1811{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  z-index:150!important;
+  background:#fff!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  border-radius:0 0 16px 16px!important;
+  transition:opacity .5s ease-out!important;
+  will-change:opacity;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-cover-v1811.is-revealing-v1811{
+  opacity:0!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-popover-v186{
+  z-index:200!important;
+}
+
+/* Text target only; physical 50px button-family geometry is unchanged. */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn,
+.modal-overlay.tournament-result .modal-actions > .modal-btn{
+  line-height:1!important;
+}
+
 </style>
 </head>
 
@@ -11145,7 +11189,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.10</span>
+          <span class="home-version-info">SSHCP V18.11</span>
         </button>
 
       </div>
@@ -14317,7 +14361,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.10 RESULT LOG',
+        'SSHCP V18.11 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14380,7 +14424,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.10 CONTROL CENTER LOG',
+        'SSHCP V18.11 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -15107,10 +15151,16 @@ let scoreTimingDetail =
         }
 
         if (mode === 'clear' && scope === 'all') {
-          /* V18.8: DELETE ALL starts a brand-new RANDOM/QA cycle.
-             The Control Center log resets completely and does not retain a
-             DELETE ALL entry. */
+          /* V18.11: DELETE ALL still starts a brand-new RANDOM/QA cycle, but
+             the successful DELETE ALL itself becomes the first row of that
+             clean Control Center log so the reset is visibly documented. */
           resetTestLog();
+          addTestLog(
+            actionLabel,
+            'VERIFIED',
+            timerSeconds(started) + 's',
+            testDetailParts.join(' • ')
+          );
         } else {
           addTestLog(
             actionLabel,
@@ -18784,9 +18834,14 @@ let scoreTimingDetail =
       els.modalActions.replaceChildren(back, summary);
       els.modalOverlay.classList.add('open');
       requestAnimationFrame(() => {
-        fitTextToBoxV5(summary, summary, summary.clientHeight * 0.50, 14, {
-          horizontalPad: 12,
-          verticalPad: 6
+        [back, summary].forEach(button => {
+          const buttonH = button.getBoundingClientRect().height || button.clientHeight || 50;
+          fitTextToBoxV5(button, button, buttonH * 0.35, 10, {
+            horizontalPad: 10,
+            verticalPad: 6,
+            wrap: false,
+            lineHeight: 1
+          });
         });
         requestAnimationFrame(fitTieBreakExplanationV1515);
       });
@@ -19250,7 +19305,7 @@ let scoreTimingDetail =
       [...els.modalActions.querySelectorAll('.modal-btn')].forEach(button => {
         if (button.classList.contains('summary-action-placeholder-v1627')) return;
         const h = button.getBoundingClientRect().height || syncSharedGeometryV187().postButton;
-        fitTextToBoxV5(button, button, h * 0.40, 10, {
+        fitTextToBoxV5(button, button, h * 0.35, 10, {
           horizontalPad: 8,
           verticalPad: 4,
           wrap: false,
@@ -19970,6 +20025,7 @@ let scoreTimingDetail =
       const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
       if (!panel || !panel.classList.contains('open')) return;
       syncGeekFilterPopoverGeometryV189();
+      syncGeekFilterCoverV1811();
 
       const allLabel = panel.querySelector('.geek-filter-all-v186 .geek-filter-text-v186');
       const normalLabels = [...panel.querySelectorAll('.geek-filter-choice-v186:not(.geek-filter-all-v186) .geek-filter-text-v186')];
@@ -20020,26 +20076,56 @@ let scoreTimingDetail =
       panel.style.setProperty('bottom', bottom + 'px', 'important');
     }
 
-    function installGeekFilterBlurV189() {
-      if (!els.modalBox) return;
-      els.modalBox.classList.add('geek-filter-open-v1810');
+    function syncGeekFilterCoverV1811() {
+      if (!els.modalBox || !els.modalTitle) return;
+      const cover = els.modalBox.querySelector('.geek-filter-cover-v1811');
+      if (!cover) return;
+      const boxRect = els.modalBox.getBoundingClientRect();
+      const titleRect = els.modalTitle.getBoundingClientRect();
+      const top = Math.max(0, Math.round(titleRect.bottom - boxRect.top));
+      cover.style.setProperty('top', top + 'px', 'important');
     }
 
-    function removeGeekFilterBlurV189() {
-      if (!els.modalBox) return;
-      els.modalBox.classList.remove('geek-filter-open-v189', 'geek-filter-open-v1810');
-      const blur = els.modalBox.querySelector('.geek-filter-blur-v189');
-      if (blur) blur.remove();
+    function installGeekFilterCoverV1811() {
+      if (!els.modalBox) return null;
+      let cover = els.modalBox.querySelector('.geek-filter-cover-v1811');
+      if (!cover) {
+        cover = document.createElement('div');
+        cover.className = 'geek-filter-cover-v1811';
+        cover.setAttribute('aria-hidden', 'true');
+        els.modalBox.appendChild(cover);
+      }
+      syncGeekFilterCoverV1811();
+      return cover;
     }
 
-    function closeGeekFilterPanelV186() {
+    function removeGeekFilterCoverV1811() {
+      if (!els.modalBox) return;
+      const cover = els.modalBox.querySelector('.geek-filter-cover-v1811');
+      if (cover) cover.remove();
+    }
+
+    function revealGeekFilterCoverV1811() {
+      if (!els.modalBox) return;
+      const cover = els.modalBox.querySelector('.geek-filter-cover-v1811');
+      if (!cover) return;
+      syncGeekFilterCoverV1811();
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => cover.classList.add('is-revealing-v1811'));
+      });
+      window.setTimeout(() => {
+        if (cover && cover.isConnected) cover.remove();
+      }, 560);
+    }
+
+    function closeGeekFilterPanelV186(preserveCover = false) {
       const anchor = els.modalActions.querySelector('.geek-filter-anchor-v186');
       const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
       const button = els.modalActions.querySelector('.geek-filter-button-v186');
       if (panel) panel.classList.remove('open');
       if (anchor) anchor.classList.remove('open');
       if (button) button.setAttribute('aria-expanded', 'false');
-      removeGeekFilterBlurV189();
+      if (!preserveCover) removeGeekFilterCoverV1811();
     }
 
     function openGeekFilterPanelV186() {
@@ -20052,7 +20138,7 @@ let scoreTimingDetail =
       panel.classList.add('open');
       anchor.classList.add('open');
       button.setAttribute('aria-expanded', 'true');
-      installGeekFilterBlurV189();
+      installGeekFilterCoverV1811();
       requestAnimationFrame(() => {
         syncGeekFilterPopoverGeometryV189();
         fitGeekFilterPanelV186();
@@ -20068,10 +20154,18 @@ let scoreTimingDetail =
     function applyGeekFiltersV186() {
       geekSelectedCategoriesV180 = new Set(geekPendingFiltersV186);
       geekScrollTopV180 = 0;
-      closeGeekFilterPanelV186();
+      /* Keep the solid white cover in place while the filtered table rebuilds.
+         Once the new table is ready, reveal it with the app's established .5s
+         transparency transition. */
+      closeGeekFilterPanelV186(true);
       renderGeekTableV180();
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) scroll.scrollTop = 0;
+      requestAnimationFrame(() => {
+        fitGeekRowsV180();
+        syncGeekFilterCoverV1811();
+        revealGeekFilterCoverV1811();
+      });
     }
 
     function buildGeekFilterPanelV180() {
@@ -20668,7 +20762,7 @@ let scoreTimingDetail =
          band is tighter on another device. */
       const sharedV189 = syncSharedGeometryV187();
       const navBand = Math.max(1, tableRect.top - titleRect.bottom);
-      const navBuffer = Math.max(2, Math.round(4 * sharedV189.multiplier));
+      const navBuffer = Math.max(2, Math.round(6 * sharedV189.multiplier));
       const buttonH = Math.max(
         20,
         Math.min(
@@ -23452,5 +23546,4 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
 
