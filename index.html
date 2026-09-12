@@ -1,13 +1,16 @@
-<!-- SSHCP | BASE KEY: 18.13-C3N7WK | BUILD KEY: 18.14-R7M2QK -->
+<!-- SSHCP | BASE KEY: 18.14-R7M2QK | BUILD KEY: 18.15-K4T9QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.14 — built directly from working V18.13 (BUILD 18.13-C3N7WK).
-           V18.14 changes only Geek main-table emphasis: STAT and US stay bold; ALL and TEAM are
-           regular black unless the authorized team owns/shares the field-best result, then both are bold Blue. */
+        /* SSHCP V18.15 — built directly from V18.14 (BUILD 18.14-R7M2QK).
+           V18.13 remains the declared GOLDEN rollback. V18.15 is a surgical candidate only:
+           Geek columns 32/18/18/32 with all data text at 45% row height; STAT titles always bold,
+           US/ALL/TEAM regular unless the authorized team owns/shares the best result, then the whole row is bold;
+           FILTER APPLY is fully contained inside the gray panel; Scorecard removes the 9/10 divider and uses
+           exact nine-row geometry, with Hole 9 and Hole 18 given a very-light-gray base row. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -241,6 +244,7 @@
           v16RootStyle.setProperty('--v187-main-button-h', v188RoundY(50) + 'px');
           v16RootStyle.setProperty('--v1810-popup-top-inset', v188RoundY(12) + 'px');
           v16RootStyle.setProperty('--v5-score-head-h', v188RoundY(46) + 'px');
+          v16RootStyle.setProperty('--v5-nine-break-h', '0px');
           v16RootStyle.setProperty('--v5-leader-head-h', v188RoundY(46) + 'px');
         } catch (e) {}
       } catch (e) {
@@ -11111,6 +11115,56 @@ body option{
   font-weight:800!important;
 }
 
+/* =========================================================
+   SSHCP V18.15 — GEEK DENSITY + FILTER CONTAINMENT + SCORECARD NINES
+   ========================================================= */
+
+/* Geek columns: STAT 32 | US 18 | ALL 18 | TEAM 32. */
+.modal-overlay.geek-mode-v180 .geek-row-v180.header,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat{
+  grid-template-columns:32fr 18fr 18fr 32fr!important;
+}
+
+/* Typography state: STAT title is always bold. US / ALL / TEAM are regular
+   by default. If the authorized team owns or shares the field-best result,
+   the complete row becomes bold. Existing ownership color cue is preserved. */
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-stat-label-v186{
+  font-weight:800!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-us-cell-v1813,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-all-cell-v1813,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-team-button-v180{
+  font-weight:400!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat.geek-ours-v1814 .geek-stat-label-v186,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat.geek-ours-v1814 .geek-us-cell-v1813,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat.geek-ours-v1814 .geek-all-cell-v1813,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat.geek-ours-v1814 .geek-team-button-v180{
+  font-weight:800!important;
+}
+
+/* FILTER position is unchanged. Give ALL and APPLY their true 50px tracks so
+   the APPLY button is fully contained inside the gray popover. */
+.modal-overlay.geek-mode-v180 .geek-filter-grid-v186{
+  grid-template-rows:50px 44px 44px 44px 50px!important;
+  grid-auto-rows:auto!important;
+}
+
+/* No physical 9/10 divider. The end of each nine is marked by a subtle base
+   row only; score-state colors/marks remain free to overlay inside the row. */
+#scorecardView .nine-break{
+  display:none!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:0!important;
+}
+#scorecardView .score-row.nine-end-row-v1815{
+  background:#f2f2f2!important;
+}
+#scorecardView #scoreRows > .score-row:nth-child(9){
+  border-bottom:1px solid var(--line)!important;
+}
+
 </style>
 </head>
 
@@ -11238,7 +11292,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.14</span>
+          <span class="home-version-info">SSHCP V18.15</span>
         </button>
 
       </div>
@@ -14410,7 +14464,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.14 RESULT LOG',
+        'SSHCP V18.15 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14473,7 +14527,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.14 CONTROL CENTER LOG',
+        'SSHCP V18.15 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16877,14 +16931,15 @@ let scoreTimingDetail =
       const fixedShellWithoutHeader = Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
       const tableBudget = Math.max(1, Math.round(screenHeight - fixedShellWithoutHeader));
       const headerHeight = syncSharedGeometryV187().tableHeader;
-      const divider = Math.max(2, Math.min(4, Math.round(tableBudget * 0.004)));
-      const scoreTableBudget = Math.max(9, tableBudget - headerHeight - divider);
+      /* V18.15: no 9/10 divider consumes vertical space. Exactly nine score
+         rows own the full table viewport below the TABLE HEADER ROW. */
+      const scoreTableBudget = Math.max(9, tableBudget - headerHeight);
       const scoreRowPixels = distributeIntegerPixelsV188(scoreTableBudget, 9);
       const rowHeight = scoreRowPixels.reduce((sum, value) => sum + value, 0) / 9;
 
       els.scorecardView.style.setProperty('--v5-score-row-h', Math.floor(rowHeight) + 'px');
       els.scorecardView.style.setProperty('--v5-score-head-h', headerHeight + 'px');
-      els.scorecardView.style.setProperty('--v5-nine-break-h', divider + 'px');
+      els.scorecardView.style.setProperty('--v5-nine-break-h', '0px');
 
       const scoreRowsForGeometryV188 = els.scoreRows
         ? Array.from(els.scoreRows.querySelectorAll('.score-row'))
@@ -16931,7 +16986,7 @@ let scoreTimingDetail =
         scoreHead: headerHeight,
         scoreRow: rowHeight,
         scoreBox: scoreBox,
-        scoreDivider: divider
+        scoreDivider: 0
       });
 
       Array.from(header.children).forEach((cell, index) => {
@@ -17012,27 +17067,8 @@ let scoreTimingDetail =
         ) => {
 
 
-          if (
-            index === 9
-          ) {
-
-            const breakRow =
-              document.createElement(
-                'div'
-              );
-
-
-            breakRow.className =
-              'nine-break';
-
-
-            els.scoreRows.appendChild(
-              breakRow
-            );
-
-          }
-
-
+          /* V18.15: no standalone 9/10 divider row. Hole 9 and Hole 18
+             receive a subtle base-row treatment instead. */
           const row =
             document.createElement(
               'div'
@@ -17041,6 +17077,10 @@ let scoreTimingDetail =
 
           row.className =
             'score-row';
+
+          if (index === 8 || index === 17) {
+            row.classList.add('nine-end-row-v1815');
+          }
 
 
           row.dataset.scoreIndex =
@@ -19870,8 +19910,8 @@ let scoreTimingDetail =
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
       if (headerCells.length !== 4) return;
 
-      /* V18.13 locked density: STAT 45%, US 35%, ALL 45%, TEAM 45% of
-         data-row height. Each text element shrinks locally only if needed. */
+      /* V18.15 locked density: STAT / US / ALL / TEAM all target 45%
+         of data-row height. Each text element shrinks locally only if needed. */
       shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
         const statCell = row.querySelector('.geek-stat-cell-v180');
         const statLabel = row.querySelector('.geek-stat-label-v186');
@@ -19891,7 +19931,7 @@ let scoreTimingDetail =
           statLabel.style.setProperty('text-align', 'left', 'important');
         }
         if (us) {
-          fitTextToBoxV5(us, us, h * 0.35, 8, {
+          fitTextToBoxV5(us, us, h * 0.45, 8, {
             horizontalPad: 8,
             verticalPad: 4,
             wrap: false,
