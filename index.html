@@ -1,17 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.8-K7M4QX | BUILD KEY: 18.9-R5T8WN -->
+<!-- SSHCP | BASE KEY: 18.9-R5T8WN | BUILD KEY: 18.10-V4K7QM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.9 — based directly on exact V18.8 (BUILD 18.8-K7M4QX).
-           V18.9 locks the Samsung S25 visual viewport (724 CSS px) as multiplier 1.000,
-           compacts the approved Scorecard/Leaderboard shell to 35/40/46/46, applies the
-           shared 46px table-header/footer family to post-round views, compacts SKINS to
-           38px data rows with 50% text, anchors/blur-isolates the GEEK filter panel, restores
-           the 10ms Score Box haptic, and adds an independent accumulated RESULT LOG derived
-           from raw authoritative score data and checked against the rendered Scramble Summary. */
+        /* SSHCP V18.10 — based directly on exact V18.9 (BUILD 18.9-R5T8WN).
+           V18.10 keeps the S25 visual viewport (724 CSS px) as multiplier 1.000, changes the
+           shared bottom-button family to 50px, standardizes Summary/SKINS/GEEK title top inset
+           to 12px, makes the GEEK FILTERS panel a true crisp second popup over the blurred
+           Geek popup, and canonicalizes team names in the independent RESULT AUDIT. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -215,7 +213,7 @@
               '--v16-context-table-gap': v188RoundY(8.16),
               '--v16-score-table-footer-gap': v188RoundY(12.24),
               '--v16-leader-table-footer-gap': v188RoundY(12.24),
-              '--v16-footer-h': v188RoundY(46),
+              '--v16-footer-h': v188RoundY(50),
               '--v16-bottom-gap': v188RoundY(12.24),
               '--v16-internal-gap': v16Px(28)
             };
@@ -224,7 +222,7 @@
               (bootV16Vars['--v16-rail'] / 3) +
               ((bootV16Vars['--v16-internal-gap'] * 2) / 3);
           } else {
-            bootV16Vars['--v16-footer-h'] = v188RoundY(46);
+            bootV16Vars['--v16-footer-h'] = v188RoundY(50);
             bootV16Vars['--v16-score-table-footer-gap'] = v188RoundY(12.24);
             bootV16Vars['--v16-leader-table-footer-gap'] = v188RoundY(12.24);
           }
@@ -238,11 +236,12 @@
           });
           v16RootStyle.setProperty('--v187-table-header-h', v188RoundY(46) + 'px');
           v16RootStyle.setProperty('--v188-skins-header-h', v188RoundY(46) + 'px');
-          v16RootStyle.setProperty('--v187-post-button-h', v188RoundY(46) + 'px');
+          v16RootStyle.setProperty('--v187-post-button-h', v188RoundY(50) + 'px');
           v16RootStyle.setProperty('--v187-skins-row-h', v188RoundY(38) + 'px');
           v16RootStyle.setProperty('--v187-skins-font-h', v188RoundY(19) + 'px');
           v16RootStyle.setProperty('--v187-skins-mark-h', v188RoundY(25.84) + 'px');
-          v16RootStyle.setProperty('--v187-main-button-h', v188RoundY(46) + 'px');
+          v16RootStyle.setProperty('--v187-main-button-h', v188RoundY(50) + 'px');
+          v16RootStyle.setProperty('--v1810-popup-top-inset', v188RoundY(12) + 'px');
           v16RootStyle.setProperty('--v5-score-head-h', v188RoundY(46) + 'px');
           v16RootStyle.setProperty('--v5-leader-head-h', v188RoundY(46) + 'px');
         } catch (e) {}
@@ -10839,7 +10838,7 @@ body option{
 
 
 /* =========================================================
-   SSHCP V18.9 — FINAL S25-NORMALIZED GEOMETRY / GEEK FILTER
+   SSHCP V18.9 — FINAL S25-NORMALIZED GEOMETRY / GEEK FILTER (superseded where noted by V18.10)
    S25 visual viewport 724 CSS px = multiplier 1.000.
    ========================================================= */
 
@@ -10947,6 +10946,76 @@ body option{
   max-height:none!important;
   white-space:nowrap!important;
   overflow:hidden!important;
+}
+
+
+
+/* =========================================================
+   SSHCP V18.10 — POST-ROUND POPUP CONSISTENCY / FILTER LAYER
+   ========================================================= */
+
+/* Bottom-button family: 50px S25 baseline × device multiplier. */
+#scorecardView .bottom-action,
+#scorecardView .score-bottom-actions .leaderboard-button,
+#leaderboardView .leader-bottom .access-scorecard,
+#leaderboardView .leader-bottom .leader-refresh-button,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
+  height:var(--v16-footer-h,50px)!important;
+  min-height:var(--v16-footer-h,50px)!important;
+  max-height:var(--v16-footer-h,50px)!important;
+}
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn,
+.modal-overlay.skins-results-v1627 .modal-actions.skins-back-only-v181 .modal-btn,
+.modal-overlay.geek-mode-v180 .modal-actions > .modal-btn,
+.modal-overlay.geek-detail-v180 .modal-actions .modal-btn,
+.modal-overlay.geek-mode-v180 .geek-filter-anchor-v186,
+.modal-overlay.geek-mode-v180 .geek-filter-button-v186{
+  height:var(--v187-post-button-h,50px)!important;
+  min-height:var(--v187-post-button-h,50px)!important;
+  max-height:var(--v187-post-button-h,50px)!important;
+}
+.modal-overlay.geek-mode-v180 .modal-actions{
+  min-height:var(--v187-post-button-h,50px)!important;
+}
+/* Beat the older V18.6 footer selector's extra specificity: FILTERS is exactly
+   the same 50px family height as BACK, never the old 58px. */
+.modal-overlay.geek-mode-v180 .modal-actions .geek-filter-anchor-v186,
+.modal-overlay.geek-mode-v180 .modal-actions .geek-filter-button-v186{
+  height:var(--v187-post-button-h,50px)!important;
+  min-height:var(--v187-post-button-h,50px)!important;
+  max-height:var(--v187-post-button-h,50px)!important;
+}
+
+/* Exact shared title inset: title line begins after 12px S25 top padding. */
+.modal-overlay.tournament-summary .modal-box,
+.modal-overlay.skins-results-v1627 .modal-box,
+.modal-overlay.geek-mode-v180 .modal-box{
+  padding-top:var(--v1810-popup-top-inset,12px)!important;
+}
+
+/* FILTERS opens a true second popup. Blur only Popup #1's content; Popup #2
+   is a direct sibling inside the card and therefore remains crisp. */
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-title,
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-text,
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-actions,
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .geek-copy-v180b{
+  filter:blur(7px)!important;
+  -webkit-filter:blur(7px)!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-popover-v186{
+  position:absolute!important;
+  z-index:200!important;
+  right:auto!important;
+  box-sizing:border-box!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  background:rgba(58,58,58,.97)!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-apply-v186{
+  height:var(--v187-post-button-h,50px)!important;
+  min-height:var(--v187-post-button-h,50px)!important;
+  max-height:var(--v187-post-button-h,50px)!important;
 }
 
 </style>
@@ -11076,7 +11145,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.9</span>
+          <span class="home-version-info">SSHCP V18.10</span>
         </button>
 
       </div>
@@ -13867,6 +13936,12 @@ let scoreTimingDetail =
         .trim();
     }
 
+    function canonicalAuditTeamV1810(value) {
+      return normalizeAuditTextV189(value)
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '');
+    }
+
     function auditGolfScoreV189(value) {
       const number = Number(value);
       if (!Number.isFinite(number)) return '';
@@ -14095,7 +14170,7 @@ let scoreTimingDetail =
         if (normalizeAuditTextV189(a.place).toUpperCase() !== normalizeAuditTextV189(e.place).toUpperCase()) {
           mismatches.push(prefix + ' PLACE ' + a.place + '!=' + e.place);
         }
-        if (normalizeAuditTextV189(a.team).toUpperCase() !== normalizeAuditTextV189(e.team).toUpperCase()) {
+        if (canonicalAuditTeamV1810(a.team) !== canonicalAuditTeamV1810(e.team)) {
           mismatches.push(prefix + ' TEAM ' + a.team + '!=' + e.team);
         }
         if (normalizeAuditTextV189(a.strokes) !== normalizeAuditTextV189(e.strokes)) {
@@ -14242,7 +14317,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.9 RESULT LOG',
+        'SSHCP V18.10 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14305,7 +14380,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.9 CONTROL CENTER LOG',
+        'SSHCP V18.10 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16528,11 +16603,11 @@ let scoreTimingDetail =
         metrics,
         tableHeader: scaled(46),
         skinsHeader: scaled(46),
-        postButton: scaled(46),
+        postButton: scaled(50),
         skinsRow: scaled(38),
         skinsFont: scaled(19),
         skinsMark: scaled(25.84),
-        mainButton: scaled(46)
+        mainButton: scaled(50),
       };
       const root = document.documentElement.style;
       root.setProperty('--v187-table-header-h', values.tableHeader + 'px');
@@ -16542,6 +16617,7 @@ let scoreTimingDetail =
       root.setProperty('--v187-skins-font-h', values.skinsFont + 'px');
       root.setProperty('--v187-skins-mark-h', values.skinsMark + 'px');
       root.setProperty('--v187-main-button-h', values.mainButton + 'px');
+      root.setProperty('--v1810-popup-top-inset', scaled(12) + 'px');
       return values;
     }
 
@@ -16609,7 +16685,7 @@ let scoreTimingDetail =
         '--v16-context-table-gap': py(8.16),
         '--v16-score-table-footer-gap': py(12.24),
         '--v16-leader-table-footer-gap': py(12.24),
-        '--v16-footer-h': py(46),
+        '--v16-footer-h': py(50),
         '--v16-bottom-gap': py(12.24),
         '--v16-internal-gap': px(28)
       };
@@ -19061,19 +19137,13 @@ let scoreTimingDetail =
 
         fitSubtitleFromBodyHeight(Math.max(1, body.clientHeight));
 
-        /* The top breathing room is deliberately one actual RESULTS/TOP 10
-           line-height. This preserves the V16.10 visual top placement without
-           keeping the old invisible title box. */
-        let measuredResultsH = Math.max(1, Math.ceil(subtitle.getBoundingClientRect().height));
-        els.modalBox.style.setProperty('--v16-summary-top-space', measuredResultsH + 'px');
+        /* V18.10: Summary/SKINS/GEEK share the same exact 12px S25 title
+           top inset. It scales only by the device-height multiplier. */
+        const popupTopInsetV1810 = Math.max(1, Math.round(12 * getVerticalMetricsV188().multiplier));
+        els.modalBox.style.setProperty('--v16-summary-top-space', popupTopInsetV1810 + 'px');
+        document.documentElement.style.setProperty('--v1810-popup-top-inset', popupTopInsetV1810 + 'px');
 
-        /* One immediate second pass lets the subtitle respond to the body
-           height after that real top-space measurement has replaced the
-           fallback value. This converges the content-based geometry in the
-           same frame instead of waiting for another resize event. */
         fitSubtitleFromBodyHeight(Math.max(1, body.clientHeight));
-        measuredResultsH = Math.max(1, Math.ceil(subtitle.getBoundingClientRect().height));
-        els.modalBox.style.setProperty('--v16-summary-top-space', measuredResultsH + 'px');
       }
 
       applyTournamentSummaryGeometryV16(body, topGrid, lower, lowerRows);
@@ -19897,7 +19967,7 @@ let scoreTimingDetail =
     }
 
     function fitGeekFilterPanelV186() {
-      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
       if (!panel || !panel.classList.contains('open')) return;
       syncGeekFilterPopoverGeometryV189();
 
@@ -19929,42 +19999,42 @@ let scoreTimingDetail =
 
 
     function syncGeekFilterPopoverGeometryV189() {
-      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
       const back = els.modalActions.querySelector('.geek-back-v180');
       const filters = els.modalActions.querySelector('.geek-filter-button-v186');
-      const anchor = els.modalActions.querySelector('.geek-filter-anchor-v186');
-      if (!panel || !back || !filters || !anchor || !panel.classList.contains('open')) return;
+      if (!panel || !back || !filters || !els.modalBox || !panel.classList.contains('open')) return;
+
+      const boxRect = els.modalBox.getBoundingClientRect();
       const backRect = back.getBoundingClientRect();
       const filterRect = filters.getBoundingClientRect();
+      const borderLeft = Math.max(0, Number(els.modalBox.clientLeft) || 0);
+      const borderBottom = Math.max(0, Number(els.modalBox.clientTop) || 0);
+      const left = Math.max(0, Math.round(backRect.left - boxRect.left - borderLeft));
       const width = Math.max(1, Math.round(filterRect.right - backRect.left));
+      const bottom = Math.max(0, Math.round(boxRect.bottom - borderBottom - filterRect.bottom));
+
+      panel.style.setProperty('left', left + 'px', 'important');
       panel.style.setProperty('width', width + 'px', 'important');
       panel.style.setProperty('max-width', 'none', 'important');
-      panel.style.setProperty('right', '0px', 'important');
-      panel.style.setProperty('bottom', '0px', 'important');
+      panel.style.setProperty('right', 'auto', 'important');
+      panel.style.setProperty('bottom', bottom + 'px', 'important');
     }
 
     function installGeekFilterBlurV189() {
       if (!els.modalBox) return;
-      let blur = els.modalBox.querySelector('.geek-filter-blur-v189');
-      if (!blur) {
-        blur = document.createElement('div');
-        blur.className = 'geek-filter-blur-v189';
-        blur.setAttribute('aria-hidden', 'true');
-        els.modalBox.appendChild(blur);
-      }
-      els.modalBox.classList.add('geek-filter-open-v189');
+      els.modalBox.classList.add('geek-filter-open-v1810');
     }
 
     function removeGeekFilterBlurV189() {
       if (!els.modalBox) return;
-      els.modalBox.classList.remove('geek-filter-open-v189');
+      els.modalBox.classList.remove('geek-filter-open-v189', 'geek-filter-open-v1810');
       const blur = els.modalBox.querySelector('.geek-filter-blur-v189');
       if (blur) blur.remove();
     }
 
     function closeGeekFilterPanelV186() {
       const anchor = els.modalActions.querySelector('.geek-filter-anchor-v186');
-      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
       const button = els.modalActions.querySelector('.geek-filter-button-v186');
       if (panel) panel.classList.remove('open');
       if (anchor) anchor.classList.remove('open');
@@ -19974,7 +20044,7 @@ let scoreTimingDetail =
 
     function openGeekFilterPanelV186() {
       const anchor = els.modalActions.querySelector('.geek-filter-anchor-v186');
-      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
       const button = els.modalActions.querySelector('.geek-filter-button-v186');
       if (!panel || !anchor || !button) return;
       geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
@@ -19990,7 +20060,7 @@ let scoreTimingDetail =
     }
 
     function toggleGeekFilterPanelV186() {
-      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
       if (panel && panel.classList.contains('open')) closeGeekFilterPanelV186();
       else openGeekFilterPanelV186();
     }
@@ -20078,10 +20148,14 @@ let scoreTimingDetail =
       const filterAnchor = document.createElement('div');
       filterAnchor.className = 'geek-filter-anchor-v186';
       filterAnchor.appendChild(filterButton);
-      filterAnchor.appendChild(buildGeekFilterPanelV180());
 
       els.modalActions.className = 'modal-actions geek-actions-v180 geek-actions-v186';
       els.modalActions.replaceChildren(back, filterAnchor);
+
+      if (els.modalBox) {
+        els.modalBox.querySelectorAll('.geek-filter-popover-v186').forEach(node => node.remove());
+        els.modalBox.appendChild(buildGeekFilterPanelV180());
+      }
       els.modalOverlay.classList.add('open');
       installGeekCopyButtonV180b();
 
@@ -22269,7 +22343,7 @@ let scoreTimingDetail =
       if (geekCopyV180b) geekCopyV180b.remove();
 
       if (els.modalBox) {
-        els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182').forEach(node => node.remove());
+        els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182,.geek-filter-popover-v186').forEach(node => node.remove());
         removeGeekFilterBlurV189();
       }
 
@@ -23378,4 +23452,5 @@ let scoreTimingDetail =
 
 </body>
 </html>
+
 
