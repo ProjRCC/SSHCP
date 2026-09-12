@@ -1,14 +1,13 @@
-<!-- SSHCP | BASE KEY: 18.10-V4K7QM | BUILD KEY: 18.12-Q8M5VT -->
+<!-- SSHCP | BASE KEY: 18.12-Q8M5VT | BUILD KEY: 18.13-C3N7WK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.12 — rebuilt directly from Golden V18.10 (BUILD 18.10-V4K7QM).
-           V18.11 is not used as a base. V18.12 keeps all Golden V18.10 behavior and applies
-           only the approved minor polish: Summary nav breathing room, 35% post-round footer
-           label targets, safe white Geek filter cover with 0.5s reveal, and DELETE ALL logging. */
+        /* SSHCP V18.13 — built directly from working V18.12 (BUILD 18.12-Q8M5VT).
+           V18.13 changes only the Geek main table presentation/data mapping: STAT / US / ALL / TEAM,
+           30/15/20/35 column widths, Blue US rail, compact row-text targets, and rounded percentages. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -10193,10 +10192,10 @@ body option{
   text-transform:none!important;
 }
 
-/* GEEK table geometry: STAT 35 / RESULT 25 / TEAM 40. */
+/* V18.13 GEEK table geometry: STAT 30 / US 15 / ALL 20 / TEAM 35. */
 .geek-row-v180.header,
 .geek-row-v180.stat{
-  grid-template-columns:35fr 25fr 40fr!important;
+  grid-template-columns:30fr 15fr 20fr 35fr!important;
 }
 
 /* Slightly larger GEEK filter checks; footer/button height remains locked. */
@@ -11064,6 +11063,30 @@ body option{
   z-index:200!important;
 }
 
+/* =========================================================
+   SSHCP V18.13 — GEEK STAT / US / ALL / TEAM TABLE
+   ========================================================= */
+.modal-overlay.geek-mode-v180 .geek-row-v180.header,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat{
+  grid-template-columns:30fr 15fr 20fr 35fr!important;
+}
+.modal-overlay.geek-mode-v180 .geek-us-cell-v1813,
+.modal-overlay.geek-mode-v180 .geek-us-header-v1813{
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-weight:800!important;
+  border-right-color:rgba(255,255,255,.60)!important;
+  border-bottom-color:rgba(255,255,255,.60)!important;
+}
+/* The US rail replaces the older whole-row authorized-owner highlight in the
+   main table. Detail-popup authorization styling is untouched. */
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-cell-v180,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-team-button-v180{
+  -webkit-text-fill-color:currentColor;
+}
+
 </style>
 </head>
 
@@ -11191,7 +11214,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.12</span>
+          <span class="home-version-info">SSHCP V18.13</span>
         </button>
 
       </div>
@@ -14363,7 +14386,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.12 RESULT LOG',
+        'SSHCP V18.13 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14426,7 +14449,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.12 CONTROL CENTER LOG',
+        'SSHCP V18.13 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -19471,6 +19494,40 @@ let scoreTimingDetail =
       return String(stat.teams.length) + ' TEAMS TIED';
     }
 
+    function geekAuthorizedResultV1813(stat) {
+      const authorized = geekAuthorizedTeamV180();
+      if (!authorized || !stat) return null;
+
+      const results = Array.isArray(stat.results) ? stat.results : [];
+      const match = results.find(item =>
+        normalizeName(item && item.team) === authorized
+      );
+      if (match) return match;
+
+      /* Fixed joke rows apply equally to every active team and intentionally
+         have no per-team results array in CF V2.1. */
+      if (String(stat.direction || '').toLowerCase() === 'fixed') {
+        return {
+          rawValue: stat.rawValue,
+          value: stat.value
+        };
+      }
+      return null;
+    }
+
+    function geekMainValueV1813(stat, item) {
+      const source = item || {};
+      const key = geekStatKeyV186(stat && stat.stat);
+      const raw = Number(source.rawValue);
+
+      if (key.includes('%') && Number.isFinite(raw)) {
+        return Math.round(raw) + '%';
+      }
+
+      const value = String(source.value != null ? source.value : '').trim();
+      return value || '—';
+    }
+
     function geekStatKeyV186(statName) {
       return String(statName || '').trim().replace(/\s+/g, ' ').toLowerCase();
     }
@@ -19665,7 +19722,10 @@ let scoreTimingDetail =
 
     function geekDetailResultV180(stat) {
       const name = geekStatKeyV186(stat && stat.stat);
-      const value = String(stat && stat.value != null ? stat.value : '').trim();
+      const roundedMainValueV1813 = geekMainValueV1813(stat, stat);
+      const value = name.includes('%')
+        ? roundedMainValueV1813
+        : String(stat && stat.value != null ? stat.value : '').trim();
       const first = stat && Array.isArray(stat.teams) && stat.teams.length ? stat.teams[0] : null;
       const detail = first && first.detail ? first.detail : {};
 
@@ -19784,19 +19844,20 @@ let scoreTimingDetail =
       const rowHeight =
         parseFloat(getComputedStyle(shell).getPropertyValue('--geek-row-h-v180')) || 44;
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
-      if (headerCells.length !== 3) return;
+      if (headerCells.length !== 4) return;
 
-      /* V18.6 locked density: STAT 55.5%, RESULT 60%, TEAM 55.5% of row
-         height. Each actual text element shrinks locally only if it needs width. */
+      /* V18.13 locked density: STAT 45%, US 35%, ALL 45%, TEAM 45% of
+         data-row height. Each text element shrinks locally only if needed. */
       shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
         const statCell = row.querySelector('.geek-stat-cell-v180');
         const statLabel = row.querySelector('.geek-stat-label-v186');
-        const result = row.querySelector('.geek-result-cell-v180');
+        const us = row.querySelector('.geek-us-cell-v1813');
+        const all = row.querySelector('.geek-all-cell-v1813');
         const team = row.querySelector('.geek-team-button-v180');
         const h = row.getBoundingClientRect().height || rowHeight;
 
         if (statCell && statLabel) {
-          fitTextToBoxV5(statCell, statLabel, h * 0.555, 8, {
+          fitTextToBoxV5(statCell, statLabel, h * 0.45, 8, {
             horizontalPad: 38,
             verticalPad: 4,
             wrap: false,
@@ -19805,16 +19866,24 @@ let scoreTimingDetail =
           statCell.style.setProperty('text-align', 'left', 'important');
           statLabel.style.setProperty('text-align', 'left', 'important');
         }
-        if (result) {
-          fitTextToBoxV5(result, result, h * 0.60, 8, {
-            horizontalPad: 12,
+        if (us) {
+          fitTextToBoxV5(us, us, h * 0.35, 8, {
+            horizontalPad: 8,
+            verticalPad: 4,
+            wrap: false,
+            lineHeight: 1
+          });
+        }
+        if (all) {
+          fitTextToBoxV5(all, all, h * 0.45, 8, {
+            horizontalPad: 8,
             verticalPad: 4,
             wrap: false,
             lineHeight: 1
           });
         }
         if (team) {
-          fitTextToBoxV5(team, team, h * 0.555, 8, {
+          fitTextToBoxV5(team, team, h * 0.45, 8, {
             horizontalPad: 10,
             verticalPad: 4,
             wrap: false,
@@ -19841,7 +19910,7 @@ let scoreTimingDetail =
       let sharedHeaderSize = headerH * 0.38;
       headerCells.forEach(cell => {
         const fitted = fitTextToBoxV5(cell, cell, headerH * 0.38, 8, {
-          horizontalPad: 12,
+          horizontalPad: 10,
           verticalPad: 4,
           wrap: false,
           lineHeight: 1
@@ -19957,9 +20026,11 @@ let scoreTimingDetail =
 
         stats.forEach(stat => {
           const label = geekTeamLabelV180(stat);
-          const owns = geekOwnsStatV180(stat);
           const isTie = Array.isArray(stat && stat.teams) && stat.teams.length > 1;
           const tone = geekStatToneV186(stat && stat.stat);
+          const usResultV1813 = geekAuthorizedResultV1813(stat);
+          const usValueV1813 = geekMainValueV1813(stat, usResultV1813);
+          const allValueV1813 = geekMainValueV1813(stat, stat);
           const sourceCategory = category === 'WACKY'
             ? GEEK_CATEGORY_ORDER_V180.find(real => geekIsWackyStatV186(real, stat && stat.stat)) || ''
             : category;
@@ -19967,7 +20038,7 @@ let scoreTimingDetail =
           const encodedStat = encodeURIComponent(String(stat.stat || ''));
 
           html +=
-            '<div class="geek-row-v180 stat' + (owns ? ' authorized-owner-row' : '') + '"' +
+            '<div class="geek-row-v180 stat"' +
               ' role="button" tabindex="0"' +
               ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
               ' data-geek-stat="' + escapeHtml(encodedStat) + '">' +
@@ -19975,9 +20046,10 @@ let scoreTimingDetail =
                 '<span class="geek-class-dot-v186 ' + escapeHtml(tone) + '" aria-hidden="true"></span>' +
                 '<span class="geek-stat-label-v186">' + escapeHtml(String(stat.stat || '').toUpperCase()) + '</span>' +
               '</div>' +
-              '<div class="geek-cell-v180 geek-result-cell-v180">' + escapeHtml(String(stat.value ?? '')) + '</div>' +
+              '<div class="geek-cell-v180 geek-us-cell-v1813">' + escapeHtml(usValueV1813) + '</div>' +
+              '<div class="geek-cell-v180 geek-all-cell-v1813">' + escapeHtml(allValueV1813) + '</div>' +
               '<div class="geek-cell-v180 geek-team-cell-v180">' +
-                '<button class="geek-team-button-v180' + (owns ? ' authorized-owner' : '') + (isTie ? ' tie-owner' : '') + '" type="button" tabindex="-1">' +
+                '<button class="geek-team-button-v180' + (isTie ? ' tie-owner' : '') + '" type="button" tabindex="-1">' +
                 escapeHtml(label) +
                 '</button>' +
               '</div>' +
@@ -20219,7 +20291,8 @@ let scoreTimingDetail =
           '<div class="geek-table-shell-v180">' +
             '<div class="geek-row-v180 header">' +
               '<div class="geek-cell-v180">STAT</div>' +
-              '<div class="geek-cell-v180">RESULT</div>' +
+              '<div class="geek-cell-v180 geek-us-header-v1813">US</div>' +
+              '<div class="geek-cell-v180">ALL</div>' +
               '<div class="geek-cell-v180">TEAM</div>' +
             '</div>' +
             '<div class="geek-table-scroll-v180"></div>' +
