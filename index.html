@@ -1,16 +1,19 @@
-<!-- SSHCP | BASE KEY: 18.6-H2M7QK | BUILD KEY: 18.7-P7N4KD -->
+<!-- SSHCP | BASE KEY: 18.7-P7N4KD | BUILD KEY: 18.8-K7M4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.7 — based directly on exact V18.6 (BUILD 18.6-H2M7QK).
-           V18.6 Geek/CF behavior, Welcome, authorization, scoring/save verification, Leaderboard data,
-           Summary/SKINS calculations, site-wide haptics, and protected HOME/INFO top-shell geometry remain authoritative.
-           V18.7 surgically normalizes post-round/table header and footer geometry, restores native Geek scrolling,
-           centers Geek-detail teams/removes detail COPY, adds the SKINS no-winner row, and preserves the
-           Leaderboard reveal shield from below HOME/INFO through the viewport bottom. */
+        /* SSHCP V18.8 — based directly on exact V18.7 (BUILD 18.7-P7N4KD).
+           V18.8 performs one coordinated vertical-geometry migration: the old .68 conversion
+           is baked into the approved Scorecard/Leaderboard HEADER shell baselines once, then
+           every vertical value uses one separate device-height multiplier with the Samsung S25
+           as the 1.00 reference. Scorecard and Leaderboard share HEADER/FOOTER geometry;
+           TABLES consume the remaining space. Shared bottom buttons are 70px on the S25,
+           SKINS header/data rows are 70px on the S25, table row pixels are distributed with
+           no unallocated remainder, Control Center reports live viewport metrics and owns the
+           GEEK/RESULTS checks, and the Leaderboard reveal shield covers everything below nav. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -125,7 +128,7 @@
             sessionStorage.getItem('sshcpResponsiveGeometryV5') || 'null'
           );
 
-          if (savedGeometry) {
+          if (savedGeometry && savedGeometry.v188 === true) {
             var nowW = window.innerWidth || 0;
             var nowH = window.innerHeight || 0;
             var closeW = Math.abs((savedGeometry.w || 0) - nowW) <= 8;
@@ -168,7 +171,7 @@
           );
           var bootV16Vars = null;
 
-          if (savedV16Shell && savedV16Shell.vars) {
+          if (savedV16Shell && savedV16Shell.v188 === true && savedV16Shell.vars) {
             var v16CloseW = Math.abs((savedV16Shell.w || 0) - v16NowW) <= 8;
             var v16CloseH = Math.abs((savedV16Shell.h || 0) - v16NowH) <= 12;
             if (v16CloseW && v16CloseH) {
@@ -176,53 +179,76 @@
             }
           }
 
+          var v188Dpr = Math.max(0.1, Number(window.devicePixelRatio) || 1);
+          var v188ScreenW = Math.max(1, Number(window.screen && screen.width) || v16NowW);
+          var v188ScreenH = Math.max(1, Number(window.screen && screen.height) || v16NowH);
+          var v188PhysShort = Math.min(v188ScreenW, v188ScreenH) * v188Dpr;
+          var v188PhysLong = Math.max(v188ScreenW, v188ScreenH) * v188Dpr;
+          var v188LikelyS25 =
+            Math.abs(v188PhysShort - 1080) <= 140 &&
+            Math.abs(v188PhysLong - 2340) <= 180;
+          var v188ScreenLong = Math.max(v188ScreenW, v188ScreenH);
+          var v188S25ScreenLong = Number(localStorage.getItem('sshcpV188S25ScreenCssHeight') || 0);
+          if (v188LikelyS25 && v188ScreenLong > 0) {
+            v188S25ScreenLong = v188ScreenLong;
+            localStorage.setItem('sshcpV188S25ScreenCssHeight', String(v188S25ScreenLong));
+          }
+          if (!(v188S25ScreenLong > 0)) v188S25ScreenLong = 832;
+          var v188BootMultiplier = v188LikelyS25
+            ? 1.00
+            : Math.max(0.70, Math.min(1.20, v188ScreenLong / v188S25ScreenLong));
+          var v188RoundY = function (value) {
+            return Math.max(1, Math.round(value * v188BootMultiplier));
+          };
+
           if (!bootV16Vars) {
             var v16Width = Math.max(1, Math.min(760, v16NowW));
-            var v16Height = Math.max(1, v16NowH);
             var v16Sx = Math.max(0.38, Math.min(1.00, v16Width / 756));
-            var v16Sy = Math.max(0.40, Math.min(0.68, v16Height / 1423));
             var v16Px = function (value) { return Math.max(1, value * v16Sx); };
-            var v16Py = function (value) { return Math.max(1, value * v16Sy); };
 
+            /* V18.8: legacy Scorecard/Leaderboard vertical shell values have the
+               historical .68 conversion baked into the S25 baseline once.
+               Runtime vertical scaling is ONLY the separate device multiplier. */
             bootV16Vars = {
               '--v16-rail': v16Px(24),
               '--v16-nav-w': v16Px(141),
-              '--v16-nav-h': v16Py(78),
-              '--v16-top-inset': v16Py(14),
-              '--v16-nav-context-gap': v16Py(12),
-              '--v16-context-h': v16Py(88),
-              '--v16-context-table-gap': v16Py(12),
-              '--v16-score-table-footer-gap': v16Py(18),
-              '--v16-leader-table-footer-gap': v16Py(28),
-              '--v16-footer-h': v16Py(60),
-              '--v16-bottom-gap': v16Py(18),
+              '--v16-nav-h': v188RoundY(53.04),
+              '--v16-top-inset': v188RoundY(9.52),
+              '--v16-nav-context-gap': v188RoundY(8.16),
+              '--v16-context-h': v188RoundY(59.84),
+              '--v16-context-table-gap': v188RoundY(8.16),
+              '--v16-score-table-footer-gap': v188RoundY(12.24),
+              '--v16-leader-table-footer-gap': v188RoundY(12.24),
+              '--v16-footer-h': v188RoundY(70),
+              '--v16-bottom-gap': v188RoundY(12.24),
               '--v16-internal-gap': v16Px(28)
             };
             bootV16Vars['--v16-final-action-left'] =
               (v16Width / 3) +
               (bootV16Vars['--v16-rail'] / 3) +
               ((bootV16Vars['--v16-internal-gap'] * 2) / 3);
+          } else {
+            bootV16Vars['--v16-footer-h'] = v188RoundY(70);
+            bootV16Vars['--v16-score-table-footer-gap'] = v188RoundY(12.24);
+            bootV16Vars['--v16-leader-table-footer-gap'] = v188RoundY(12.24);
           }
 
           var v16RootStyle = document.documentElement.style;
-          var v187BootSy = Math.max(0.40, Math.min(0.68, Math.max(1, v16NowH) / 1423));
-          /* V18.7: the shared vertical system is recomputed even if this session
-             hydrated older saved geometry from V18.6. HOME/INFO variables are untouched. */
-          bootV16Vars['--v16-footer-h'] = Math.max(1, 60 * v187BootSy);
           Object.keys(bootV16Vars).forEach(function (name) {
             var value = Number(bootV16Vars[name]);
             if (Number.isFinite(value)) {
               v16RootStyle.setProperty(name, value + 'px');
             }
           });
-          v16RootStyle.setProperty('--v187-table-header-h', Math.max(1, 50 * v187BootSy) + 'px');
-          v16RootStyle.setProperty('--v187-post-button-h', Math.max(1, 55 * v187BootSy) + 'px');
-          v16RootStyle.setProperty('--v187-skins-row-h', Math.max(1, 50 * v187BootSy) + 'px');
-          v16RootStyle.setProperty('--v187-skins-font-h', Math.max(1, 25 * v187BootSy) + 'px');
-          v16RootStyle.setProperty('--v187-skins-mark-h', Math.max(1, 34 * v187BootSy) + 'px');
-          v16RootStyle.setProperty('--v187-main-button-h', Math.max(1, 60 * v187BootSy) + 'px');
-          v16RootStyle.setProperty('--v5-score-head-h', Math.max(1, 50 * v187BootSy) + 'px');
-          v16RootStyle.setProperty('--v5-leader-head-h', Math.max(1, 50 * v187BootSy) + 'px');
+          v16RootStyle.setProperty('--v187-table-header-h', v188RoundY(50) + 'px');
+          v16RootStyle.setProperty('--v188-skins-header-h', v188RoundY(70) + 'px');
+          v16RootStyle.setProperty('--v187-post-button-h', v188RoundY(70) + 'px');
+          v16RootStyle.setProperty('--v187-skins-row-h', v188RoundY(70) + 'px');
+          v16RootStyle.setProperty('--v187-skins-font-h', v188RoundY(35) + 'px');
+          v16RootStyle.setProperty('--v187-skins-mark-h', v188RoundY(47.6) + 'px');
+          v16RootStyle.setProperty('--v187-main-button-h', v188RoundY(70) + 'px');
+          v16RootStyle.setProperty('--v5-score-head-h', v188RoundY(50) + 'px');
+          v16RootStyle.setProperty('--v5-leader-head-h', v188RoundY(50) + 'px');
         } catch (e) {}
       } catch (e) {
         window.__sshcpBootTeam = '';
@@ -7846,7 +7872,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 /* Shared top anchors: outer rails, HOME/INFO corner controls, centered event. */
 #scorecardView .score-fixed-top,
 #leaderboardView .leader-top{
-  padding-top:calc(var(--v16-top-inset,7px) + env(safe-area-inset-top))!important;
+  padding-top:calc(var(--v16-top-inset,10px) + env(safe-area-inset-top))!important;
   padding-left:var(--v16-rail,12px)!important;
   padding-right:var(--v16-rail,12px)!important;
   padding-bottom:0!important;
@@ -7856,9 +7882,9 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   grid-template-columns:var(--v16-nav-w,70px) minmax(0,1fr) var(--v16-nav-w,70px)!important;
   column-gap:var(--v16-internal-gap,14px)!important;
   row-gap:0!important;
-  height:var(--v16-nav-h,39px)!important;
-  min-height:var(--v16-nav-h,39px)!important;
-  max-height:var(--v16-nav-h,39px)!important;
+  height:var(--v16-nav-h,53px)!important;
+  min-height:var(--v16-nav-h,53px)!important;
+  max-height:var(--v16-nav-h,53px)!important;
   padding:0!important;
   align-items:stretch!important;
 }
@@ -7891,10 +7917,10 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 /* Scorecard context zone = fixed S25-multiplied rectangle. */
 #scorecardView .team-select-wrap{
   width:100%!important;
-  height:var(--v16-context-h,44px)!important;
-  min-height:var(--v16-context-h,44px)!important;
-  max-height:var(--v16-context-h,44px)!important;
-  margin:var(--v16-nav-context-gap,6px) 0 var(--v16-context-table-gap,6px)!important;
+  height:var(--v16-context-h,60px)!important;
+  min-height:var(--v16-context-h,60px)!important;
+  max-height:var(--v16-context-h,60px)!important;
+  margin:var(--v16-nav-context-gap,8px) 0 var(--v16-context-table-gap,8px)!important;
   padding:0!important;
 }
 #scorecardView .top-team-select{
@@ -7918,10 +7944,10 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   margin:0 var(--v16-rail,12px)!important;
 }
 #scorecardView .score-fixed-bottom{
-  padding-top:var(--v16-score-table-footer-gap,14px)!important;
+  padding-top:var(--v16-score-table-footer-gap,12px)!important;
   padding-left:var(--v16-rail,12px)!important;
   padding-right:var(--v16-rail,12px)!important;
-  padding-bottom:calc(var(--v16-bottom-gap,9px) + env(safe-area-inset-bottom))!important;
+  padding-bottom:calc(var(--v16-bottom-gap,12px) + env(safe-area-inset-bottom))!important;
 }
 #scorecardView .score-bottom-actions{
   grid-template-columns:minmax(0,1fr)!important;
@@ -7930,9 +7956,9 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 #scorecardView .bottom-action,
 #scorecardView .score-bottom-actions .leaderboard-button{
   width:100%!important;
-  height:var(--v16-footer-h,56px)!important;
-  min-height:var(--v16-footer-h,56px)!important;
-  max-height:var(--v16-footer-h,56px)!important;
+  height:var(--v16-footer-h,70px)!important;
+  min-height:var(--v16-footer-h,70px)!important;
+  max-height:var(--v16-footer-h,70px)!important;
   margin:0!important;
   white-space:nowrap!important;
   overflow:hidden!important;
@@ -7957,10 +7983,10 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 #leaderboardView .leader-title-bar,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
   width:100%!important;
-  height:var(--v16-context-h,44px)!important;
-  min-height:var(--v16-context-h,44px)!important;
-  max-height:var(--v16-context-h,44px)!important;
-  margin:var(--v16-nav-context-gap,6px) 0 var(--v16-context-table-gap,6px)!important;
+  height:var(--v16-context-h,60px)!important;
+  min-height:var(--v16-context-h,60px)!important;
+  max-height:var(--v16-context-h,60px)!important;
+  margin:var(--v16-nav-context-gap,8px) 0 var(--v16-context-table-gap,8px)!important;
   padding:0!important;
 }
 #leaderboardView .leader-title{
@@ -8018,10 +8044,10 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   height:auto!important;
   min-height:0!important;
   margin:0!important;
-  padding-top:var(--v16-leader-table-footer-gap,14px)!important;
+  padding-top:var(--v16-leader-table-footer-gap,12px)!important;
   padding-left:var(--v16-rail,12px)!important;
   padding-right:var(--v16-rail,12px)!important;
-  padding-bottom:calc(var(--v16-bottom-gap,9px) + env(safe-area-inset-bottom))!important;
+  padding-bottom:calc(var(--v16-bottom-gap,12px) + env(safe-area-inset-bottom))!important;
   flex:0 0 auto!important;
   align-items:stretch!important;
   background:rgba(255,255,255,.96)!important;
@@ -8031,9 +8057,9 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button{
   width:100%!important;
-  height:var(--v16-footer-h,56px)!important;
-  min-height:var(--v16-footer-h,56px)!important;
-  max-height:var(--v16-footer-h,56px)!important;
+  height:var(--v16-footer-h,70px)!important;
+  min-height:var(--v16-footer-h,70px)!important;
+  max-height:var(--v16-footer-h,70px)!important;
   margin:0!important;
   white-space:nowrap!important;
   overflow:hidden!important;
@@ -8390,9 +8416,9 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   top:auto!important;
   bottom:calc(var(--v16-bottom-gap,9px) + env(safe-area-inset-bottom))!important;
   width:auto!important;
-  height:var(--v16-footer-h,56px)!important;
-  min-height:var(--v16-footer-h,56px)!important;
-  max-height:var(--v16-footer-h,56px)!important;
+  height:var(--v16-footer-h,70px)!important;
+  min-height:var(--v16-footer-h,70px)!important;
+  max-height:var(--v16-footer-h,70px)!important;
 }
 
 #leaderboardView .leaderboard-screen.tournament-complete
@@ -10219,7 +10245,7 @@ body option{
   left:var(--v16-rail,12px)!important;
   z-index:20!important;
   width:var(--v16-nav-w,70px)!important;
-  height:var(--v16-nav-h,39px)!important;
+  height:var(--v16-nav-h,53px)!important;
   min-width:0!important;
   min-height:0!important;
   max-width:none!important;
@@ -10651,12 +10677,11 @@ body option{
 
 /* =========================================================
    SSHCP V18.7 — SHARED TABLE / FOOTER GEOMETRY NORMALIZATION
-   - HOME/INFO/top-shell geometry is intentionally untouched.
-   - Table headers: fixed 50px × existing vertical device multiplier.
-   - Post-round bottom buttons: 55px × multiplier, text fitted at 40%.
-   - Scorecard/Leaderboard bottom buttons: 60px × multiplier, text fitted at 40%.
-   - Summary/Geek/Leaderboard/SKINS header text targets 38%; Scorecard keeps
-     its established per-cell text ratios.
+   Historical block retained for selector continuity. V18.8 supersedes its
+   vertical fallback values with clean S25 baselines: 50px shared table-header
+   rows, 70px bottom-button family, and 70px SKINS header/data rows.
+   Summary/Geek/Leaderboard header text targets 38%; Scorecard keeps
+   its established per-cell text ratios.
    ========================================================= */
 
 /* Shared static table-header appearance. */
@@ -10689,27 +10714,27 @@ body option{
 .modal-overlay.tournament-summary .tournament-summary-row.header,
 .modal-overlay.geek-mode-v180 .geek-row-v180.header,
 .modal-overlay.skins-results-v1627 .skins-row-v1627.header{
-  height:var(--v187-table-header-h,34px)!important;
-  min-height:var(--v187-table-header-h,34px)!important;
-  max-height:var(--v187-table-header-h,34px)!important;
+  height:var(--v187-table-header-h,50px)!important;
+  min-height:var(--v187-table-header-h,50px)!important;
+  max-height:var(--v187-table-header-h,50px)!important;
 }
 .modal-overlay.geek-mode-v180 .geek-row-v180.header{
-  flex:0 0 var(--v187-table-header-h,34px)!important;
+  flex:0 0 var(--v187-table-header-h,50px)!important;
 }
 
 /* SKINS keeps its established visual proportions, now tied to device scaling. */
 .modal-overlay.skins-results-v1627 .skins-row-v1627{
-  height:var(--v187-skins-row-h,34px)!important;
-  min-height:var(--v187-skins-row-h,34px)!important;
-  max-height:var(--v187-skins-row-h,34px)!important;
+  height:var(--v187-skins-row-h,70px)!important;
+  min-height:var(--v187-skins-row-h,70px)!important;
+  max-height:var(--v187-skins-row-h,70px)!important;
 }
 .modal-overlay.skins-results-v1627 .skins-cell-v1627{
-  font-size:var(--v187-skins-font-h,17px)!important;
+  font-size:var(--v187-skins-font-h,35px)!important;
 }
 .modal-overlay.skins-results-v1627 .skins-score-mark-v1627{
-  width:var(--v187-skins-mark-h,23px)!important;
-  height:var(--v187-skins-mark-h,23px)!important;
-  font-size:var(--v187-skins-font-h,17px)!important;
+  width:var(--v187-skins-mark-h,48px)!important;
+  height:var(--v187-skins-mark-h,48px)!important;
+  font-size:var(--v187-skins-font-h,35px)!important;
 }
 .modal-overlay.skins-results-v1627 .skins-no-skins-row-v187{
   grid-template-columns:1fr!important;
@@ -10721,19 +10746,19 @@ body option{
   text-align:center!important;
 }
 
-/* Post-round bottom rails: shared 55px baseline × multiplier. */
+/* V18.8 bottom-button family: 70px S25 baseline × device multiplier. */
 .modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn,
 .modal-overlay.skins-results-v1627 .modal-actions.skins-back-only-v181 .modal-btn,
 .modal-overlay.geek-mode-v180 .modal-actions > .modal-btn,
 .modal-overlay.geek-detail-v180 .modal-actions .modal-btn,
 .modal-overlay.geek-mode-v180 .geek-filter-anchor-v186,
 .modal-overlay.geek-mode-v180 .geek-filter-button-v186{
-  height:var(--v187-post-button-h,37px)!important;
-  min-height:var(--v187-post-button-h,37px)!important;
-  max-height:var(--v187-post-button-h,37px)!important;
+  height:var(--v187-post-button-h,70px)!important;
+  min-height:var(--v187-post-button-h,70px)!important;
+  max-height:var(--v187-post-button-h,70px)!important;
 }
 .modal-overlay.geek-mode-v180 .modal-actions{
-  min-height:var(--v187-post-button-h,37px)!important;
+  min-height:var(--v187-post-button-h,70px)!important;
 }
 
 /* Geek scroll matches the proven native Scorecard/Leaderboard model. */
@@ -10759,6 +10784,61 @@ body option{
 .modal-overlay.geek-detail-v180 .geek-detail-teams-v180 li{
   width:100%!important;
   text-align:center!important;
+}
+
+/* =========================================================
+   SSHCP V18.8 — CLEAN S25 VERTICAL BASELINE + CONTROL CENTER QA
+   ========================================================= */
+
+/* SKINS intentionally uses the new 70px S25 header/body row family. */
+.modal-overlay.skins-results-v1627 .skins-row-v1627.header{
+  height:var(--v188-skins-header-h,70px)!important;
+  min-height:var(--v188-skins-header-h,70px)!important;
+  max-height:var(--v188-skins-header-h,70px)!important;
+}
+
+/* GEEK diagnostic COPY moved out of production popup and into Control Center. */
+.geek-copy-v180b{
+  display:none!important;
+}
+
+#testLogView .control-center-viewport-v188{
+  flex:0 0 auto!important;
+  min-height:34px!important;
+  margin:0!important;
+  padding:4px 6px!important;
+  border:1px solid #aaa!important;
+  border-radius:7px!important;
+  background:#f6f6f6!important;
+  color:#222!important;
+  font-family:Arial,sans-serif!important;
+  font-size:9px!important;
+  font-weight:700!important;
+  line-height:1.15!important;
+  text-align:center!important;
+  white-space:pre-line!important;
+}
+
+#testLogView .control-center-checks-v188{
+  flex:0 0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin:0!important;
+}
+#testLogView .control-center-check-v188{
+  height:42px!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:2px 4px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:7px!important;
+  background:#fafafa!important;
+  color:var(--accent)!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
 }
 
 </style>
@@ -10888,7 +10968,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.7</span>
+          <span class="home-version-info">SSHCP V18.8</span>
         </button>
 
       </div>
@@ -11261,6 +11341,15 @@ body option{
           <button id="testCopyLogButton" class="test-copy-log" type="button">COPY LOG</button>
         </div>
 
+        <div id="controlCenterViewportMetricsV188" class="control-center-viewport-v188">
+          VIEWPORT METRICS
+        </div>
+
+        <div class="control-center-checks-v188" aria-label="Control Center checks">
+          <button id="controlCenterGeekCheckButtonV188" class="control-center-check-v188" type="button">GEEK CHECK</button>
+          <button id="controlCenterResultsCheckButtonV188" class="control-center-check-v188" type="button">RESULTS CHECK</button>
+        </div>
+
         <div class="control-center-nav" aria-label="Control Center sections">
           <label id="controlCenterSkinsToggle" class="control-center-nav-button control-center-skins-toggle">
             <input id="controlCenterSkinsCheck" type="checkbox">
@@ -11547,6 +11636,15 @@ body option{
 
       testCopyLogButton:
         document.getElementById('testCopyLogButton'),
+
+      controlCenterViewportMetricsV188:
+        document.getElementById('controlCenterViewportMetricsV188'),
+
+      controlCenterGeekCheckButtonV188:
+        document.getElementById('controlCenterGeekCheckButtonV188'),
+
+      controlCenterResultsCheckButtonV188:
+        document.getElementById('controlCenterResultsCheckButtonV188'),
 
       controlCenterTeamsButton:
         document.getElementById('controlCenterTeamsButton'),
@@ -13352,6 +13450,281 @@ let scoreTimingDetail =
       if (currentView === 'testlog') renderTestLog();
     }
 
+
+    function controlCenterViewportLineV188() {
+      const metrics = getVerticalMetricsV188();
+      const mult = Number(metrics.multiplier).toFixed(3);
+      const inner = Math.round(metrics.innerWidth) + '×' + Math.round(metrics.innerHeight);
+      const visual = Math.round(metrics.visualWidth) + '×' + Math.round(metrics.visualHeight);
+      const screenCss = Math.round(metrics.screenWidth) + '×' + Math.round(metrics.screenHeight);
+      const physical = Math.round(metrics.physicalShort) + '×' + Math.round(metrics.physicalLong);
+      return (
+        'INNER ' + inner +
+        ' • VISUAL ' + visual +
+        ' • SCREEN ' + screenCss +
+        ' • DPR ' + Number(metrics.dpr).toFixed(2) +
+        ' • PHYS≈' + physical +
+        ' • MULT ' + mult +
+        (metrics.isS25 ? ' • S25 BASE' : '')
+      );
+    }
+
+
+    function controlCenterGeometryLineV188() {
+      const root = getComputedStyle(document.documentElement);
+      const readPx = name => {
+        const value = parseFloat(root.getPropertyValue(name));
+        return Number.isFinite(value) ? Math.round(value) : null;
+      };
+      let remembered = {};
+      try {
+        remembered = JSON.parse(
+          sessionStorage.getItem('sshcpResponsiveGeometryV5') || '{}'
+        ) || {};
+      } catch (_) {}
+
+      const parts = [
+        'NAV ' + (readPx('--v16-nav-h') ?? '—'),
+        'CTX ' + (readPx('--v16-context-h') ?? '—'),
+        'THEAD ' + (readPx('--v187-table-header-h') ?? '—'),
+        'FOOT ' + (readPx('--v16-footer-h') ?? '—'),
+        'GAP ' + (readPx('--v16-score-table-footer-gap') ?? '—') +
+          '/' + (readPx('--v16-bottom-gap') ?? '—')
+      ];
+      if (Number.isFinite(Number(remembered.scoreRow))) {
+        parts.push('SROW ' + Math.round(Number(remembered.scoreRow)));
+      }
+      if (Number.isFinite(Number(remembered.leaderRow))) {
+        parts.push('LROW ' + Math.round(Number(remembered.leaderRow)));
+      }
+      return parts.join(' • ');
+    }
+
+    function updateControlCenterViewportMetricsV188() {
+      if (!els.controlCenterViewportMetricsV188) return;
+      els.controlCenterViewportMetricsV188.textContent =
+        controlCenterViewportLineV188() + '\n' + controlCenterGeometryLineV188();
+    }
+
+    async function runControlCenterGeekCheckV188() {
+      const started = timerStart();
+      startLoadingLine();
+
+      try {
+        const response = await fetch(
+          CLOUDFLARE_API_URL +
+            '?action=geekMode' +
+            '&refresh=' + Date.now() + '-control-center',
+          { cache:'no-store' }
+        );
+        const data = await response.json();
+        if (!response.ok || !data || data.ok !== true || data.action !== 'geekMode') {
+          throw new Error((data && data.error) || 'GEEK MODE data unavailable.');
+        }
+
+        geekDataV180 = data;
+        startGeekDiagnosticV180b();
+        const report = buildGeekCompactLogV180b();
+        const categoryCount = Array.isArray(data.categories) ? data.categories.length : 0;
+        const statCount = Array.isArray(data.categories)
+          ? data.categories.reduce((sum, block) =>
+              sum + (Array.isArray(block && block.stats) ? block.stats.length : 0), 0)
+          : 0;
+
+        addTestLog(
+          'GEEK CHECK',
+          'OK',
+          statCount + ' STATS',
+          report.replace(/\n+/g, ' | ')
+        );
+        completeLoadingLine();
+      } catch (error) {
+        stopLoadingLine();
+        addTestLog(
+          'GEEK CHECK',
+          'FAILED',
+          timerSeconds(started) + 's',
+          String(error && error.message || 'Request failed')
+        );
+      }
+
+      renderTestLog();
+      requestAnimationFrame(fitTestPageButtonText);
+    }
+
+    function numericTeamHandicapV188(team, leaderRow) {
+      const candidates = [
+        team && team.handicap,
+        team && team.hcp,
+        leaderRow && leaderRow.handicap,
+        leaderRow && leaderRow.hcp,
+        leaderRow && leaderRow.teamHandicap,
+        leaderRow && leaderRow.teamHcp
+      ];
+      for (const value of candidates) {
+        if (value === '' || value === null || value === undefined) continue;
+        const number = Number(value);
+        if (Number.isFinite(number)) return Math.abs(number);
+      }
+      return null;
+    }
+
+    function officialRoundCheckV188(scoreSource, leaderboardRows) {
+      const sourceTeams = Array.isArray(scoreSource && scoreSource.teams)
+        ? scoreSource.teams.filter(team => team && String(team.name || '').trim() !== '')
+        : [];
+      const sourceHoles = Array.isArray(scoreSource && scoreSource.course && scoreSource.course.holes)
+        ? scoreSource.course.holes.slice(0, 18)
+        : [];
+      const rows = Array.isArray(leaderboardRows) ? leaderboardRows : [];
+      const failures = [];
+
+      if (!sourceTeams.length) failures.push('NO OFFICIAL TEAMS');
+      if (sourceHoles.length !== 18) failures.push('COURSE != 18 HOLES');
+      if (!rows.length) failures.push('NO LEADERBOARD ROWS');
+      if (failures.length) return { ok:false, failures };
+
+      const parTotal = sourceHoles.reduce((sum, hole) => {
+        const par = Number(hole && hole.par);
+        return sum + (Number.isFinite(par) ? par : 0);
+      }, 0);
+
+      const rowsBySlot = new Map(
+        rows.map(row => [Number(row && row.slot), row])
+      );
+
+      sourceTeams.forEach(team => {
+        const slot = Number(team && team.slot);
+        const row = rowsBySlot.get(slot);
+        if (!row) {
+          failures.push('T' + slot + ' MISSING FROM LEADERBOARD');
+          return;
+        }
+
+        const rawScores = Array.isArray(team.scores) ? team.scores.slice(0, 18) : [];
+        const validScores = rawScores.map(value => Number(value))
+          .filter(value => Number.isFinite(value) && value > 0);
+        const thru = validScores.length;
+
+        if (thru !== Number(row.thru)) {
+          failures.push('T' + slot + ' THRU ' + thru + '!=' + row.thru);
+        }
+
+        if (thru === 18) {
+          const totalStrokes = validScores.reduce((sum, value) => sum + value, 0);
+          const grossVsPar = totalStrokes - parTotal;
+          const hcp = numericTeamHandicapV188(team, row);
+          const netVsPar = hcp === null ? NaN : grossVsPar - hcp;
+
+          if (Number.isFinite(Number(row.totalStrokes)) &&
+              Number(row.totalStrokes) !== totalStrokes) {
+            failures.push('T' + slot + ' STROKES ' + totalStrokes + '!=' + row.totalStrokes);
+          }
+          if (Number.isFinite(Number(row.gross)) &&
+              Number(row.gross) !== grossVsPar) {
+            failures.push('T' + slot + ' GROSS ' + grossVsPar + '!=' + row.gross);
+          }
+          if (Number.isFinite(netVsPar) &&
+              Number.isFinite(Number(row.net)) &&
+              Number(row.net) !== netVsPar) {
+            failures.push('T' + slot + ' NET ' + netVsPar + '!=' + row.net);
+          }
+
+          const tbScores = Array.isArray(row.tiebreakScores) ? row.tiebreakScores : [];
+          const tbHoles = Array.isArray(row.tiebreakHoles) ? row.tiebreakHoles : [];
+          const tbCount = Math.min(tbScores.length, tbHoles.length);
+          for (let index = 0; index < tbCount; index++) {
+            const actualHole = Number(tbHoles[index]);
+            const listed = Number(tbScores[index]);
+            const official = Number(rawScores[actualHole - 1]);
+            if (
+              !Number.isInteger(actualHole) ||
+              actualHole < 1 ||
+              actualHole > 18 ||
+              !Number.isFinite(listed) ||
+              !Number.isFinite(official) ||
+              listed !== official
+            ) {
+              failures.push(
+                'T' + slot + ' TB' + (index + 1) +
+                ' H' + String(tbHoles[index]) +
+                ' ' + String(tbScores[index]) +
+                '!=' + String(official)
+              );
+              break;
+            }
+          }
+        }
+      });
+
+      const completeRows = rows.filter(row => Number(row && row.thru) === 18);
+      if (completeRows.length === rows.length && rows.length) {
+        try {
+          buildTournamentPodium(rows);
+          const firstTie = firstPlaceTiedRows(rows);
+          if (firstTie.length >= 2) {
+            const resolution = resolveTieContenders(firstTie);
+            if (!resolution) failures.push('TIE BREAK RESOLUTION MISSING');
+          }
+        } catch (error) {
+          failures.push('PODIUM ' + String(error && error.message || 'ERROR'));
+        }
+      }
+
+      return { ok: failures.length === 0, failures };
+    }
+
+    async function runControlCenterResultsCheckV188() {
+      const started = timerStart();
+      startLoadingLine();
+
+      try {
+        const stamp = Date.now();
+        const [scoreResponse, leaderResponse] = await Promise.all([
+          fetch(CLOUDFLARE_API_URL + '?refresh=' + stamp + '-results-check', { cache:'no-store' }),
+          fetch(CLOUDFLARE_API_URL + '?action=leaderboard&refresh=' + stamp + '-results-check', { cache:'no-store' })
+        ]);
+
+        const [scoreData, leaderData] = await Promise.all([
+          scoreResponse.json(),
+          leaderResponse.json()
+        ]);
+
+        if (!scoreResponse.ok || !scoreData || scoreData.ok !== true) {
+          throw new Error((scoreData && scoreData.error) || 'OFFICIAL score read failed.');
+        }
+        if (!leaderResponse.ok || !leaderData || leaderData.ok !== true) {
+          throw new Error((leaderData && leaderData.error) || 'Leaderboard read failed.');
+        }
+
+        const rows = Array.isArray(leaderData.leaderboard) ? leaderData.leaderboard : [];
+        const check = officialRoundCheckV188(scoreData, rows);
+
+        if (!check.ok) {
+          throw new Error(check.failures.slice(0, 8).join(' • ') || 'RESULTS mismatch');
+        }
+
+        addTestLog(
+          'RESULTS CHECK',
+          'OK',
+          rows.length + ' TEAMS',
+          'Actual Scores match the Scramble Summary RESULTS / Tie Break interpretation'
+        );
+        completeLoadingLine();
+      } catch (error) {
+        stopLoadingLine();
+        addTestLog(
+          'RESULTS CHECK',
+          'FAILED',
+          timerSeconds(started) + 's',
+          String(error && error.message || 'Request failed')
+        );
+      }
+
+      renderTestLog();
+      requestAnimationFrame(fitTestPageButtonText);
+    }
+
     function buildTestLogReport() {
       const log = getTestLog();
       const directory = readStoredTestQrDirectory() || [];
@@ -13366,8 +13739,10 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.7 CONTROL CENTER LOG',
+        'SSHCP V18.8 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
+        'Viewport: ' + controlCenterViewportLineV188(),
+        'Geometry: ' + controlCenterGeometryLineV188(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
           (getQrTeam() ? ' / ' + getQrTeam() : ''),
@@ -13470,6 +13845,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
+      updateControlCenterViewportMetricsV188();
       /* TEST PAGE opening refreshes the CF QR directory once. Existing cached
          data remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -14088,12 +14464,19 @@ let scoreTimingDetail =
           testDetailParts.push(data.random2Summary);
         }
 
-        addTestLog(
-          actionLabel,
-          'VERIFIED',
-          timerSeconds(started) + 's',
-          testDetailParts.join(' • ')
-        );
+        if (mode === 'clear' && scope === 'all') {
+          /* V18.8: DELETE ALL starts a brand-new RANDOM/QA cycle.
+             The Control Center log resets completely and does not retain a
+             DELETE ALL entry. */
+          resetTestLog();
+        } else {
+          addTestLog(
+            actionLabel,
+            'VERIFIED',
+            timerSeconds(started) + 's',
+            testDetailParts.join(' • ')
+          );
+        }
 
         completeLoadingLine();
         renderTestLog();
@@ -14406,7 +14789,7 @@ let scoreTimingDetail =
         const lowerButtonBottom = buttons.length
           ? Math.max(...buttons.map(rect => rect.bottom))
           : navRect.bottom;
-        top = Math.ceil(lowerButtonBottom + 3);
+        top = Math.floor(lowerButtonBottom);
       } else {
         return false;
       }
@@ -14522,7 +14905,7 @@ let scoreTimingDetail =
     function beginLeaderboardRevealV177() {
       if (currentView !== 'leaderboard') return null;
       const header = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
-      return beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false, 4900, 'leaderboard');
+      return beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false, 8800, 'leaderboard');
     }
 
     async function showScorecard() {
@@ -15481,6 +15864,7 @@ let scoreTimingDetail =
       /* Control Center typography rule: each functional row shares one text
          size. If one label is the limiting case, only that row shrinks. */
       fitRow('.test-log-utility-row', 11, 7);
+      fitRow('.control-center-checks-v188', 12, 8);
       fitRow('.control-center-nav', 12, 8);
       fitRow('.test-score-controls', 10, 7);
       fitRow('.test-auth-button-row', 11, 7);
@@ -15496,6 +15880,7 @@ let scoreTimingDetail =
         const next = {
           ...previous,
           ...patch,
+          v188: true,
           w: window.innerWidth || 0,
           h: window.innerHeight || 0
         };
@@ -15508,27 +15893,116 @@ let scoreTimingDetail =
     }
 
 
+    const V188_S25_PHYSICAL_W = 1080;
+    const V188_S25_PHYSICAL_H = 2340;
+    const V188_S25_SCREEN_CSS_FALLBACK_H = 832;
+
+    function getVerticalMetricsV188() {
+      const innerWidth = Math.max(1, window.innerWidth || document.documentElement.clientWidth || 1);
+      const innerHeight = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 1);
+      const visualWidth = Math.max(
+        1,
+        Number(window.visualViewport && window.visualViewport.width) || innerWidth
+      );
+      const visualHeight = Math.max(
+        1,
+        Number(window.visualViewport && window.visualViewport.height) || innerHeight
+      );
+      const dpr = Math.max(0.1, Number(window.devicePixelRatio) || 1);
+      const screenWidth = Math.max(1, Number(window.screen && screen.width) || innerWidth);
+      const screenHeight = Math.max(1, Number(window.screen && screen.height) || innerHeight);
+      const physicalShort = Math.min(screenWidth, screenHeight) * dpr;
+      const physicalLong = Math.max(screenWidth, screenHeight) * dpr;
+      const isS25 =
+        Math.abs(physicalShort - V188_S25_PHYSICAL_W) <= 140 &&
+        Math.abs(physicalLong - V188_S25_PHYSICAL_H) <= 180;
+      const screenLong = Math.max(screenWidth, screenHeight);
+
+      let s25ScreenLong = Number(localStorage.getItem('sshcpV188S25ScreenCssHeight') || 0);
+      if (isS25 && screenLong > 0) {
+        s25ScreenLong = screenLong;
+        try {
+          localStorage.setItem('sshcpV188S25ScreenCssHeight', String(s25ScreenLong));
+        } catch (_) {}
+      }
+      if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
+
+      const multiplier = isS25
+        ? 1.00
+        : Math.max(0.70, Math.min(1.20, screenLong / s25ScreenLong));
+
+      return {
+        innerWidth,
+        innerHeight,
+        visualWidth,
+        visualHeight,
+        screenWidth,
+        screenHeight,
+        screenLong,
+        dpr,
+        physicalShort,
+        physicalLong,
+        isS25,
+        s25ScreenLong,
+        multiplier
+      };
+    }
+
     function syncSharedGeometryV187() {
-      const height = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 1);
-      const sy = Math.max(0.40, Math.min(0.68, height / 1423));
-      const scaled = value => Math.max(1, value * sy);
+      const metrics = getVerticalMetricsV188();
+      const scaled = value => Math.max(1, Math.round(value * metrics.multiplier));
       const values = {
-        sy,
+        sy: metrics.multiplier,
+        multiplier: metrics.multiplier,
+        metrics,
         tableHeader: scaled(50),
-        postButton: scaled(55),
-        skinsRow: scaled(50),
-        skinsFont: scaled(25),
-        skinsMark: scaled(34),
-        mainButton: scaled(60)
+        skinsHeader: scaled(70),
+        postButton: scaled(70),
+        skinsRow: scaled(70),
+        skinsFont: scaled(35),
+        skinsMark: scaled(47.6),
+        mainButton: scaled(70)
       };
       const root = document.documentElement.style;
       root.setProperty('--v187-table-header-h', values.tableHeader + 'px');
+      root.setProperty('--v188-skins-header-h', values.skinsHeader + 'px');
       root.setProperty('--v187-post-button-h', values.postButton + 'px');
       root.setProperty('--v187-skins-row-h', values.skinsRow + 'px');
       root.setProperty('--v187-skins-font-h', values.skinsFont + 'px');
       root.setProperty('--v187-skins-mark-h', values.skinsMark + 'px');
       root.setProperty('--v187-main-button-h', values.mainButton + 'px');
       return values;
+    }
+
+    function distributeIntegerPixelsV188(totalPixels, count) {
+      const countSafe = Math.max(1, Math.floor(Number(count) || 1));
+      const total = Math.max(countSafe, Math.round(Number(totalPixels) || countSafe));
+      const base = Math.floor(total / countSafe);
+      const remainder = total - (base * countSafe);
+      return Array.from({ length: countSafe }, (_, index) =>
+        base + (index < remainder ? 1 : 0)
+      );
+    }
+
+    function distributeWeightedPixelsV188(totalPixels, weights) {
+      const safeWeights = (Array.isArray(weights) ? weights : [])
+        .map(value => Math.max(0, Number(value) || 0));
+      if (!safeWeights.length) return [];
+      const total = Math.max(safeWeights.length, Math.round(Number(totalPixels) || safeWeights.length));
+      const weightTotal = safeWeights.reduce((sum, value) => sum + value, 0) || 1;
+      const raw = safeWeights.map(value => (total * value) / weightTotal);
+      const pixels = raw.map(value => Math.floor(value));
+      let remainder = total - pixels.reduce((sum, value) => sum + value, 0);
+      const order = raw
+        .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
+        .sort((a, b) => b.fraction - a.fraction || a.index - b.index);
+      let pointer = 0;
+      while (remainder > 0) {
+        pixels[order[pointer % order.length].index] += 1;
+        pointer += 1;
+        remainder -= 1;
+      }
+      return pixels;
     }
 
 
@@ -15541,30 +16015,31 @@ let scoreTimingDetail =
       const width = Math.max(1, Math.min(760, shell.clientWidth || window.innerWidth || 1));
       const height = Math.max(1, shell.clientHeight || window.innerHeight || 1);
 
-      /* S25 visual reference: 756px wide × ~1423px browser-content height.
-         Values below are the approved screenshot measurements multiplied by
-         independent horizontal/vertical device factors. Large-screen growth
-         is bounded so iPad controls remain deliberate rather than enormous. */
+      /* V18.8: horizontal scaling remains the proven width system.
+         Vertical scaling is now one clean S25-relative multiplier. The old
+         .68 conversion has been baked into the approved HEADER/FOOTER S25
+         baselines below and is no longer applied at runtime. */
       const sx = Math.max(0.38, Math.min(1.00, width / 756));
-      const sy = Math.max(0.40, Math.min(0.68, height / 1423));
+      const metricsV188 = getVerticalMetricsV188();
+      const sy = metricsV188.multiplier;
 
       const px = value => Math.max(1, value * sx);
-      const py = value => Math.max(1, value * sy);
+      const py = value => Math.max(1, Math.round(value * sy));
 
       const sharedV187 = syncSharedGeometryV187();
 
       const vars = {
         '--v16-rail': px(24),
         '--v16-nav-w': px(141),
-        '--v16-nav-h': py(78),
-        '--v16-top-inset': py(14),
-        '--v16-nav-context-gap': py(12),
-        '--v16-context-h': py(88),
-        '--v16-context-table-gap': py(12),
-        '--v16-score-table-footer-gap': py(18),
-        '--v16-leader-table-footer-gap': py(28),
-        '--v16-footer-h': py(60),
-        '--v16-bottom-gap': py(18),
+        '--v16-nav-h': py(53.04),
+        '--v16-top-inset': py(9.52),
+        '--v16-nav-context-gap': py(8.16),
+        '--v16-context-h': py(59.84),
+        '--v16-context-table-gap': py(8.16),
+        '--v16-score-table-footer-gap': py(12.24),
+        '--v16-leader-table-footer-gap': py(12.24),
+        '--v16-footer-h': py(70),
+        '--v16-bottom-gap': py(12.24),
         '--v16-internal-gap': px(28)
       };
 
@@ -15580,6 +16055,7 @@ let scoreTimingDetail =
         view.style.setProperty(name, value + 'px');
       });
       document.documentElement.style.setProperty('--v187-table-header-h', sharedV187.tableHeader + 'px');
+      document.documentElement.style.setProperty('--v188-skins-header-h', sharedV187.skinsHeader + 'px');
       document.documentElement.style.setProperty('--v187-post-button-h', sharedV187.postButton + 'px');
       document.documentElement.style.setProperty('--v187-skins-row-h', sharedV187.skinsRow + 'px');
       document.documentElement.style.setProperty('--v187-skins-font-h', sharedV187.skinsFont + 'px');
@@ -15590,6 +16066,7 @@ let scoreTimingDetail =
         sessionStorage.setItem(
           'sshcpV16ShellGeometry',
           JSON.stringify({
+            v188: true,
             w: window.innerWidth || 0,
             h: window.innerHeight || 0,
             vars
@@ -15646,19 +16123,32 @@ let scoreTimingDetail =
       const bottomHeight = bottom.getBoundingClientRect().height;
       if (!Number.isFinite(screenHeight) || screenHeight <= 0) return;
 
-      /* V18.7: shell first, then data. The Scorecard table header is a fixed
-         50px × existing vertical multiplier and no longer participates in the
-         nine-row equation. The tiny 9/10 divider remains a separate allowance. */
+      /* V18.8: HEADER + FOOTER are fixed first; TABLE gets the exact remainder.
+         The table-header row is 50px on the S25 × device multiplier. The
+         remaining integer pixel budget is divided across exactly nine visible
+         score rows, with any remainder deliberately distributed so there is
+         never an unallocated gap at the bottom of the viewport. */
       const fixedShellWithoutHeader = Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
-      const tableBudget = Math.max(1, screenHeight - fixedShellWithoutHeader);
-      const headerHeight = Math.max(1, 50 * geometry.sy);
-      const divider = Math.max(2, Math.min(4, tableBudget * 0.004));
-      const scoreTableBudget = Math.max(1, tableBudget - headerHeight - divider);
-      const rowHeight = Math.max(1, scoreTableBudget / 9);
+      const tableBudget = Math.max(1, Math.round(screenHeight - fixedShellWithoutHeader));
+      const headerHeight = Math.max(1, Math.round(50 * geometry.sy));
+      const divider = Math.max(2, Math.min(4, Math.round(tableBudget * 0.004)));
+      const scoreTableBudget = Math.max(9, tableBudget - headerHeight - divider);
+      const scoreRowPixels = distributeIntegerPixelsV188(scoreTableBudget, 9);
+      const rowHeight = scoreRowPixels.reduce((sum, value) => sum + value, 0) / 9;
 
-      els.scorecardView.style.setProperty('--v5-score-row-h', rowHeight + 'px');
+      els.scorecardView.style.setProperty('--v5-score-row-h', Math.floor(rowHeight) + 'px');
       els.scorecardView.style.setProperty('--v5-score-head-h', headerHeight + 'px');
       els.scorecardView.style.setProperty('--v5-nine-break-h', divider + 'px');
+
+      const scoreRowsForGeometryV188 = els.scoreRows
+        ? Array.from(els.scoreRows.querySelectorAll('.score-row'))
+        : [];
+      scoreRowsForGeometryV188.forEach((row, index) => {
+        const exactHeight = scoreRowPixels[index % 9];
+        row.style.setProperty('height', exactHeight + 'px', 'important');
+        row.style.setProperty('min-height', exactHeight + 'px', 'important');
+        row.style.setProperty('max-height', exactHeight + 'px', 'important');
+      });
 
       const sampleScoreCell = els.scoreRows
         ? els.scoreRows.querySelector('.score-row .score-cell')
@@ -17905,22 +18395,28 @@ let scoreTimingDetail =
 
       const sharedV187 = syncSharedGeometryV187();
       const headerH = sharedV187.tableHeader;
-      const fixedSpace = subtitleBlockH + noteSectionH + headerH;
-      const weightedSpace = Math.max(1, bodyHeight - fixedSpace);
-      const weight = 2 + 1.5 + 1.5 + lowerCount;
-      const x = Math.max(1, weightedSpace / Math.max(1, weight));
-
-      const place1 = 2 * x;
-      const place2 = 1.5 * x;
-      const place3 = 1.5 * x;
-      const lowerRow = 1 * x;
+      const bodyPx = Math.max(1, Math.round(bodyHeight));
+      const subtitlePx = Math.max(1, Math.round(subtitleBlockH));
+      const notePx = Math.max(1, Math.round(noteSectionH));
+      const weightedSpace = Math.max(
+        5 + lowerCount,
+        bodyPx - subtitlePx - notePx - headerH
+      );
+      const weightedRows = distributeWeightedPixelsV188(
+        weightedSpace,
+        [2, 1.5, 1.5, ...Array(lowerCount).fill(1)]
+      );
+      const place1 = weightedRows[0] || 1;
+      const place2 = weightedRows[1] || 1;
+      const place3 = weightedRows[2] || 1;
+      const lowerRowPixels = weightedRows.slice(3);
       const topGridH = headerH + place1 + place2 + place3;
-      const lowerH = lowerRow * lowerCount;
+      const lowerH = lowerRowPixels.reduce((sum, value) => sum + value, 0);
 
       body.style.setProperty('gap', '0px', 'important');
       body.style.setProperty(
         'grid-template-rows',
-        subtitleBlockH + 'px ' + topGridH + 'px ' + noteSectionH + 'px ' + lowerH + 'px',
+        subtitlePx + 'px ' + topGridH + 'px ' + notePx + 'px ' + lowerH + 'px',
         'important'
       );
       topGrid.style.setProperty(
@@ -17930,7 +18426,7 @@ let scoreTimingDetail =
       );
       lower.style.setProperty(
         'grid-template-rows',
-        lowerCount > 0 ? 'repeat(' + lowerCount + ', ' + lowerRow + 'px)' : '0px',
+        lowerCount > 0 ? lowerRowPixels.map(value => value + 'px').join(' ') : '0px',
         'important'
       );
 
@@ -18664,13 +19160,25 @@ let scoreTimingDetail =
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
 
-      /* V18.7: fixed 50px × multiplier header, then fifteen complete
-         data/category row-heights share the remaining table shell. */
+      /* V18.8: fixed 50px S25 table-header row × device multiplier.
+         Fifteen visible Geek rows consume every remaining integer pixel.
+         The 15-row pattern repeats through the scroll list so there is never
+         a fractional remainder/gap at the bottom of the table viewport. */
       const sharedV187 = syncSharedGeometryV187();
       const headerHeight = sharedV187.tableHeader;
-      const rowHeight = Math.max(18, (height - headerHeight) / 15);
-      shell.style.setProperty('--geek-row-h-v180', rowHeight + 'px');
+      const dataPixels = Math.max(15 * 18, Math.round(height - headerHeight));
+      const rowPixelsV188 = distributeIntegerPixelsV188(dataPixels, 15);
+      const rowHeight = rowPixelsV188.reduce((sum, value) => sum + value, 0) / 15;
+      shell.style.setProperty('--geek-row-h-v180', Math.floor(rowHeight) + 'px');
       shell.style.setProperty('--geek-header-h-v185', headerHeight + 'px');
+
+      const geekRowsV188 = shell.querySelectorAll('.geek-table-scroll-v180 .geek-row-v180');
+      geekRowsV188.forEach((row, index) => {
+        const exactHeight = rowPixelsV188[index % 15];
+        row.style.setProperty('height', exactHeight + 'px', 'important');
+        row.style.setProperty('min-height', exactHeight + 'px', 'important');
+        row.style.setProperty('max-height', exactHeight + 'px', 'important');
+      });
 
       requestAnimationFrame(() => {
         fitGeekTableTextV180();
@@ -19292,7 +19800,7 @@ let scoreTimingDetail =
 
       const headerCells = els.modalBody.querySelectorAll('.skins-row-v1627.header .skins-cell-v1627');
       headerCells.forEach(cell => {
-        fitTextToBoxV5(cell, cell, sharedV187.tableHeader * 0.38, 8, {
+        fitTextToBoxV5(cell, cell, sharedV187.skinsHeader * 0.38, 8, {
           horizontalPad:8, verticalPad:4, wrap:false, lineHeight:1
         });
       });
@@ -20472,25 +20980,28 @@ let scoreTimingDetail =
         Math.min(8, els.leaderRows ? els.leaderRows.querySelectorAll('.leader-row').length : 1)
       );
 
-      /* V18.7: anchored shell first. The Leaderboard header is fixed at
-         50px × vertical multiplier and removed from the N-row equation.
-         N remains capped at 8; additional teams extend below and scroll. */
-      const headerHeight = Math.max(1, 50 * geometry.sy);
-      const rowHeightInitial = Math.max(1, (tableBudget - headerHeight) / rowCount);
+      /* V18.8: Scorecard and Leaderboard share the same fixed TABLE HEADER
+         baseline. The Leaderboard viewport then distributes every remaining
+         integer pixel across the visible rows (max 8). The repeating pattern
+         means each full visible block consumes the viewport exactly. */
+      const headerHeight = Math.max(1, Math.round(50 * geometry.sy));
+      const rowHeightInitial = Math.max(1, Math.floor((Math.max(rowCount, Math.round(tableBudget - headerHeight))) / rowCount));
 
       els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
       els.leaderContent.style.setProperty('--leader-row-height', rowHeightInitial + 'px');
       els.leaderContent.style.setProperty('--v16-visible-row-count', String(rowCount));
 
       requestAnimationFrame(() => {
-        /* V16.6: row height belongs to the visible leaderboard viewport,
-           not to the full table. With 9+ teams the table is taller than the
-           viewport by design; dividing total table height by 8 would inflate
-           every row and destroy the proven <=8-team geometry. */
-        const actualViewportHeight = els.leaderContent.clientHeight;
-        const rowHeight = actualViewportHeight > 0
-          ? actualViewportHeight / rowCount
-          : rowHeightInitial;
+        const actualViewportHeight = Math.max(rowCount, Math.round(els.leaderContent.clientHeight || 0));
+        const leaderRowPixelsV188 = distributeIntegerPixelsV188(actualViewportHeight, rowCount);
+        const rowHeight = leaderRowPixelsV188.reduce((sum, value) => sum + value, 0) / rowCount;
+
+        els.leaderRows.querySelectorAll('.leader-row').forEach((row, index) => {
+          const exactHeight = leaderRowPixelsV188[index % rowCount];
+          row.style.setProperty('height', exactHeight + 'px', 'important');
+          row.style.setProperty('min-height', exactHeight + 'px', 'important');
+          row.style.setProperty('max-height', exactHeight + 'px', 'important');
+        });
 
         els.leaderContent.style.setProperty('--leader-row-height', rowHeight + 'px');
 
@@ -21428,6 +21939,8 @@ let scoreTimingDetail =
     if (els.testLogScorecardButton) els.testLogScorecardButton.addEventListener('click', showScorecard);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
+    if (els.controlCenterGeekCheckButtonV188) els.controlCenterGeekCheckButtonV188.addEventListener('click', runControlCenterGeekCheckV188);
+    if (els.controlCenterResultsCheckButtonV188) els.controlCenterResultsCheckButtonV188.addEventListener('click', runControlCenterResultsCheckV188);
     if (els.controlCenterTeamsButton) els.controlCenterTeamsButton.addEventListener('click', openTeamsPopup);
     if (els.controlCenterSkinsCheck) {
       els.controlCenterSkinsCheck.checked = skinsEnabledV1627();
@@ -21462,6 +21975,19 @@ let scoreTimingDetail =
     els.testAddRandomCurrentButton.addEventListener('click', () => showTestScoreWarning('random', 'current'));
     els.testAddRandom2CurrentButton.addEventListener('click', () => showTestScoreWarning('random2', 'current'));
     els.testDeleteAllButton.addEventListener('click', () => showTestScoreWarning('clear', 'all'));
+
+    window.addEventListener('resize', () => {
+      if (currentView === 'testlog') {
+        updateControlCenterViewportMetricsV188();
+      }
+    }, { passive:true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        if (currentView === 'testlog') {
+          updateControlCenterViewportMetricsV188();
+        }
+      }, { passive:true });
+    }
 
 
     async function openHomePrimaryV181() {
