@@ -1,15 +1,14 @@
-<!-- SSHCP | BASE KEY: 18.10-V4K7QM | BUILD KEY: 18.11-F6Q2XR -->
+<!-- SSHCP | BASE KEY: 18.10-V4K7QM | BUILD KEY: 18.12-Q8M5VT -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.11 — based directly on exact Golden V18.10 (BUILD 18.10-V4K7QM).
-           V18.11 keeps the S25 visual viewport (724 CSS px) as multiplier 1.000, preserves the
-           shared bottom-button family to 50px, standardizes Summary/SKINS/GEEK title top inset
-           to 12px, keeps the GEEK FILTERS panel as a true crisp second popup over a solid white
-           table cover, and canonicalizes team names in the independent RESULT AUDIT. */
+        /* SSHCP V18.12 — rebuilt directly from Golden V18.10 (BUILD 18.10-V4K7QM).
+           V18.11 is not used as a base. V18.12 keeps all Golden V18.10 behavior and applies
+           only the approved minor polish: Summary nav breathing room, 35% post-round footer
+           label targets, safe white Geek filter cover with 0.5s reveal, and DELETE ALL logging. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11019,16 +11018,16 @@ body option{
 }
 
 
-
 /* =========================================================
-   SSHCP V18.11 — GOLDEN V18.10 MINOR POLISH
-   - Summary top-nav gains 6px S25 breathing room above/below.
-   - Summary + Tie Break footer labels use a 35% text target.
-   - Geek FILTERS uses a solid white cover below the GEEK MODE title; APPLY
-     reveals the rebuilt table over the established .5s transparency fade.
+   SSHCP V18.12 — SURGICAL POLISH FROM GOLDEN V18.10
+   - No V18.11 code is carried forward.
+   - Geek FILTERS: no blur. A pointer-events:none white shield covers only
+     the Geek content below the GEEK MODE title; the filter popup stays sharp.
+   - On APPLY the shield fades away over 0.5s after the filtered table rebuild.
+   - Summary/Tie Break footer label targets are handled in JS at 35%.
    ========================================================= */
 
-/* V18.11 replaces the V18.10 blur treatment completely. */
+/* Explicitly neutralize the Golden V18.10 blur while FILTERS is open. */
 .modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-title,
 .modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-text,
 .modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-actions,
@@ -11036,10 +11035,15 @@ body option{
   filter:none!important;
   -webkit-filter:none!important;
 }
-.modal-overlay.geek-mode-v180 .geek-filter-cover-v1811{
+
+/* Safe CSS-only cover: it can never intercept taps because pointer-events:none.
+   JS only supplies the exact top edge (bottom of GEEK MODE title). */
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810::after{
+  content:"";
   position:absolute!important;
   left:0!important;
   right:0!important;
+  top:var(--v1812-geek-cover-top,58px)!important;
   bottom:0!important;
   z-index:150!important;
   background:#fff!important;
@@ -11049,17 +11053,15 @@ body option{
   transition:opacity .5s ease-out!important;
   will-change:opacity;
 }
-.modal-overlay.geek-mode-v180 .geek-filter-cover-v1811.is-revealing-v1811{
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810.geek-filter-reveal-v1812::after{
   opacity:0!important;
+}
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .modal-title{
+  position:relative!important;
+  z-index:160!important;
 }
 .modal-overlay.geek-mode-v180 .geek-filter-popover-v186{
   z-index:200!important;
-}
-
-/* Text target only; physical 50px button-family geometry is unchanged. */
-.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn,
-.modal-overlay.tournament-result .modal-actions > .modal-btn{
-  line-height:1!important;
 }
 
 </style>
@@ -11189,7 +11191,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.11</span>
+          <span class="home-version-info">SSHCP V18.12</span>
         </button>
 
       </div>
@@ -14361,7 +14363,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.11 RESULT LOG',
+        'SSHCP V18.12 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14424,7 +14426,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.11 CONTROL CENTER LOG',
+        'SSHCP V18.12 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -15151,9 +15153,9 @@ let scoreTimingDetail =
         }
 
         if (mode === 'clear' && scope === 'all') {
-          /* V18.11: DELETE ALL still starts a brand-new RANDOM/QA cycle, but
-             the successful DELETE ALL itself becomes the first row of that
-             clean Control Center log so the reset is visibly documented. */
+          /* V18.12: DELETE ALL behavior is unchanged. After the verified clear,
+             start a fresh QA cycle and keep this successful DELETE ALL as the
+             first visible row in the new Control Center log. */
           resetTestLog();
           addTestLog(
             actionLabel,
@@ -20025,7 +20027,6 @@ let scoreTimingDetail =
       const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
       if (!panel || !panel.classList.contains('open')) return;
       syncGeekFilterPopoverGeometryV189();
-      syncGeekFilterCoverV1811();
 
       const allLabel = panel.querySelector('.geek-filter-all-v186 .geek-filter-text-v186');
       const normalLabels = [...panel.querySelectorAll('.geek-filter-choice-v186:not(.geek-filter-all-v186) .geek-filter-text-v186')];
@@ -20076,46 +20077,42 @@ let scoreTimingDetail =
       panel.style.setProperty('bottom', bottom + 'px', 'important');
     }
 
-    function syncGeekFilterCoverV1811() {
-      if (!els.modalBox || !els.modalTitle) return;
-      const cover = els.modalBox.querySelector('.geek-filter-cover-v1811');
-      if (!cover) return;
-      const boxRect = els.modalBox.getBoundingClientRect();
-      const titleRect = els.modalTitle.getBoundingClientRect();
-      const top = Math.max(0, Math.round(titleRect.bottom - boxRect.top));
-      cover.style.setProperty('top', top + 'px', 'important');
-    }
-
-    function installGeekFilterCoverV1811() {
-      if (!els.modalBox) return null;
-      let cover = els.modalBox.querySelector('.geek-filter-cover-v1811');
-      if (!cover) {
-        cover = document.createElement('div');
-        cover.className = 'geek-filter-cover-v1811';
-        cover.setAttribute('aria-hidden', 'true');
-        els.modalBox.appendChild(cover);
+    function installGeekFilterBlurV189() {
+      if (!els.modalBox) return;
+      /* V18.12: legacy function name retained to avoid touching proven call sites.
+         It now installs a safe white CSS shield instead of any blur. */
+      if (els.modalTitle) {
+        const boxRect = els.modalBox.getBoundingClientRect();
+        const titleRect = els.modalTitle.getBoundingClientRect();
+        const coverTop = Math.max(0, Math.round(titleRect.bottom - boxRect.top));
+        els.modalBox.style.setProperty('--v1812-geek-cover-top', coverTop + 'px');
       }
-      syncGeekFilterCoverV1811();
-      return cover;
+      els.modalBox.classList.remove('geek-filter-reveal-v1812');
+      els.modalBox.classList.add('geek-filter-open-v1810');
     }
 
-    function removeGeekFilterCoverV1811() {
+    function removeGeekFilterBlurV189() {
       if (!els.modalBox) return;
-      const cover = els.modalBox.querySelector('.geek-filter-cover-v1811');
-      if (cover) cover.remove();
+      els.modalBox.classList.remove(
+        'geek-filter-open-v189',
+        'geek-filter-open-v1810',
+        'geek-filter-reveal-v1812'
+      );
+      els.modalBox.style.removeProperty('--v1812-geek-cover-top');
+      const blur = els.modalBox.querySelector('.geek-filter-blur-v189');
+      if (blur) blur.remove();
     }
 
-    function revealGeekFilterCoverV1811() {
-      if (!els.modalBox) return;
-      const cover = els.modalBox.querySelector('.geek-filter-cover-v1811');
-      if (!cover) return;
-      syncGeekFilterCoverV1811();
+    function revealGeekFilterCoverV1812() {
+      if (!els.modalBox || !els.modalBox.classList.contains('geek-filter-open-v1810')) return;
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => cover.classList.add('is-revealing-v1811'));
+        requestAnimationFrame(() => {
+          if (els.modalBox) els.modalBox.classList.add('geek-filter-reveal-v1812');
+        });
       });
       window.setTimeout(() => {
-        if (cover && cover.isConnected) cover.remove();
-      }, 560);
+        if (els.modalBox) removeGeekFilterBlurV189();
+      }, 540);
     }
 
     function closeGeekFilterPanelV186(preserveCover = false) {
@@ -20125,7 +20122,7 @@ let scoreTimingDetail =
       if (panel) panel.classList.remove('open');
       if (anchor) anchor.classList.remove('open');
       if (button) button.setAttribute('aria-expanded', 'false');
-      if (!preserveCover) removeGeekFilterCoverV1811();
+      if (!preserveCover) removeGeekFilterBlurV189();
     }
 
     function openGeekFilterPanelV186() {
@@ -20138,7 +20135,7 @@ let scoreTimingDetail =
       panel.classList.add('open');
       anchor.classList.add('open');
       button.setAttribute('aria-expanded', 'true');
-      installGeekFilterCoverV1811();
+      installGeekFilterBlurV189();
       requestAnimationFrame(() => {
         syncGeekFilterPopoverGeometryV189();
         fitGeekFilterPanelV186();
@@ -20154,17 +20151,14 @@ let scoreTimingDetail =
     function applyGeekFiltersV186() {
       geekSelectedCategoriesV180 = new Set(geekPendingFiltersV186);
       geekScrollTopV180 = 0;
-      /* Keep the solid white cover in place while the filtered table rebuilds.
-         Once the new table is ready, reveal it with the app's established .5s
-         transparency transition. */
+      /* Keep the white shield up while the filtered Geek table rebuilds. */
       closeGeekFilterPanelV186(true);
       renderGeekTableV180();
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) scroll.scrollTop = 0;
       requestAnimationFrame(() => {
         fitGeekRowsV180();
-        syncGeekFilterCoverV1811();
-        revealGeekFilterCoverV1811();
+        revealGeekFilterCoverV1812();
       });
     }
 
