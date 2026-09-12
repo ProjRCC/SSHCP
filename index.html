@@ -1,15 +1,16 @@
-<!-- SSHCP | BASE KEY: 18.2-P9K4VX | BUILD KEY: 18.3-T6R9KM -->
+<!-- SSHCP | BASE KEY: 18.5-M4Q8TZ | BUILD KEY: 18.6-H2M7QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.3 — based directly on exact V18.2 (BUILD 18.2-P9K4VX).
-           V18.1 Welcome, Geek diagnostics, uppercase presentation, V17.11 Scorecard/Leaderboard geometry,
-           V16.31 authorization, scoring/save verification, leaderboard data, Summary standings, and SKINS
-           scoring remain authoritative. V18.3 is a surgical cleanup pass: Geek row/detail presentation, Summary navigation alignment,
-           Summary header one-line fitting, and whole-row Geek detail access. */
+        /* SSHCP V18.6 — based directly on exact V18.5 (BUILD 18.5-M4Q8TZ).
+           V18.5 Welcome, authorization, scoring/save verification, Leaderboard data, Summary/SKINS,
+           site-wide 10ms button/checkbox haptic + press feedback, and all protected geometry remain authoritative.
+           V18.6 implements only the locked Geek redesign (38-stat CF V2.1 payload, 15 visible rows,
+           classification dots, anchored staged FILTERS panel, WACKY virtual group) plus the surgical
+           Leaderboard reveal-shield top correction. Scorecard shield and scoring logic remain untouched. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -10160,10 +10161,10 @@ body option{
   text-transform:none!important;
 }
 
-/* GEEK table geometry: STAT 35 / RESULT 20 / TEAM 45. */
+/* GEEK table geometry: STAT 35 / RESULT 25 / TEAM 40. */
 .geek-row-v180.header,
 .geek-row-v180.stat{
-  grid-template-columns:35fr 20fr 45fr!important;
+  grid-template-columns:35fr 25fr 40fr!important;
 }
 
 /* Slightly larger GEEK filter checks; footer/button height remains locked. */
@@ -10371,6 +10372,270 @@ body option{
 }
 
 
+
+
+/* =========================================================
+   SSHCP V18.5 — CONSOLIDATED GEEK / RESULTS / INTERACTION PASS
+   ========================================================= */
+:root{
+  --sshcp-static-header-gray-v185:#444;
+}
+
+/* Static table headers are informational, not buttons: dark gray + white.
+   Blue remains available for clickable primary actions and authorized-owner
+   highlighting. */
+.modal-overlay.tournament-summary .tournament-summary-row.header,
+.skins-row-v1627.header,
+.geek-row-v180.header{
+  background:var(--sshcp-static-header-gray-v185)!important;
+  color:#fff!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-row.header > div,
+.skins-row-v1627.header .skins-cell-v1627,
+.geek-row-v180.header .geek-cell-v180{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+
+/* GEEK header is 75% of a normal data row; data/category rows retain the
+   normal row height. Column widths are 35 / 25 / 40. */
+.geek-row-v180.header{
+  height:var(--geek-header-h-v185,33px)!important;
+  min-height:var(--geek-header-h-v185,33px)!important;
+  max-height:var(--geek-header-h-v185,33px)!important;
+  flex:0 0 var(--geek-header-h-v185,33px)!important;
+  grid-template-columns:35fr 25fr 40fr!important;
+}
+.geek-row-v180.stat{
+  grid-template-columns:35fr 25fr 40fr!important;
+}
+
+/* Detail labels are navigation-like cues without recoloring the data itself. */
+.geek-detail-section-v180{
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  font-weight:900!important;
+  text-align:center!important;
+}
+.geek-detail-result-v180{
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+.geek-detail-teams-v180{
+  display:table!important;
+  width:auto!important;
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:0!important;
+  list-style:none!important;
+  text-align:left!important;
+}
+.geek-detail-teams-v180 li{
+  text-align:left!important;
+}
+.geek-detail-teams-v180 li:not(.authorized){
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+.geek-detail-teams-v180 li.authorized{
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  font-weight:900!important;
+}
+
+
+
+
+/* =========================================================
+   SSHCP V18.6 — LOCKED GEEK REDESIGN + LEADERBOARD SHIELD
+   Presentation/filtering only. CF V2.1 remains lazy/read-only. Scoring,
+   Scorecard shield, authorization, Welcome, Summary and SKINS stay protected.
+   ========================================================= */
+
+/* 15-row Geek density with locked 35 / 25 / 40 columns. */
+.geek-row-v180.header,
+.geek-row-v180.stat{
+  grid-template-columns:35fr 25fr 40fr!important;
+}
+
+/* STAT classification marker. The surrounding row may turn Blue for the
+   authorized owner, but this dot intentionally keeps its semantic color. */
+.geek-stat-cell-v180{
+  gap:clamp(4px,.8vw,7px)!important;
+}
+.geek-class-dot-v186{
+  width:clamp(7px,1.5dvh,12px)!important;
+  height:clamp(7px,1.5dvh,12px)!important;
+  min-width:clamp(7px,1.5dvh,12px)!important;
+  flex:0 0 clamp(7px,1.5dvh,12px)!important;
+  border-radius:50%!important;
+  box-sizing:border-box!important;
+}
+.geek-class-dot-v186.good{ background:#20a83a!important; }
+.geek-class-dot-v186.neutral{ background:#c9c9c9!important; }
+.geek-class-dot-v186.bad{ background:#e00000!important; }
+.geek-stat-label-v186{
+  min-width:0!important;
+  display:block!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:clip!important;
+  text-transform:uppercase!important;
+  color:inherit!important;
+  -webkit-text-fill-color:inherit!important;
+}
+
+/* V18.6 bottom rail: BACK secondary (~33%), FILTERS primary (~66%). */
+.modal-overlay.geek-mode-v180 .modal-actions.geek-actions-v186{
+  grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;
+  gap:8px!important;
+  overflow:visible!important;
+  position:relative!important;
+}
+.modal-overlay.geek-mode-v180 .modal-actions > .modal-btn.geek-back-v180{
+  border:2px solid var(--accent)!important;
+  background:#fff!important;
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  font-weight:800!important;
+}
+.geek-filter-anchor-v186{
+  position:relative!important;
+  width:100%!important;
+  height:58px!important;
+  min-width:0!important;
+  overflow:visible!important;
+  z-index:25!important;
+}
+.modal-overlay.geek-mode-v180 .modal-actions .geek-filter-button-v186{
+  width:100%!important;
+  height:58px!important;
+  min-height:58px!important;
+  margin:0!important;
+  padding:0 8px!important;
+  box-sizing:border-box!important;
+  border:2px solid var(--accent)!important;
+  border-radius:9px!important;
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+
+/* Anchored panel: lower-right corner stays on the FILTERS button corner;
+   panel expands upward and left. backdrop-filter affects only pixels physically
+   behind this small panel; the black surround and popup edge remain crisp. */
+.geek-filter-popover-v186{
+  position:absolute!important;
+  right:0!important;
+  bottom:0!important;
+  z-index:40!important;
+  width:min(440px,calc(100vw - 54px))!important;
+  max-width:calc(95vw - 28px)!important;
+  box-sizing:border-box!important;
+  display:none!important;
+  padding:8px!important;
+  border:2px solid #555!important;
+  border-radius:12px!important;
+  background:rgba(58,58,58,.94)!important;
+  color:#fff!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.28)!important;
+  -webkit-backdrop-filter:blur(7px) brightness(.78)!important;
+  backdrop-filter:blur(7px) brightness(.78)!important;
+}
+.geek-filter-popover-v186.open{
+  display:block!important;
+}
+.geek-filter-anchor-v186.open > .geek-filter-button-v186{
+  visibility:hidden!important;
+}
+.geek-filter-grid-v186{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-rows:44px!important;
+  gap:6px!important;
+}
+.geek-filter-choice-v186{
+  min-width:0!important;
+  height:44px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:8px!important;
+  padding:0 10px!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+  border-radius:8px!important;
+  background:rgba(255,255,255,.05)!important;
+  color:#fff!important;
+  cursor:pointer!important;
+  overflow:hidden!important;
+}
+.geek-filter-choice-v186.geek-filter-all-v186{
+  grid-column:1 / -1!important;
+  height:50px!important;
+  grid-row:auto!important;
+  justify-content:center!important;
+}
+.geek-filter-choice-v186 input{
+  width:19.8px!important; /* 45% of 44px */
+  height:19.8px!important;
+  min-width:19.8px!important;
+  flex:0 0 19.8px!important;
+  margin:0!important;
+  accent-color:var(--accent)!important;
+}
+.geek-filter-choice-v186.geek-filter-all-v186 input{
+  width:25px!important; /* 50% of 50px */
+  height:25px!important;
+  min-width:25px!important;
+  flex-basis:25px!important;
+}
+.geek-filter-text-v186{
+  min-width:0!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-family:'Oswald',Arial,sans-serif!important;
+  font-weight:800!important;
+  line-height:1!important;
+  text-transform:uppercase!important;
+}
+.geek-filter-apply-v186{
+  grid-column:1 / -1!important;
+  width:100%!important;
+  height:54px!important;
+  min-height:54px!important;
+  margin:0!important;
+  padding:0 10px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:9px!important;
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-family:'Oswald',Arial,sans-serif!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+
+@media (max-width:520px){
+  .geek-filter-popover-v186{
+    width:min(88vw,430px)!important;
+  }
+  .geek-filter-grid-v186{
+    gap:5px!important;
+  }
+  .geek-filter-choice-v186{
+    padding-left:8px!important;
+    padding-right:8px!important;
+    gap:6px!important;
+  }
+}
+
 </style>
 </head>
 
@@ -10498,7 +10763,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.3</span>
+          <span class="home-version-info">SSHCP V18.6</span>
         </button>
 
       </div>
@@ -12976,7 +13241,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.3 CONTROL CENTER LOG',
+        'SSHCP V18.6 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
@@ -13992,27 +14257,36 @@ let scoreTimingDetail =
     function syncMainPageRevealGeometryV1710(shield, mode) {
       if (!shield) return false;
 
-      let topAnchor = null;
-
-      if (mode === 'scorecard') {
-        topAnchor = els.scorecardView && els.scorecardView.querySelector('.score-nav');
-      } else if (mode === 'leaderboard') {
-        topAnchor = els.leaderboardView && els.leaderboardView.querySelector('.leader-nav');
-      }
-
-      if (!topAnchor) return false;
-
-      const topRect = topAnchor.getBoundingClientRect();
+      let top = null;
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-
       if (!(viewportHeight > 0)) return false;
 
-      /* Start immediately below the permanent top navigation. Full-width fixed
-         positioning plus bottom:0 guarantees every mutable page element below
-         it — team/title strips, table, final-result controls, and bottom buttons
-         — remains hidden until the finished layout is ready to reveal. */
-      const top = Math.max(0, Math.min(viewportHeight - 1, Math.ceil(topRect.bottom)));
+      if (mode === 'scorecard') {
+        /* V18.6: Scorecard geometry is intentionally untouched. */
+        const topAnchor = els.scorecardView && els.scorecardView.querySelector('.score-nav');
+        if (!topAnchor) return false;
+        const topRect = topAnchor.getBoundingClientRect();
+        top = Math.ceil(topRect.bottom);
+      } else if (mode === 'leaderboard') {
+        /* V18.6: Leaderboard only. Anchor the white shield a few pixels below
+           the lower rendered HOME/INFO button bottom so no refresh/loading strip
+           can peek through above the mutable page content on any viewport. */
+        const nav = els.leaderboardView && els.leaderboardView.querySelector('.leader-nav');
+        if (!nav) return false;
+        const buttons = [...nav.querySelectorAll('.nav-button')]
+          .filter(Boolean)
+          .map(button => button.getBoundingClientRect())
+          .filter(rect => rect.height > 0);
+        const navRect = nav.getBoundingClientRect();
+        const lowerButtonBottom = buttons.length
+          ? Math.max(...buttons.map(rect => rect.bottom))
+          : navRect.bottom;
+        top = Math.ceil(lowerButtonBottom + 3);
+      } else {
+        return false;
+      }
 
+      top = Math.max(0, Math.min(viewportHeight - 1, top));
       shield.style.left = '0px';
       shield.style.right = '0px';
       shield.style.top = top + 'px';
@@ -17685,22 +17959,37 @@ let scoreTimingDetail =
 
     const GEEK_ENABLED_KEY_V180 = 'sshcpGeekModeEnabledV180';
     let geekDataV180 = null;
-    let geekSelectedCategoriesV180 = new Set([
-      'SCORING',
-      'FIELD',
-      'MOMENTUM',
-      'CONSISTENCY',
-      'HOLE TYPES'
-    ]);
+
+    /* V18.6 committed filter state. ALL is the default/master view. WACKY is
+       virtual: it groups the designated final row from each real category. */
+    let geekSelectedCategoriesV180 = new Set(['ALL']);
+    let geekPendingFiltersV186 = new Set(['ALL']);
     let geekScrollTopV180 = 0;
 
     const GEEK_CATEGORY_ORDER_V180 = [
-      'SCORING',
+      'SCORES',
       'FIELD',
-      'MOMENTUM',
-      'CONSISTENCY',
-      'HOLE TYPES'
+      'RUN',
+      'STEADY',
+      'SETUP'
     ];
+
+    const GEEK_FILTER_ORDER_V186 = [
+      'SCORES',
+      'FIELD',
+      'RUN',
+      'STEADY',
+      'SETUP',
+      'WACKY'
+    ];
+
+    const GEEK_WACKY_STAT_BY_CATEGORY_V186 = {
+      'SCORES':'we doubled',
+      'FIELD':'withdrew',
+      'RUN':'bogeeee train',
+      'STEADY':'par train',
+      'SETUP':'water ball'
+    };
 
     /* V18.0b — temporary compact diagnostics. No additional request is ever
        made: COPY compresses the already-loaded CF V2.0 response and current
@@ -17711,65 +18000,64 @@ let scoreTimingDetail =
     let geekLastTapStatV180b = '';
 
     const GEEK_LOG_CODES_V180B = {
-      'Eagles':'EAG', 'Birdies':'BRD', 'Pars':'PAR', 'Bogeys':'BOG',
-      'Eagle %':'EAGP', 'Birdie %':'BRDP', 'Par-or-Better %':'POBP',
-      'Bogey-or-Worse %':'BOWP', 'Front 9 vs Par':'F9', 'Back 9 vs Par':'B9',
-      'Hardest Hole':'HH', 'Easiest Hole':'EH', 'Most Eagles':'MEAG',
-      'Most Birdies':'MBRD', 'Fewest Bogeys':'FBOG', 'Par-3 Rank':'P3R',
-      'Par-4 Rank':'P4R', 'Par-5 Rank':'P5R', 'Best Hole vs Field':'BHF',
-      'Worst Hole vs Field':'WHF', 'Best 9-Hole Stretch':'B9S',
-      'Worst 9-Hole Stretch':'W9S', 'Back-9 Comeback':'B9C',
-      'Closing Hole Birdies':'CHB', 'Score Variance':'VAR', 'Score Range':'RNG',
-      'Highest Hole Score':'HI', 'Lowest Hole Score':'LO',
-      'Longest E/Under Streak':'STK', 'Par-3 vs Par':'P3V', 'Par-4 vs Par':'P4V',
-      'Par-5 vs Par':'P5V', 'Par-3 Birdie Rate':'P3B', 'Par-5 Birdie Rate':'P5B',
-      'Par-5 Eagle Rate':'P5E', '9 Easy Holes vs Par':'E9',
-      '9 Hard Holes vs Par':'H9'
+      'eagles':'EAG', 'birdies':'BRD', 'pars':'PAR', 'bogeys':'BOG',
+      'eagle %':'EAGP', 'birdie %':'BRDP', 'par-or-better %':'POBP',
+      'bogey-or-worse %':'BOWP', 'front 9 vs par':'F9', 'back 9 vs par':'B9',
+      'we doubled':'DBL', 'par-3 birdies':'P3B', 'par-4 birdies':'P4B',
+      'par-5 birdies':'P5B', 'hole wins':'HW', 'best hole vs field':'BHF',
+      'worst hole vs field':'WHF', 'withdrew':'WD', 'best 9-hole stretch':'B9S',
+      'worst 9-hole stretch':'W9S', 'back-9 comeback':'B9C',
+      'closing birdie streak':'CBS', 'longest birdie streak':'LBS',
+      'bogeeee train':'BGT', 'highest hole score':'HI', 'lowest hole score':'LO',
+      'longest par/under streak':'PUS', 'score range':'RNG', 'par train':'PTR',
+      'par-3 vs par':'P3V', 'par-4 vs par':'P4V', 'par-5 vs par':'P5V',
+      'short vs par':'SVP', 'long vs par':'LVP', '9 easy holes vs par':'E9',
+      '9 hard holes vs par':'H9', 'drivable par-4 birdies':'DP4B', 'water ball':'WTR'
     };
 
     const GEEK_LOG_CATEGORY_CODES_V180B = {
-      'SCORING':'SC', 'FIELD':'FI', 'MOMENTUM':'MO',
-      'CONSISTENCY':'CO', 'HOLE TYPES':'HT'
+      'SCORES':'SC', 'FIELD':'FI', 'RUN':'RU', 'STEADY':'ST', 'SETUP':'SE', 'WACKY':'WA'
     };
 
     const GEEK_DESCRIPTIONS_V180 = {
-      'Eagles': 'Most eagles made during the round.',
-      'Birdies': 'Most birdies made during the round.',
-      'Pars': 'Most pars made during the round.',
-      'Bogeys': 'Fewest bogeys made during the round.',
-      'Eagle %': 'Highest percentage of played holes finished two strokes under par.',
-      'Birdie %': 'Highest percentage of played holes finished one stroke under par.',
-      'Par-or-Better %': 'Highest percentage of played holes finished at par or better.',
-      'Bogey-or-Worse %': 'Lowest percentage of played holes finished bogey or worse.',
-      'Front 9 vs Par': 'Best score versus par on course holes 1 through 9.',
-      'Back 9 vs Par': 'Best score versus par on course holes 10 through 18.',
-      'Hardest Hole': 'Lowest score recorded on the #1 handicap hole.',
-      'Easiest Hole': 'Lowest score recorded on the #18 handicap hole.',
-      'Most Eagles': 'Most eagles made during the round.',
-      'Most Birdies': 'Most birdies made during the round.',
-      'Fewest Bogeys': 'Fewest bogeys made during the round.',
-      'Par-3 Rank': 'Best total score versus par on all par-3 holes.',
-      'Par-4 Rank': 'Best total score versus par on all par-4 holes.',
-      'Par-5 Rank': 'Best total score versus par on all par-5 holes.',
-      'Best Hole vs Field': 'Largest single-hole advantage compared with the field average.',
-      'Worst Hole vs Field': 'Largest single-hole disadvantage compared with the field average.',
-      'Best 9-Hole Stretch': 'Best score versus par over any consecutive nine holes in actual play order.',
-      'Worst 9-Hole Stretch': 'Worst score versus par over any consecutive nine holes in actual play order.',
-      'Back-9 Comeback': 'Biggest improvement from the first nine played to the second nine played.',
-      'Closing Hole Birdies': 'Most birdies made over the final three holes played.',
-      'Score Variance': 'Lowest hole-to-hole scoring variance relative to par.',
-      'Score Range': 'Smallest difference between a team’s highest and lowest hole scores.',
-      'Highest Hole Score': 'Highest single-hole score recorded during the round.',
-      'Lowest Hole Score': 'Lowest single-hole score recorded during the round.',
-      'Longest E/Under Streak': 'Longest consecutive streak of holes played at even par or better.',
-      'Par-3 vs Par': 'Best total score versus par on all par-3 holes.',
-      'Par-4 vs Par': 'Best total score versus par on all par-4 holes.',
-      'Par-5 vs Par': 'Best total score versus par on all par-5 holes.',
-      'Par-3 Birdie Rate': 'Highest birdie rate on par-3 holes.',
-      'Par-5 Birdie Rate': 'Highest birdie rate on par-5 holes.',
-      'Par-5 Eagle Rate': 'Highest eagle rate on par-5 holes.',
-      '9 Easy Holes vs Par': 'Best score versus par on handicap holes 10 through 18.',
-      '9 Hard Holes vs Par': 'Best score versus par on handicap holes 1 through 9.'
+      'eagles':'Most eagles made during the round.',
+      'birdies':'Most birdies made during the round.',
+      'pars':'Most pars made during the round.',
+      'bogeys':'Fewest bogeys made during the round.',
+      'eagle %':'Highest percentage of played holes finished two strokes under par.',
+      'birdie %':'Highest percentage of played holes finished one stroke under par.',
+      'par-or-better %':'Highest percentage of played holes finished at par or better.',
+      'bogey-or-worse %':'Lowest percentage of played holes finished bogey or worse.',
+      'front 9 vs par':'Best score versus par on course holes 1 through 9.',
+      'back 9 vs par':'Best score versus par on course holes 10 through 18.',
+      'we doubled':'It’s a scramble. How did this happen?',
+      'par-3 birdies':'Most birdies made on par-3 holes.',
+      'par-4 birdies':'Most birdies made on par-4 holes.',
+      'par-5 birdies':'Most birdies made on par-5 holes.',
+      'hole wins':'Most holes won outright with the lowest gross score in the field. A tied low score does not count.',
+      'best hole vs field':'Largest single-hole advantage compared with the field average.',
+      'worst hole vs field':'Largest single-hole disadvantage compared with the field average.',
+      'withdrew':'18 holes later… we finished.',
+      'best 9-hole stretch':'Best score versus par over any consecutive nine holes in actual play order.',
+      'worst 9-hole stretch':'Worst score versus par over any consecutive nine holes in actual play order.',
+      'back-9 comeback':'Biggest improvement from the first nine played to the second nine played.',
+      'closing birdie streak':'Longest consecutive streak of exact birdies to finish the team’s round.',
+      'longest birdie streak':'Longest consecutive streak of exact birdies anywhere in the round.',
+      'bogeeee train':'C’mon, ride the train. Longest streak of exact bogeys; a double breaks it.',
+      'highest hole score':'Highest single-hole score recorded during the round.',
+      'lowest hole score':'Lowest single-hole score recorded during the round.',
+      'longest par/under streak':'Longest consecutive streak of holes played at par or better.',
+      'score range':'Smallest difference between a team’s highest and lowest raw hole scores.',
+      'par train':'Pars win majors.',
+      'par-3 vs par':'Best total score versus par on all par-3 holes.',
+      'par-4 vs par':'Best total score versus par on all par-4 holes.',
+      'par-5 vs par':'Best total score versus par on all par-5 holes.',
+      'short vs par':'Best score versus par on SHORT holes using WHITE tee yardage thresholds.',
+      'long vs par':'Best score versus par on LONG holes using WHITE tee yardage thresholds.',
+      '9 easy holes vs par':'Best score versus par on handicap holes 10 through 18.',
+      '9 hard holes vs par':'Best score versus par on handicap holes 1 through 9.',
+      'drivable par-4 birdies':'Most birdies on par-4 holes under 300 yards from the WHITE tees.',
+      'water ball':'Where did it enter?'
     };
 
     function geekEnabledV180() {
@@ -17813,9 +18101,27 @@ let scoreTimingDetail =
       return String(stat.teams.length) + ' TEAMS TIED';
     }
 
+    function geekStatKeyV186(statName) {
+      return String(statName || '').trim().replace(/\s+/g, ' ').toLowerCase();
+    }
+
     function geekDescriptionV180(statName) {
-      return GEEK_DESCRIPTIONS_V180[String(statName || '').trim()] ||
+      return GEEK_DESCRIPTIONS_V180[geekStatKeyV186(statName)] ||
         'Tournament result calculated from the live scorecard.';
+    }
+
+    function geekStatToneV186(statName) {
+      const raw = String(statName || '').trim();
+      const letters = raw.replace(/[^A-Za-z]/g, '');
+      if (!letters) return 'neutral';
+      if (letters === letters.toUpperCase()) return 'good';
+      if (letters === letters.toLowerCase()) return 'bad';
+      return 'neutral';
+    }
+
+    function geekIsWackyStatV186(category, statName) {
+      const expected = GEEK_WACKY_STAT_BY_CATEGORY_V186[String(category || '').trim().toUpperCase()] || '';
+      return expected && geekStatKeyV186(statName) === expected;
     }
 
     function startGeekDiagnosticV180b() {
@@ -17834,7 +18140,7 @@ let scoreTimingDetail =
 
     function geekLogCodeV180b(statName) {
       const name = String(statName || '').trim();
-      return GEEK_LOG_CODES_V180B[name] ||
+      return GEEK_LOG_CODES_V180B[geekStatKeyV186(name)] ||
         name.toUpperCase().replace(/[^A-Z0-9]+/g, '').slice(0, 8) || 'STAT';
     }
 
@@ -17890,11 +18196,11 @@ let scoreTimingDetail =
     }
 
     function geekFilterLogLabelV180b() {
-      if (geekAllSelectedV180()) return 'ALL';
+      if (geekSelectedCategoriesV180.has('ALL')) return 'ALL';
       if (!geekSelectedCategoriesV180.size) return 'NONE';
-      return GEEK_CATEGORY_ORDER_V180
-        .filter(category => geekSelectedCategoriesV180.has(category))
-        .map(category => GEEK_LOG_CATEGORY_CODES_V180B[category] || category.slice(0, 2))
+      return ['SCORES','FIELD','RUN','STEADY','SETUP','WACKY']
+        .filter(filter => geekSelectedCategoriesV180.has(filter))
+        .map(filter => GEEK_LOG_CATEGORY_CODES_V180B[filter] || filter.slice(0, 2))
         .join(',');
     }
 
@@ -17988,63 +18294,39 @@ let scoreTimingDetail =
     }
 
     function geekDetailResultV180(stat) {
-      const name = String(stat && stat.stat || '').trim();
+      const name = geekStatKeyV186(stat && stat.stat);
       const value = String(stat && stat.value != null ? stat.value : '').trim();
-      const first = stat && Array.isArray(stat.teams) && stat.teams.length
-        ? stat.teams[0]
-        : null;
+      const first = stat && Array.isArray(stat.teams) && stat.teams.length ? stat.teams[0] : null;
       const detail = first && first.detail ? first.detail : {};
 
       switch (name) {
-        case 'Eagles':
-        case 'Most Eagles':
-          return value + ' Eagles';
-        case 'Birdies':
-        case 'Most Birdies':
-          return value + ' Birdies';
-        case 'Pars':
-          return value + ' Pars';
-        case 'Bogeys':
-        case 'Fewest Bogeys':
-          return value + ' Bogeys';
-        case 'Eagle %':
-          return value + ' Eagle Rate';
-        case 'Birdie %':
-          return value + ' Birdie Rate';
-        case 'Par-or-Better %':
-          return value + ' Par-or-Better';
-        case 'Bogey-or-Worse %':
-          return value + ' Bogey-or-Worse';
-        case 'Front 9 vs Par':
-          return value + ' on Front 9';
-        case 'Back 9 vs Par':
-          return value + ' on Back 9';
-        case 'Hardest Hole':
-        case 'Easiest Hole':
-          return value + (detail.hole ? ' on Hole ' + detail.hole : '');
-        case 'Par-3 Rank':
-        case 'Par-3 vs Par':
-          return value + ' on Par-3s';
-        case 'Par-4 Rank':
-        case 'Par-4 vs Par':
-          return value + ' on Par-4s';
-        case 'Par-5 Rank':
-        case 'Par-5 vs Par':
-          return value + ' on Par-5s';
-        case 'Best Hole vs Field':
-        case 'Worst Hole vs Field':
+        case 'eagles': return value + ' Eagles';
+        case 'birdies': return value + ' Birdies';
+        case 'pars': return value + ' Pars';
+        case 'bogeys': return value + ' Bogeys';
+        case 'eagle %': return value + ' Eagle Rate';
+        case 'birdie %': return value + ' Birdie Rate';
+        case 'par-or-better %': return value + ' Par-or-Better';
+        case 'bogey-or-worse %': return value + ' Bogey-or-Worse';
+        case 'front 9 vs par': return value + ' on Front 9';
+        case 'back 9 vs par': return value + ' on Back 9';
+        case 'we doubled': return value + ' Double Bogeys';
+        case 'par-3 birdies': return value + ' Birdies on Par-3s';
+        case 'par-4 birdies': return value + ' Birdies on Par-4s';
+        case 'par-5 birdies': return value + ' Birdies on Par-5s';
+        case 'hole wins': return value + ' Hole Wins';
+        case 'best hole vs field':
+        case 'worst hole vs field':
           return value + ' vs Field' + (detail.hole ? ' on Hole ' + detail.hole : '');
-        case 'Best 9-Hole Stretch':
+        case 'withdrew': return value;
+        case 'best 9-hole stretch':
+        case 'worst 9-hole stretch':
           return value + ' over 9 Holes' + (detail.startHole ? ' (Starts Hole ' + detail.startHole + ')' : '');
-        case 'Worst 9-Hole Stretch':
-          return value + ' over 9 Holes' + (detail.startHole ? ' (Starts Hole ' + detail.startHole + ')' : '');
-        case 'Back-9 Comeback': {
+        case 'back-9 comeback': {
           const firstNine = Number(detail.firstNine);
           const backNine = Number(detail.backNine);
           const improvement = Number(stat && stat.rawValue);
-          const count = Number.isFinite(improvement)
-            ? Math.abs(improvement)
-            : Math.abs(Number(value));
+          const count = Number.isFinite(improvement) ? Math.abs(improvement) : Math.abs(Number(value));
           const label = Number.isFinite(count)
             ? String(count).replace(/\.0+$/, '') + '-Stroke Improvement'
             : value + ' Improvement';
@@ -18053,42 +18335,34 @@ let scoreTimingDetail =
           }
           return label;
         }
-        case 'Closing Hole Birdies':
-          return value + ' Birdies in Final 3 Holes';
-        case 'Score Variance':
-          return value + ' Variance';
-        case 'Score Range':
-          return value + '-Stroke Range';
-        case 'Highest Hole Score':
-        case 'Lowest Hole Score':
-          return value + ' Strokes';
-        case 'Longest E/Under Streak':
-          return value + ' Holes';
-        case 'Par-3 Birdie Rate':
-          return value + ' on Par-3s';
-        case 'Par-5 Birdie Rate':
-          return value + ' on Par-5s';
-        case 'Par-5 Eagle Rate':
-          return value + ' on Par-5s';
-        case '9 Easy Holes vs Par':
-          return value + ' on Easiest 9';
-        case '9 Hard Holes vs Par':
-          return value + ' on Hardest 9';
-        default:
-          return value || '—';
+        case 'closing birdie streak': return value + '-Hole Closing Birdie Streak';
+        case 'longest birdie streak': return value + '-Hole Birdie Streak';
+        case 'bogeeee train': return value + '-Hole Bogey Train';
+        case 'highest hole score':
+        case 'lowest hole score': return value + ' Strokes';
+        case 'longest par/under streak': return value + ' Holes';
+        case 'score range': return value + '-Stroke Range';
+        case 'par train': return value + '-Hole Par Train';
+        case 'par-3 vs par': return value + ' on Par-3s';
+        case 'par-4 vs par': return value + ' on Par-4s';
+        case 'par-5 vs par': return value + ' on Par-5s';
+        case 'short vs par': return value + ' on Short Holes';
+        case 'long vs par': return value + ' on Long Holes';
+        case '9 easy holes vs par': return value + ' on Easiest 9';
+        case '9 hard holes vs par': return value + ' on Hardest 9';
+        case 'drivable par-4 birdies': return value + ' Birdies on Drivable Par-4s';
+        case 'water ball': return value || 'N/A';
+        default: return value || '—';
       }
     }
 
     function geekAllSelectedV180() {
-      return GEEK_CATEGORY_ORDER_V180.every(category =>
-        geekSelectedCategoriesV180.has(category)
-      );
+      return geekSelectedCategoriesV180.has('ALL');
     }
 
     function geekSetAllV180(enabled) {
-      geekSelectedCategoriesV180 = enabled
-        ? new Set(GEEK_CATEGORY_ORDER_V180)
-        : new Set();
+      geekSelectedCategoriesV180 = enabled ? new Set(['ALL']) : new Set();
+      geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
     }
 
     function measureGeekSharedFontV181(texts, targetPx, minPx, availablePx, fontWeight) {
@@ -18138,47 +18412,47 @@ let scoreTimingDetail =
       if (!shell) return;
 
       const rowHeight =
-        parseFloat(getComputedStyle(shell).getPropertyValue('--geek-row-h-v180')) ||
-        44;
+        parseFloat(getComputedStyle(shell).getPropertyValue('--geek-row-h-v180')) || 44;
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
       if (headerCells.length !== 3) return;
 
-      /* V18.3: data rows keep the V18.2 local one-line fit rule but reduce the
-         caps by exactly 10%: STAT 40.5%, RESULT 45%, TEAM 40.5%. */
+      /* V18.6 locked density: STAT 55.5%, RESULT 60%, TEAM 55.5% of row
+         height. Each actual text element shrinks locally only if it needs width. */
       shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
-        const stat = row.querySelector('.geek-stat-cell-v180');
+        const statCell = row.querySelector('.geek-stat-cell-v180');
+        const statLabel = row.querySelector('.geek-stat-label-v186');
         const result = row.querySelector('.geek-result-cell-v180');
         const team = row.querySelector('.geek-team-button-v180');
         const h = row.getBoundingClientRect().height || rowHeight;
 
-        if (stat) {
-          fitTextToBoxV5(stat, stat, h * 0.405, 8, {
-            horizontalPad: 20,
-            verticalPad: 6,
+        if (statCell && statLabel) {
+          fitTextToBoxV5(statCell, statLabel, h * 0.555, 8, {
+            horizontalPad: 38,
+            verticalPad: 4,
             wrap: false,
             lineHeight: 1
           });
-          stat.style.setProperty('text-align', 'left', 'important');
+          statCell.style.setProperty('text-align', 'left', 'important');
+          statLabel.style.setProperty('text-align', 'left', 'important');
         }
         if (result) {
-          fitTextToBoxV5(result, result, h * 0.45, 8, {
+          fitTextToBoxV5(result, result, h * 0.60, 8, {
             horizontalPad: 12,
-            verticalPad: 6,
+            verticalPad: 4,
             wrap: false,
             lineHeight: 1
           });
         }
         if (team) {
-          fitTextToBoxV5(team, team, h * 0.405, 8, {
+          fitTextToBoxV5(team, team, h * 0.555, 8, {
             horizontalPad: 10,
-            verticalPad: 6,
+            verticalPad: 4,
             wrap: false,
             lineHeight: 1
           });
         }
       });
 
-      /* Category labels are deliberately stronger: 50% of the gray row height. */
       shell.querySelectorAll('.geek-row-v180.category .geek-cell-v180').forEach(cell => {
         const row = cell.closest('.geek-row-v180.category');
         const h = row ? (row.getBoundingClientRect().height || rowHeight) : rowHeight;
@@ -18190,17 +18464,19 @@ let scoreTimingDetail =
         });
       });
 
-      /* Header does NOT receive the 10% data-row reduction. RESULT remains the
-         limiting header because its 20% column is tight: it starts at 90% of
-         the 60% header target (54%), and that one fitted size is then applied
-         identically to STAT, RESULT and TEAM. */
       const headerRow = headerCells[0].closest('.geek-row-v180.header');
-      const headerH = headerRow ? (headerRow.getBoundingClientRect().height || rowHeight) : rowHeight;
-      const sharedHeaderSize = fitTextToBoxV5(headerCells[1], headerCells[1], headerH * 0.54, 8, {
-        horizontalPad: 12,
-        verticalPad: 5,
-        wrap: false,
-        lineHeight: 1
+      const headerH = headerRow
+        ? (headerRow.getBoundingClientRect().height || (rowHeight * 0.75))
+        : (rowHeight * 0.75);
+      let sharedHeaderSize = headerH * 0.40;
+      headerCells.forEach(cell => {
+        const fitted = fitTextToBoxV5(cell, cell, headerH * 0.40, 8, {
+          horizontalPad: 12,
+          verticalPad: 4,
+          wrap: false,
+          lineHeight: 1
+        });
+        sharedHeaderSize = Math.min(sharedHeaderSize, fitted);
       });
       headerCells.forEach(cell => {
         cell.style.setProperty('font-size', sharedHeaderSize + 'px', 'important');
@@ -18217,20 +18493,27 @@ let scoreTimingDetail =
       if (!shell) return;
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
-      const rowHeight = Math.max(32, height / 11);
+
+      /* V18.6: one 0.75x header plus fifteen complete normal row-heights. */
+      const rowHeight = Math.max(18, height / 15.75);
+      const headerHeight = rowHeight * 0.75;
       shell.style.setProperty('--geek-row-h-v180', rowHeight + 'px');
+      shell.style.setProperty('--geek-header-h-v185', headerHeight + 'px');
+
       requestAnimationFrame(() => {
         fitGeekTableTextV180();
         const back = els.modalActions.querySelector('.geek-back-v180');
-        if (back) {
-          const h = back.getBoundingClientRect().height || 58;
-          fitTextToBoxV5(back, back, h * 0.50, 12, {
+        const filters = els.modalActions.querySelector('.geek-filter-button-v186');
+        [back, filters].filter(Boolean).forEach(button => {
+          const h = button.getBoundingClientRect().height || 58;
+          fitTextToBoxV5(button, button, h * 0.50, 12, {
             horizontalPad: 10,
             verticalPad: 6,
             wrap: false,
             lineHeight: 1
           });
-        }
+        });
+        fitGeekFilterPanelV186();
       });
     }
 
@@ -18243,14 +18526,44 @@ let scoreTimingDetail =
         return;
       }
 
-      let html = '';
-      geekDataV180.categories.forEach(categoryBlock => {
-        const category = String(categoryBlock && categoryBlock.category || '').trim().toUpperCase();
-        if (!geekSelectedCategoriesV180.has(category)) return;
+      const blocksByCategory = new Map();
+      geekDataV180.categories.forEach(block => {
+        const category = String(block && block.category || '').trim().toUpperCase();
+        blocksByCategory.set(category, block);
+      });
 
-        const stats = Array.isArray(categoryBlock.stats)
-          ? categoryBlock.stats.filter(stat => stat && stat.supported !== false)
-          : [];
+      const selected = geekSelectedCategoriesV180;
+      const blocks = [];
+
+      if (selected.has('ALL')) {
+        GEEK_CATEGORY_ORDER_V180.forEach(category => {
+          const block = blocksByCategory.get(category);
+          if (block) blocks.push({ category, stats:Array.isArray(block.stats) ? block.stats : [] });
+        });
+      } else if (selected.has('WACKY')) {
+        const wackyStats = [];
+        GEEK_CATEGORY_ORDER_V180.forEach(category => {
+          const block = blocksByCategory.get(category);
+          if (!block || !Array.isArray(block.stats)) return;
+          const stat = block.stats.find(item =>
+            item && item.supported !== false && geekIsWackyStatV186(category, item.stat)
+          );
+          if (stat) wackyStats.push(stat);
+        });
+        blocks.push({ category:'WACKY', stats:wackyStats });
+      } else {
+        GEEK_CATEGORY_ORDER_V180.forEach(category => {
+          if (!selected.has(category)) return;
+          const block = blocksByCategory.get(category);
+          if (block) blocks.push({ category, stats:Array.isArray(block.stats) ? block.stats : [] });
+        });
+      }
+
+      let html = '';
+      blocks.forEach(block => {
+        const category = block.category;
+        const stats = (Array.isArray(block.stats) ? block.stats : [])
+          .filter(stat => stat && stat.supported !== false);
         if (!stats.length) return;
 
         html +=
@@ -18262,7 +18575,11 @@ let scoreTimingDetail =
           const label = geekTeamLabelV180(stat);
           const owns = geekOwnsStatV180(stat);
           const isTie = Array.isArray(stat && stat.teams) && stat.teams.length > 1;
-          const encodedCategory = encodeURIComponent(category);
+          const tone = geekStatToneV186(stat && stat.stat);
+          const sourceCategory = category === 'WACKY'
+            ? GEEK_CATEGORY_ORDER_V180.find(real => geekIsWackyStatV186(real, stat && stat.stat)) || ''
+            : category;
+          const encodedCategory = encodeURIComponent(sourceCategory);
           const encodedStat = encodeURIComponent(String(stat.stat || ''));
 
           html +=
@@ -18270,7 +18587,10 @@ let scoreTimingDetail =
               ' role="button" tabindex="0"' +
               ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
               ' data-geek-stat="' + escapeHtml(encodedStat) + '">' +
-              '<div class="geek-cell-v180 geek-stat-cell-v180">' + escapeHtml(String(stat.stat || '')) + '</div>' +
+              '<div class="geek-cell-v180 geek-stat-cell-v180">' +
+                '<span class="geek-class-dot-v186 ' + escapeHtml(tone) + '" aria-hidden="true"></span>' +
+                '<span class="geek-stat-label-v186">' + escapeHtml(String(stat.stat || '').toUpperCase()) + '</span>' +
+              '</div>' +
               '<div class="geek-cell-v180 geek-result-cell-v180">' + escapeHtml(String(stat.value ?? '')) + '</div>' +
               '<div class="geek-cell-v180 geek-team-cell-v180">' +
                 '<button class="geek-team-button-v180' + (owns ? ' authorized-owner' : '') + (isTie ? ' tie-owner' : '') + '" type="button" tabindex="-1">' +
@@ -18281,10 +18601,7 @@ let scoreTimingDetail =
         });
       });
 
-      if (!html) {
-        html = '<div class="geek-empty-v180">NO CATEGORIES SELECTED</div>';
-      }
-
+      if (!html) html = '<div class="geek-empty-v180">NO FILTERS SELECTED</div>';
       scroll.innerHTML = html;
 
       const openDetailFromRow = row => {
@@ -18302,8 +18619,6 @@ let scoreTimingDetail =
         }
       };
 
-      /* V18.3: the entire STAT/RESULT/TEAM row opens the explanation popup,
-         not only the TEAM cell. */
       scroll.querySelectorAll('.geek-row-v180.stat').forEach(row => {
         row.addEventListener('click', () => openDetailFromRow(row));
         row.addEventListener('keydown', event => {
@@ -18319,25 +18634,97 @@ let scoreTimingDetail =
 
     function syncGeekFilterChecksV180(panel) {
       if (!panel) return;
-      const all = panel.querySelector('input[data-geek-filter="ALL"]');
-      if (all) all.checked = geekAllSelectedV180();
-      GEEK_CATEGORY_ORDER_V180.forEach(category => {
-        const input = panel.querySelector('input[data-geek-filter="' + category + '"]');
-        if (input) input.checked = geekSelectedCategoriesV180.has(category);
+      panel.querySelectorAll('input[data-geek-filter]').forEach(input => {
+        input.checked = geekPendingFiltersV186.has(input.dataset.geekFilter);
       });
+    }
+
+    function fitGeekFilterPanelV186() {
+      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      if (!panel || !panel.classList.contains('open')) return;
+
+      const allLabel = panel.querySelector('.geek-filter-all-v186 .geek-filter-text-v186');
+      const normalLabels = [...panel.querySelectorAll('.geek-filter-choice-v186:not(.geek-filter-all-v186) .geek-filter-text-v186')];
+      const apply = panel.querySelector('.geek-filter-apply-v186');
+
+      if (allLabel) {
+        const row = allLabel.closest('.geek-filter-choice-v186');
+        const h = row ? row.getBoundingClientRect().height : 50;
+        fitTextToBoxV5(row, allLabel, h * 0.58, 11, {
+          horizontalPad:42, verticalPad:4, wrap:false, lineHeight:1
+        });
+      }
+      normalLabels.forEach(label => {
+        const row = label.closest('.geek-filter-choice-v186');
+        const h = row ? row.getBoundingClientRect().height : 44;
+        fitTextToBoxV5(row, label, h * 0.48, 10, {
+          horizontalPad:38, verticalPad:4, wrap:false, lineHeight:1
+        });
+      });
+      if (apply) {
+        const h = apply.getBoundingClientRect().height || 54;
+        fitTextToBoxV5(apply, apply, h * 0.52, 12, {
+          horizontalPad:12, verticalPad:6, wrap:false, lineHeight:1
+        });
+      }
+    }
+
+    function closeGeekFilterPanelV186() {
+      const anchor = els.modalActions.querySelector('.geek-filter-anchor-v186');
+      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      const button = els.modalActions.querySelector('.geek-filter-button-v186');
+      if (panel) panel.classList.remove('open');
+      if (anchor) anchor.classList.remove('open');
+      if (button) button.setAttribute('aria-expanded', 'false');
+    }
+
+    function openGeekFilterPanelV186() {
+      const anchor = els.modalActions.querySelector('.geek-filter-anchor-v186');
+      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      const button = els.modalActions.querySelector('.geek-filter-button-v186');
+      if (!panel || !anchor || !button) return;
+      geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
+      syncGeekFilterChecksV180(panel);
+      panel.classList.add('open');
+      anchor.classList.add('open');
+      button.setAttribute('aria-expanded', 'true');
+      requestAnimationFrame(fitGeekFilterPanelV186);
+    }
+
+    function toggleGeekFilterPanelV186() {
+      const panel = els.modalActions.querySelector('.geek-filter-popover-v186');
+      if (panel && panel.classList.contains('open')) closeGeekFilterPanelV186();
+      else openGeekFilterPanelV186();
+    }
+
+    function applyGeekFiltersV186() {
+      geekSelectedCategoriesV180 = new Set(geekPendingFiltersV186);
+      geekScrollTopV180 = 0;
+      closeGeekFilterPanelV186();
+      renderGeekTableV180();
+      const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
+      if (scroll) scroll.scrollTop = 0;
     }
 
     function buildGeekFilterPanelV180() {
       const panel = document.createElement('div');
-      panel.className = 'geek-filter-panel-v180';
+      panel.className = 'geek-filter-popover-v186';
+      panel.setAttribute('aria-hidden', 'false');
 
-      const labels = ['ALL', ...GEEK_CATEGORY_ORDER_V180];
-      panel.innerHTML = labels.map(label =>
-        '<label class="geek-filter-label-v180">' +
-          '<input type="checkbox" data-geek-filter="' + escapeHtml(label) + '">' +
-          '<span>' + escapeHtml(label) + '</span>' +
-        '</label>'
-      ).join('');
+      panel.innerHTML =
+        '<div class="geek-filter-grid-v186">' +
+          '<label class="geek-filter-choice-v186 geek-filter-all-v186">' +
+            '<input type="checkbox" data-geek-filter="ALL">' +
+            '<span class="geek-filter-text-v186">ALL</span>' +
+          '</label>' +
+          GEEK_FILTER_ORDER_V186.map(label =>
+            '<label class="geek-filter-choice-v186">' +
+              '<input type="checkbox" data-geek-filter="' + escapeHtml(label) + '">' +
+              '<span class="geek-filter-text-v186">' + escapeHtml(label) + '</span>' +
+            '</label>'
+          ).join('') +
+          '<button class="geek-filter-apply-v186" type="button">APPLY</button>' +
+        '</div>';
 
       syncGeekFilterChecksV180(panel);
 
@@ -18347,20 +18734,21 @@ let scoreTimingDetail =
         const key = input.dataset.geekFilter;
 
         if (key === 'ALL') {
-          if (geekAllSelectedV180()) geekSetAllV180(false);
-          else geekSetAllV180(true);
+          geekPendingFiltersV186 = input.checked ? new Set(['ALL']) : new Set();
+        } else if (key === 'WACKY') {
+          geekPendingFiltersV186 = input.checked ? new Set(['WACKY']) : new Set();
         } else {
-          if (input.checked) geekSelectedCategoriesV180.add(key);
-          else geekSelectedCategoriesV180.delete(key);
+          geekPendingFiltersV186.delete('ALL');
+          geekPendingFiltersV186.delete('WACKY');
+          if (input.checked) geekPendingFiltersV186.add(key);
+          else geekPendingFiltersV186.delete(key);
         }
 
         syncGeekFilterChecksV180(panel);
-        geekScrollTopV180 = 0;
-        renderGeekTableV180();
-        const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
-        if (scroll) scroll.scrollTop = 0;
       });
 
+      const apply = panel.querySelector('.geek-filter-apply-v186');
+      if (apply) apply.addEventListener('click', applyGeekFiltersV186);
       return panel;
     }
 
@@ -18386,9 +18774,16 @@ let scoreTimingDetail =
         '</div>';
 
       const back = makeModalButton('BACK', 'geek-back-v180', showTournamentSummary);
-      const filterPanel = buildGeekFilterPanelV180();
-      els.modalActions.className = 'modal-actions geek-actions-v180';
-      els.modalActions.replaceChildren(back, filterPanel);
+      const filterButton = makeModalButton('FILTERS', 'geek-filter-button-v186', toggleGeekFilterPanelV186);
+      filterButton.setAttribute('aria-expanded', 'false');
+
+      const filterAnchor = document.createElement('div');
+      filterAnchor.className = 'geek-filter-anchor-v186';
+      filterAnchor.appendChild(filterButton);
+      filterAnchor.appendChild(buildGeekFilterPanelV180());
+
+      els.modalActions.className = 'modal-actions geek-actions-v180 geek-actions-v186';
+      els.modalActions.replaceChildren(back, filterAnchor);
       els.modalOverlay.classList.add('open');
       installGeekCopyButtonV180b();
 
@@ -18406,10 +18801,12 @@ let scoreTimingDetail =
     }
 
     async function openGeekModeV180() {
-      /* This function is the ONLY CF V2.0 Geek read entry point.
+      /* This function remains the ONLY CF V2.1 Geek read entry point.
          No startup/scorecard/leaderboard/background Geek request exists. */
       geekScrollTopV180 = 0;
-      geekSetAllV180(true);
+      /* V18.6: first open starts at ALL from initialization; later opens in the
+         same page session retain the last committed filter selection. */
+      geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
       geekDataV180 = null;
 
       closeModal();
@@ -18569,13 +18966,19 @@ let scoreTimingDetail =
           teamSize = Math.min(teamSize, fitted);
         });
         teamContainer.style.setProperty('font-size', teamSize + 'px', 'important');
-        teamNodes.forEach(node => node.style.setProperty('font-size', teamSize + 'px', 'important'));
+        teamNodes.forEach(node => {
+          node.style.setProperty('font-size', teamSize + 'px', 'important');
+          if (teams) node.style.setProperty('text-align', 'left', 'important');
+        });
 
         let guard = 0;
         while (els.modalBox.scrollHeight > els.modalBox.clientHeight + 1 && teamSize > minimumTeam && guard < 80) {
           teamSize -= 0.5;
           teamContainer.style.setProperty('font-size', teamSize + 'px', 'important');
-          teamNodes.forEach(node => node.style.setProperty('font-size', teamSize + 'px', 'important'));
+          teamNodes.forEach(node => {
+            node.style.setProperty('font-size', teamSize + 'px', 'important');
+            if (teams) node.style.setProperty('text-align', 'left', 'important');
+          });
           guard += 1;
         }
       }
@@ -18830,10 +19233,10 @@ let scoreTimingDetail =
       const leaderboard = els.modalBox.querySelector('.summary-leaderboard-overlay-v182');
       if (!subtitle || !table || !home || !leaderboard) return;
 
-      /* RESULTS/TOP 10 remains centered vertically between SCRAMBLE SUMMARY and
-         the table. HOME/LEADERBOARD share that centerline, but V18.3 uses the
-         table edges as the outer limits and the subtitle itself as the inner
-         limit so the three controls can never collide. */
+      /* V18.5: RESULTS/TOP 10 remains centered vertically in the open band.
+         HOME and LEADERBOARD each own exactly 25% of the table width. Their
+         OUTER edges align exactly with the table edges, leaving the middle 50%
+         as the stable centered subtitle zone. */
       subtitle.style.setProperty('transform', 'none', 'important');
       const titleRect = els.modalTitle.getBoundingClientRect();
       const tableRect = table.getBoundingClientRect();
@@ -18843,33 +19246,32 @@ let scoreTimingDetail =
 
       const centerY = (titleRect.bottom + tableRect.top) / 2;
       const subtitleCenterY = subtitleRect.top + (subtitleRect.height / 2);
-      const subtitleShift = centerY - subtitleCenterY;
-      subtitle.style.setProperty('transform', 'translateY(' + subtitleShift.toFixed(2) + 'px)', 'important');
+      subtitle.style.setProperty(
+        'transform',
+        'translateY(' + (centerY - subtitleCenterY).toFixed(2) + 'px)',
+        'important'
+      );
 
-      const centeredSubtitleLeft = boxRect.left + (boxRect.width / 2) - (subtitleRect.width / 2);
-      const centeredSubtitleRight = centeredSubtitleLeft + subtitleRect.width;
-      const gap = 8;
-      const leftRegionWidth = Math.max(1, centeredSubtitleLeft - gap - tableRect.left);
-      const rightRegionWidth = Math.max(1, tableRect.right - (centeredSubtitleRight + gap));
       const footerBack = els.modalActions.querySelector('.modal-btn');
       const backRect = footerBack ? footerBack.getBoundingClientRect() : null;
       const buttonH = backRect ? (backRect.height || 40) : 40;
-      const desiredW = backRect ? (backRect.width || 96) : 96;
-      const homeW = Math.max(56, Math.min(desiredW, leftRegionWidth));
-      const leaderW = Math.max(56, Math.min(desiredW, rightRegionWidth));
+      const buttonW = Math.max(1, tableRect.width * 0.25);
+      const tableLeftInBox = tableRect.left - boxRect.left;
+      const tableRightInBox = tableRect.right - boxRect.left;
+      const top = centerY - boxRect.top - (buttonH / 2);
 
-      home.style.setProperty('width', homeW + 'px', 'important');
+      home.style.setProperty('width', buttonW + 'px', 'important');
       home.style.setProperty('height', buttonH + 'px', 'important');
-      home.style.setProperty('left', (tableRect.left - boxRect.left) + 'px', 'important');
-      home.style.setProperty('top', (centerY - boxRect.top - buttonH / 2) + 'px', 'important');
+      home.style.setProperty('left', tableLeftInBox + 'px', 'important');
+      home.style.setProperty('top', top + 'px', 'important');
 
-      leaderboard.style.setProperty('width', leaderW + 'px', 'important');
+      leaderboard.style.setProperty('width', buttonW + 'px', 'important');
       leaderboard.style.setProperty('height', buttonH + 'px', 'important');
-      leaderboard.style.setProperty('left', (tableRect.right - boxRect.left - leaderW) + 'px', 'important');
-      leaderboard.style.setProperty('top', (centerY - boxRect.top - buttonH / 2) + 'px', 'important');
+      leaderboard.style.setProperty('left', (tableRightInBox - buttonW) + 'px', 'important');
+      leaderboard.style.setProperty('top', top + 'px', 'important');
 
-      [[home, homeW], [leaderboard, leaderW]].forEach(([button]) => {
-        fitTextToBoxV5(button, button, buttonH * 0.50, 10, {
+      [home, leaderboard].forEach(button => {
+        fitTextToBoxV5(button, button, buttonH * 0.50, 9, {
           horizontalPad: 12,
           verticalPad: 6,
           wrap: false,
@@ -20562,15 +20964,8 @@ let scoreTimingDetail =
     let sshcpPressedRestoreV172 = null;
 
     function isExcludedPressButtonV172(button) {
-      return !button || button.matches(
-        '.score-button,' +
-        '.score-team-select-button,' +
-        '.home-team-option,' +
-        '.score-team-option,' +
-        '.passkey-team-button,' +
-        '.passkey-team-option,' +
-        '.geek-copy-v180b'
-      );
+      /* V18.5 audit: every enabled literal BUTTON participates. */
+      return !button;
     }
 
     function parseCssColorV172(value) {
@@ -20593,68 +20988,62 @@ let scoreTimingDetail =
       return luminance >= .5 ? '#fff' : '#333';
     }
 
+    function triggerHapticV185(ms = 10) {
+      if (navigator && typeof navigator.vibrate === 'function') {
+        try { navigator.vibrate(ms); } catch (_) {}
+      }
+    }
+
+    function darkFilledButtonV185(button) {
+      if (!button) return false;
+      const computed = getComputedStyle(button);
+      const c = parseCssColorV172(computed.backgroundColor);
+      if (!c || c.a < .12) return false;
+      const luminance = ((.2126 * c.r) + (.7152 * c.g) + (.0722 * c.b)) / 255;
+      return luminance < .62;
+    }
+
     function beginLiteralButtonPressV172(button, event) {
       if (!(button instanceof HTMLButtonElement)) return;
       if (button.disabled || isExcludedPressButtonV172(button)) return;
 
       endLiteralButtonPressV172();
 
-      /* V17.5: HOME's MASTER team selector remains one visual split control.
-         Pressing either the main face or arrow face darkens the entire split
-         and fires only one 7ms haptic. Dropdown choices themselves remain
-         excluded by isExcludedPressButtonV172(). */
-      const homeMasterSelectorPress =
-        isMasterQr() &&
-        (button.id === 'homeScorecardButton' || button.id === 'homeTeamArrowButton');
-
-      if (homeMasterSelectorPress) {
-        const access = document.getElementById('homeScorecardAccess');
-        if (access) access.classList.add('sshcp-team-selector-pressed-v174');
-        sshcpPressedButtonV172 = button;
-        sshcpPressedRestoreV172 = { group: access };
-
-        if (
-          event && event.pointerType === 'touch' &&
-          navigator && typeof navigator.vibrate === 'function'
-        ) {
-          try { navigator.vibrate(7); } catch (_) {}
-        }
-        return;
-      }
-
       const computed = getComputedStyle(button);
+      const isDarkFilled = darkFilledButtonV185(button);
       const prior = {
         bg: button.style.getPropertyValue('background'),
         bgPriority: button.style.getPropertyPriority('background'),
         color: button.style.getPropertyValue('color'),
         colorPriority: button.style.getPropertyPriority('color'),
         border: button.style.getPropertyValue('border-color'),
-        borderPriority: button.style.getPropertyPriority('border-color')
+        borderPriority: button.style.getPropertyPriority('border-color'),
+        textFill: button.style.getPropertyValue('-webkit-text-fill-color'),
+        textFillPriority: button.style.getPropertyPriority('-webkit-text-fill-color'),
+        filter: button.style.getPropertyValue('filter'),
+        filterPriority: button.style.getPropertyPriority('filter')
       };
 
-      button.style.setProperty(
-        '--sshcp-press-bg-v172',
-        monochromeCssV172(computed.backgroundColor, true)
-      );
-      button.style.setProperty(
-        '--sshcp-press-fg-v172',
-        monochromeCssV172(computed.color, false)
-      );
-      button.style.setProperty(
-        '--sshcp-press-border-v172',
-        monochromeCssV172(computed.borderTopColor, false)
-      );
+      /* Inline !important is intentional here: it beats every historical
+         page/modal-specific !important rule during the brief physical press.
+         Dark filled controls flash #333/white; outlined/light controls are
+         pinned to their exact pre-press colors so they visually stay put. */
+      const pressedBg = isDarkFilled ? '#333' : computed.backgroundColor;
+      const pressedFg = isDarkFilled ? '#fff' : computed.color;
+      const pressedBorder = isDarkFilled ? '#333' : computed.borderTopColor;
+      button.style.setProperty('background', pressedBg, 'important');
+      button.style.setProperty('color', pressedFg, 'important');
+      button.style.setProperty('border-color', pressedBorder, 'important');
+      button.style.setProperty('-webkit-text-fill-color', pressedFg, 'important');
+      button.style.setProperty('filter', 'none', 'important');
       button.classList.add('sshcp-button-pressed-v172');
 
       sshcpPressedButtonV172 = button;
       sshcpPressedRestoreV172 = prior;
 
-      if (
-        event && event.pointerType === 'touch' &&
-        navigator && typeof navigator.vibrate === 'function'
-      ) {
-        try { navigator.vibrate(7); } catch (_) {}
-      }
+      /* V18.5 test-strength haptic. Intentionally 10ms so missed controls are
+         obvious during the site-wide interaction audit. */
+      triggerHapticV185(10);
     }
 
     function endLiteralButtonPressV172() {
@@ -20662,15 +21051,29 @@ let scoreTimingDetail =
       const prior = sshcpPressedRestoreV172;
       if (!button) return;
 
-      if (prior && prior.group) {
-        prior.group.classList.remove('sshcp-team-selector-pressed-v174');
+      button.classList.remove('sshcp-button-pressed-v172');
+
+      const restore = (name, value, priority) => {
+        if (value) button.style.setProperty(name, value, priority || '');
+        else button.style.removeProperty(name);
+      };
+      if (prior) {
+        restore('background', prior.bg, prior.bgPriority);
+        restore('color', prior.color, prior.colorPriority);
+        restore('border-color', prior.border, prior.borderPriority);
+        restore('-webkit-text-fill-color', prior.textFill, prior.textFillPriority);
+        restore('filter', prior.filter, prior.filterPriority);
       } else {
-        button.classList.remove('sshcp-button-pressed-v172');
-        button.style.removeProperty('--sshcp-press-bg-v172');
-        button.style.removeProperty('--sshcp-press-fg-v172');
-        button.style.removeProperty('--sshcp-press-border-v172');
+        button.style.removeProperty('background');
+        button.style.removeProperty('color');
+        button.style.removeProperty('border-color');
+        button.style.removeProperty('-webkit-text-fill-color');
+        button.style.removeProperty('filter');
       }
 
+      button.style.removeProperty('--sshcp-press-bg-v172');
+      button.style.removeProperty('--sshcp-press-fg-v172');
+      button.style.removeProperty('--sshcp-press-border-v172');
       sshcpPressedButtonV172 = null;
       sshcpPressedRestoreV172 = null;
     }
@@ -20685,6 +21088,16 @@ let scoreTimingDetail =
 
     document.addEventListener('pointerup', endLiteralButtonPressV172, true);
     document.addEventListener('pointercancel', endLiteralButtonPressV172, true);
+
+
+    /* V18.5: every checkbox gets the same test-strength tactile confirmation.
+       No checkbox press-color treatment is added. */
+    document.addEventListener('change', event => {
+      const target = event.target;
+      if (target instanceof HTMLInputElement && target.type === 'checkbox' && !target.disabled) {
+        triggerHapticV185(10);
+      }
+    }, true);
 
     /* =========================================================
        LOADING LINE
