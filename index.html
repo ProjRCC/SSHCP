@@ -1,13 +1,13 @@
-<!-- SSHCP | BASE KEY: 18.12-Q8M5VT | BUILD KEY: 18.13-C3N7WK -->
+<!-- SSHCP | BASE KEY: 18.13-C3N7WK | BUILD KEY: 18.14-R7M2QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.13 — built directly from working V18.12 (BUILD 18.12-Q8M5VT).
-           V18.13 changes only the Geek main table presentation/data mapping: STAT / US / ALL / TEAM,
-           30/15/20/35 column widths, Blue US rail, compact row-text targets, and rounded percentages. */
+        /* SSHCP V18.14 — built directly from working V18.13 (BUILD 18.13-C3N7WK).
+           V18.14 changes only Geek main-table emphasis: STAT and US stay bold; ALL and TEAM are
+           regular black unless the authorized team owns/shares the field-best result, then both are bold Blue. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11087,6 +11087,30 @@ body option{
   -webkit-text-fill-color:currentColor;
 }
 
+/* =========================================================
+   SSHCP V18.14 — GEEK OWNERSHIP EMPHASIS ONLY
+   STAT + US are the permanent bold pair. ALL + TEAM stay regular black
+   unless the authorized team owns/shares that field-best result.
+   ========================================================= */
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-stat-label-v186{
+  font-weight:800!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-us-cell-v1813{
+  font-weight:800!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-all-cell-v1813,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat .geek-team-button-v180{
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  font-weight:400!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat.geek-ours-v1814 .geek-all-cell-v1813,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat.geek-ours-v1814 .geek-team-button-v180{
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  font-weight:800!important;
+}
+
 </style>
 </head>
 
@@ -11214,7 +11238,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.13</span>
+          <span class="home-version-info">SSHCP V18.14</span>
         </button>
 
       </div>
@@ -14386,7 +14410,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.13 RESULT LOG',
+        'SSHCP V18.14 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14449,7 +14473,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.13 CONTROL CENTER LOG',
+        'SSHCP V18.14 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -20031,6 +20055,7 @@ let scoreTimingDetail =
           const usResultV1813 = geekAuthorizedResultV1813(stat);
           const usValueV1813 = geekMainValueV1813(stat, usResultV1813);
           const allValueV1813 = geekMainValueV1813(stat, stat);
+          const ownsBestV1814 = geekOwnsStatV180(stat);
           const sourceCategory = category === 'WACKY'
             ? GEEK_CATEGORY_ORDER_V180.find(real => geekIsWackyStatV186(real, stat && stat.stat)) || ''
             : category;
@@ -20038,7 +20063,7 @@ let scoreTimingDetail =
           const encodedStat = encodeURIComponent(String(stat.stat || ''));
 
           html +=
-            '<div class="geek-row-v180 stat"' +
+            '<div class="geek-row-v180 stat' + (ownsBestV1814 ? ' geek-ours-v1814' : '') + '"' +
               ' role="button" tabindex="0"' +
               ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
               ' data-geek-stat="' + escapeHtml(encodedStat) + '">' +
