@@ -1,17 +1,20 @@
-<!-- SSHCP | BASE KEY: 18.33-J8R5PV | BUILD KEY: 18.34-M6T9QK -->
+<!-- SSHCP | BASE KEY: 18.34-M6T9QK | BUILD KEY: 18.35-V7K2RM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.34 — built directly from V18.33 (BUILD 18.33-J8R5PV).
-           V18.16 remains the declared GOLDEN rollback. V18.33 preserves V18.32 behavior and
-           changes only the Scorecard motion/rerender interaction requested after phone+iPad
-           testing: horizontal hole separators are 0.5px in the same gray; live scrollTop is
-           preserved through Scorecard rerenders/sizing; a direct ENTER owns the one intentional
-           row movement without a second verification reposition; and the final animation endpoint
-           accepts a <=3 CSS px remainder instead of forcing a microscopic finishing snap. */
+        /* SSHCP V18.35 — built directly from V18.34 (BUILD 18.34-M6T9QK).
+           V18.16 remains the declared GOLDEN rollback. V18.35 keeps all V18.34
+           scoring / verification authority intact but replaces the old fixed-time
+           ENTER movement with Next Expected Score Row (NESR) positioning. ENTER
+           scrolls only when NESR lacks four visible rows beneath it while four
+           later course rows still exist; refresh normalizes NESR to four rows
+           beneath whenever the 1–18 boundaries allow. Scroll time is distance-
+           based with smoothstep easing, then formatting releases after 0.1s;
+           no-scroll ENTER releases after 0.5s. HOME also shows the current build
+           identity with only the Vxx.yy portion in mid gray. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11754,6 +11757,16 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   overflow-anchor:none!important;
 }
 
+
+/* =========================================================
+   SSHCP V18.35 — HOME VERSION IDENTITY
+   Keep SSHCP on the established HOME accent; only Vxx.yy is mid gray.
+   ========================================================= */
+#homeView .home-version-info .home-version-number-v1835{
+  color:#8f8f8f!important;
+  -webkit-text-fill-color:#8f8f8f!important;
+}
+
 </style>
 </head>
 
@@ -11881,7 +11894,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.33</span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.35</span></span>
         </button>
 
       </div>
@@ -12748,24 +12761,18 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
     /*
-      SSHCP V18.34 — post-scroll visual handoff.
+      SSHCP V18.35 — NESR visual handoff.
 
-      The real Cloudflare -> Google Sheets write/readback verification still
-      starts immediately and remains authoritative. A normal ENTER now keeps
-      the just-entered score pending gray while the one-row scorecard movement
-      completes. Only after that movement is fully settled does ONE 0.5-second
-      visual timer begin. At the end of that single timer, one render performs
-      the whole handoff together:
-
-        previous/entered score -> optimistic Blue
-        new/current hole number -> dark gray
-        new/current score box -> Blue outline
-
-      A save failure still uses the original ENTER timestamp and therefore
-      cannot show SCORE NOT SAVED before 1.5 seconds from ENTER. The save
-      request itself is never delayed by this visual sequencing.
+      Cloudflare save / Google Sheets readback verification still starts
+      immediately and remains authoritative. ENTER first determines the Next
+      Expected Score Row (NESR). If a NESR positioning scroll is needed, the
+      one coordinated visual handoff releases 0.1s after that scroll settles.
+      If no scroll is needed, the handoff releases after 0.5s. At that single
+      render: entered score -> Blue, NESR hole -> dark gray, NESR score box ->
+      Blue outline. SCORE NOT SAVED remains anchored at 1.5s from ENTER.
     */
-    const SCORE_POST_SCROLL_VISUAL_DELAY_V1834 = 500;
+    const SCORE_AFTER_SCROLL_VISUAL_DELAY_V1835 = 100;
+    const SCORE_NO_SCROLL_VISUAL_DELAY_V1835 = 500;
     const SCORE_FAILURE_NOTICE_DELAY_V1619 = 1500;
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
@@ -12804,7 +12811,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
       return state;
     }
 
-    function startScoreVisualReleaseV1834(index, expectedGeneration) {
+    function startScoreVisualReleaseV1835(index, expectedGeneration, delayMs) {
       const state = scoreVisualStateV1619[index];
       if (!state) return;
       if (expectedGeneration !== undefined && expectedGeneration !== null && state.generation !== expectedGeneration) return;
@@ -12814,7 +12821,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
         return;
       }
 
-      state.releaseAt = performance.now() + SCORE_POST_SCROLL_VISUAL_DELAY_V1834;
+      const releaseDelayV1835 = Number.isFinite(delayMs)
+        ? Math.max(0, delayMs)
+        : SCORE_NO_SCROLL_VISUAL_DELAY_V1835;
+
+      state.releaseAt = performance.now() + releaseDelayV1835;
       state.timer = window.setTimeout(() => {
         if (scoreVisualStateV1619[index] !== state) return;
         if (localScores[index] !== state.value) {
@@ -12831,9 +12842,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
           scoreVisualStateV1619[index] = null;
         }
 
-        /* One render, one moment: score Blue + new hole gray + new box border. */
+        /* One render, one moment: score Blue + NESR hole gray + NESR box Blue. */
         renderScorecard();
-      }, SCORE_POST_SCROLL_VISUAL_DELAY_V1834);
+      }, releaseDelayV1835);
     }
 
     function scoreIsVisuallyBlueV1619(index, localValue, savedValue) {
@@ -12861,9 +12872,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         state.verified = true;
 
-        /* Verification never releases the visual state early. The post-scroll
-           0.5s handoff owns that moment. If that handoff already happened,
-           native savedScores styling can take over without another repaint. */
+        /* Verification never releases the visual state early. The NESR
+           handoff owns that moment. If that handoff already happened, native
+           savedScores styling can take over without another repaint. */
         if (state.blue) {
           if (state.timer) window.clearTimeout(state.timer);
           scoreVisualStateV1619[index] = null;
@@ -14108,13 +14119,22 @@ let scoreTimingDetail =
 
 
     /*
-      SSHCP V16.21 — ENTER beauty scroll + fixed visual save cadence.
-      Normal score entry keeps every V16.17 scoring / gray / Blue behavior
-      unchanged, but when the four-rows-below viewport actually has to move,
-      the scorecard visibly travels to the new position over ~0.8 seconds.
+      SSHCP V18.35 — Next Expected Score Row (NESR) positioning.
 
-      CLEAR never starts this animation. Refresh / return positioning keeps
-      the already-approved native smooth scroll behavior.
+      ENTER:
+        - if NESR plus the next four course rows are already fully visible,
+          leave the viewport alone;
+        - if four later course rows exist but are not all visible, scroll only
+          enough to place NESR with exactly four rows beneath it;
+        - if fewer than four later course rows exist, do not scroll.
+
+      REFRESH / fresh Scorecard entry:
+        normalize NESR to exactly four rows beneath whenever course boundaries
+        allow; near the end, use the bottom/end view.
+
+      There is no fixed-time ENTER duration. Motion is distance-based and uses
+      quintic smoothstep easing so short moves stay quick while longer recovery
+      moves remain visibly smooth.
     */
     let scoreEnterBeautyScrollFrameV1618 = 0;
     let scoreEnterBeautyScrollTargetV1618 = null;
@@ -14128,7 +14148,7 @@ let scoreTimingDetail =
       scoreEnterBeautyScrollTargetV1618 = null;
     }
 
-    function animateScoreEnterBeautyScrollV1618(targetTop, durationMs = 800, onSettledV1834 = null) {
+    function animateScorecardNESRScrollV1835(targetTop, onSettledV1835 = null) {
       if (!els.scoreScroll) return false;
 
       const startTop = els.scoreScroll.scrollTop;
@@ -14140,168 +14160,154 @@ let scoreTimingDetail =
 
       cancelScoreEnterBeautyScrollV1618();
 
+      const sampleRowV1835 = els.scoreRows
+        ? els.scoreRows.querySelector('.score-row')
+        : null;
+      const rowHeightV1835 = sampleRowV1835
+        ? Math.max(1, sampleRowV1835.getBoundingClientRect().height)
+        : 60;
+      const rowDistanceV1835 = Math.abs(distance) / rowHeightV1835;
+      const durationMsV1835 = Math.min(650, Math.max(300, 260 + (rowDistanceV1835 * 55)));
+
       const startedAt = performance.now();
       scoreEnterBeautyScrollTargetV1618 = targetTop;
 
       const step = now => {
-        const progress = Math.min(1, Math.max(0, (now - startedAt) / durationMs));
-        const eased = progress < 0.5
-          ? 4 * progress * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        const progress = Math.min(1, Math.max(0, (now - startedAt) / durationMsV1835));
+        /* Quintic smoothstep: zero velocity at both ends, no finishing snap. */
+        const eased = progress * progress * progress * (progress * (progress * 6 - 15) + 10);
+        els.scoreScroll.scrollTop = startTop + (distance * eased);
 
         if (progress < 1) {
-          els.scoreScroll.scrollTop = startTop + (distance * eased);
           scoreEnterBeautyScrollFrameV1618 = requestAnimationFrame(step);
           return;
-        }
-
-        /* V18.33 — do not manufacture a tiny final 'perfect' snap. The last
-           animated frame is visually final when it is already within 3 CSS px
-           of the computed target. A larger remainder is still corrected. */
-        const remainingV1833 = targetTop - els.scoreScroll.scrollTop;
-        if (Math.abs(remainingV1833) > 3) {
-          els.scoreScroll.scrollTop = targetTop;
         }
 
         scoreEnterBeautyScrollFrameV1618 = 0;
         scoreEnterBeautyScrollTargetV1618 = null;
         rememberScorePosition();
-        if (typeof onSettledV1834 === 'function') onSettledV1834();
+        if (typeof onSettledV1835 === 'function') {
+          onSettledV1835({ scrolled: true });
+        }
       };
 
       scoreEnterBeautyScrollFrameV1618 = requestAnimationFrame(step);
       return true;
     }
 
+    function restoreScorePosition(useLocalProgress = false, onSettledV1835 = null) {
 
-    function restoreScorePosition(useLocalProgress = false, onSettledV1834 = null) {
+      const settleV1835 = scrolled => {
+        if (typeof onSettledV1835 === 'function') {
+          onSettledV1835({ scrolled: !!scrolled });
+        }
+      };
 
-      if (
-        !selectedTeam ||
-        !els.scoreScroll
-      ) {
-        if (typeof onSettledV1834 === 'function') onSettledV1834();
+      if (!selectedTeam || !els.scoreScroll) {
+        settleV1835(false);
         return;
       }
 
-      requestAnimationFrame(
-        () => {
-          requestAnimationFrame(
-            () => {
-              /*
-                SSHCP V16 — Starting Hole controls only the play order / active
-                navigation position. THRU remains independent and is still the
-                count of completed scores.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          /* NESR follows the live UI state, including any pending gray score. */
+          const progressScoresV1835 = localScores;
+          const nesrIndexV1835 = scorecardActiveHoleIndexV16(progressScoresV1835, selectedTeam);
+          const rowsV1835 = els.scoreRows
+            ? Array.from(els.scoreRows.querySelectorAll('.score-row'))
+            : [];
+          const nesrRowV1835 = rowsV1835[nesrIndexV1835] || null;
 
-                The active hole is the first blank score in the team's cyclic
-                Starting-Hole order. The viewport positions that active hole
-                with four course rows below whenever the 1–18 boundaries allow.
-                A wrap from Hole 18 to Hole 1 therefore returns to the beginning.
-              */
-              const progressScores = useLocalProgress ? localScores : savedScores;
-              const activeIndex = scorecardActiveHoleIndexV16(progressScores, selectedTeam);
+          if (!nesrRowV1835) {
+            els.scoreScroll.scrollTop = 0;
+            rememberScorePosition();
+            settleV1835(false);
+            return;
+          }
 
-              const targetIndex = Math.min(
-                9,
-                Math.max(0, activeIndex - 4)
-              );
+          const actualRowsAfterV1835 = Math.max(0, 17 - nesrIndexV1835);
+          const reducedMotionV1835 = window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-              const row = els.scoreRows.querySelector(
-                '.score-row[data-score-index="' + targetIndex + '"]'
-              );
-
-              if (row) {
-                const maxScroll = Math.max(
-                  0,
-                  els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight
-                );
-
-                const scrollRect = els.scoreScroll.getBoundingClientRect();
-                const rowRect = row.getBoundingClientRect();
-                const targetScroll = els.scoreScroll.scrollTop + (rowRect.top - scrollRect.top);
-                const clampedTarget = Math.min(Math.max(0, targetScroll), maxScroll);
-
-                const reducedMotion = window.matchMedia &&
-                  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-                /* V18.31 — microscopic row/border rounding is not a navigation
-                   event. Use the visible horizontal divider as the scale, with a
-                   2-CSS-pixel floor, and leave the viewport exactly where it is
-                   when the remaining difference is inside that tolerance. This
-                   prevents the iPad-style final 1–2px correction/snap. */
-                const rowStyleV1831 = getComputedStyle(row);
-                const dividerWidthV1831 = Math.max(
-                  0,
-                  parseFloat(rowStyleV1831.borderBottomWidth) || 0
-                );
-                const microScrollToleranceV1831 = Math.max(3, dividerWidthV1831);
-                const scrollDeltaV1831 = Math.abs(
-                  clampedTarget - els.scoreScroll.scrollTop
-                );
-                const needsMove = scrollDeltaV1831 > microScrollToleranceV1831;
-
-                if (!needsMove) {
-                  rememberScorePosition();
-                  if (typeof onSettledV1834 === 'function') onSettledV1834();
-                  return;
-                }
-
-                /*
-                  V16.19: a real ENTER uses the V16.18 explicit ~0.8s visual scroll
-                  only when the four-below target actually changes. The save
-                  request / pending gray / verified Blue states continue on
-                  their existing timing and are never gated by this animation.
-                */
-                if (useLocalProgress && !reducedMotion && needsMove) {
-                  const startedV1834 = animateScoreEnterBeautyScrollV1618(
-                    clampedTarget,
-                    800,
-                    onSettledV1834
-                  );
-                  if (!startedV1834 && typeof onSettledV1834 === 'function') onSettledV1834();
-                  return;
-                }
-
-                /*
-                  Verification can finish while the ENTER animation is still
-                  traveling to this same target. Do not start a second scroll
-                  on top of it. If a newer local score is already queued, also
-                  leave the viewport under the newer local-progress animation.
-                */
-                if (
-                  !useLocalProgress &&
-                  scoreEnterBeautyScrollFrameV1618 &&
-                  (
-                    hasPendingScores() ||
-                    (
-                      Number.isFinite(scoreEnterBeautyScrollTargetV1618) &&
-                      Math.abs(clampedTarget - scoreEnterBeautyScrollTargetV1618) <= 2
-                    )
-                  )
-                ) {
-                  return;
-                }
-
-                if (!useLocalProgress && !reducedMotion && needsMove) {
-                  cancelScoreEnterBeautyScrollV1618();
-                  els.scoreScroll.scrollTo({ top: clampedTarget, behavior: 'smooth' });
-                  window.setTimeout(rememberScorePosition, 520);
-                } else {
-                  cancelScoreEnterBeautyScrollV1618();
-                  els.scoreScroll.scrollTop = clampedTarget;
-                  rememberScorePosition();
-                  if (typeof onSettledV1834 === 'function') onSettledV1834();
-                }
-                return;
-              }
-
-              els.scoreScroll.scrollTop = 0;
+          /* ENTER only moves when four later rows really exist AND NESR + those
+             four rows are not already fully visible. Near the course end, stay
+             put rather than chasing spacing that cannot exist. */
+          if (useLocalProgress) {
+            if (actualRowsAfterV1835 < 4) {
               rememberScorePosition();
-              if (typeof onSettledV1834 === 'function') onSettledV1834();
+              settleV1835(false);
+              return;
             }
+
+            const fourthAfterV1835 = rowsV1835[nesrIndexV1835 + 4];
+            const scrollRectV1835 = els.scoreScroll.getBoundingClientRect();
+            const nesrRectV1835 = nesrRowV1835.getBoundingClientRect();
+            const fourthRectV1835 = fourthAfterV1835
+              ? fourthAfterV1835.getBoundingClientRect()
+              : null;
+            const visibilityToleranceV1835 = 2;
+            const alreadyHasFourBelowV1835 = !!(
+              fourthRectV1835 &&
+              nesrRectV1835.top >= (scrollRectV1835.top - visibilityToleranceV1835) &&
+              fourthRectV1835.bottom <= (scrollRectV1835.bottom + visibilityToleranceV1835)
+            );
+
+            if (alreadyHasFourBelowV1835) {
+              rememberScorePosition();
+              settleV1835(false);
+              return;
+            }
+          }
+
+          /* Exact NESR target: NESR is the fifth visible course row whenever
+             possible. Top and bottom boundaries gracefully clamp the view. */
+          const targetIndexV1835 = Math.min(
+            9,
+            Math.max(0, nesrIndexV1835 - 4)
           );
-        }
-      );
+          const targetRowV1835 = rowsV1835[targetIndexV1835];
+
+          if (!targetRowV1835) {
+            rememberScorePosition();
+            settleV1835(false);
+            return;
+          }
+
+          const maxScrollV1835 = Math.max(
+            0,
+            els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight
+          );
+          const scrollRectV1835 = els.scoreScroll.getBoundingClientRect();
+          const targetRectV1835 = targetRowV1835.getBoundingClientRect();
+          const targetScrollV1835 = els.scoreScroll.scrollTop +
+            (targetRectV1835.top - scrollRectV1835.top);
+          const clampedTargetV1835 = Math.min(
+            Math.max(0, targetScrollV1835),
+            maxScrollV1835
+          );
+          const deltaV1835 = Math.abs(clampedTargetV1835 - els.scoreScroll.scrollTop);
+
+          if (deltaV1835 <= 3) {
+            rememberScorePosition();
+            settleV1835(false);
+            return;
+          }
+
+          if (reducedMotionV1835) {
+            cancelScoreEnterBeautyScrollV1618();
+            els.scoreScroll.scrollTop = clampedTargetV1835;
+            rememberScorePosition();
+            settleV1835(false);
+            return;
+          }
+
+          const startedV1835 = animateScorecardNESRScrollV1835(
+            clampedTargetV1835,
+            onSettledV1835
+          );
+          if (!startedV1835) settleV1835(false);
+        });
+      });
     }
 
 
@@ -15098,7 +15104,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.33 RESULT LOG',
+        'SSHCP V18.35 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15161,7 +15167,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.33 CONTROL CENTER LOG',
+        'SSHCP V18.35 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17751,10 +17757,10 @@ let scoreTimingDetail =
         localScores[stateIndex] === state.value
       ));
 
-      /* V18.34 — while a fresh ENTER is traveling / waiting its post-scroll
-         0.5s handoff, keep the prior current-hole cue in place. The handoff
-         render advances the dark-gray hole cue and Blue score-box outline at
-         the exact same moment the entered score turns Blue. */
+      /* V18.35 — while a fresh ENTER is traveling / waiting its NESR handoff,
+         keep the prior current-hole cue in place. The handoff render advances
+         the dark-gray NESR hole cue and Blue score-box outline at the exact
+         same moment the entered score turns Blue. */
       const nextHoleIndex = holdNextHoleVisualV1834
         ? visualNextHoleIndexV1834
         : localNextHoleIndexV1834;
@@ -18042,9 +18048,9 @@ let scoreTimingDetail =
       /* V18.31 — establish the exact distributed nine-row geometry now, before
          ENTER / verification can calculate a scroll target.
 
-         V18.33 — preserve the live scrollTop across BOTH sizing passes. The
-         follow-up RAF snapshots whatever position the 0.8s ENTER animation has
-         reached by that frame, so it never drags the viewport backward. */
+         V18.33/V18.35 — preserve the live scrollTop across BOTH sizing passes.
+         The follow-up RAF snapshots whatever position the active NESR scroll
+         has reached by that frame, so it never drags the viewport backward. */
       sizeScorecardV5();
 
       if (preserveScoreScrollV1833 && Number.isFinite(scoreScrollTopBeforeRenderV1833)) {
@@ -18554,13 +18560,11 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V5.2 — ENTER advances immediately.
-          A real entered score has already rerendered the next-hole gray
-          indicator from localScores, and this moves the visible viewport
-          at the same moment. CLEAR intentionally does not auto-advance.
-          V18.34 visual Blue now waits for the scroll to settle, then uses
-          one 0.5s handoff timer; backend verification remains authoritative
-          and can roll it back on failure.
+          SSHCP V18.35 — ENTER starts save immediately, then positions the
+          Next Expected Score Row (NESR) only when needed. A real NESR scroll
+          releases formatting 0.1s after it settles; a no-scroll ENTER waits
+          0.5s. CLEAR stays stationary. Backend verification remains
+          authoritative and can roll optimistic Blue back on failure.
         */
         if (!commitResult.cleared) {
           const visualStateV1834 = scoreVisualStateV1619[commitResult.index];
@@ -18568,10 +18572,14 @@ let scoreTimingDetail =
             ? visualStateV1834.generation
             : null;
 
-          restoreScorePosition(true, () => {
-            startScoreVisualReleaseV1834(
+          restoreScorePosition(true, resultV1835 => {
+            const visualDelayV1835 = resultV1835 && resultV1835.scrolled
+              ? SCORE_AFTER_SCROLL_VISUAL_DELAY_V1835
+              : SCORE_NO_SCROLL_VISUAL_DELAY_V1835;
+            startScoreVisualReleaseV1835(
               commitResult.index,
-              visualGenerationV1834
+              visualGenerationV1834,
+              visualDelayV1835
             );
           });
         } else {
@@ -18617,7 +18625,7 @@ let scoreTimingDetail =
        One request only:
        Worker writes -> reads Google Sheets back -> verifies.
        Worker verification still requires verified:true plus an exact
-       verifiedScores match. V18.34's Blue state is a UI-only post-scroll 0.5s
+       verifiedScores match. V18.35's Blue state is a UI-only NESR-timed
        optimistic handoff and is rolled back on a failed/unconfirmed save.
        ========================================================= */
 
@@ -18833,11 +18841,11 @@ let scoreTimingDetail =
 
         syncPendingScoresStorage();
 
-        /* V18.34 — a normal ENTER already has the correct pending-gray frame on
-           screen. If that ENTER owns a visual cadence, do not rebuild all 18
-           rows when verification returns during the 0.8s movement. The single
-           post-scroll handoff render will apply the verified/optimistic Blue
-           state. REFRESH and non-cadence saves still repaint immediately. */
+        /* V18.35 — a normal ENTER already has the correct pending-gray frame
+           on screen. If that ENTER owns a visual cadence, do not rebuild all 18
+           rows while NESR motion / handoff timing is active. The single NESR
+           handoff render applies the verified/optimistic Blue state. REFRESH
+           and non-cadence saves still repaint immediately. */
         const holdVerificationRenderV1834 = (
           failureContextV1621 === 'enter' &&
           visualGenerationsAtRequestV1619.some((generation, index) => (
