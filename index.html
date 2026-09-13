@@ -1,15 +1,16 @@
-<!-- SSHCP | BASE KEY: 18.29-H4N7QS | BUILD KEY: 18.30-Q6M9VX -->
+<!-- SSHCP | BASE KEY: 18.30-Q6M9VX | BUILD KEY: 18.31-T5R8KM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.30 — built directly from V18.29 (BUILD 18.29-H4N7QS).
-           V18.16 remains the declared GOLDEN rollback. V18.30 preserves V18.29 behavior and
-           changes only GEEK MODE filtering: ALL is a true master checkbox, GOOD/BAD filter by
-           capitalization-driven dot tone, category checkboxes remain independent, WACKY stays
-           available as the sixth category control, and any unchecked child immediately clears ALL. */
+        /* SSHCP V18.31 — built directly from V18.30 (BUILD 18.30-Q6M9VX).
+           V18.16 remains the declared GOLDEN rollback. V18.31 preserves V18.30 behavior and
+           changes only two paths: HOME browser refresh now performs a silent fresh leaderboard
+           completion-status read before HOME is finalized, and Scorecard ENTER/verification
+           stabilizes exact row geometry before positioning while ignoring divider-scale
+           micro-differences instead of snapping the final pixel(s). */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11817,7 +11818,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.30</span>
+          <span class="home-version-info">SSHCP V18.31</span>
         </button>
 
       </div>
@@ -14141,8 +14142,26 @@ let scoreTimingDetail =
                 const reducedMotion = window.matchMedia &&
                   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-                const needsMove =
-                  Math.abs(clampedTarget - els.scoreScroll.scrollTop) > 2;
+                /* V18.31 — microscopic row/border rounding is not a navigation
+                   event. Use the visible horizontal divider as the scale, with a
+                   2-CSS-pixel floor, and leave the viewport exactly where it is
+                   when the remaining difference is inside that tolerance. This
+                   prevents the iPad-style final 1–2px correction/snap. */
+                const rowStyleV1831 = getComputedStyle(row);
+                const dividerWidthV1831 = Math.max(
+                  0,
+                  parseFloat(rowStyleV1831.borderBottomWidth) || 0
+                );
+                const microScrollToleranceV1831 = Math.max(2, dividerWidthV1831);
+                const scrollDeltaV1831 = Math.abs(
+                  clampedTarget - els.scoreScroll.scrollTop
+                );
+                const needsMove = scrollDeltaV1831 > microScrollToleranceV1831;
+
+                if (!needsMove) {
+                  rememberScorePosition();
+                  return;
+                }
 
                 /*
                   V16.19: a real ENTER uses the V16.18 explicit ~0.8s visual scroll
@@ -14989,7 +15008,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.30 RESULT LOG',
+        'SSHCP V18.31 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15052,7 +15071,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.30 CONTROL CENTER LOG',
+        'SSHCP V18.31 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17901,6 +17920,11 @@ let scoreTimingDetail =
       saveScorecardSnapshotV53();
 
 
+      /* V18.31 — establish the exact distributed nine-row geometry now, before
+         ENTER / verification can calculate a scroll target. The follow-up RAF
+         keeps the established responsive typography/refit pass, but it no longer
+         owns the first exact row-height application. */
+      sizeScorecardV5();
       requestAnimationFrame(
         sizeScorecardV5
       );
@@ -19345,6 +19369,39 @@ let scoreTimingDetail =
         els.homeLeaderboardButton.textContent = isComplete
           ? 'SCRAMBLE SUMMARY'
           : 'VIEW LIVE LEADERBOARD';
+      }
+    }
+
+    /* V18.31 — HOME refresh truth comes from the backend, not this device's
+       previous session. This is intentionally a lightweight leaderboard-status
+       read: no view switch, no Leaderboard reveal shield, no visible loading
+       line, and no hidden table render. The returned rows also prime Summary. */
+    async function refreshHomeTournamentStateV1831() {
+      try {
+        const response = await fetch(
+          CLOUDFLARE_API_URL +
+          '?action=leaderboard&refresh=' +
+          Date.now() +
+          '-home-status',
+          { cache: 'no-store' }
+        );
+
+        if (!response.ok) return false;
+
+        const data = await response.json();
+        if (!data || data.ok !== true) return false;
+
+        const rows = Array.isArray(data.leaderboard)
+          ? data.leaderboard
+          : [];
+
+        updateTournamentFinishState(rows);
+        return true;
+      }
+      catch (_) {
+        /* Keep the last-known session state if the silent HOME status read
+           cannot complete. A visible error would defeat this background check. */
+        return false;
       }
     }
 
@@ -24593,6 +24650,11 @@ let scoreTimingDetail =
       }
 
 
+      /* V18.31 — every browser refresh that resolves to HOME silently checks
+         current leaderboard completion first. This makes separate devices agree
+         on VIEW LIVE LEADERBOARD vs SCRAMBLE SUMMARY without requiring either
+         device to visit the Leaderboard. */
+      await refreshHomeTournamentStateV1831();
       showHome();
 
     }
