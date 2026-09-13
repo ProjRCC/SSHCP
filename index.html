@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.28-R3K7VN | BUILD KEY: 18.29-H4N7QS -->
+<!-- SSHCP | BASE KEY: 18.29-H4N7QS | BUILD KEY: 18.30-Q6M9VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.29 — built directly from V18.28 (BUILD 18.28-R3K7VN).
-           V18.16 remains the declared GOLDEN rollback. V18.29 preserves V18.28 behavior and
-           changes only HOME -> Scorecard entry sequencing: HOME now stores the intended team
-           identity without pre-rendering/repositioning the hidden Scorecard, then uses the same
-           existing showScorecard() fresh-read + white reveal + final-position path as Leaderboard. */
+        /* SSHCP V18.30 — built directly from V18.29 (BUILD 18.29-H4N7QS).
+           V18.16 remains the declared GOLDEN rollback. V18.30 preserves V18.29 behavior and
+           changes only GEEK MODE filtering: ALL is a true master checkbox, GOOD/BAD filter by
+           capitalization-driven dot tone, category checkboxes remain independent, WACKY stays
+           available as the sixth category control, and any unchecked child immediately clears ALL. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11655,6 +11655,41 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   -webkit-text-fill-color:var(--feature-gold-v1825)!important;
 }
 
+
+/* =========================================================
+   SSHCP V18.30 — GEEK FILTER MASTER + GOOD/BAD
+   Layout only: centered ALL, divider, GOOD/BAD with semantic dots,
+   divider, then the existing two-column category family. Checkbox is
+   always the first control in every labeled row.
+   ========================================================= */
+.modal-overlay.geek-mode-v180 .geek-filter-grid-v186{
+  grid-template-rows:
+    50px
+    1px
+    44px
+    1px
+    44px
+    44px
+    44px
+    var(--v187-post-button-h,50px)!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-separator-v1830{
+  grid-column:1 / -1!important;
+  width:100%!important;
+  height:1px!important;
+  min-height:1px!important;
+  max-height:1px!important;
+  align-self:center!important;
+  background:rgba(255,255,255,.48)!important;
+  border:0!important;
+  border-radius:0!important;
+  pointer-events:none!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-tone-v1830 .geek-class-dot-v186{
+  align-self:center!important;
+  flex-shrink:0!important;
+}
+
 </style>
 </head>
 
@@ -11782,7 +11817,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.29</span>
+          <span class="home-version-info">SSHCP V18.30</span>
         </button>
 
       </div>
@@ -14954,7 +14989,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.29 RESULT LOG',
+        'SSHCP V18.30 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15017,7 +15052,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.29 CONTROL CENTER LOG',
+        'SSHCP V18.30 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -20017,10 +20052,11 @@ let scoreTimingDetail =
     const GEEK_ENABLED_KEY_V180 = 'sshcpGeekModeEnabledV180';
     let geekDataV180 = null;
 
-    /* V18.6 committed filter state. ALL is the default/master view. WACKY is
-       virtual: it groups the designated final row from each real category. */
-    let geekSelectedCategoriesV180 = new Set(['ALL']);
-    let geekPendingFiltersV186 = new Set(['ALL']);
+    /* V18.30 committed filter state.
+       ALL is a true master summary checkbox. GOOD/BAD are tone filters driven
+       by the existing capitalization metadata; neutral/gray stats are not
+       suppressed by either tone switch. WACKY remains the sixth category
+       control for the designated personality rows. */
     let geekScrollTopV180 = 0;
 
     const GEEK_CATEGORY_ORDER_V180 = [
@@ -20031,7 +20067,7 @@ let scoreTimingDetail =
       'SETUP'
     ];
 
-    const GEEK_FILTER_ORDER_V186 = [
+    const GEEK_CATEGORY_FILTER_ORDER_V1830 = [
       'SCORES',
       'FIELD',
       'RUN',
@@ -20039,6 +20075,23 @@ let scoreTimingDetail =
       'SETUP',
       'WACKY'
     ];
+
+    const GEEK_TONE_FILTER_ORDER_V1830 = [
+      'GOOD',
+      'BAD'
+    ];
+
+    const GEEK_FILTER_ORDER_V186 = [
+      ...GEEK_TONE_FILTER_ORDER_V1830,
+      ...GEEK_CATEGORY_FILTER_ORDER_V1830
+    ];
+
+    function geekFullFilterSetV1830() {
+      return new Set(['ALL', ...GEEK_FILTER_ORDER_V186]);
+    }
+
+    let geekSelectedCategoriesV180 = geekFullFilterSetV1830();
+    let geekPendingFiltersV186 = geekFullFilterSetV1830();
 
     const GEEK_WACKY_STAT_BY_CATEGORY_V186 = {
       'SCORES':'we doubled',
@@ -20073,6 +20126,7 @@ let scoreTimingDetail =
     };
 
     const GEEK_LOG_CATEGORY_CODES_V180B = {
+      'GOOD':'G', 'BAD':'B',
       'SCORES':'SC', 'FIELD':'FI', 'RUN':'RU', 'STEADY':'ST', 'SETUP':'SE', 'WACKY':'WA'
     };
 
@@ -20320,9 +20374,10 @@ let scoreTimingDetail =
 
     function geekFilterLogLabelV180b() {
       if (geekSelectedCategoriesV180.has('ALL')) return 'ALL';
-      if (!geekSelectedCategoriesV180.size) return 'NONE';
-      return ['SCORES','FIELD','RUN','STEADY','SETUP','WACKY']
-        .filter(filter => geekSelectedCategoriesV180.has(filter))
+      const active = GEEK_FILTER_ORDER_V186
+        .filter(filter => geekSelectedCategoriesV180.has(filter));
+      if (!active.length) return 'NONE';
+      return active
         .map(filter => GEEK_LOG_CATEGORY_CODES_V180B[filter] || filter.slice(0, 2))
         .join(',');
     }
@@ -20482,12 +20537,24 @@ let scoreTimingDetail =
       }
     }
 
+    function geekEveryChildFilterCheckedV1830(filterSet) {
+      const source = filterSet instanceof Set ? filterSet : new Set();
+      return GEEK_FILTER_ORDER_V186.every(filter => source.has(filter));
+    }
+
+    function geekSyncAllFlagV1830(filterSet) {
+      if (!(filterSet instanceof Set)) return filterSet;
+      if (geekEveryChildFilterCheckedV1830(filterSet)) filterSet.add('ALL');
+      else filterSet.delete('ALL');
+      return filterSet;
+    }
+
     function geekAllSelectedV180() {
-      return geekSelectedCategoriesV180.has('ALL');
+      return geekEveryChildFilterCheckedV1830(geekSelectedCategoriesV180);
     }
 
     function geekSetAllV180(enabled) {
-      geekSelectedCategoriesV180 = enabled ? new Set(['ALL']) : new Set();
+      geekSelectedCategoriesV180 = enabled ? geekFullFilterSetV1830() : new Set();
       geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
     }
 
@@ -20692,13 +20759,21 @@ let scoreTimingDetail =
 
       const selected = geekSelectedCategoriesV180;
       const blocks = [];
+      const selectedRealCategories = GEEK_CATEGORY_ORDER_V180
+        .filter(category => selected.has(category));
+      const includeWackyV1830 = selected.has('WACKY');
 
-      if (selected.has('ALL')) {
-        GEEK_CATEGORY_ORDER_V180.forEach(category => {
+      /* V18.30: real category boxes remain the primary table layout. WACKY
+         behaves as a sixth category control without duplicating rows: while any
+         real categories are selected, it simply includes/excludes each
+         category's designated wacky row. If WACKY is the only category left,
+         the established virtual WACKY block collects those five rows. */
+      if (selectedRealCategories.length) {
+        selectedRealCategories.forEach(category => {
           const block = blocksByCategory.get(category);
           if (block) blocks.push({ category, stats:Array.isArray(block.stats) ? block.stats : [] });
         });
-      } else if (selected.has('WACKY')) {
+      } else if (includeWackyV1830) {
         const wackyStats = [];
         GEEK_CATEGORY_ORDER_V180.forEach(category => {
           const block = blocksByCategory.get(category);
@@ -20709,19 +20784,24 @@ let scoreTimingDetail =
           if (stat) wackyStats.push(stat);
         });
         blocks.push({ category:'WACKY', stats:wackyStats });
-      } else {
-        GEEK_CATEGORY_ORDER_V180.forEach(category => {
-          if (!selected.has(category)) return;
-          const block = blocksByCategory.get(category);
-          if (block) blocks.push({ category, stats:Array.isArray(block.stats) ? block.stats : [] });
-        });
       }
 
       let html = '';
       blocks.forEach(block => {
         const category = block.category;
         const stats = (Array.isArray(block.stats) ? block.stats : [])
-          .filter(stat => stat && stat.supported !== false);
+          .filter(stat => stat && stat.supported !== false)
+          .filter(stat => {
+            const tone = geekStatToneV186(stat && stat.stat);
+            if (tone === 'good') return selected.has('GOOD');
+            if (tone === 'bad') return selected.has('BAD');
+            return true; /* gray/neutral is intentionally independent */
+          })
+          .filter(stat => {
+            if (category === 'WACKY') return true;
+            if (!geekIsWackyStatV186(category, stat && stat.stat)) return true;
+            return includeWackyV1830;
+          });
         if (!stats.length) return;
 
         html +=
@@ -20796,6 +20876,7 @@ let scoreTimingDetail =
 
     function syncGeekFilterChecksV180(panel) {
       if (!panel) return;
+      geekSyncAllFlagV1830(geekPendingFiltersV186);
       panel.querySelectorAll('input[data-geek-filter]').forEach(input => {
         input.checked = geekPendingFiltersV186.has(input.dataset.geekFilter);
       });
@@ -20951,7 +21032,19 @@ let scoreTimingDetail =
             '<input type="checkbox" data-geek-filter="ALL">' +
             '<span class="geek-filter-text-v186">ALL</span>' +
           '</label>' +
-          GEEK_FILTER_ORDER_V186.map(label =>
+          '<div class="geek-filter-separator-v1830" aria-hidden="true"></div>' +
+          '<label class="geek-filter-choice-v186 geek-filter-tone-v1830">' +
+            '<input type="checkbox" data-geek-filter="GOOD">' +
+            '<span class="geek-class-dot-v186 good" aria-hidden="true"></span>' +
+            '<span class="geek-filter-text-v186">GOOD</span>' +
+          '</label>' +
+          '<label class="geek-filter-choice-v186 geek-filter-tone-v1830">' +
+            '<input type="checkbox" data-geek-filter="BAD">' +
+            '<span class="geek-class-dot-v186 bad" aria-hidden="true"></span>' +
+            '<span class="geek-filter-text-v186">BAD</span>' +
+          '</label>' +
+          '<div class="geek-filter-separator-v1830" aria-hidden="true"></div>' +
+          GEEK_CATEGORY_FILTER_ORDER_V1830.map(label =>
             '<label class="geek-filter-choice-v186">' +
               '<input type="checkbox" data-geek-filter="' + escapeHtml(label) + '">' +
               '<span class="geek-filter-text-v186">' + escapeHtml(label) + '</span>' +
@@ -20968,14 +21061,17 @@ let scoreTimingDetail =
         const key = input.dataset.geekFilter;
 
         if (key === 'ALL') {
-          geekPendingFiltersV186 = input.checked ? new Set(['ALL']) : new Set();
-        } else if (key === 'WACKY') {
-          geekPendingFiltersV186 = input.checked ? new Set(['WACKY']) : new Set();
+          geekPendingFiltersV186 = input.checked
+            ? geekFullFilterSetV1830()
+            : new Set();
         } else {
-          geekPendingFiltersV186.delete('ALL');
-          geekPendingFiltersV186.delete('WACKY');
           if (input.checked) geekPendingFiltersV186.add(key);
           else geekPendingFiltersV186.delete(key);
+
+          /* ALL is only checked when every child is checked. One unchecked
+             child clears it immediately; rechecking the last missing child
+             restores ALL automatically. */
+          geekSyncAllFlagV1830(geekPendingFiltersV186);
         }
 
         syncGeekFilterChecksV180(panel);
