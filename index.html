@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.24-F6R9MN | BUILD KEY: 18.25-Q4T8NV -->
+<!-- SSHCP | BASE KEY: 18.25-Q4T8NV | BUILD KEY: 18.26-M5Q8RK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.25 — built directly from V18.24 (BUILD 18.24-F6R9MN).
-           V18.16 remains the declared GOLDEN rollback. V18.25 preserves the tested V18.24 Control
-           Center rewrite and production logic. This patch removes the V18.24 gold perimeter fade,
-           uses flat tournament-Blue feature buttons with Gold text, removes the completed HOME
-           SCRAMBLE SUMMARY border, and preserves paint-only press feedback with zero geometry pulse. */
+        /* SSHCP V18.26 — built directly from V18.25 (BUILD 18.25-Q4T8NV).
+           V18.16 remains the declared GOLDEN rollback. V18.26 preserves the tested V18.24 Control
+           Center rewrite plus V18.25 flat Blue/Gold post-round treatment. This surgical patch makes
+           the completed HOME SCRAMBLE SUMMARY use the same shared dark-filled press paint without
+           any geometry/border pulse, and fixes GEEK MODE Gold resting text specificity. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11603,6 +11603,46 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   transform:none!important;
 }
 
+
+/* =========================================================
+   SSHCP V18.26 — HOME PRESS GEOMETRY PARITY + GEEK GOLD FIX
+   The completed HOME SCRAMBLE SUMMARY remains the same flat Blue/Gold
+   resting action introduced in V18.25. During pointer press, the shared
+   literal-button handler still supplies the normal #333 / white paint used
+   by every other dark filled button. These rules lock only the button's
+   existing box model so historical HOME :active border rules cannot create
+   an optical/real size pulse. No alternate press design is introduced.
+   ========================================================= */
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pressed-v172{
+  width:80%!important;
+  min-width:80%!important;
+  max-width:80%!important;
+  min-height:58px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding:12px 14px!important;
+  border:0 solid transparent!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  transform:none!important;
+  scale:none!important;
+  translate:none!important;
+  outline:0!important;
+  box-shadow:none!important;
+  transition:none!important;
+}
+
+/* V18.3 carried a higher-specificity white-label rule for Summary GEEK MODE.
+   Match that selector at the end of the cascade so V18.25's intended Gold
+   resting label actually wins. Shared pointerdown inline paint still turns
+   the text white during the normal dark-gray press, just like SKINS. */
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-geek-button-v180{
+  color:var(--feature-gold-v1825)!important;
+  -webkit-text-fill-color:var(--feature-gold-v1825)!important;
+}
+
 </style>
 </head>
 
@@ -11730,7 +11770,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.25</span>
+          <span class="home-version-info">SSHCP V18.26</span>
         </button>
 
       </div>
@@ -14902,7 +14942,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.25 RESULT LOG',
+        'SSHCP V18.26 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14965,7 +15005,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.25 CONTROL CENTER LOG',
+        'SSHCP V18.26 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
