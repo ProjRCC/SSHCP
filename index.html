@@ -1,16 +1,17 @@
-<!-- SSHCP | BASE KEY: 18.30-Q6M9VX | BUILD KEY: 18.31-T5R8KM -->
+<!-- SSHCP | BASE KEY: 18.31-T5R8KM | BUILD KEY: 18.32-C7P4NW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.31 — built directly from V18.30 (BUILD 18.30-Q6M9VX).
-           V18.16 remains the declared GOLDEN rollback. V18.31 preserves V18.30 behavior and
-           changes only two paths: HOME browser refresh now performs a silent fresh leaderboard
-           completion-status read before HOME is finalized, and Scorecard ENTER/verification
-           stabilizes exact row geometry before positioning while ignoring divider-scale
-           micro-differences instead of snapping the final pixel(s). */
+        /* SSHCP V18.32 — built directly from V18.31 (BUILD 18.31-T5R8KM).
+           V18.16 remains the declared GOLDEN rollback. V18.32 preserves V18.31 behavior and
+           changes only presentation/scroll tolerance requested after iPad testing: Tie Break
+           Result SCRAMBLE SUMMARY uses Gold resting text; the normal three-button Quick Guide
+           footer reaches farther left/right so fitted labels can render larger; Scorecard
+           horizontal hole separators are doubled to 2px in the same gray; and microscopic
+           Scorecard corrections at or below 3 CSS px are ignored. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11691,6 +11692,49 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   flex-shrink:0!important;
 }
 
+
+/* =========================================================
+   SSHCP V18.32 — TIE RESULT / QUICK GUIDE / SCORECARD POLISH
+   Presentation + divider-scale scroll guard only. V18.31 HOME completion
+   refresh logic, score-entry geometry, scoring, save/verify and navigation
+   remain unchanged.
+   ========================================================= */
+
+/* Tie Break Result uses the same completed-tournament Blue/Gold language as
+   every other SCRAMBLE SUMMARY action. Exclude the shared pressed class /
+   native :active state so the established dark-gray + white press feedback
+   remains intact. */
+.modal-overlay.tournament-result
+.modal-btn.tournament-summary-button:not(.sshcp-button-pressed-v172):not(:active){
+  color:var(--feature-gold-v1825)!important;
+  -webkit-text-fill-color:var(--feature-gold-v1825)!important;
+}
+
+/* Normal in-app QUICK GUIDE only: let the three-button footer reach close to
+   the popup's left/right edges. The existing fitted-text routine then has more
+   horizontal room for LEADERBOARD / SCORECARD and can keep a larger matched
+   label. Welcome QUICK GUIDE's single GOT IT footer is intentionally excluded. */
+.modal-overlay.quick-guide
+.quick-guide-actions-v172:not(.quick-guide-welcome-actions-v175){
+  width:calc(100% + 36px)!important;
+  margin-left:-18px!important;
+  margin-right:-18px!important;
+}
+
+/* Double only the horizontal hole separators, keeping the exact same subdued
+   gray. Vertical cell borders and the outer Scorecard frame are untouched.
+   Rows are border-box sized, so this does not alter the approved nine-row
+   viewport budget or scroll geometry. */
+#scorecardView .score-row{
+  border-bottom:2px solid var(--line)!important;
+}
+#scorecardView #scoreRows > .score-row:nth-child(9){
+  border-bottom:2px solid var(--line)!important;
+}
+#scorecardView #scoreRows > .score-row:last-child{
+  border-bottom:0!important;
+}
+
 </style>
 </head>
 
@@ -11818,7 +11862,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.31</span>
+          <span class="home-version-info">SSHCP V18.32</span>
         </button>
 
       </div>
@@ -14152,7 +14196,7 @@ let scoreTimingDetail =
                   0,
                   parseFloat(rowStyleV1831.borderBottomWidth) || 0
                 );
-                const microScrollToleranceV1831 = Math.max(2, dividerWidthV1831);
+                const microScrollToleranceV1831 = Math.max(3, dividerWidthV1831);
                 const scrollDeltaV1831 = Math.abs(
                   clampedTarget - els.scoreScroll.scrollTop
                 );
@@ -15008,7 +15052,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.31 RESULT LOG',
+        'SSHCP V18.32 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15071,7 +15115,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.31 CONTROL CENTER LOG',
+        'SSHCP V18.32 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
