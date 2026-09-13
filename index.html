@@ -1,17 +1,17 @@
-<!-- SSHCP | BASE KEY: 18.31-T5R8KM | BUILD KEY: 18.32-C7P4NW -->
+<!-- SSHCP | BASE KEY: 18.33-J8R5PV | BUILD KEY: 18.34-M6T9QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.32 — built directly from V18.31 (BUILD 18.31-T5R8KM).
-           V18.16 remains the declared GOLDEN rollback. V18.32 preserves V18.31 behavior and
-           changes only presentation/scroll tolerance requested after iPad testing: Tie Break
-           Result SCRAMBLE SUMMARY uses Gold resting text; the normal three-button Quick Guide
-           footer reaches farther left/right so fitted labels can render larger; Scorecard
-           horizontal hole separators are doubled to 2px in the same gray; and microscopic
-           Scorecard corrections at or below 3 CSS px are ignored. */
+        /* SSHCP V18.34 — built directly from V18.33 (BUILD 18.33-J8R5PV).
+           V18.16 remains the declared GOLDEN rollback. V18.33 preserves V18.32 behavior and
+           changes only the Scorecard motion/rerender interaction requested after phone+iPad
+           testing: horizontal hole separators are 0.5px in the same gray; live scrollTop is
+           preserved through Scorecard rerenders/sizing; a direct ENTER owns the one intentional
+           row movement without a second verification reposition; and the final animation endpoint
+           accepts a <=3 CSS px remainder instead of forcing a microscopic finishing snap. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11735,6 +11735,25 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   border-bottom:0!important;
 }
 
+/* =========================================================
+   SSHCP V18.33 — SCORECARD MOTION STABILITY
+   Keep horizontal hole separation intentionally subtle and prevent browser
+   scroll anchoring from participating while rows are rebuilt during scoring.
+   Vertical borders / outer frame remain untouched.
+   ========================================================= */
+#scorecardView .score-row{
+  border-bottom:0.5px solid var(--line)!important;
+}
+#scorecardView #scoreRows > .score-row:nth-child(9){
+  border-bottom:0.5px solid var(--line)!important;
+}
+#scorecardView #scoreRows > .score-row:last-child{
+  border-bottom:0!important;
+}
+#scorecardView .score-scroll{
+  overflow-anchor:none!important;
+}
+
 </style>
 </head>
 
@@ -11862,7 +11881,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.32</span>
+          <span class="home-version-info">SSHCP V18.33</span>
         </button>
 
       </div>
@@ -12729,23 +12748,24 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
     /*
-      SSHCP V16.21 — fixed visual save cadence.
+      SSHCP V18.34 — post-scroll visual handoff.
 
       The real Cloudflare -> Google Sheets write/readback verification still
-      starts immediately and remains authoritative. The Scorecard's visual
-      confirmation is intentionally decoupled from variable network timing:
+      starts immediately and remains authoritative. A normal ENTER now keeps
+      the just-entered score pending gray while the one-row scorecard movement
+      completes. Only after that movement is fully settled does ONE 0.5-second
+      visual timer begin. At the end of that single timer, one render performs
+      the whole handoff together:
 
-        ENTER -> pending gray immediately
-        0.8s  -> optimistic Blue tile + next-hole Blue border
-        verify success -> keep Blue
-        verify failure -> no failure UI before 1.5s from that ENTER; then
-                          revert the affected still-unconfirmed score(s) gray
-                          and show the V16.21 trigger-specific save warning.
+        previous/entered score -> optimistic Blue
+        new/current hole number -> dark gray
+        new/current score box -> Blue outline
 
-      This is UI timing only. It never delays the save request, write, readback,
-      exact verification, queueing, or pending-score persistence.
+      A save failure still uses the original ENTER timestamp and therefore
+      cannot show SCORE NOT SAVED before 1.5 seconds from ENTER. The save
+      request itself is never delayed by this visual sequencing.
     */
-    const SCORE_VISUAL_BLUE_DELAY_V1619 = 800;
+    const SCORE_POST_SCROLL_VISUAL_DELAY_V1834 = 500;
     const SCORE_FAILURE_NOTICE_DELAY_V1619 = 1500;
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
@@ -12764,7 +12784,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
     }
 
     function beginScoreVisualCadenceV1619(index, value) {
-      if (!Number.isInteger(index) || index < 0 || index >= 18 || value === null) return;
+      if (!Number.isInteger(index) || index < 0 || index >= 18 || value === null) return null;
 
       clearScoreVisualStateV1619(index);
 
@@ -12774,14 +12794,27 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
         value,
         previousSavedValue: savedScores[index],
         enteredAt,
-        releaseAt: enteredAt + SCORE_VISUAL_BLUE_DELAY_V1619,
+        releaseAt: null,
         blue: false,
         verified: false,
         timer: 0
       };
 
       scoreVisualStateV1619[index] = state;
+      return state;
+    }
 
+    function startScoreVisualReleaseV1834(index, expectedGeneration) {
+      const state = scoreVisualStateV1619[index];
+      if (!state) return;
+      if (expectedGeneration !== undefined && expectedGeneration !== null && state.generation !== expectedGeneration) return;
+      if (state.blue || state.timer) return;
+      if (localScores[index] !== state.value) {
+        clearScoreVisualStateV1619(index);
+        return;
+      }
+
+      state.releaseAt = performance.now() + SCORE_POST_SCROLL_VISUAL_DELAY_V1834;
       state.timer = window.setTimeout(() => {
         if (scoreVisualStateV1619[index] !== state) return;
         if (localScores[index] !== state.value) {
@@ -12792,18 +12825,15 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
         state.timer = 0;
         state.blue = true;
 
-        /* If the backend already verified this exact value, the temporary
-           visual gate can now be removed; native savedScores styling keeps
-           the tile Blue from this same render onward. */
-        if (
-          state.verified &&
-          savedScores[index] === state.value
-        ) {
+        /* If the backend already verified this exact value, native savedScores
+           styling takes over from this same render onward. */
+        if (state.verified && savedScores[index] === state.value) {
           scoreVisualStateV1619[index] = null;
         }
 
+        /* One render, one moment: score Blue + new hole gray + new box border. */
         renderScorecard();
-      }, SCORE_VISUAL_BLUE_DELAY_V1619);
+      }, SCORE_POST_SCROLL_VISUAL_DELAY_V1834);
     }
 
     function scoreIsVisuallyBlueV1619(index, localValue, savedValue) {
@@ -12831,10 +12861,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         state.verified = true;
 
-        /* Verification may finish before 0.8s. Keep the score gray until the
-           fixed visual release time. If 0.8s has already elapsed, native
-           verified styling can take over immediately with no visible change. */
-        if (performance.now() >= state.releaseAt) {
+        /* Verification never releases the visual state early. The post-scroll
+           0.5s handoff owns that moment. If that handoff already happened,
+           native savedScores styling can take over without another repaint. */
+        if (state.blue) {
           if (state.timer) window.clearTimeout(state.timer);
           scoreVisualStateV1619[index] = null;
         }
@@ -14098,13 +14128,13 @@ let scoreTimingDetail =
       scoreEnterBeautyScrollTargetV1618 = null;
     }
 
-    function animateScoreEnterBeautyScrollV1618(targetTop, durationMs = 800) {
+    function animateScoreEnterBeautyScrollV1618(targetTop, durationMs = 800, onSettledV1834 = null) {
       if (!els.scoreScroll) return false;
 
       const startTop = els.scoreScroll.scrollTop;
       const distance = targetTop - startTop;
 
-      if (Math.abs(distance) <= 2) {
+      if (Math.abs(distance) <= 3) {
         return false;
       }
 
@@ -14119,17 +14149,24 @@ let scoreTimingDetail =
           ? 4 * progress * progress * progress
           : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-        els.scoreScroll.scrollTop = startTop + (distance * eased);
-
         if (progress < 1) {
+          els.scoreScroll.scrollTop = startTop + (distance * eased);
           scoreEnterBeautyScrollFrameV1618 = requestAnimationFrame(step);
           return;
         }
 
-        els.scoreScroll.scrollTop = targetTop;
+        /* V18.33 — do not manufacture a tiny final 'perfect' snap. The last
+           animated frame is visually final when it is already within 3 CSS px
+           of the computed target. A larger remainder is still corrected. */
+        const remainingV1833 = targetTop - els.scoreScroll.scrollTop;
+        if (Math.abs(remainingV1833) > 3) {
+          els.scoreScroll.scrollTop = targetTop;
+        }
+
         scoreEnterBeautyScrollFrameV1618 = 0;
         scoreEnterBeautyScrollTargetV1618 = null;
         rememberScorePosition();
+        if (typeof onSettledV1834 === 'function') onSettledV1834();
       };
 
       scoreEnterBeautyScrollFrameV1618 = requestAnimationFrame(step);
@@ -14137,12 +14174,13 @@ let scoreTimingDetail =
     }
 
 
-    function restoreScorePosition(useLocalProgress = false) {
+    function restoreScorePosition(useLocalProgress = false, onSettledV1834 = null) {
 
       if (
         !selectedTeam ||
         !els.scoreScroll
       ) {
+        if (typeof onSettledV1834 === 'function') onSettledV1834();
         return;
       }
 
@@ -14204,6 +14242,7 @@ let scoreTimingDetail =
 
                 if (!needsMove) {
                   rememberScorePosition();
+                  if (typeof onSettledV1834 === 'function') onSettledV1834();
                   return;
                 }
 
@@ -14214,7 +14253,12 @@ let scoreTimingDetail =
                   their existing timing and are never gated by this animation.
                 */
                 if (useLocalProgress && !reducedMotion && needsMove) {
-                  animateScoreEnterBeautyScrollV1618(clampedTarget, 800);
+                  const startedV1834 = animateScoreEnterBeautyScrollV1618(
+                    clampedTarget,
+                    800,
+                    onSettledV1834
+                  );
+                  if (!startedV1834 && typeof onSettledV1834 === 'function') onSettledV1834();
                   return;
                 }
 
@@ -14246,12 +14290,14 @@ let scoreTimingDetail =
                   cancelScoreEnterBeautyScrollV1618();
                   els.scoreScroll.scrollTop = clampedTarget;
                   rememberScorePosition();
+                  if (typeof onSettledV1834 === 'function') onSettledV1834();
                 }
                 return;
               }
 
               els.scoreScroll.scrollTop = 0;
               rememberScorePosition();
+              if (typeof onSettledV1834 === 'function') onSettledV1834();
             }
           );
         }
@@ -15052,7 +15098,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.32 RESULT LOG',
+        'SSHCP V18.33 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15115,7 +15161,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.32 CONTROL CENTER LOG',
+        'SSHCP V18.33 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17665,6 +17711,20 @@ let scoreTimingDetail =
 
     function renderScorecard() {
 
+      /* V18.33 — score entry / Blue verification can rerender while the
+         one-row ENTER animation is in flight. Rebuilding all 18 rows must not
+         let the scroll container collapse/clamp and then re-expand underneath
+         that animation. Preserve the exact live position through this render. */
+      const preserveScoreScrollV1833 = !!(
+        els.scoreScroll &&
+        currentView === 'scorecard' &&
+        els.scoreRows &&
+        els.scoreRows.children.length
+      );
+      const scoreScrollTopBeforeRenderV1833 = preserveScoreScrollV1833
+        ? els.scoreScroll.scrollTop
+        : null;
+
       els.scoreRows.innerHTML =
         '';
 
@@ -17682,10 +17742,26 @@ let scoreTimingDetail =
         turns Blue, savedScores advances and the next-hole Blue border appears
         in that same render.
       */
-      const nextHoleIndex = scorecardActiveHoleIndexV16(localScores, selectedTeam);
+      const localNextHoleIndexV1834 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
       const visualProgressScoresV1619 = scoreVisualProgressV1619();
-      const verifiedNextHoleIndex = scorecardActiveHoleIndexV16(visualProgressScoresV1619, selectedTeam);
-      const showVerifiedNextHoleBorder = nextHoleIndex === verifiedNextHoleIndex;
+      const visualNextHoleIndexV1834 = scorecardActiveHoleIndexV16(visualProgressScoresV1619, selectedTeam);
+      const holdNextHoleVisualV1834 = scoreVisualStateV1619.some((state, stateIndex) => (
+        !!state &&
+        state.blue !== true &&
+        localScores[stateIndex] === state.value
+      ));
+
+      /* V18.34 — while a fresh ENTER is traveling / waiting its post-scroll
+         0.5s handoff, keep the prior current-hole cue in place. The handoff
+         render advances the dark-gray hole cue and Blue score-box outline at
+         the exact same moment the entered score turns Blue. */
+      const nextHoleIndex = holdNextHoleVisualV1834
+        ? visualNextHoleIndexV1834
+        : localNextHoleIndexV1834;
+      const showVerifiedNextHoleBorder = (
+        !holdNextHoleVisualV1834 &&
+        localNextHoleIndexV1834 === visualNextHoleIndexV1834
+      );
 
 
       holes.forEach(
@@ -17961,17 +18037,47 @@ let scoreTimingDetail =
 
       updateSubmitButtonState();
       updateScorecardRunningScores();
-      saveScorecardSnapshotV53();
 
 
       /* V18.31 — establish the exact distributed nine-row geometry now, before
-         ENTER / verification can calculate a scroll target. The follow-up RAF
-         keeps the established responsive typography/refit pass, but it no longer
-         owns the first exact row-height application. */
+         ENTER / verification can calculate a scroll target.
+
+         V18.33 — preserve the live scrollTop across BOTH sizing passes. The
+         follow-up RAF snapshots whatever position the 0.8s ENTER animation has
+         reached by that frame, so it never drags the viewport backward. */
       sizeScorecardV5();
-      requestAnimationFrame(
-        sizeScorecardV5
-      );
+
+      if (preserveScoreScrollV1833 && Number.isFinite(scoreScrollTopBeforeRenderV1833)) {
+        const maxScrollV1833 = Math.max(
+          0,
+          els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight
+        );
+        els.scoreScroll.scrollTop = Math.min(
+          Math.max(0, scoreScrollTopBeforeRenderV1833),
+          maxScrollV1833
+        );
+      }
+
+      saveScorecardSnapshotV53();
+
+      requestAnimationFrame(() => {
+        const liveScrollTopV1833 = preserveScoreScrollV1833 && els.scoreScroll
+          ? els.scoreScroll.scrollTop
+          : null;
+
+        sizeScorecardV5();
+
+        if (Number.isFinite(liveScrollTopV1833) && els.scoreScroll) {
+          const maxScrollV1833 = Math.max(
+            0,
+            els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight
+          );
+          els.scoreScroll.scrollTop = Math.min(
+            Math.max(0, liveScrollTopV1833),
+            maxScrollV1833
+          );
+        }
+      });
 
     }
 
@@ -18357,6 +18463,9 @@ let scoreTimingDetail =
       ] =
         value;
 
+      /* V18.34 — establish the pending visual gate before the first render so
+         the old/current hole cue remains stable while the scorecard scrolls. */
+      beginScoreVisualCadenceV1619(index, value);
 
       renderScorecard();
       syncPendingScoresStorage();
@@ -18449,15 +18558,22 @@ let scoreTimingDetail =
           A real entered score has already rerendered the next-hole gray
           indicator from localScores, and this moves the visible viewport
           at the same moment. CLEAR intentionally does not auto-advance.
-          V16.21 visual Blue now follows the fixed 0.8s cadence; backend
-          verification remains authoritative and can roll it back on failure.
+          V18.34 visual Blue now waits for the scroll to settle, then uses
+          one 0.5s handoff timer; backend verification remains authoritative
+          and can roll it back on failure.
         */
         if (!commitResult.cleared) {
-          beginScoreVisualCadenceV1619(
-            commitResult.index,
-            localScores[commitResult.index]
-          );
-          restoreScorePosition(true);
+          const visualStateV1834 = scoreVisualStateV1619[commitResult.index];
+          const visualGenerationV1834 = visualStateV1834
+            ? visualStateV1834.generation
+            : null;
+
+          restoreScorePosition(true, () => {
+            startScoreVisualReleaseV1834(
+              commitResult.index,
+              visualGenerationV1834
+            );
+          });
         } else {
           /* CLEAR stays stationary and never participates in optimistic Blue. */
           clearScoreVisualStateV1619(commitResult.index);
@@ -18501,8 +18617,8 @@ let scoreTimingDetail =
        One request only:
        Worker writes -> reads Google Sheets back -> verifies.
        Worker verification still requires verified:true plus an exact
-       verifiedScores match. V16.21's Blue state is a UI-only 0.8s optimistic
-       cadence and is rolled back on a failed/unconfirmed save.
+       verifiedScores match. V18.34's Blue state is a UI-only post-scroll 0.5s
+       optimistic handoff and is rolled back on a failed/unconfirmed save.
        ========================================================= */
 
 
@@ -18716,7 +18832,24 @@ let scoreTimingDetail =
         }
 
         syncPendingScoresStorage();
-        renderScorecard();
+
+        /* V18.34 — a normal ENTER already has the correct pending-gray frame on
+           screen. If that ENTER owns a visual cadence, do not rebuild all 18
+           rows when verification returns during the 0.8s movement. The single
+           post-scroll handoff render will apply the verified/optimistic Blue
+           state. REFRESH and non-cadence saves still repaint immediately. */
+        const holdVerificationRenderV1834 = (
+          failureContextV1621 === 'enter' &&
+          visualGenerationsAtRequestV1619.some((generation, index) => (
+            generation !== null &&
+            generation !== undefined &&
+            expectedScores[index] !== savedScoresAtRequestV1619[index]
+          ))
+        );
+
+        if (!holdVerificationRenderV1834) {
+          renderScorecard();
+        }
 
         /*
           V15.9 — only an entered/verified score advances the visible
@@ -18724,7 +18857,13 @@ let scoreTimingDetail =
           scorecard and updates its hole indicator, but does not move
           the viewport.
         */
-        if (shouldAutoPositionAfterSave) {
+        /* V18.33 — a direct ENTER already performed its one intentional
+           local-progress move before the save began. Verification may repaint
+           gray -> Blue, but must not launch a second positioning pass that can
+           appear as a tiny finishing jitter. REFRESH retains the existing
+           verified-position recovery because there may have been no local ENTER
+           animation in that path. */
+        if (shouldAutoPositionAfterSave && failureContextV1621 !== 'enter') {
           restoreScorePosition();
         }
 
