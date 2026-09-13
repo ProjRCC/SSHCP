@@ -1,17 +1,16 @@
-<!-- SSHCP | BASE KEY: 18.36-R5M8QX | BUILD KEY: 18.37-H3Q7MX -->
+<!-- SSHCP | BASE KEY: 18.37-H3Q7MX | BUILD KEY: 18.38-P4N7TZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.37 — built directly from V18.36 (BUILD 18.36-R5M8QX).
-           V18.16 remains the declared GOLDEN rollback. V18.37 preserves the
-           V18.36 NESR / CLEAR timing and corrects shotgun nine-hole landmarks:
-           first-nine start/end remain light gray, second-nine start/end remain
-           one shade darker, and non-Hole-1 starts now show BOTH 1px tournament-
-           blue segment boundaries in the fixed 1–18 scorecard view. Hole-1 starts
-           keep the single internal 9/10 blue divider. */
+        /* SSHCP V18.38 — built directly from V18.37 (BUILD 18.37-H3Q7MX).
+           V18.16 remains the declared GOLDEN rollback. V18.38 preserves all
+           V18.37 NESR / CLEAR timing, shotgun landmark placement, and divider
+           locations. The only scorecard change is presentation: the existing
+           dynamic nine-hole segment divider(s) now use the same dark gray as
+           the Scorecard header row and are 2px thick instead of 1px blue. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11756,7 +11755,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 /* =========================================================
-   SSHCP V18.37 — HOME VERSION IDENTITY
+   SSHCP V18.38 — HOME VERSION IDENTITY
    Keep SSHCP on the established HOME accent; only Vxx.yy is mid gray.
    ========================================================= */
 #homeView .home-version-info .home-version-number-v1835{
@@ -11766,12 +11765,12 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 /* =========================================================
-   SSHCP V18.37 — DYNAMIC NINE-HOLE LANDMARKS
+   SSHCP V18.38 — DYNAMIC NINE-HOLE LANDMARKS
    Starting Hole defines the two nine-hole segments. First-nine start/end are
-   light gray; second-nine start/end are one shade darker. The halfway boundary
-   is tournament blue at 1px — exactly double the normal 0.5px row separator.
-   These are passive row backgrounds; active/NESR cell and score-state styling
-   continue to paint above them.
+   light gray; second-nine start/end are one shade darker. V18.38 keeps every
+   V18.37 divider location exactly as-is, but renders those boundaries at 2px
+   using the same dark gray as the Scorecard header row. These are passive row
+   backgrounds; active/NESR cell and score-state styling continue to paint above them.
    ========================================================= */
 #scorecardView .score-row.nine-end-row-v1815{
   background:transparent!important;
@@ -11783,10 +11782,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   background:#e8e8e8!important;
 }
 #scorecardView .score-row.halfway-divider-after-v1836{
-  border-bottom:1px solid var(--accent)!important;
+  border-bottom:2px solid var(--sshcp-static-header-gray-v185,#444)!important;
 }
 #scorecardView .score-row.halfway-divider-before-v1836{
-  border-top:1px solid var(--accent)!important;
+  border-top:2px solid var(--sshcp-static-header-gray-v185,#444)!important;
 }
 
 </style>
@@ -11916,7 +11915,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.37</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.38</span></span>
         </button>
 
       </div>
@@ -12799,7 +12798,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
 
-    /* V18.37 — CLEAR focus cadence. Multiple rapid CLEAR actions restart this
+    /* V18.38 — CLEAR focus cadence. Multiple rapid CLEAR actions restart this
        single 1.0s timer, so the visible NESR cue / Blue score-box outline do
        not jump around while scores are being cleared quickly. Saves still start
        immediately; only the visual focus waits. */
@@ -15163,7 +15162,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.37 RESULT LOG',
+        'SSHCP V18.38 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15226,7 +15225,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.37 CONTROL CENTER LOG',
+        'SSHCP V18.38 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17817,7 +17816,7 @@ let scoreTimingDetail =
       ));
 
       /* V18.35 — while a fresh ENTER is traveling / waiting its NESR handoff,
-         keep the prior current-hole cue in place. V18.37 preserves the same concept
+         keep the prior current-hole cue in place. V18.38 preserves the same concept
          for CLEAR: rapid clears hold the currently displayed focus for 1.0s,
          then catch up once to the true NESR. */
       const heldClearHoleIndexV1836 = (
@@ -17837,7 +17836,7 @@ let scoreTimingDetail =
           localNextHoleIndexV1834 === visualNextHoleIndexV1834
         );
 
-      /* V18.37 — Starting Hole owns the visual nine-hole landmarks. */
+      /* V18.38 — Starting Hole owns the visual nine-hole landmarks. */
       const playOrderV1836 = scorecardPlayOrderV16(selectedTeam);
       const firstNineStartIndexV1836 = playOrderV1836[0] ?? 0;
       const firstNineEndIndexV1836 = playOrderV1836[8] ?? 8;
@@ -17881,9 +17880,9 @@ let scoreTimingDetail =
             row.classList.add('halfway-divider-before-v1836');
           }
 
-          /* V18.37 — a shotgun start above Hole 1 has a second internal
+          /* V18.38 — a shotgun start above Hole 1 has a second internal
              played-nine boundary in the fixed 1–18 table: round finish ->
-             round start. Example Start 12: blue after Hole 11 as well as
+             round start. Example Start 12: divider after Hole 11 as well as
              after Hole 2. Start 1 deliberately keeps only the 9/10 split. */
           if (firstNineStartIndexV1836 !== 0 && index === secondNineEndIndexV1836) {
             row.classList.add('halfway-divider-after-v1836');
@@ -18661,7 +18660,7 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V18.37 — ENTER keeps the V18.35 NESR motion / timing: a real
+          SSHCP V18.38 — ENTER keeps the V18.35 NESR motion / timing: a real
           NESR scroll releases formatting 0.1s after it settles; a no-scroll
           ENTER waits 0.5s. CLEAR never scrolls and uses the restartable 1.0s
           visual-focus hold started at commit time. Backend verification remains
