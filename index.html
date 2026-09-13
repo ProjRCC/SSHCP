@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.25-Q4T8NV | BUILD KEY: 18.26-M5Q8RK -->
+<!-- SSHCP | BASE KEY: 18.26-M5Q8RK | BUILD KEY: 18.27-L6Q9TR -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.26 — built directly from V18.25 (BUILD 18.25-Q4T8NV).
-           V18.16 remains the declared GOLDEN rollback. V18.26 preserves the tested V18.24 Control
-           Center rewrite plus V18.25 flat Blue/Gold post-round treatment. This surgical patch makes
-           the completed HOME SCRAMBLE SUMMARY use the same shared dark-filled press paint without
-           any geometry/border pulse, and fixes GEEK MODE Gold resting text specificity. */
+        /* SSHCP V18.27 — built directly from V18.26 (BUILD 18.26-M5Q8RK).
+           V18.16 remains the declared GOLDEN rollback. V18.27 preserves the now-locked V18.26
+           presentation/interaction behavior. This surgical patch adds only the authorized-team
+           Blue/white PLACE-cell cue in Scramble Summary and frontend compatibility for the locked
+           CF V2.2 shortened Geek labels; scoring, ranking, geometry, and navigation remain unchanged. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -7063,6 +7063,18 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   pointer-events:none!important;
 }
 
+/* V18.27 — Scramble Summary mirrors the established authorized-place cue:
+   only the authorized team's PLACE cell is tournament Blue with white text.
+   No row geometry, ranking, team text, NET STROKES, or NET +/- styling changes. */
+.modal-overlay.tournament-summary .summary-authorized-place-v1827{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+}
+.modal-overlay.tournament-summary .summary-authorized-place-v1827 .summary-place-number,
+.modal-overlay.tournament-summary .summary-authorized-place-v1827 .summary-place-marker{
+  color:var(--on-accent)!important;
+}
+
 /* One-line selectors/dropdowns: target -> shrink -> final | truncation only. */
 #homeView .home-scorecard-team,
 #scorecardView .score-team-select-button,
@@ -11770,7 +11782,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.26</span>
+          <span class="home-version-info">SSHCP V18.27</span>
         </button>
 
       </div>
@@ -14942,7 +14954,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.26 RESULT LOG',
+        'SSHCP V18.27 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15005,7 +15017,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.26 CONTROL CENTER LOG',
+        'SSHCP V18.27 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -20174,7 +20186,39 @@ let scoreTimingDetail =
     }
 
     function geekStatKeyV186(statName) {
-      return String(statName || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      const normalized = String(statName || '').trim().replace(/\s+/g, ' ').toLowerCase();
+
+      /* V18.27 / CF V2.2 — the finalized sheet keeps the same calculations
+         but uses shorter locked labels. Canonicalize only for frontend
+         descriptions/detail formatting/log codes; the raw label/casing remains
+         untouched for display order and GOOD/NEUTRAL/BAD dot metadata. */
+      const aliases = {
+        'par/better %':'par-or-better %',
+        'bogey/worse %':'bogey-or-worse %',
+        'front 9 +/-':'front 9 vs par',
+        'back 9 +/-':'back 9 vs par',
+        'p3 birdies':'par-3 birdies',
+        'p4 birdies':'par-4 birdies',
+        'p5 birdies':'par-5 birdies',
+        'best vs field':'best hole vs field',
+        'worst vs field':'worst hole vs field',
+        'best 9 stretch':'best 9-hole stretch',
+        'worst 9 stretch':'worst 9-hole stretch',
+        'birdie streak':'longest birdie streak',
+        'closing birdies':'closing birdie streak',
+        'back 9 comeback':'back-9 comeback',
+        'par/under streak':'longest par/under streak',
+        'high hole score':'highest hole score',
+        'low hole score':'lowest hole score',
+        'p3 vs par':'par-3 vs par',
+        'p4 vs par':'par-4 vs par',
+        'p5 vs par':'par-5 vs par',
+        'easy 9 vs par':'9 easy holes vs par',
+        'hard 9 vs par':'9 hard holes vs par',
+        'drivable p4 birdies':'drivable par-4 birdies'
+      };
+
+      return aliases[normalized] || normalized;
     }
 
     function geekDescriptionV180(statName) {
@@ -20228,16 +20272,16 @@ let scoreTimingDetail =
     function geekLogDetailV180b(stat) {
       if (!stat || !Array.isArray(stat.teams) || !stat.teams.length) return '';
       const detail = stat.teams[0] && stat.teams[0].detail ? stat.teams[0].detail : {};
-      const name = String(stat.stat || '');
+      const name = geekStatKeyV186(stat.stat);
 
-      if ((name === 'Hardest Hole' || name === 'Easiest Hole' ||
-           name === 'Best Hole vs Field' || name === 'Worst Hole vs Field') && detail.hole) {
+      if ((name === 'hardest hole' || name === 'easiest hole' ||
+           name === 'best hole vs field' || name === 'worst hole vs field') && detail.hole) {
         return '@H' + String(detail.hole);
       }
-      if ((name === 'Best 9-Hole Stretch' || name === 'Worst 9-Hole Stretch') && detail.startHole) {
+      if ((name === 'best 9-hole stretch' || name === 'worst 9-hole stretch') && detail.startHole) {
         return '@S' + String(detail.startHole);
       }
-      if (name === 'Back-9 Comeback') {
+      if (name === 'back-9 comeback') {
         const first = Number(detail.firstNine);
         const back = Number(detail.backNine);
         if (Number.isFinite(first) && Number.isFinite(back)) {
@@ -21598,6 +21642,14 @@ let scoreTimingDetail =
 
       const podium = buildTournamentPodium(lastLeaderboardRows);
       const rows = podium.ordered.slice(0, 10);
+      const summaryAuthorizedTeamV1827 = normalizeName(getAuthorizedTeam() || '');
+
+      function summaryOwnsAuthorizedPlaceV1827(row) {
+        return Boolean(
+          summaryAuthorizedTeamV1827 &&
+          normalizeName((row && row.team) || '') === summaryAuthorizedTeamV1827
+        );
+      }
 
       function summaryPlaceLabel(rowIndex) {
         return resolvedTournamentPlaceLabel(rows, rowIndex);
@@ -21625,7 +21677,9 @@ let scoreTimingDetail =
 
         html +=
           '<div class="tournament-summary-row place-' + (index + 1) + '">' +
-          '<div class="tournament-summary-place"><span class="summary-place-number">' + escapeHtml(String(index + 1)) +
+          '<div class="tournament-summary-place' +
+          (summaryOwnsAuthorizedPlaceV1827(row) ? ' summary-authorized-place-v1827' : '') +
+          '"><span class="summary-place-number">' + escapeHtml(String(index + 1)) +
           '</span></div>' +
           '<div class="tournament-summary-team"><span class="summary-team-anchor">' +
           '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
@@ -21661,7 +21715,9 @@ let scoreTimingDetail =
             (hcp === null ? '' : ' (HCP ' + hcp + ')');
           html +=
             '<div class="tournament-summary-remaining-row">' +
-            '<div class="tournament-summary-remaining-cell place">' + escapeHtml(String(place)) + '</div>' +
+            '<div class="tournament-summary-remaining-cell place' +
+            (summaryOwnsAuthorizedPlaceV1827(row) ? ' summary-authorized-place-v1827' : '') +
+            '">' + escapeHtml(String(place)) + '</div>' +
             '<div class="tournament-summary-remaining-cell team"><span class="summary-team-anchor">' +
             '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
             '</span></div>' +
