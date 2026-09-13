@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.23-B7H4QX | BUILD KEY: 18.24-F6R9MN -->
+<!-- SSHCP | BASE KEY: 18.24-F6R9MN | BUILD KEY: 18.25-Q4T8NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.24 — built directly from V18.23 (BUILD 18.23-B7H4QX).
-           V18.16 remains the declared GOLDEN rollback. V18.24 preserves V18.23 production logic and
-           rewrites only the Control Center presentation from the measured S25 Chrome 384×724 target.
-           It also adds the approved end-of-round Blue/Gold feature-button treatment and locks those
-           feature buttons against any press-state geometry pulse. */
+        /* SSHCP V18.25 — built directly from V18.24 (BUILD 18.24-F6R9MN).
+           V18.16 remains the declared GOLDEN rollback. V18.25 preserves the tested V18.24 Control
+           Center rewrite and production logic. This patch removes the V18.24 gold perimeter fade,
+           uses flat tournament-Blue feature buttons with Gold text, removes the completed HOME
+           SCRAMBLE SUMMARY border, and preserves paint-only press feedback with zero geometry pulse. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11544,51 +11544,43 @@ body option{
 }
 
 /* =========================================================
-   SSHCP V18.24 — END-OF-ROUND FEATURE BUTTON SIGNATURE
-   Blue remains dominant. A real Gold perimeter glow occupies roughly the
-   outer 10–18% and dissolves into Blue. The treatment is static and shared by
-   HOME/Leaderboard SCRAMBLE SUMMARY plus Summary SKINS/GEEK MODE.
+   SSHCP V18.25 — FLAT END-OF-ROUND FEATURE BUTTON COLORS
+   V18.24's Gold perimeter fade is removed completely. The four post-round
+   feature actions stay flat tournament Blue with Gold text. Completed HOME
+   SCRAMBLE SUMMARY has no border; during-play VIEW LIVE LEADERBOARD remains
+   governed by its existing white/Blue outlined state. Press feedback remains
+   paint-only and geometry-neutral.
    ========================================================= */
-:root{ --feature-gold-v1824:#D4AF37; }
+:root{ --feature-gold-v1825:#D4AF37; }
 html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary,
 .modal-overlay.tournament-summary .summary-skins-button-v1627,
 .modal-overlay.tournament-summary .summary-geek-button-v180{
-  background:
-    linear-gradient(to right,
-      rgba(212,175,55,.92) 0%,
-      rgba(212,175,55,.46) 6%,
-      rgba(212,175,55,0) 18%,
-      rgba(212,175,55,0) 82%,
-      rgba(212,175,55,.46) 94%,
-      rgba(212,175,55,.92) 100%),
-    linear-gradient(to bottom,
-      rgba(212,175,55,.86) 0%,
-      rgba(212,175,55,.34) 7%,
-      rgba(212,175,55,0) 18%,
-      rgba(212,175,55,0) 82%,
-      rgba(212,175,55,.34) 93%,
-      rgba(212,175,55,.86) 100%),
-    var(--accent)!important;
-  color:var(--on-accent)!important;
-  -webkit-text-fill-color:var(--on-accent)!important;
+  background:var(--accent)!important;
+  color:var(--feature-gold-v1825)!important;
+  -webkit-text-fill-color:var(--feature-gold-v1825)!important;
   box-sizing:border-box!important;
   -webkit-appearance:none!important;
   appearance:none!important;
   transform:none!important;
   transition:none!important;
   filter:none!important;
+  box-shadow:none!important;
 }
 
-/* Press feedback must be paint-only. These declarations explicitly freeze the
-   border model that previously made the Summary action appear to pulse. */
+/* Completed HOME changes from the during-play outlined action to a flat filled
+   SCRAMBLE SUMMARY action. Border removal does not change its outer geometry
+   because the button remains border-box sized by the existing HOME layout. */
 html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
 html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active,
 html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pressed-v172{
   border-style:solid!important;
-  border-width:5px!important;
+  border-width:0!important;
   transform:none!important;
+  outline:0!important;
 }
+
+/* Leaderboard Summary was already borderless; keep that geometry locked. */
 #leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary:active,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary.sshcp-button-pressed-v172{
@@ -11597,6 +11589,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   transform:none!important;
   outline:0!important;
 }
+
+/* SKINS / GEEK MODE keep their established button geometry; only the resting
+   paint changes to Blue + Gold text. */
 .modal-overlay.tournament-summary .summary-skins-button-v1627,
 .modal-overlay.tournament-summary .summary-skins-button-v1627:active,
 .modal-overlay.tournament-summary .summary-skins-button-v1627.sshcp-button-pressed-v172,
@@ -11735,7 +11730,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.24</span>
+          <span class="home-version-info">SSHCP V18.25</span>
         </button>
 
       </div>
@@ -14907,7 +14902,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.24 RESULT LOG',
+        'SSHCP V18.25 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14970,7 +14965,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.24 CONTROL CENTER LOG',
+        'SSHCP V18.25 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
