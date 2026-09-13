@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.26-M5Q8RK | BUILD KEY: 18.27-L6Q9TR -->
+<!-- SSHCP | BASE KEY: 18.28-R3K7VN | BUILD KEY: 18.29-H4N7QS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.27 — built directly from V18.26 (BUILD 18.26-M5Q8RK).
-           V18.16 remains the declared GOLDEN rollback. V18.27 preserves the now-locked V18.26
-           presentation/interaction behavior. This surgical patch adds only the authorized-team
-           Blue/white PLACE-cell cue in Scramble Summary and frontend compatibility for the locked
-           CF V2.2 shortened Geek labels; scoring, ranking, geometry, and navigation remain unchanged. */
+        /* SSHCP V18.29 — built directly from V18.28 (BUILD 18.28-R3K7VN).
+           V18.16 remains the declared GOLDEN rollback. V18.29 preserves V18.28 behavior and
+           changes only HOME -> Scorecard entry sequencing: HOME now stores the intended team
+           identity without pre-rendering/repositioning the hidden Scorecard, then uses the same
+           existing showScorecard() fresh-read + white reveal + final-position path as Leaderboard. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11782,7 +11782,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.27</span>
+          <span class="home-version-info">SSHCP V18.29</span>
         </button>
 
       </div>
@@ -14954,7 +14954,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.27 RESULT LOG',
+        'SSHCP V18.29 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15017,7 +15017,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.27 CONTROL CENTER LOG',
+        'SSHCP V18.29 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -15952,7 +15952,12 @@ let scoreTimingDetail =
         button.addEventListener('click', async () => {
           closeHomeTeamDropup();
           if (!canNavigateToTeam(team)) { showNotAuthorized(); return; }
-          selectTeam(team.slot);
+
+          /* V18.29 — HOME -> Scorecard path normalization.
+             Do not render/reposition the hidden Scorecard before showScorecard().
+             Store only the intended team; the existing covered fresh load owns
+             team restoration, render, reveal fade, and final score position. */
+          rememberSelectedTeam(team.name);
           addTestLog('TEAM SELECT', 'OK', '—', team.name);
           await showScorecard();
         });
@@ -15985,11 +15990,13 @@ let scoreTimingDetail =
         await openHomeTeamDropup();
         return;
       }
-      if (!scorecardHasLoaded && !scorecardLoadInProgress) {
-        await loadScorecard();
-      }
-      const team = teams.find(item => normalizeName(item.name) === normalizeName(targetTeamName));
-      if (team) selectTeam(team.slot, false);
+
+      /* V18.29 — match the clean Leaderboard -> Scorecard path.
+         HOME must not pre-load, pre-render, or pre-position the hidden
+         Scorecard. Persist the intended team name only, then let
+         showScorecard() switch views and run the established white-covered
+         fresh load before restoreScorePosition() executes after reveal. */
+      rememberSelectedTeam(targetTeamName);
       await showScorecard();
     }
 
@@ -22251,21 +22258,39 @@ let scoreTimingDetail =
       return splitLeaderboardTeamTwoLinesV55(text);
     }
 
+    function geekStatLegalCutsV1828(text) {
+      const value = String(text || '').trim();
+      const cuts = [];
+
+      /* V18.28 legal STAT breaks:
+         - normal spaces, EXCEPT the space that directly binds a trailing %
+         - immediately AFTER a hyphen
+         - immediately AFTER a slash
+         This keeps constructs such as EAGLE % / BIRDIE % / BETTER % intact
+         while allowing PAR/ | BETTER % and BOGEY/ | WORSE %. */
+      for (let i = 1; i < value.length - 1; i++) {
+        if (value[i] === ' ') {
+          let next = i + 1;
+          while (next < value.length && value[next] === ' ') next++;
+          if (value[next] !== '%') cuts.push({ cut:i, skip:1 });
+        }
+        else if (value[i] === '-' || value[i] === '/') {
+          cuts.push({ cut:i + 1, skip:0 });
+        }
+      }
+
+      return cuts;
+    }
+
     function splitGeekStatTwoLinesV1821(text) {
       const value = String(text || '').trim();
       if (!value) return null;
 
       const midpoint = value.length / 2;
-      const cuts = [];
+      const cuts = geekStatLegalCutsV1828(value);
 
-      /* V18.23 legal breaks only: normal spaces or immediately AFTER a hyphen.
-         If no legal break exists, return null so the fitter shrinks the intact
-         word instead of ever slicing through it. */
-      for (let i = 1; i < value.length - 1; i++) {
-        if (value[i] === ' ') cuts.push({ cut:i, skip:1 });
-        else if (value[i] === '-') cuts.push({ cut:i + 1, skip:0 });
-      }
-
+      /* If no legal break exists, shrink the intact word/phrase instead of
+         ever manufacturing a character-level split. */
       if (!cuts.length) return null;
 
       const best = cuts.reduce((chosen, candidate) =>
@@ -22284,15 +22309,11 @@ let scoreTimingDetail =
       const value = String(text || '').trim();
       if (!value) return ['', '', ''];
 
-      const cuts = [];
-      for (let i = 1; i < value.length - 1; i++) {
-        if (value[i] === ' ') cuts.push({ cut:i, skip:1 });
-        else if (value[i] === '-') cuts.push({ cut:i + 1, skip:0 });
-      }
+      const cuts = geekStatLegalCutsV1828(value);
 
       /* Prefer legal break points near thirds. Score every ordered pair by the
-         longest line first, then by overall balance. Hyphens stay on the line
-         before the break because hyphen cuts use skip:0. */
+         longest line first, then by overall balance. Hyphens/slashes stay on the line
+         before the break because punctuation cuts use skip:0. */
       if (cuts.length >= 2) {
         let best = null;
         for (let a = 0; a < cuts.length - 1; a++) {
