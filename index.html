@@ -1,20 +1,18 @@
-<!-- SSHCP | BASE KEY: 18.34-M6T9QK | BUILD KEY: 18.35-V7K2RM -->
+<!-- SSHCP | BASE KEY: 18.35-V7K2RM | BUILD KEY: 18.36-R5M8QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.35 — built directly from V18.34 (BUILD 18.34-M6T9QK).
-           V18.16 remains the declared GOLDEN rollback. V18.35 keeps all V18.34
-           scoring / verification authority intact but replaces the old fixed-time
-           ENTER movement with Next Expected Score Row (NESR) positioning. ENTER
-           scrolls only when NESR lacks four visible rows beneath it while four
-           later course rows still exist; refresh normalizes NESR to four rows
-           beneath whenever the 1–18 boundaries allow. Scroll time is distance-
-           based with smoothstep easing, then formatting releases after 0.1s;
-           no-scroll ENTER releases after 0.5s. HOME also shows the current build
-           identity with only the Vxx.yy portion in mid gray. */
+        /* SSHCP V18.36 — built directly from V18.35 (BUILD 18.35-V7K2RM).
+           V18.16 remains the declared GOLDEN rollback. V18.36 preserves the
+           V18.35 NESR motion / verification model, adds a restartable 1.0s CLEAR
+           visual-focus hold for fast clearing, and makes the scorecard's nine-hole
+           landmarks dynamic from Starting Hole. First-nine start/end use light
+           gray; second-nine start/end use one shade darker; the halfway boundary
+           is a 1px tournament-blue divider (double the normal 0.5px separator).
+           HOME shows the current build identity with only Vxx.yy in mid gray. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11759,12 +11757,37 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 /* =========================================================
-   SSHCP V18.35 — HOME VERSION IDENTITY
+   SSHCP V18.36 — HOME VERSION IDENTITY
    Keep SSHCP on the established HOME accent; only Vxx.yy is mid gray.
    ========================================================= */
 #homeView .home-version-info .home-version-number-v1835{
   color:#8f8f8f!important;
   -webkit-text-fill-color:#8f8f8f!important;
+}
+
+
+/* =========================================================
+   SSHCP V18.36 — DYNAMIC NINE-HOLE LANDMARKS
+   Starting Hole defines the two nine-hole segments. First-nine start/end are
+   light gray; second-nine start/end are one shade darker. The halfway boundary
+   is tournament blue at 1px — exactly double the normal 0.5px row separator.
+   These are passive row backgrounds; active/NESR cell and score-state styling
+   continue to paint above them.
+   ========================================================= */
+#scorecardView .score-row.nine-end-row-v1815{
+  background:transparent!important;
+}
+#scorecardView .score-row.round-landmark-light-v1836{
+  background:#f2f2f2!important;
+}
+#scorecardView .score-row.round-landmark-dark-v1836{
+  background:#e8e8e8!important;
+}
+#scorecardView .score-row.halfway-divider-after-v1836{
+  border-bottom:1px solid var(--accent)!important;
+}
+#scorecardView .score-row.halfway-divider-before-v1836{
+  border-top:1px solid var(--accent)!important;
 }
 
 </style>
@@ -11894,7 +11917,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.35</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.36</span></span>
         </button>
 
       </div>
@@ -12777,6 +12800,42 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
 
+    /* V18.36 — CLEAR focus cadence. Multiple rapid CLEAR actions restart this
+       single 1.0s timer, so the visible NESR cue / Blue score-box outline do
+       not jump around while scores are being cleared quickly. Saves still start
+       immediately; only the visual focus waits. */
+    const CLEAR_FOCUS_VISUAL_DELAY_V1836 = 1000;
+    let clearVisualHoldActiveV1836 = false;
+    let clearVisualHoldHoleIndexV1836 = null;
+    let clearVisualHoldTimerV1836 = 0;
+
+    function resetClearVisualHoldV1836() {
+      if (clearVisualHoldTimerV1836) window.clearTimeout(clearVisualHoldTimerV1836);
+      clearVisualHoldTimerV1836 = 0;
+      clearVisualHoldActiveV1836 = false;
+      clearVisualHoldHoleIndexV1836 = null;
+    }
+
+    function beginClearVisualHoldV1836() {
+      if (!clearVisualHoldActiveV1836 || !Number.isInteger(clearVisualHoldHoleIndexV1836)) {
+        const displayedProgressV1836 = scoreVisualProgressV1619();
+        clearVisualHoldHoleIndexV1836 = scorecardActiveHoleIndexV16(
+          displayedProgressV1836,
+          selectedTeam
+        );
+      }
+
+      clearVisualHoldActiveV1836 = true;
+      if (clearVisualHoldTimerV1836) window.clearTimeout(clearVisualHoldTimerV1836);
+
+      clearVisualHoldTimerV1836 = window.setTimeout(() => {
+        clearVisualHoldTimerV1836 = 0;
+        clearVisualHoldActiveV1836 = false;
+        clearVisualHoldHoleIndexV1836 = null;
+        renderScorecard();
+      }, CLEAR_FOCUS_VISUAL_DELAY_V1836);
+    }
+
     function clearScoreVisualStateV1619(index) {
       const state = scoreVisualStateV1619[index];
       if (state && state.timer) window.clearTimeout(state.timer);
@@ -12788,6 +12847,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
         if (state && state.timer) window.clearTimeout(state.timer);
         scoreVisualStateV1619[index] = null;
       });
+      resetClearVisualHoldV1836();
     }
 
     function beginScoreVisualCadenceV1619(index, value) {
@@ -15104,7 +15164,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.35 RESULT LOG',
+        'SSHCP V18.36 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15167,7 +15227,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.35 CONTROL CENTER LOG',
+        'SSHCP V18.36 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17758,15 +17818,35 @@ let scoreTimingDetail =
       ));
 
       /* V18.35 — while a fresh ENTER is traveling / waiting its NESR handoff,
-         keep the prior current-hole cue in place. The handoff render advances
-         the dark-gray NESR hole cue and Blue score-box outline at the exact
-         same moment the entered score turns Blue. */
-      const nextHoleIndex = holdNextHoleVisualV1834
-        ? visualNextHoleIndexV1834
-        : localNextHoleIndexV1834;
-      const showVerifiedNextHoleBorder = (
-        !holdNextHoleVisualV1834 &&
-        localNextHoleIndexV1834 === visualNextHoleIndexV1834
+         keep the prior current-hole cue in place. V18.36 adds the same concept
+         for CLEAR: rapid clears hold the currently displayed focus for 1.0s,
+         then catch up once to the true NESR. */
+      const heldClearHoleIndexV1836 = (
+        clearVisualHoldActiveV1836 &&
+        Number.isInteger(clearVisualHoldHoleIndexV1836)
+      ) ? clearVisualHoldHoleIndexV1836 : null;
+
+      const nextHoleIndex = heldClearHoleIndexV1836 !== null
+        ? heldClearHoleIndexV1836
+        : (holdNextHoleVisualV1834
+          ? visualNextHoleIndexV1834
+          : localNextHoleIndexV1834);
+      const showVerifiedNextHoleBorder = heldClearHoleIndexV1836 !== null
+        ? true
+        : (
+          !holdNextHoleVisualV1834 &&
+          localNextHoleIndexV1834 === visualNextHoleIndexV1834
+        );
+
+      /* V18.36 — Starting Hole owns the visual nine-hole landmarks. */
+      const playOrderV1836 = scorecardPlayOrderV16(selectedTeam);
+      const firstNineStartIndexV1836 = playOrderV1836[0] ?? 0;
+      const firstNineEndIndexV1836 = playOrderV1836[8] ?? 8;
+      const secondNineStartIndexV1836 = playOrderV1836[9] ?? 9;
+      const secondNineEndIndexV1836 = playOrderV1836[17] ?? 17;
+      const halfwayWrapsV1836 = (
+        firstNineEndIndexV1836 === 17 &&
+        secondNineStartIndexV1836 === 0
       );
 
 
@@ -17777,8 +17857,6 @@ let scoreTimingDetail =
         ) => {
 
 
-          /* V18.15: no standalone 9/10 divider row. Hole 9 and Hole 18
-             receive a subtle base-row treatment instead. */
           const row =
             document.createElement(
               'div'
@@ -17788,8 +17866,20 @@ let scoreTimingDetail =
           row.className =
             'score-row';
 
-          if (index === 8 || index === 17) {
-            row.classList.add('nine-end-row-v1815');
+          if (index === firstNineStartIndexV1836 || index === firstNineEndIndexV1836) {
+            row.classList.add('round-landmark-light-v1836');
+          }
+
+          if (index === secondNineStartIndexV1836 || index === secondNineEndIndexV1836) {
+            row.classList.add('round-landmark-dark-v1836');
+          }
+
+          if (!halfwayWrapsV1836 && index === firstNineEndIndexV1836) {
+            row.classList.add('halfway-divider-after-v1836');
+          }
+
+          if (halfwayWrapsV1836 && index === secondNineStartIndexV1836) {
+            row.classList.add('halfway-divider-before-v1836');
           }
 
 
@@ -18384,6 +18474,8 @@ let scoreTimingDetail =
         raw === ''
       ) {
 
+        beginClearVisualHoldV1836();
+
         localScores[
           index
         ] =
@@ -18436,6 +18528,8 @@ let scoreTimingDetail =
       if (
         value === 0
       ) {
+
+        beginClearVisualHoldV1836();
 
         localScores[
           index
@@ -18560,10 +18654,10 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V18.35 — ENTER starts save immediately, then positions the
-          Next Expected Score Row (NESR) only when needed. A real NESR scroll
-          releases formatting 0.1s after it settles; a no-scroll ENTER waits
-          0.5s. CLEAR stays stationary. Backend verification remains
+          SSHCP V18.36 — ENTER keeps the V18.35 NESR motion / timing: a real
+          NESR scroll releases formatting 0.1s after it settles; a no-scroll
+          ENTER waits 0.5s. CLEAR never scrolls and uses the restartable 1.0s
+          visual-focus hold started at commit time. Backend verification remains
           authoritative and can roll optimistic Blue back on failure.
         */
         if (!commitResult.cleared) {
@@ -18583,7 +18677,9 @@ let scoreTimingDetail =
             );
           });
         } else {
-          /* CLEAR stays stationary and never participates in optimistic Blue. */
+          /* CLEAR stays stationary. Its 1.0s visual-focus hold was started by
+             commitScoreEntryValue() before the local blank render, so multiple
+             rapid clears simply restart one shared timer. */
           clearScoreVisualStateV1619(commitResult.index);
           cancelScoreEnterBeautyScrollV1618();
         }
