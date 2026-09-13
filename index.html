@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.22-V3C8LK | BUILD KEY: 18.23-B7H4QX -->
+<!-- SSHCP | BASE KEY: 18.23-B7H4QX | BUILD KEY: 18.24-F6R9MN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.23 — built directly from V18.22 (BUILD 18.22-V3C8LK).
-           V18.16 remains the declared GOLDEN rollback. V18.23 preserves all V18.22 behavior and makes
-           only three Geek presentation refinements: the viewport is sized as 11 normal-row units, STAT
-           text targets 40% of row height, and STAT wrapping never splits an actual word. Category rows
-           remain 80% of normal row height and Welcome remains locked at 85% of viewport width. */
+        /* SSHCP V18.24 — built directly from V18.23 (BUILD 18.23-B7H4QX).
+           V18.16 remains the declared GOLDEN rollback. V18.24 preserves V18.23 production logic and
+           rewrites only the Control Center presentation from the measured S25 Chrome 384×724 target.
+           It also adds the approved end-of-round Blue/Gold feature-button treatment and locks those
+           feature buttons against any press-state geometry pulse. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11277,6 +11277,337 @@ body option{
   color:var(--accent)!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V18.24 — CONTROL CENTER MEASURED RESPONSIVE REWRITE
+   Master visual reference: S25 default Chrome, 384×724 visual viewport,
+   device multiplier 1.000. Horizontal geometry is percentage-based from
+   that reference. Vertical geometry and typography scale from the existing
+   device multiplier. The log remains the only flexible vertical zone, so a
+   tablet naturally devotes about half of a tall screen to log history while
+   the control families retain the target composition.
+   ========================================================= */
+#testLogView{
+  --cc-mult-v1824:1;
+  --cc-top-v1824:25px;
+  --cc-bottom-v1824:8px;
+  --cc-title-v1824:22px;
+  --cc-title-gap-v1824:10px;
+  --cc-stack-top-v1824:10px;
+  --cc-stack-gap-v1824:7px;
+  --cc-utility-h-v1824:42px;
+  --cc-metrics-h-v1824:34px;
+  --cc-check-h-v1824:42px;
+  --cc-mode-h-v1824:46px;
+  --cc-score-h-v1824:46px;
+  --cc-auth-h-v1824:46px;
+  --cc-bottom-nav-h-v1824:42px;
+  --cc-auth-nav-gap-v1824:18px;
+  --cc-log-head-h-v1824:28px;
+  --cc-log-row-min-v1824:28px;
+  --cc-log-font-v1824:10px;
+  --cc-log-detail-v1824:8px;
+  --cc-cell-vpad-v1824:5px;
+  --cc-detail-gap-v1824:2px;
+  --cc-check-box-v1824:18px;
+  --cc-check-gap-v1824:7px;
+  --cc-check-font-v1824:14px;
+  --cc-radius7-v1824:7px;
+  --cc-radius8-v1824:8px;
+  --cc-border1-v1824:1px;
+  --cc-border2-v1824:2px;
+}
+
+#testLogView .test-log-screen{
+  box-sizing:border-box!important;
+  width:min(760px,100%)!important;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  margin:0 auto!important;
+  padding-top:calc(var(--cc-top-v1824) + env(safe-area-inset-top))!important;
+  padding-right:min(3.125vw,23.75px)!important; /* 12 / 384, capped at 760px shell */
+  padding-bottom:max(var(--cc-bottom-v1824),env(safe-area-inset-bottom))!important;
+  padding-left:min(3.125vw,23.75px)!important;  /* 12 / 384, capped at 760px shell */
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+#testLogView .test-log-header{
+  flex:0 0 auto!important;
+  display:block!important;
+  margin:0 0 var(--cc-title-gap-v1824)!important;
+}
+#testLogView .test-log-title{
+  margin:0!important;
+  color:var(--accent)!important;
+  font-size:var(--cc-title-v1824)!important;
+  line-height:1!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+
+/* Exact target column family: TIME 17% / ACTION 55% / RESULT 14% / TOTAL 14%. */
+#testLogView .test-log-table{
+  flex:1 1 0!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  border-width:var(--cc-border1-v1824)!important;
+  border-radius:var(--cc-radius8-v1824)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#testLogView .test-log-row{
+  grid-template-columns:17% 55% 14% 14%!important;
+  min-height:var(--cc-log-row-min-v1824)!important;
+  font-size:var(--cc-log-font-v1824)!important;
+  line-height:1.15!important;
+}
+#testLogView .test-log-row.header{
+  min-height:var(--cc-log-head-h-v1824)!important;
+  height:var(--cc-log-head-h-v1824)!important;
+  position:sticky!important;
+  top:0!important;
+  z-index:3!important;
+}
+#testLogView .test-log-row>div{
+  min-width:0!important;
+  padding:var(--cc-cell-vpad-v1824) 1.10%!important;
+}
+#testLogView .test-log-detail{
+  display:block!important;
+  margin-top:var(--cc-detail-gap-v1824)!important;
+  font-size:var(--cc-log-detail-v1824)!important;
+  line-height:1.12!important;
+}
+
+#testLogView .control-center-bottom-stack{
+  flex:0 0 auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:var(--cc-stack-gap-v1824)!important;
+  margin-top:var(--cc-stack-top-v1824)!important;
+  min-height:0!important;
+}
+
+/* Horizontal button composition is fixed as percentages of available width. */
+#testLogView .test-log-utility-row,
+#testLogView .control-center-checks-v188{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  column-gap:1.944444%!important; /* 7 / 360 */
+  row-gap:0!important;
+  margin:0!important;
+}
+#testLogView .control-center-nav,
+#testLogView .test-bottom-nav{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  column-gap:1.944444%!important;
+  row-gap:0!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+#testLogView .test-score-controls{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  column-gap:1.388889%!important; /* 5 / 360 */
+  row-gap:0!important;
+  margin:0!important;
+}
+#testLogView .test-auth-button-row,
+#testLogView .test-auth-button-row.authorized,
+#testLogView .test-auth-button-row.master-authorized{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  column-gap:1.944444%!important;
+  row-gap:0!important;
+  align-items:stretch!important;
+}
+#testLogView .test-auth-button-row.authorized:not(.master-authorized){
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+
+/* Measured S25 heights × device multiplier. */
+#testLogView .test-log-utility-row .test-log-reset,
+#testLogView .test-log-utility-row .test-copy-log{
+  width:100%!important;
+  height:var(--cc-utility-h-v1824)!important;
+  min-height:var(--cc-utility-h-v1824)!important;
+  max-height:var(--cc-utility-h-v1824)!important;
+  margin:0!important;
+  padding:0 1.1%!important;
+  border-radius:var(--cc-radius7-v1824)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+#testLogView .control-center-viewport-v188{
+  flex:0 0 var(--cc-metrics-h-v1824)!important;
+  height:var(--cc-metrics-h-v1824)!important;
+  min-height:var(--cc-metrics-h-v1824)!important;
+  max-height:var(--cc-metrics-h-v1824)!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:calc(4px * var(--cc-mult-v1824)) 1.5%!important;
+  border-width:var(--cc-border1-v1824)!important;
+  border-radius:var(--cc-radius7-v1824)!important;
+  font-size:calc(9px * var(--cc-mult-v1824))!important;
+  line-height:1.12!important;
+  overflow:hidden!important;
+}
+#testLogView .control-center-check-v188{
+  height:var(--cc-check-h-v1824)!important;
+  min-height:var(--cc-check-h-v1824)!important;
+  max-height:var(--cc-check-h-v1824)!important;
+  margin:0!important;
+  padding:0 1.1%!important;
+  border-width:var(--cc-border2-v1824)!important;
+  border-radius:var(--cc-radius7-v1824)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+#testLogView .control-center-nav-button{
+  box-sizing:border-box!important;
+  height:var(--cc-mode-h-v1824)!important;
+  min-height:var(--cc-mode-h-v1824)!important;
+  max-height:var(--cc-mode-h-v1824)!important;
+  margin:0!important;
+  padding:0 1.1%!important;
+  border-width:var(--cc-border2-v1824)!important;
+  border-radius:var(--cc-radius8-v1824)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+#testLogView .control-center-skins-toggle,
+#testLogView .control-center-geek-toggle{
+  gap:var(--cc-check-gap-v1824)!important;
+}
+#testLogView .control-center-skins-box,
+#testLogView .control-center-geek-box{
+  width:var(--cc-check-box-v1824)!important;
+  height:var(--cc-check-box-v1824)!important;
+  flex:0 0 var(--cc-check-box-v1824)!important;
+  border-width:var(--cc-border2-v1824)!important;
+  border-radius:calc(3px * var(--cc-mult-v1824))!important;
+  font-size:var(--cc-check-font-v1824)!important;
+}
+#testLogView .test-score-action{
+  height:var(--cc-score-h-v1824)!important;
+  min-height:var(--cc-score-h-v1824)!important;
+  max-height:var(--cc-score-h-v1824)!important;
+  margin:0!important;
+  padding:0 0.75%!important;
+  border-width:var(--cc-border2-v1824)!important;
+  border-radius:var(--cc-radius8-v1824)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+#testLogView .test-remove-auth,
+#testLogView .test-switch-auth,
+#testLogView .test-team-auth-toggle{
+  box-sizing:border-box!important;
+  height:var(--cc-auth-h-v1824)!important;
+  min-height:var(--cc-auth-h-v1824)!important;
+  max-height:var(--cc-auth-h-v1824)!important;
+  margin:0!important;
+  padding:0 1.1%!important;
+  border-radius:var(--cc-radius8-v1824)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+#testLogView .test-team-auth-toggle{
+  gap:var(--cc-check-gap-v1824)!important;
+}
+#testLogView .test-bottom-nav{
+  margin-top:var(--cc-auth-nav-gap-v1824)!important;
+}
+#testLogView .test-bottom-nav-button{
+  box-sizing:border-box!important;
+  width:100%!important;
+  height:var(--cc-bottom-nav-h-v1824)!important;
+  min-height:var(--cc-bottom-nav-h-v1824)!important;
+  max-height:var(--cc-bottom-nav-h-v1824)!important;
+  margin:0!important;
+  padding:0 1.1%!important;
+  border-width:var(--cc-border2-v1824)!important;
+  border-radius:var(--cc-radius7-v1824)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  line-height:1!important;
+}
+
+/* =========================================================
+   SSHCP V18.24 — END-OF-ROUND FEATURE BUTTON SIGNATURE
+   Blue remains dominant. A real Gold perimeter glow occupies roughly the
+   outer 10–18% and dissolves into Blue. The treatment is static and shared by
+   HOME/Leaderboard SCRAMBLE SUMMARY plus Summary SKINS/GEEK MODE.
+   ========================================================= */
+:root{ --feature-gold-v1824:#D4AF37; }
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary,
+.modal-overlay.tournament-summary .summary-skins-button-v1627,
+.modal-overlay.tournament-summary .summary-geek-button-v180{
+  background:
+    linear-gradient(to right,
+      rgba(212,175,55,.92) 0%,
+      rgba(212,175,55,.46) 6%,
+      rgba(212,175,55,0) 18%,
+      rgba(212,175,55,0) 82%,
+      rgba(212,175,55,.46) 94%,
+      rgba(212,175,55,.92) 100%),
+    linear-gradient(to bottom,
+      rgba(212,175,55,.86) 0%,
+      rgba(212,175,55,.34) 7%,
+      rgba(212,175,55,0) 18%,
+      rgba(212,175,55,0) 82%,
+      rgba(212,175,55,.34) 93%,
+      rgba(212,175,55,.86) 100%),
+    var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  box-sizing:border-box!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  transform:none!important;
+  transition:none!important;
+  filter:none!important;
+}
+
+/* Press feedback must be paint-only. These declarations explicitly freeze the
+   border model that previously made the Summary action appear to pulse. */
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pressed-v172{
+  border-style:solid!important;
+  border-width:5px!important;
+  transform:none!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary:active,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary.sshcp-button-pressed-v172{
+  border-style:solid!important;
+  border-width:0!important;
+  transform:none!important;
+  outline:0!important;
+}
+.modal-overlay.tournament-summary .summary-skins-button-v1627,
+.modal-overlay.tournament-summary .summary-skins-button-v1627:active,
+.modal-overlay.tournament-summary .summary-skins-button-v1627.sshcp-button-pressed-v172,
+.modal-overlay.tournament-summary .summary-geek-button-v180,
+.modal-overlay.tournament-summary .summary-geek-button-v180:active,
+.modal-overlay.tournament-summary .summary-geek-button-v180.sshcp-button-pressed-v172{
+  border-style:solid!important;
+  border-width:2px!important;
+  transform:none!important;
+}
+
 </style>
 </head>
 
@@ -11404,7 +11735,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.23</span>
+          <span class="home-version-info">SSHCP V18.24</span>
         </button>
 
       </div>
@@ -11754,7 +12085,7 @@ body option{
 
 
   <!-- =======================================================
-       CONTROL CENTER — CURRENT SSHCP V17.5
+       CONTROL CENTER — V18.24 MEASURED RESPONSIVE REWRITE
        Top title/log anchor from the top; all controls anchor from the bottom.
        ======================================================= -->
 
@@ -14576,7 +14907,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.23 RESULT LOG',
+        'SSHCP V18.24 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14639,7 +14970,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.23 CONTROL CENTER LOG',
+        'SSHCP V18.24 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16717,59 +17048,98 @@ let scoreTimingDetail =
 
     let testButtonMeasureProbe = null;
 
+    function syncControlCenterLayoutV1824() {
+      if (!els.testLogView) return null;
+      const metrics = getVerticalMetricsV188();
+      const multiplier = metrics.multiplier;
+      const root = els.testLogView;
+      const setPx = (name, base) => {
+        root.style.setProperty(name, (base * multiplier).toFixed(3) + 'px');
+      };
+
+      root.style.setProperty('--cc-mult-v1824', multiplier.toFixed(5));
+      setPx('--cc-top-v1824', 25);
+      setPx('--cc-bottom-v1824', 8);
+      setPx('--cc-title-v1824', 22);
+      setPx('--cc-title-gap-v1824', 10);
+      setPx('--cc-stack-top-v1824', 10);
+      setPx('--cc-stack-gap-v1824', 7);
+      setPx('--cc-utility-h-v1824', 42);
+      setPx('--cc-metrics-h-v1824', 34);
+      setPx('--cc-check-h-v1824', 42);
+      setPx('--cc-mode-h-v1824', 46);
+      setPx('--cc-score-h-v1824', 46);
+      setPx('--cc-auth-h-v1824', 46);
+      setPx('--cc-bottom-nav-h-v1824', 42);
+      setPx('--cc-auth-nav-gap-v1824', 18);
+      setPx('--cc-log-head-h-v1824', 28);
+      setPx('--cc-log-row-min-v1824', 28);
+      setPx('--cc-log-font-v1824', 10);
+      setPx('--cc-log-detail-v1824', 8);
+      setPx('--cc-cell-vpad-v1824', 5);
+      setPx('--cc-detail-gap-v1824', 2);
+      setPx('--cc-check-box-v1824', 18);
+      setPx('--cc-check-gap-v1824', 7);
+      setPx('--cc-check-font-v1824', 14);
+      setPx('--cc-radius7-v1824', 7);
+      setPx('--cc-radius8-v1824', 8);
+      setPx('--cc-border1-v1824', 1);
+      setPx('--cc-border2-v1824', 2);
+      return { metrics, multiplier };
+    }
+
     function fitTestPageButtonText() {
       if (!els.testLogView || currentView !== 'testlog') return;
+      const geometry = syncControlCenterLayoutV1824();
+      const multiplier = geometry ? geometry.multiplier : getVerticalMetricsV188().multiplier;
 
-      function fitRow(selector, targetSize, minimumSize) {
-        const row = els.testLogView.querySelector(selector);
-        if (!row) return;
-
-        const buttons = Array.from(row.querySelectorAll('button')).filter(
-          button => button.clientHeight > 0 && button.clientWidth > 0
-        );
-        if (!buttons.length) return;
-
-        let sharedSize = targetSize;
-
-        buttons.forEach(button => {
-          button.style.fontSize = targetSize + 'px';
-          fitTextToBoxV5(
-            button,
-            button,
-            targetSize,
-            minimumSize,
-            {
-              horizontalPad: 8,
-              verticalPad: 4,
-              wrap: false,
-              lineHeight: 1,
-              ignoreHeight: false
-            }
-          );
-          const fitted = parseFloat(getComputedStyle(button).fontSize);
-          if (Number.isFinite(fitted)) sharedSize = Math.min(sharedSize, fitted);
+      function visibleFamilyMembers(row) {
+        if (!row) return [];
+        return Array.from(row.children).filter(element => {
+          if (!(element instanceof HTMLElement)) return false;
+          const style = getComputedStyle(element);
+          return style.display !== 'none' && element.clientWidth > 0 && element.clientHeight > 0;
         });
-
-        buttons.forEach(button => {
-          button.style.fontSize = sharedSize + 'px';
-        });
-
-        if (row.classList.contains('test-auth-button-row')) {
-          const authLabel = row.querySelector('.test-team-auth-toggle');
-          if (authLabel) authLabel.style.fontSize = sharedSize + 'px';
-        }
-        const skinsLabel = row.querySelector('.control-center-skins-toggle');
-        if (skinsLabel) skinsLabel.style.fontSize = sharedSize + 'px';
       }
 
-      /* Control Center typography rule: each functional row shares one text
-         size. If one label is the limiting case, only that row shrinks. */
-      fitRow('.test-log-utility-row', 11, 7);
-      fitRow('.control-center-checks-v188', 12, 8);
-      fitRow('.control-center-nav', 12, 8);
-      fitRow('.test-score-controls', 10, 7);
-      fitRow('.test-auth-button-row', 11, 7);
-      fitRow('.test-bottom-nav', 12, 8);
+      function familyFitsOneLine(elements) {
+        return elements.every(element => {
+          const widthOkay = element.scrollWidth <= element.clientWidth + 1;
+          const heightOkay = element.scrollHeight <= element.clientHeight + 1;
+          return widthOkay && heightOkay;
+        });
+      }
+
+      function fitFamily(selector, targetBase, minimumBase) {
+        const row = els.testLogView.querySelector(selector);
+        const elements = visibleFamilyMembers(row);
+        if (!elements.length) return;
+
+        const target = targetBase * multiplier;
+        const minimum = minimumBase * multiplier;
+        let size = target;
+
+        elements.forEach(element => {
+          element.style.setProperty('font-size', size + 'px', 'important');
+          element.style.setProperty('white-space', 'nowrap', 'important');
+        });
+
+        while (size > minimum && !familyFitsOneLine(elements)) {
+          size = Math.max(minimum, size - 0.25);
+          elements.forEach(element => {
+            element.style.setProperty('font-size', size + 'px', 'important');
+          });
+        }
+      }
+
+      /* Every Control Center row is a typography family: one line only and one
+         shared font size. The longest label shrinks the entire family together. */
+      fitFamily('.test-log-utility-row', 11, 7);
+      fitFamily('.control-center-checks-v188', 12, 8);
+      fitFamily('.control-center-nav', 12, 8);
+      fitFamily('.test-score-controls', 10, 7);
+      fitFamily('.test-auth-button-row', 11, 7);
+      fitFamily('.test-bottom-nav', 12, 8);
     }
 
     function rememberResponsiveGeometryV5(patch = {}) {
@@ -23418,6 +23788,7 @@ let scoreTimingDetail =
       window.visualViewport.addEventListener('resize', () => {
         if (currentView === 'testlog') {
           updateControlCenterViewportMetricsV188();
+          requestAnimationFrame(fitTestPageButtonText);
         }
       }, { passive:true });
     }
