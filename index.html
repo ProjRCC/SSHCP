@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 18.20-K7M4QZ | BUILD KEY: 18.21-R5N8QK -->
+<!-- SSHCP | BASE KEY: 18.21-R5N8QK | BUILD KEY: 18.22-V3C8LK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.21 — built directly from V18.20 (BUILD 18.20-K7M4QZ).
-           V18.16 remains the declared GOLDEN rollback. V18.21 preserves all V18.20 behavior and makes
-           only three presentation refinements: Geek STAT two-line fitting may also break immediately
-           after a hyphen while the semantic status dot stays centered; Geek shows 12 visible rows instead
-           of 15; and the Welcome assigned-team name uses 85% of viewport width instead of 90%. */
+        /* SSHCP V18.22 — built directly from V18.21 (BUILD 18.21-R5N8QK).
+           V18.16 remains the declared GOLDEN rollback. V18.22 preserves all V18.21 behavior and makes
+           only three Geek presentation refinements: STAT labels may use up to three lines before shrinking,
+           the Geek viewport is sized as 10 normal-row units, and category rows use 80% of normal row height.
+           Welcome assigned-team sizing remains locked at 85% of viewport width. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -9881,6 +9881,9 @@ button.sshcp-button-pressed-v172{
 }
 .geek-row-v180.category{
   grid-template-columns:1fr!important;
+  height:var(--geek-category-row-h-v1822,35px)!important;
+  min-height:var(--geek-category-row-h-v1822,35px)!important;
+  max-height:var(--geek-category-row-h-v1822,35px)!important;
   background:#666!important;
   color:#fff!important;
   font-weight:800!important;
@@ -11401,7 +11404,7 @@ body option{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info">SSHCP V18.21</span>
+          <span class="home-version-info">SSHCP V18.22</span>
         </button>
 
       </div>
@@ -14573,7 +14576,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.21 RESULT LOG',
+        'SSHCP V18.22 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -14636,7 +14639,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.21 CONTROL CENTER LOG',
+        'SSHCP V18.22 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -20094,19 +20097,16 @@ let scoreTimingDetail =
         const h = row.getBoundingClientRect().height || rowHeight;
 
         if (statCell && statLabel) {
-          /* V18.20: preserve the fixed semantic dot in the flex cell while the
-             STAT label gets one-line-first / two-line fallback. The complete
-             two-line label block may consume at most 80% of the actual row. */
-          fitTwoLineTeamTextV58(
+          /* V18.22: preserve the fixed semantic dot in the flex cell while the
+             STAT label tries 1 line, then 2 lines (max 80% row height), then
+             3 lines (max 90%) before any font-size reduction. Target stays 45%. */
+          fitGeekStatUpToThreeLinesV1822(
             statCell,
-            null,
             statLabel,
             h,
             h * 0.45,
             8,
-            38,
-            0.80,
-            splitGeekStatTwoLinesV1821
+            38
           );
           statCell.style.setProperty('text-align', 'left', 'important');
           statLabel.style.setProperty('text-align', 'left', 'important');
@@ -20178,21 +20178,25 @@ let scoreTimingDetail =
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
 
-      /* V18.21: fixed 46px S25 table-header row × device multiplier.
-         Twelve visible Geek rows consume every remaining integer pixel.
-         The 12-row pattern repeats through the scroll list so there is never
-         a fractional remainder/gap at the bottom of the table viewport. */
+      /* V18.22: fixed 46px S25 table-header row × device multiplier.
+         The remaining viewport equals 10 NORMAL Geek-row units. Category rows
+         are deliberately shorter at 80% of a normal row, so they consume only
+         0.80 row units and can reveal slightly more than 10 physical lines. */
       const sharedV187 = syncSharedGeometryV187();
       const headerHeight = sharedV187.tableHeader;
-      const dataPixels = Math.max(12 * 18, Math.round(height - headerHeight));
-      const rowPixelsV188 = distributeIntegerPixelsV188(dataPixels, 12);
-      const rowHeight = rowPixelsV188.reduce((sum, value) => sum + value, 0) / 12;
+      const dataPixels = Math.max(10 * 18, Math.round(height - headerHeight));
+      const normalRowPixelsV1822 = distributeIntegerPixelsV188(dataPixels, 10);
+      const rowHeight = normalRowPixelsV1822.reduce((sum, value) => sum + value, 0) / 10;
       shell.style.setProperty('--geek-row-h-v180', Math.floor(rowHeight) + 'px');
+      shell.style.setProperty('--geek-category-row-h-v1822', Math.max(18, Math.round(rowHeight * 0.80)) + 'px');
       shell.style.setProperty('--geek-header-h-v185', headerHeight + 'px');
 
       const geekRowsV188 = shell.querySelectorAll('.geek-table-scroll-v180 .geek-row-v180');
       geekRowsV188.forEach((row, index) => {
-        const exactHeight = rowPixelsV188[index % 12];
+        const normalHeight = normalRowPixelsV1822[index % 10];
+        const exactHeight = row.classList.contains('category')
+          ? Math.max(18, Math.round(normalHeight * 0.80))
+          : normalHeight;
         row.style.setProperty('height', exactHeight + 'px', 'important');
         row.style.setProperty('min-height', exactHeight + 'px', 'important');
         row.style.setProperty('max-height', exactHeight + 'px', 'important');
@@ -21793,8 +21797,8 @@ let scoreTimingDetail =
       const midpoint = value.length / 2;
       const cuts = [];
 
-      /* V18.21: Geek STAT labels may break at normal spaces or immediately
-         AFTER a hyphen. The hyphen remains at the end of line 1. */
+      /* V18.22 carries forward the V18.21 legal breaks: normal spaces or
+         immediately AFTER a hyphen, with the hyphen retained on the prior line. */
       for (let i = 1; i < value.length - 1; i++) {
         if (value[i] === ' ') cuts.push({ cut:i, skip:1 });
         else if (value[i] === '-') cuts.push({ cut:i + 1, skip:0 });
@@ -21814,6 +21818,54 @@ let scoreTimingDetail =
 
       const cut = Math.max(1, Math.min(value.length - 1, Math.round(midpoint)));
       return [value.slice(0, cut), value.slice(cut)];
+    }
+
+
+    function splitGeekStatThreeLinesV1822(text) {
+      const value = String(text || '').trim();
+      if (!value) return ['', '', ''];
+
+      const cuts = [];
+      for (let i = 1; i < value.length - 1; i++) {
+        if (value[i] === ' ') cuts.push({ cut:i, skip:1 });
+        else if (value[i] === '-') cuts.push({ cut:i + 1, skip:0 });
+      }
+
+      /* Prefer legal break points near thirds. Score every ordered pair by the
+         longest line first, then by overall balance. Hyphens stay on the line
+         before the break because hyphen cuts use skip:0. */
+      if (cuts.length >= 2) {
+        let best = null;
+        for (let a = 0; a < cuts.length - 1; a++) {
+          for (let b = a + 1; b < cuts.length; b++) {
+            const c1 = cuts[a];
+            const c2 = cuts[b];
+            if (c2.cut <= c1.cut + c1.skip) continue;
+            const lines = [
+              value.slice(0, c1.cut).trim(),
+              value.slice(c1.cut + c1.skip, c2.cut).trim(),
+              value.slice(c2.cut + c2.skip).trim()
+            ];
+            if (lines.some(line => !line)) continue;
+            const lengths = lines.map(line => line.length);
+            const maxLen = Math.max(...lengths);
+            const minLen = Math.min(...lengths);
+            const score = (maxLen * 1000) + (maxLen - minLen);
+            if (!best || score < best.score) best = { score, lines };
+          }
+        }
+        if (best) return best.lines;
+      }
+
+      /* Last-resort hard thirds only when the label provides too few legal
+         break points. This preserves the existing no-truncation preference. */
+      const first = Math.max(1, Math.min(value.length - 2, Math.round(value.length / 3)));
+      const second = Math.max(first + 1, Math.min(value.length - 1, Math.round((value.length * 2) / 3)));
+      return [
+        value.slice(0, first).trim(),
+        value.slice(first, second).trim(),
+        value.slice(second).trim()
+      ];
     }
 
     function measureTeamLineWidthV58(target, text, fontSize) {
@@ -21935,6 +21987,168 @@ let scoreTimingDetail =
         line1,
         line2
       };
+    }
+
+
+    function renderGeekStatLinesV1822(textEl, lines) {
+      const clean = (Array.isArray(lines) ? lines : []).map(line => String(line || '').trim());
+      const nodes = [];
+      clean.forEach((line, index) => {
+        if (index) nodes.push(document.createElement('br'));
+        nodes.push(document.createTextNode(line));
+      });
+      textEl.replaceChildren(...nodes);
+      textEl.classList.toggle('two-line', clean.length === 2);
+      textEl.classList.toggle('three-line-v1822', clean.length === 3);
+    }
+
+    function geekStatLinesFitV1822(textEl, lines, fontSize, availableWidth, availableHeight) {
+      const clean = (Array.isArray(lines) ? lines : []).map(line => String(line || '').trim());
+      const widest = clean.reduce(
+        (maxWidth, line) => Math.max(maxWidth, measureTeamLineWidthV58(textEl, line, fontSize)),
+        0
+      );
+      const lineHeight = 1.00;
+      const height = fontSize * lineHeight * clean.length;
+      return {
+        fits: clean.every(Boolean) && widest <= availableWidth + 0.75 && height <= availableHeight + 0.75,
+        lines: clean
+      };
+    }
+
+    function fitGeekStatUpToThreeLinesV1822(
+      container,
+      textEl,
+      rowHeight,
+      targetSize,
+      minSize,
+      horizontalPad
+    ) {
+      if (!container || !textEl) return;
+
+      const original = String(
+        textEl.dataset.v1822Name ||
+        textEl.dataset.v58Name ||
+        textEl.dataset.fullTeamName ||
+        textEl.textContent || ''
+      ).trim();
+      textEl.dataset.v1822Name = original;
+      textEl.dataset.v58Name = original;
+      textEl.dataset.fullTeamName = original;
+      textEl.classList.remove('two-line', 'three-line-v1822');
+      textEl.textContent = original;
+      textEl.style.removeProperty('font-size');
+
+      const availableWidth = Math.max(
+        1,
+        container.clientWidth - Math.max(0, Number(horizontalPad) || 0)
+      );
+      const minimum = Math.max(5, Number(minSize) || 8);
+      const target = Math.max(minimum, Number(targetSize) || minimum);
+      const twoLineHeight = Math.max(1, rowHeight * 0.80);
+      const threeLineHeight = Math.max(1, rowHeight * 0.90);
+
+      const applyLines = (lines, size) => {
+        renderGeekStatLinesV1822(textEl, lines);
+        textEl.style.setProperty('font-size', size + 'px', 'important');
+        textEl.style.setProperty('line-height', '1', 'important');
+        textEl.style.setProperty('white-space', lines.length > 1 ? 'normal' : 'nowrap', 'important');
+        textEl.style.setProperty('overflow', 'visible', 'important');
+      };
+
+      /* 1 line at the full 45%-of-row target. */
+      textEl.style.setProperty('font-size', target + 'px', 'important');
+      textEl.style.setProperty('line-height', '1', 'important');
+      textEl.style.setProperty('white-space', 'nowrap', 'important');
+      textEl.style.setProperty('overflow', 'visible', 'important');
+      if (
+        measureTeamLineWidthV58(textEl, original, target) <= availableWidth + 0.75 &&
+        target <= rowHeight * 0.90 + 0.75
+      ) {
+        return { size: target, truncated: false, lines: 1 };
+      }
+
+      /* Try 2 lines at target, capped to 80% of row height. */
+      const twoAtTarget = geekStatLinesFitV1822(
+        textEl,
+        splitGeekStatTwoLinesV1821(original),
+        target,
+        availableWidth,
+        twoLineHeight
+      );
+      applyLines(twoAtTarget.lines, target);
+      if (twoAtTarget.fits) {
+        return { size: target, truncated: false, lines: 2 };
+      }
+
+      /* Before shrinking, try 3 lines at the SAME target size, capped to 90%. */
+      const threeAtTarget = geekStatLinesFitV1822(
+        textEl,
+        splitGeekStatThreeLinesV1822(original),
+        target,
+        availableWidth,
+        threeLineHeight
+      );
+      applyLines(threeAtTarget.lines, target);
+      if (threeAtTarget.fits) {
+        return { size: target, truncated: false, lines: 3 };
+      }
+
+      /* Only now shrink. At each size prefer 2 lines if it fits; otherwise
+         accept 3 lines. The first fit encountered preserves the largest text. */
+      let size = target;
+      while (size > minimum) {
+        size = Math.max(minimum, size - 0.5);
+
+        const two = geekStatLinesFitV1822(
+          textEl,
+          splitGeekStatTwoLinesV1821(original),
+          size,
+          availableWidth,
+          twoLineHeight
+        );
+        if (two.fits) {
+          applyLines(two.lines, size);
+          return { size, truncated: false, lines: 2 };
+        }
+
+        const three = geekStatLinesFitV1822(
+          textEl,
+          splitGeekStatThreeLinesV1822(original),
+          size,
+          availableWidth,
+          threeLineHeight
+        );
+        if (three.fits) {
+          applyLines(three.lines, size);
+          return { size, truncated: false, lines: 3 };
+        }
+      }
+
+      /* Extreme fallback: keep the longest prefix that can fit across three
+         lines at minimum size, then mark truncation with |. */
+      for (let count = original.length - 1; count >= 1; count--) {
+        const prefix = original.slice(0, count).replace(/\s+$/, '');
+        if (!prefix) continue;
+        const candidate = prefix + '|';
+        const lines = splitGeekStatThreeLinesV1822(candidate);
+        const fit = geekStatLinesFitV1822(
+          textEl,
+          lines,
+          minimum,
+          availableWidth,
+          threeLineHeight
+        );
+        if (!fit.fits) continue;
+        applyLines(lines, minimum);
+        return { size: minimum, truncated: true, lines: 3 };
+      }
+
+      textEl.textContent = '|';
+      textEl.classList.remove('two-line', 'three-line-v1822');
+      textEl.style.setProperty('font-size', minimum + 'px', 'important');
+      textEl.style.setProperty('line-height', '1', 'important');
+      return { size: minimum, truncated: true, lines: 1 };
     }
 
     function fitTwoLineTeamTextV58(
@@ -23558,9 +23772,8 @@ let scoreTimingDetail =
       const team = document.getElementById('qrWelcomeTeamV170');
       if (!team || !team.textContent) return;
 
-      /* V18.21: horizontal fill governs TEAM sizing. Measure the authoritative
-         name itself and size it to 85% of viewport width so longer names can
-         remain large while retaining a little more side margin than V18.20. */
+      /* V18.22 carries forward V18.21 Welcome sizing unchanged: horizontal fill
+         governs TEAM sizing at 85% of viewport width. */
       const targetWidth = Math.max(1, window.innerWidth * 0.85);
       const probeSize = 100;
       const minimum = 18;
