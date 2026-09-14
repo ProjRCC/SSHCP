@@ -1,16 +1,19 @@
-<!-- SSHCP | BASE KEY: 18.38-P4N7TZ | BUILD KEY: 18.39-K6R2VX -->
+<!-- SSHCP | BASE KEY: 18.39-K6R2VX | BUILD KEY: 18.40-J7M4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.39 — built directly from V18.38 GOLDEN (BUILD 18.38-P4N7TZ).
-           V18.38 remains the declared GOLDEN rollback. V18.39 preserves all
-           V18.38 scoring, NESR / CLEAR timing, shotgun landmarks, GEEK data,
-           filters, geometry, Worker/API behavior, and Sheet behavior. The only
-           UI change is GEEK owner/share emphasis: US + ALL + TEAM form one
-           Blue band with white bold text; STAT remains exactly unchanged. */
+        /* SSHCP V18.40 — built directly from V18.39 (BUILD 18.39-K6R2VX).
+           V18.38 remains the declared GOLDEN rollback. V18.40 preserves all
+           V18.39 scoring, NESR / CLEAR timing, shotgun landmarks, Worker/API,
+           Sheet behavior, GEEK ownership banding and post-round feature logic.
+           Presentation cleanup only: Welcome TEAM gets a WELCOME-relative
+           ceiling; secondary controls share one dark-gray/white treatment;
+           WACKY filter is retired; GOOD includes neutral while BAD is red-only;
+           Scorecard footer says LEADERBOARD; Control Center TEAMS/GEEK/SKINS
+           row is retired and GEEK MODE + SKINS are permanent Summary features. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11805,6 +11808,99 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   font-weight:800!important;
 }
 
+
+/* =========================================================
+   SSHCP V18.40 — SECONDARY CONTROL SYSTEM + WELCOME / FILTER POLISH
+   One shared control/state gray (#666) now owns secondary buttons, the
+   Scorecard team selector, pending scores and NESR hole highlight. The two
+   shotgun landmark grays (#f2f2f2 / #e8e8e8) remain completely untouched.
+   Post-round Blue/Gold feature buttons remain special.
+   ========================================================= */
+:root{
+  --sshcp-control-gray-v1840:#666;
+}
+
+/* Secondary / utility buttons: same geometry, filled gray + white. */
+html:not(.sshcp-tournament-complete) #homeView #homeLeaderboardButton,
+html:not(.sshcp-tournament-complete) #homeView #homeLeaderboardButton:active,
+#homeView .quick-guide-button,
+#homeView .quick-guide-button:active,
+#scorecardView .nav-button,
+#scorecardView .nav-button:active,
+#leaderboardView .nav-button,
+#leaderboardView .nav-button:active,
+#scorecardView .score-team-select-button,
+#scorecardView .score-team-select-button.has-team,
+#scorecardView .score-team-select-button:focus,
+.score-entry-clear,
+.score-entry-clear:active,
+.switch-auth-button,
+.switch-auth-button:active,
+.passkey-team-button,
+.passkey-team-button:active,
+#leaderboardView .leaderboard-screen:not(.tournament-complete) .leader-bottom .leader-refresh-button,
+#leaderboardView .leaderboard-screen:not(.tournament-complete) .leader-bottom .leader-refresh-button:active,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard:active,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button:active,
+.modal-btn:not(.primary):not(.testing):not(.reset-danger):not(.tournament-summary-button):not(.summary-skins-button-v1627):not(.summary-geek-button-v180):not(.geek-back-v180):not(.geek-detail-back-v182):not(.quick-guide-got-it-v175),
+.modal-overlay.tournament-summary .summary-nav-overlay-v182,
+.modal-overlay.tournament-summary .summary-nav-overlay-v182:active,
+.teams-popup-back,
+.teams-popup-back:active,
+.qr-welcome-guide-v170,
+.qr-welcome-guide-v170:active,
+#testLogView .test-log-utility-row .test-log-reset,
+#testLogView .test-log-utility-row .test-copy-log,
+#testLogView .control-center-check-v188,
+#testLogView .test-score-action.add,
+#testLogView .test-switch-auth:not(.authorized),
+#testLogView .test-bottom-nav-button:not(.home),
+#testLogView .test-team-auth-toggle{
+  background:var(--sshcp-control-gray-v1840)!important;
+  border-color:var(--sshcp-control-gray-v1840)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:none!important;
+}
+
+/* Team-selector arrows follow the same filled control. */
+#scorecardView .score-team-select-button::after{
+  border-right-color:#fff!important;
+  border-bottom-color:#fff!important;
+  border-left-color:#fff!important;
+  border-top-color:#fff!important;
+}
+.passkey-team-button::after{
+  border-top-color:#fff!important;
+}
+
+/* Pending and NESR cues intentionally use the exact same control gray. */
+#scorecardView .score-button.unsaved{
+  background:var(--sshcp-control-gray-v1840)!important;
+  border-color:var(--sshcp-control-gray-v1840)!important;
+  color:#fff!important;
+}
+#scorecardView .hole-cell.next-hole-cell{
+  background:var(--sshcp-control-gray-v1840)!important;
+  color:#fff!important;
+}
+#scorecardView .hole-cell.next-hole-cell .hole-number{
+  color:#fff!important;
+}
+
+/* BREAK TIE keeps its approved red fill, but never carries an outline/frame. */
+#leaderboardView .leader-final-action.break-tie,
+#leaderboardView .leader-final-action.break-tie:active,
+#leaderboardView .leader-final-action.break-tie.sshcp-button-pressed-v172{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+
 </style>
 </head>
 
@@ -11932,7 +12028,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.39</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.40</span></span>
         </button>
 
       </div>
@@ -12074,7 +12170,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
             class="bottom-action leaderboard-button"
             type="button"
           >
-            LIVE LEADERBOARD
+            LEADERBOARD
           </button>
 
 
@@ -12312,20 +12408,6 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
         <div class="control-center-checks-v188" aria-label="Control Center checks">
           <button id="controlCenterGeekCheckButtonV188" class="control-center-check-v188" type="button">GEEK CHECK</button>
           <button id="controlCenterResultsCheckButtonV188" class="control-center-check-v188" type="button">COPY RESULT LOG</button>
-        </div>
-
-        <div class="control-center-nav" aria-label="Control Center sections">
-          <label id="controlCenterSkinsToggle" class="control-center-nav-button control-center-skins-toggle">
-            <input id="controlCenterSkinsCheck" type="checkbox">
-            <span class="control-center-skins-box" aria-hidden="true">✓</span>
-            <span>SKINS</span>
-          </label>
-          <label id="controlCenterGeekModeToggle" class="control-center-nav-button control-center-geek-toggle">
-            <input id="controlCenterGeekModeCheck" type="checkbox">
-            <span class="control-center-geek-box" aria-hidden="true">✓</span>
-            <span>GEEK MODE</span>
-          </label>
-          <button id="controlCenterTeamsButton" class="control-center-nav-button" type="button">TEAMS</button>
         </div>
 
         <div class="test-score-controls">
@@ -15179,7 +15261,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.39 RESULT LOG',
+        'SSHCP V18.40 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15242,7 +15324,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.39 CONTROL CENTER LOG',
+        'SSHCP V18.40 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -20419,11 +20501,10 @@ let scoreTimingDetail =
     const GEEK_ENABLED_KEY_V180 = 'sshcpGeekModeEnabledV180';
     let geekDataV180 = null;
 
-    /* V18.30 committed filter state.
-       ALL is a true master summary checkbox. GOOD/BAD are tone filters driven
-       by the existing capitalization metadata; neutral/gray stats are not
-       suppressed by either tone switch. WACKY remains the sixth category
-       control for the designated personality rows. */
+    /* V18.40 committed filter state.
+       ALL remains the true master. GOOD includes both green + neutral/gray
+       stats; BAD includes red stats only. WACKY is no longer a filter/category
+       control; the five real data categories remain unchanged. */
     let geekScrollTopV180 = 0;
 
     const GEEK_CATEGORY_ORDER_V180 = [
@@ -20439,8 +20520,7 @@ let scoreTimingDetail =
       'FIELD',
       'RUN',
       'STEADY',
-      'SETUP',
-      'WACKY'
+      'SETUP'
     ];
 
     const GEEK_TONE_FILTER_ORDER_V1830 = [
@@ -20539,7 +20619,7 @@ let scoreTimingDetail =
     };
 
     function geekEnabledV180() {
-      return localStorage.getItem(GEEK_ENABLED_KEY_V180) === '1';
+      return true;
     }
 
     function setGeekEnabledV180(enabled) {
@@ -21128,30 +21208,11 @@ let scoreTimingDetail =
       const blocks = [];
       const selectedRealCategories = GEEK_CATEGORY_ORDER_V180
         .filter(category => selected.has(category));
-      const includeWackyV1830 = selected.has('WACKY');
 
-      /* V18.30: real category boxes remain the primary table layout. WACKY
-         behaves as a sixth category control without duplicating rows: while any
-         real categories are selected, it simply includes/excludes each
-         category's designated wacky row. If WACKY is the only category left,
-         the established virtual WACKY block collects those five rows. */
-      if (selectedRealCategories.length) {
-        selectedRealCategories.forEach(category => {
-          const block = blocksByCategory.get(category);
-          if (block) blocks.push({ category, stats:Array.isArray(block.stats) ? block.stats : [] });
-        });
-      } else if (includeWackyV1830) {
-        const wackyStats = [];
-        GEEK_CATEGORY_ORDER_V180.forEach(category => {
-          const block = blocksByCategory.get(category);
-          if (!block || !Array.isArray(block.stats)) return;
-          const stat = block.stats.find(item =>
-            item && item.supported !== false && geekIsWackyStatV186(category, item.stat)
-          );
-          if (stat) wackyStats.push(stat);
-        });
-        blocks.push({ category:'WACKY', stats:wackyStats });
-      }
+      selectedRealCategories.forEach(category => {
+        const block = blocksByCategory.get(category);
+        if (block) blocks.push({ category, stats:Array.isArray(block.stats) ? block.stats : [] });
+      });
 
       let html = '';
       blocks.forEach(block => {
@@ -21162,12 +21223,7 @@ let scoreTimingDetail =
             const tone = geekStatToneV186(stat && stat.stat);
             if (tone === 'good') return selected.has('GOOD');
             if (tone === 'bad') return selected.has('BAD');
-            return true; /* gray/neutral is intentionally independent */
-          })
-          .filter(stat => {
-            if (category === 'WACKY') return true;
-            if (!geekIsWackyStatV186(category, stat && stat.stat)) return true;
-            return includeWackyV1830;
+            return selected.has('GOOD'); /* neutral/gray is the light-green side */
           });
         if (!stats.length) return;
 
@@ -21184,9 +21240,7 @@ let scoreTimingDetail =
           const usValueV1813 = geekMainValueV1813(stat, usResultV1813);
           const allValueV1813 = geekMainValueV1813(stat, stat);
           const ownsBestV1814 = geekOwnsStatV180(stat);
-          const sourceCategory = category === 'WACKY'
-            ? GEEK_CATEGORY_ORDER_V180.find(real => geekIsWackyStatV186(real, stat && stat.stat)) || ''
-            : category;
+          const sourceCategory = category;
           const encodedCategory = encodeURIComponent(sourceCategory);
           const encodedStat = encodeURIComponent(String(stat.stat || ''));
 
@@ -21803,7 +21857,7 @@ let scoreTimingDetail =
     const SKINS_ENABLED_KEY_V1627 = 'sshcpSkinsEnabledV1627';
 
     function skinsEnabledV1627() {
-      return localStorage.getItem(SKINS_ENABLED_KEY_V1627) === '1';
+      return true;
     }
 
     function setSkinsEnabledV1627(enabled) {
@@ -22199,26 +22253,11 @@ let scoreTimingDetail =
       html += '</div>';
 
       els.modalBody.innerHTML = html;
-      let geekAction;
-      if (geekEnabledV180()) {
-        geekAction = makeModalButton('GEEK MODE', 'summary-geek-button-v180', openGeekModeV180);
-      } else {
-        geekAction = makeModalButton('GEEK MODE', 'summary-action-placeholder-v1627', () => {});
-        geekAction.tabIndex = -1;
-        geekAction.setAttribute('aria-hidden', 'true');
-      }
-
+      const geekAction = makeModalButton('GEEK MODE', 'summary-geek-button-v180', openGeekModeV180);
       const back = makeModalButton('BACK', '', closeModal);
+      const skins = makeModalButton('SKINS', 'summary-skins-button-v1627', showSkinsPopupV1627);
       els.modalActions.className = 'modal-actions tournament-summary-actions-v1627';
-      if (skinsEnabledV1627()) {
-        const skins = makeModalButton('SKINS', 'summary-skins-button-v1627', showSkinsPopupV1627);
-        els.modalActions.replaceChildren(geekAction, back, skins);
-      } else {
-        const skinsReserve = makeModalButton('SKINS', 'summary-action-placeholder-v1627', () => {});
-        skinsReserve.tabIndex = -1;
-        skinsReserve.setAttribute('aria-hidden', 'true');
-        els.modalActions.replaceChildren(geekAction, back, skinsReserve);
-      }
+      els.modalActions.replaceChildren(geekAction, back, skins);
       els.modalOverlay.classList.add('open');
       installSummaryNavigationV182();
       const summaryRevealShieldV177 = beginDataRevealShieldV177('summary', [els.modalBody], '#fff', false, 5100);
@@ -24705,10 +24744,13 @@ let scoreTimingDetail =
 
     function fitQrWelcomeTeamV170() {
       const team = document.getElementById('qrWelcomeTeamV170');
+      const welcome = document.querySelector('.qr-welcome-title-v170');
       if (!team || !team.textContent) return;
 
-      /* V18.23 carries forward V18.22 Welcome sizing unchanged: horizontal fill
-         governs TEAM sizing at 85% of viewport width. */
+      /* V18.40: preserve the proven 85%-viewport horizontal fit. Short names
+         may still grow aggressively, but their TOP edge can never enter the
+         protected blank band below WELCOME. That band is exactly 50% of the
+         rendered WELCOME box height, so the same rule scales on phone/tablet. */
       const targetWidth = Math.max(1, window.innerWidth * 0.85);
       const probeSize = 100;
       const minimum = 18;
@@ -24726,6 +24768,18 @@ let scoreTimingDetail =
       team.style.fontSize = size.toFixed(2) + 'px';
       team.style.width = '85vw';
       team.style.maxWidth = '85vw';
+
+      if (welcome) {
+        const welcomeRect = welcome.getBoundingClientRect();
+        const teamRect = team.getBoundingClientRect();
+        const protectedTop = welcomeRect.bottom + (welcomeRect.height * 0.50);
+        const allowedHeight = teamRect.bottom - protectedTop;
+
+        if (teamRect.height > 0 && teamRect.top < protectedTop && allowedHeight > 0) {
+          size = Math.max(minimum, size * (allowedHeight / teamRect.height));
+          team.style.fontSize = size.toFixed(2) + 'px';
+        }
+      }
     }
 
     function dismissQrWelcomeV170() {
@@ -24900,7 +24954,7 @@ let scoreTimingDetail =
 
       const rememberedView =
         getRememberedView();
-      const restoreTeamsPopupV1626 = teamsPopupWasOpenOnRefreshV1626();
+      const restoreTeamsPopupV1626 = false; /* V18.40: Control Center TEAMS row retired. */
       syncHomeTournamentCompleteV1630(
         sessionStorage.getItem('sshcpTournamentComplete') === '1'
       );
