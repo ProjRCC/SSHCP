@@ -1,21 +1,22 @@
-<!-- SSHCP | BASE KEY: 18.55-V7N3QK | BUILD KEY: 18.56-N4K7PX -->
+<!-- SSHCP | BASE KEY: 18.57-H6R9TW | BUILD KEY: 18.58-Q5T2MX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.56 — built directly from V18.55 (BUILD 18.55-V7N3QK).
-           V18.38 remains the declared GOLDEN rollback. V18.56 preserves all
+        /* SSHCP V18.58 — built directly from V18.57 (BUILD 18.57-H6R9TW).
+           V18.38 remains the declared GOLDEN rollback. V18.58 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry,
-           solve-for-X sizing, V18.54 Control Center Gray 5 controls, and all
-           established Scorecard/Leaderboard shell geometry. Surgical presentation
-           change only: the two running-score side values become identical solid
-           white rounded rectangles sized for signed two-digit values (-10/+10).
-           E/positive text uses the same Gray 5 as the header; negative text stays
-           red. Values are centered vertically/horizontally; SCORE remains unchanged.
-           No border, outline, stroke, data, scoring, Worker, API or Sheet changes. */
+           solve-for-X sizing, Control Center Gray 5 controls, V18.57 Quick Guide
+           sizing/copy, and the V18.56/V18.57 running-score box geometry. Surgical
+           presentation changes only: Scorecard and Leaderboard center brands now
+           display ROTB 26; GEEK MODE keeps its fixed 46px S25 table header × device
+           multiplier, then divides the remaining table viewport into 22 equal X
+           units, with category rows = 1X and stat rows = 2X. Free inertial scrolling
+           remains unchanged with no scroll snapping. No data, scoring, Worker, API
+           or Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12262,7 +12263,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.56</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.58</span></span>
         </button>
 
       </div>
@@ -12301,7 +12302,7 @@ button.sshcp-button-pressed-v172{
           <div
             id="scoreTiming"
             class="test-timing header-brand"
-          >RUNNING OF THE BULLS 2026</div>
+          >ROTB 26</div>
 
 
           <button
@@ -12465,7 +12466,7 @@ button.sshcp-button-pressed-v172{
           <div
             id="leaderTiming"
             class="leader-test-timing header-brand"
-          >RUNNING OF THE BULLS 2026</div>
+          >ROTB 26</div>
 
 
           <button
@@ -13607,12 +13608,12 @@ let scoreTimingDetail =
 
 
     function updateScoreTiming() {
-      els.scoreTiming.textContent = 'RUNNING OF THE BULLS 2026';
+      els.scoreTiming.textContent = 'ROTB 26';
     }
 
 
     function updateLeaderboardTiming() {
-      els.leaderTiming.textContent = 'RUNNING OF THE BULLS 2026';
+      els.leaderTiming.textContent = 'ROTB 26';
     }
 
     /* =========================================================
@@ -15495,7 +15496,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.56 RESULT LOG',
+        'SSHCP V18.58 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15558,7 +15559,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.56 CONTROL CENTER LOG',
+        'SSHCP V18.58 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -18157,7 +18158,8 @@ let scoreTimingDetail =
           const leftZoneWidth = Math.max(0, (scoreRect.left - runningRect.left) - (sideGap * 2));
           const rightZoneWidth = Math.max(0, (runningRect.right - scoreRect.right) - (sideGap * 2));
           const zoneWidth = Math.max(0, Math.min(leftZoneWidth, rightZoneWidth));
-          const maxHeightFromRow = Math.max(20, Math.round(headerHeight * 0.85));
+          /* V18.57: 82% ceiling tightens the white surround a hair from V18.56's 85%. */
+          const maxHeightFromRow = Math.max(20, Math.round(headerHeight * 0.82));
           boxHeight = Math.max(20, Math.min(maxHeightFromRow, zoneWidth || maxHeightFromRow));
           boxWidth = Math.max(boxHeight, Math.min(Math.round(boxHeight * 1.20), Math.max(boxHeight, Math.round(zoneWidth || boxHeight))));
           boxRadius = Math.max(5, Math.min(Math.round(boxHeight * 0.18), Math.round(boxHeight / 2)));
@@ -18167,7 +18169,7 @@ let scoreTimingDetail =
         els.scorecardView.style.setProperty('--v1855-running-box-h', boxHeight + 'px');
         els.scorecardView.style.setProperty('--v1855-running-box-radius', boxRadius + 'px');
 
-        const fontMax = Math.max(10, boxHeight * 0.58);
+        const fontMax = Math.max(10, boxHeight * 0.60);
         const fontMin = 7;
         const sharedSamples = ['-10', '+10'];
         if (parts[0] && String(parts[0].textContent || '').trim()) sharedSamples.push(String(parts[0].textContent || '').trim());
@@ -18180,8 +18182,8 @@ let scoreTimingDetail =
             sharedFontSize = Math.min(
               sharedFontSize,
               measureTextFitFontSizeV1856(target, sample, fontMax, fontMin, {
-                horizontalPad: Math.max(6, target.clientWidth * 0.14),
-                verticalPad: Math.max(4, target.clientHeight * 0.16),
+                horizontalPad: Math.max(5, target.clientWidth * 0.12),
+                verticalPad: Math.max(3, target.clientHeight * 0.14),
                 lineHeight: 1
               })
             );
@@ -21489,28 +21491,38 @@ let scoreTimingDetail =
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
 
-      /* V18.23: fixed 46px S25 table-header row × device multiplier.
-         The remaining viewport equals 11 NORMAL Geek-row units. Category rows
-         remain shorter at 80% of a normal row, so they consume only 0.80 row
-         units and can reveal slightly more than 11 physical lines. */
+      /* V18.58: fixed 46px S25 table-header row × device multiplier stays
+         unchanged. The exact remaining table viewport becomes 22 equal X units:
+         category row = 1X, stat row = 2X. This makes the natural top/load view
+         terminate only on an X boundary (full row or exactly half of a stat row)
+         without changing the existing smooth/free inertial scrolling behavior. */
       const sharedV187 = syncSharedGeometryV187();
       const headerHeight = sharedV187.tableHeader;
-      const dataPixels = Math.max(11 * 18, Math.round(height - headerHeight));
-      const normalRowPixelsV1822 = distributeIntegerPixelsV188(dataPixels, 11);
-      const rowHeight = normalRowPixelsV1822.reduce((sum, value) => sum + value, 0) / 11;
-      shell.style.setProperty('--geek-row-h-v180', Math.floor(rowHeight) + 'px');
-      shell.style.setProperty('--geek-category-row-h-v1822', Math.max(18, Math.round(rowHeight * 0.80)) + 'px');
+      const scrollViewport = shell.querySelector('.geek-table-scroll-v180');
+      const measuredViewportHeight = scrollViewport
+        ? scrollViewport.getBoundingClientRect().height
+        : 0;
+      const dataPixels = Math.max(
+        22 * 9,
+        measuredViewportHeight > 0 ? measuredViewportHeight : (height - headerHeight)
+      );
+      const xUnit = dataPixels / 22;
+      const categoryHeight = xUnit;
+      const statHeight = xUnit * 2;
+
+      shell.style.setProperty('--geek-row-h-v180', statHeight.toFixed(3) + 'px');
+      shell.style.setProperty('--geek-category-row-h-v1822', categoryHeight.toFixed(3) + 'px');
       shell.style.setProperty('--geek-header-h-v185', headerHeight + 'px');
 
       const geekRowsV188 = shell.querySelectorAll('.geek-table-scroll-v180 .geek-row-v180');
-      geekRowsV188.forEach((row, index) => {
-        const normalHeight = normalRowPixelsV1822[index % 11];
+      geekRowsV188.forEach(row => {
         const exactHeight = row.classList.contains('category')
-          ? Math.max(18, Math.round(normalHeight * 0.80))
-          : normalHeight;
-        row.style.setProperty('height', exactHeight + 'px', 'important');
-        row.style.setProperty('min-height', exactHeight + 'px', 'important');
-        row.style.setProperty('max-height', exactHeight + 'px', 'important');
+          ? categoryHeight
+          : statHeight;
+        const value = exactHeight.toFixed(3) + 'px';
+        row.style.setProperty('height', value, 'important');
+        row.style.setProperty('min-height', value, 'important');
+        row.style.setProperty('max-height', value, 'important');
       });
 
       requestAnimationFrame(() => {
@@ -24171,6 +24183,9 @@ let scoreTimingDetail =
     function fitQuickGuideFooterV173(leaderboard, back, scorecard) {
       if (!leaderboard || !back || !scorecard) return;
 
+      /* V18.57: footer text target is 50% of each button row height.
+         LEADERBOARD + SCORECARD share the smaller fitted size; BACK is fit
+         independently from its own row height so the short center label can breathe. */
       const outerTarget = Math.max(12, Math.floor(leaderboard.clientHeight * 0.50));
       const leaderboardFit = fitQuickGuideButtonTextV173(leaderboard, outerTarget);
       const scorecardFit = fitQuickGuideButtonTextV173(scorecard, outerTarget);
@@ -24214,7 +24229,7 @@ let scoreTimingDetail =
           '<div class="quick-guide-line-v172 indent-v172"><strong>' + escapeHtml(accentName) + '</strong> = Successfully Submitted</div>' +
           '<div class="quick-guide-line-v172 indent-v172"><strong>Gray</strong> = Not Submitted - Refresh Page</div>' +
           '<div class="quick-guide-line-v172">Tap any Submitted Score to <strong>Edit</strong></div>' +
-          '<div class="quick-guide-line-v172"><strong>LIVE LEADERBOARD</strong> for Current Standings</div>' +
+          '<div class="quick-guide-line-v172"><strong>LEADERBOARD</strong> for Current Standings</div>' +
           '<div class="quick-guide-line-v172"><strong>REFRESH</strong> for the Latest Standings</div>' +
           '<div class="quick-guide-line-v172"><strong>SCORECARD</strong> to go back to Team Scorecard</div>' +
           '<div class="quick-guide-line-v172">Explore <strong>SCRAMBLE SUMMARY, SKINS or GEEK MODE</strong> at Scramble Completion</div>' +
