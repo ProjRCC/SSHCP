@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 18.54-P3W7LX | BUILD KEY: 18.55-V7N3QK -->
+<!-- SSHCP | BASE KEY: 18.55-V7N3QK | BUILD KEY: 18.56-N4K7PX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.55 — built directly from V18.54 (BUILD 18.54-P3W7LX).
-           V18.38 remains the declared GOLDEN rollback. V18.55 preserves all
+        /* SSHCP V18.56 — built directly from V18.55 (BUILD 18.55-V7N3QK).
+           V18.38 remains the declared GOLDEN rollback. V18.56 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry,
            solve-for-X sizing, V18.54 Control Center Gray 5 controls, and all
@@ -12083,6 +12083,7 @@ button.sshcp-button-pressed-v172{
 }
 
 /* SSHCP V18.55 — fixed white running-score value boxes; SCORE geometry untouched. */
+/* SSHCP V18.56 — phone-safe centered running-score boxes, width-limited by each side zone. */
 #scorecardView .score-table-head > .score-running-header > .score-running-gross,
 #scorecardView .score-table-head > .score-running-header > .score-running-net{
   width:var(--v1855-running-box-w,38px)!important;
@@ -12261,7 +12262,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.55</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.56</span></span>
         </button>
 
       </div>
@@ -15494,7 +15495,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.55 RESULT LOG',
+        'SSHCP V18.56 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15557,7 +15558,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.55 CONTROL CENTER LOG',
+        'SSHCP V18.56 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17439,6 +17440,66 @@ let scoreTimingDetail =
       return best;
     }
 
+    function measureTextFitFontSizeV1856(target, sampleText, maxPx, minPx = 8, options = {}) {
+      if (!target) return minPx;
+
+      const boxWidth = target.clientWidth;
+      const boxHeight = target.clientHeight;
+      if (boxWidth <= 0 || boxHeight <= 0) return minPx;
+
+      const horizontalPad = Number(options.horizontalPad || 0);
+      const verticalPad = Number(options.verticalPad || 0);
+      const availableWidth = Math.max(1, boxWidth - horizontalPad);
+      const availableHeight = Math.max(1, boxHeight - verticalPad);
+
+      if (!v5MeasureProbe) {
+        v5MeasureProbe = document.createElement('span');
+        v5MeasureProbe.setAttribute('aria-hidden', 'true');
+        Object.assign(v5MeasureProbe.style, {
+          position: 'fixed',
+          left: '-10000px',
+          top: '-10000px',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          zIndex: '-1'
+        });
+        document.body.appendChild(v5MeasureProbe);
+      }
+
+      const computed = getComputedStyle(target);
+      const textValue = String(sampleText || '').replace(/\s+/g, ' ').trim() || '0';
+
+      v5MeasureProbe.textContent = textValue;
+      v5MeasureProbe.style.fontFamily = computed.fontFamily;
+      v5MeasureProbe.style.fontWeight = computed.fontWeight;
+      v5MeasureProbe.style.fontStyle = computed.fontStyle;
+      v5MeasureProbe.style.letterSpacing = computed.letterSpacing;
+      v5MeasureProbe.style.textTransform = computed.textTransform;
+      v5MeasureProbe.style.whiteSpace = 'nowrap';
+      v5MeasureProbe.style.width = 'auto';
+      v5MeasureProbe.style.lineHeight = String(options.lineHeight || 1);
+
+      let low = Math.max(5, minPx);
+      let high = Math.max(low, maxPx);
+      let best = low;
+
+      for (let i = 0; i < 12; i++) {
+        const mid = (low + high) / 2;
+        v5MeasureProbe.style.fontSize = mid + 'px';
+        const rect = v5MeasureProbe.getBoundingClientRect();
+        const fits = rect.width <= availableWidth + 0.75 && rect.height <= availableHeight + 0.75;
+
+        if (fits) {
+          best = mid;
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+
+      return best;
+    }
+
     function fitHomeTeamOptionsV58() {
       if (!els.homeTeamDropup) return;
       els.homeTeamDropup.querySelectorAll('.home-team-option').forEach(button => {
@@ -18072,15 +18133,71 @@ let scoreTimingDetail =
 
       const running = header.querySelector('.score-running-header');
       if (running) {
-        /* V18.55: identical white value boxes scale from the measured table-header
-           height. Width is sized for E through signed two-digit values (-10/+10). */
-        els.scorecardView.style.setProperty('--v1855-running-box-w', Math.max(34, headerHeight * 0.84) + 'px');
-        els.scorecardView.style.setProperty('--v1855-running-box-h', Math.max(28, headerHeight * 0.70) + 'px');
-        els.scorecardView.style.setProperty('--v1855-running-box-radius', Math.max(5, headerHeight * 0.13) + 'px');
+        /* V18.56: use the true side zones around SCORE. Keep both white value
+           boxes identical, centered in their respective zones, pushed as large
+           as possible without crossing boundaries, capped by the row height,
+           and allowed to widen up to 120% of height when space permits. */
         const parts = Array.from(running.children);
-        if (parts[0]) fitTextToBoxV5(parts[0], parts[0], headerHeight * 0.40, 7, {horizontalPad:8, verticalPad:4});
-        if (parts[1]) fitTextToBoxV5(parts[1], parts[1], headerHeight * 0.375, 9, {horizontalPad:10, verticalPad:4});
-        if (parts[2]) fitTextToBoxV5(parts[2], parts[2], headerHeight * 0.40, 7, {horizontalPad:8, verticalPad:4});
+
+        if (parts[1]) {
+          fitTextToBoxV5(parts[1], parts[1], headerHeight * 0.375, 9, {
+            horizontalPad: 10,
+            verticalPad: 4
+          });
+        }
+
+        let boxWidth = Math.max(24, Math.round(headerHeight * 0.78));
+        let boxHeight = Math.max(24, Math.round(headerHeight * 0.78));
+        let boxRadius = Math.max(5, Math.round(boxHeight * 0.18));
+
+        if (parts[1]) {
+          const runningRect = running.getBoundingClientRect();
+          const scoreRect = parts[1].getBoundingClientRect();
+          const sideGap = Math.max(2, Math.round(headerHeight * 0.04));
+          const leftZoneWidth = Math.max(0, (scoreRect.left - runningRect.left) - (sideGap * 2));
+          const rightZoneWidth = Math.max(0, (runningRect.right - scoreRect.right) - (sideGap * 2));
+          const zoneWidth = Math.max(0, Math.min(leftZoneWidth, rightZoneWidth));
+          const maxHeightFromRow = Math.max(20, Math.round(headerHeight * 0.85));
+          boxHeight = Math.max(20, Math.min(maxHeightFromRow, zoneWidth || maxHeightFromRow));
+          boxWidth = Math.max(boxHeight, Math.min(Math.round(boxHeight * 1.20), Math.max(boxHeight, Math.round(zoneWidth || boxHeight))));
+          boxRadius = Math.max(5, Math.min(Math.round(boxHeight * 0.18), Math.round(boxHeight / 2)));
+        }
+
+        els.scorecardView.style.setProperty('--v1855-running-box-w', boxWidth + 'px');
+        els.scorecardView.style.setProperty('--v1855-running-box-h', boxHeight + 'px');
+        els.scorecardView.style.setProperty('--v1855-running-box-radius', boxRadius + 'px');
+
+        const fontMax = Math.max(10, boxHeight * 0.58);
+        const fontMin = 7;
+        const sharedSamples = ['-10', '+10'];
+        if (parts[0] && String(parts[0].textContent || '').trim()) sharedSamples.push(String(parts[0].textContent || '').trim());
+        if (parts[2] && String(parts[2].textContent || '').trim()) sharedSamples.push(String(parts[2].textContent || '').trim());
+
+        let sharedFontSize = Infinity;
+        [parts[0], parts[2]].forEach(target => {
+          if (!target) return;
+          sharedSamples.forEach(sample => {
+            sharedFontSize = Math.min(
+              sharedFontSize,
+              measureTextFitFontSizeV1856(target, sample, fontMax, fontMin, {
+                horizontalPad: Math.max(6, target.clientWidth * 0.14),
+                verticalPad: Math.max(4, target.clientHeight * 0.16),
+                lineHeight: 1
+              })
+            );
+          });
+        });
+
+        if (!Number.isFinite(sharedFontSize)) sharedFontSize = fontMin;
+
+        [parts[0], parts[2]].forEach(target => {
+          if (!target) return;
+          target.style.setProperty('font-size', sharedFontSize + 'px', 'important');
+          target.style.setProperty('line-height', '1', 'important');
+          target.style.setProperty('white-space', 'nowrap', 'important');
+          target.style.setProperty('overflow', 'hidden', 'important');
+          target.style.setProperty('text-align', 'center', 'important');
+        });
       }
 
       els.scoreRows.querySelectorAll('.score-row').forEach(row => {
@@ -25484,4 +25601,3 @@ let scoreTimingDetail =
 
 </body>
 </html>
-
