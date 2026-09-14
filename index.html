@@ -1,22 +1,24 @@
-<!-- SSHCP | BASE KEY: 18.57-H6R9TW | BUILD KEY: 18.58-Q5T2MX -->
+<!-- SSHCP | BASE KEY: 18.58-Q5T2MX | BUILD KEY: 18.59-C8M4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.58 — built directly from V18.57 (BUILD 18.57-H6R9TW).
-           V18.38 remains the declared GOLDEN rollback. V18.58 preserves all
+        /* SSHCP V18.59 — built directly from V18.58 (BUILD 18.58-Q5T2MX).
+           V18.38 remains the declared GOLDEN rollback. V18.59 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry,
            solve-for-X sizing, Control Center Gray 5 controls, V18.57 Quick Guide
            sizing/copy, and the V18.56/V18.57 running-score box geometry. Surgical
            presentation changes only: Scorecard and Leaderboard center brands now
-           display ROTB 26; GEEK MODE keeps its fixed 46px S25 table header × device
-           multiplier, then divides the remaining table viewport into 22 equal X
-           units, with category rows = 1X and stat rows = 2X. Free inertial scrolling
-           remains unchanged with no scroll snapping. No data, scoring, Worker, API
-           or Sheet changes. */
+           display ROTB 26. V18.59 makes three presentation-only refinements:
+           GEEK MODE keeps the same 22-unit viewport system but category rows become
+           1.5X while stat rows remain 2X; ROTB 26 now targets the same font height as
+           HOME/INFO and shrinks only when its one-line width requires it; Quick Guide
+           BACK gets a small independent text-size bump. Free inertial scrolling stays
+           unchanged with no snap behavior added. No data, scoring, Worker, API or
+           Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12263,7 +12265,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.58</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.59</span></span>
         </button>
 
       </div>
@@ -15496,7 +15498,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.58 RESULT LOG',
+        'SSHCP V18.59 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15559,7 +15561,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.58 CONTROL CENTER LOG',
+        'SSHCP V18.59 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -18020,9 +18022,11 @@ let scoreTimingDetail =
 
       const brand = view.querySelector('.header-brand');
       if (brand) {
-        fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.38, 8, {
+        /* V18.59: ROTB 26 targets the same text height as HOME / INFO.
+           Keep it on one line and reduce only when the center width requires it. */
+        fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.52, 8, {
           horizontalPad: 4,
-          verticalPad: 2,
+          verticalPad: 4,
           wrap: false,
           lineHeight: 1
         });
@@ -21491,11 +21495,10 @@ let scoreTimingDetail =
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
 
-      /* V18.58: fixed 46px S25 table-header row × device multiplier stays
-         unchanged. The exact remaining table viewport becomes 22 equal X units:
-         category row = 1X, stat row = 2X. This makes the natural top/load view
-         terminate only on an X boundary (full row or exactly half of a stat row)
-         without changing the existing smooth/free inertial scrolling behavior. */
+      /* V18.59: keep the V18.58 22-unit table viewport and fixed 46px S25
+         table-header × device multiplier, but give category rows more breathing room:
+         category row = 1.5X, stat row = 2X. Scrolling remains smooth/free with no
+         snap behavior added. */
       const sharedV187 = syncSharedGeometryV187();
       const headerHeight = sharedV187.tableHeader;
       const scrollViewport = shell.querySelector('.geek-table-scroll-v180');
@@ -21507,7 +21510,7 @@ let scoreTimingDetail =
         measuredViewportHeight > 0 ? measuredViewportHeight : (height - headerHeight)
       );
       const xUnit = dataPixels / 22;
-      const categoryHeight = xUnit;
+      const categoryHeight = xUnit * 1.5;
       const statHeight = xUnit * 2;
 
       shell.style.setProperty('--geek-row-h-v180', statHeight.toFixed(3) + 'px');
@@ -24183,9 +24186,9 @@ let scoreTimingDetail =
     function fitQuickGuideFooterV173(leaderboard, back, scorecard) {
       if (!leaderboard || !back || !scorecard) return;
 
-      /* V18.57: footer text target is 50% of each button row height.
-         LEADERBOARD + SCORECARD share the smaller fitted size; BACK is fit
-         independently from its own row height so the short center label can breathe. */
+      /* V18.59: LEADERBOARD + SCORECARD retain their shared 50% row-height
+         target. BACK remains independent and gets a small bump to 55% of its own
+         row height so the short center label reads at the intended visual weight. */
       const outerTarget = Math.max(12, Math.floor(leaderboard.clientHeight * 0.50));
       const leaderboardFit = fitQuickGuideButtonTextV173(leaderboard, outerTarget);
       const scorecardFit = fitQuickGuideButtonTextV173(scorecard, outerTarget);
@@ -24193,7 +24196,7 @@ let scoreTimingDetail =
       leaderboard.style.fontSize = matchedOuter + 'px';
       scorecard.style.fontSize = matchedOuter + 'px';
 
-      const backTarget = Math.max(12, Math.floor(back.clientHeight * 0.50));
+      const backTarget = Math.max(12, Math.floor(back.clientHeight * 0.55));
       fitQuickGuideButtonTextV173(back, backTarget);
     }
 
