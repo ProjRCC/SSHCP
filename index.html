@@ -1,23 +1,21 @@
-<!-- SSHCP | BASE KEY: 18.46-B7K4QX | BUILD KEY: 18.47-N5Q8VK -->
+<!-- SSHCP | BASE KEY: 18.47-N5Q8VK | BUILD KEY: 18.48-C9R5MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.47 — built directly from V18.46 (BUILD 18.46-B7K4QX).
-           V18.38 remains the declared GOLDEN rollback. V18.47 preserves all
-           V18.46 scoring, NESR / CLEAR timing, shotgun landmarks, Worker/API,
-           Sheet behavior, Welcome ceiling, GEEK filtering/ownership, permanent
-           post-round GEEK MODE + SKINS behavior, simplified Gray 1/2/3/4 model
-           and white post-round feature labels. Presentation-only changes:
-           QR-authorized team Scorecard removes the redundant team identity bar
-           and moves the table header up to the former top edge of that bar;
-           MASTER Scorecard keeps the selector unchanged. Scramble Summary HOME
-           and LEADERBOARD top-navigation buttons now use the same device-scaled
-           height as Scorecard HOME, preserving their existing horizontal anchors
-           and creating more vertical buffer. No data, scoring, Worker, API or
-           Sheet changes. */
+        /* SSHCP V18.48 — built directly from V18.47 (BUILD 18.47-N5Q8VK).
+           V18.38 remains the declared GOLDEN rollback. V18.48 preserves all
+           V18.47 scoring, NESR / CLEAR timing, shotgun landmarks, Worker/API,
+           Sheet behavior, authorized-scorecard compaction, Welcome ceiling,
+           GEEK filtering/ownership, permanent post-round GEEK MODE + SKINS,
+           simplified Gray 1/2/3/4 model and white feature labels.
+           Presentation-only Scramble Summary cleanup: remove the redundant
+           top HOME / LEADERBOARD controls and RESULTS / TOP 10 label, move the
+           standings header to the former top-navigation position, and replace
+           the footer BACK action with HOME. GEEK MODE and SKINS remain Blue;
+           HOME remains Gray 3. No data, scoring, Worker, API or Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12286,6 +12284,16 @@ body.team-qr-locked #scorecardView .score-team-select-wrap{
 body.team-qr-locked #scorecardView .score-table-head{
   margin-top:var(--v16-nav-context-gap,8px)!important;
 }
+
+/* =========================================================
+   SSHCP V18.48 — SCRAMBLE SUMMARY NAVIGATION SIMPLIFICATION
+   Top HOME / LEADERBOARD and RESULTS / TOP 10 are removed. The standings
+   header begins at the modal-body top, which is the former top-nav position.
+   Footer HOME replaces BACK and remains Gray 3; GEEK MODE / SKINS remain Blue.
+   ========================================================= */
+.modal-overlay.tournament-summary .modal-text{
+  grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)!important;
+}
 </style>
 </head>
 
@@ -12413,7 +12421,7 @@ body.team-qr-locked #scorecardView .score-table-head{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.47</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.48</span></span>
         </button>
 
       </div>
@@ -15646,7 +15654,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.47 RESULT LOG',
+        'SSHCP V18.48 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15709,7 +15717,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.47 CONTROL CENTER LOG',
+        'SSHCP V18.48 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -20553,7 +20561,6 @@ let scoreTimingDetail =
     function applyTournamentSummaryGeometryV16(body, topGrid, lower, lowerRows) {
       if (!body || !topGrid || !lower) return;
 
-      const subtitle = body.querySelector('.tournament-summary-subtitle');
       const notes = body.querySelector('.tournament-summary-notes');
       const noteCount = Math.min(
         3,
@@ -20565,26 +20572,13 @@ let scoreTimingDetail =
       );
       const bodyHeight = Math.max(1, body.clientHeight);
 
-      /* V16.11 Scramble Summary geometry contract.
-         The title/subtitle are natural content-height elements, not fixed
-         invisible boxes. Fixed shell pieces are budgeted BEFORE x is solved:
-           - popup top -> SCRAMBLE SUMMARY = one measured RESULTS/TOP 10 line-height
-           - SCRAMBLE SUMMARY -> RESULTS/TOP 10 = 15px (title margin)
-           - RESULTS/TOP 10 -> top table = 15px
-           - lower table -> BACK = 15px (modal-actions top padding)
-           - no tie notes = one 15px separator buffer
-           - 1-3 tie notes = 8px above + 15px per line + 8px below
-         V18.7 removes the header from the weighted equation:
-           fixed header = 50px × vertical multiplier
-           1st 2x + 2nd 1.5x + 3rd 1.5x + up to seven lower rows at 1x each. */
-      const resultsBuffer = 15;
+      /* V18.48 — Summary has no RESULTS/TOP 10 row and no top nav row.
+         The standings table now begins at the modal-body top, i.e. the former
+         HOME / LEADERBOARD top position. The recovered height is distributed
+         through the existing weighted standings rows. */
       const noTieBuffer = 15;
       const tieBuffer = 8;
       const tieLineH = 15;
-      const measuredSubtitleH = subtitle
-        ? Math.max(1, Math.ceil(subtitle.getBoundingClientRect().height))
-        : 24;
-      const subtitleBlockH = measuredSubtitleH + resultsBuffer;
       const noteSectionH = noteCount > 0
         ? tieBuffer + (noteCount * tieLineH) + tieBuffer
         : noTieBuffer;
@@ -20592,11 +20586,10 @@ let scoreTimingDetail =
       const sharedV187 = syncSharedGeometryV187();
       const headerH = sharedV187.tableHeader;
       const bodyPx = Math.max(1, Math.round(bodyHeight));
-      const subtitlePx = Math.max(1, Math.round(subtitleBlockH));
       const notePx = Math.max(1, Math.round(noteSectionH));
       const weightedSpace = Math.max(
         5 + lowerCount,
-        bodyPx - subtitlePx - notePx - headerH
+        bodyPx - notePx - headerH
       );
       const weightedRows = distributeWeightedPixelsV188(
         weightedSpace,
@@ -20612,7 +20605,7 @@ let scoreTimingDetail =
       body.style.setProperty('gap', '0px', 'important');
       body.style.setProperty(
         'grid-template-rows',
-        subtitlePx + 'px ' + topGridH + 'px ' + notePx + 'px ' + lowerH + 'px',
+        topGridH + 'px ' + notePx + 'px ' + lowerH + 'px',
         'important'
       );
       topGrid.style.setProperty(
@@ -20626,12 +20619,6 @@ let scoreTimingDetail =
         'important'
       );
 
-      if (subtitle) {
-        subtitle.style.setProperty('height', 'auto', 'important');
-        subtitle.style.setProperty('min-height', '0px', 'important');
-        subtitle.style.setProperty('max-height', 'none', 'important');
-        subtitle.style.setProperty('margin', '0px', 'important');
-      }
       if (notes) {
         notes.style.setProperty('height', noteSectionH + 'px', 'important');
         notes.style.setProperty('min-height', noteSectionH + 'px', 'important');
@@ -20640,7 +20627,6 @@ let scoreTimingDetail =
         notes.style.setProperty('padding-bottom', noteCount > 0 ? tieBuffer + 'px' : '0px', 'important');
       }
     }
-
 
     function fitTournamentSummaryRemaining() {
       if (!els.modalOverlay.classList.contains('tournament-summary')) return;
@@ -20654,9 +20640,9 @@ let scoreTimingDetail =
       const lowerRows = Array.from(lower.querySelectorAll('.tournament-summary-remaining-row'));
       document.documentElement.style.setProperty('--v5-summary-lower-count', String(Math.max(1, lowerRows.length)));
 
-      /* V16.11: fit the two headings as content first. Their measured
-         heights then become real geometry inputs instead of inherited
-         fixed-height boxes. */
+      /* V18.48: Summary keeps the established title, but no longer carries a
+         RESULTS/TOP 10 subtitle. The standings grid begins immediately at the
+         body top, reclaiming the former top-navigation band. */
       fitTextToBoxV5(els.modalTitle, els.modalTitle, Math.min(52, els.modalBox.clientWidth * 0.115) * 0.80, 16, {
         horizontalPad: 12,
         verticalPad: 0,
@@ -20665,29 +20651,10 @@ let scoreTimingDetail =
         ignoreHeight: true
       });
 
-      const subtitle = body.querySelector('.tournament-summary-subtitle');
-      if (subtitle) {
-        const fitSubtitleFromBodyHeight = measuredBodyH => {
-          const v1610SubtitleBoxH = Math.max(22, Math.min(38, measuredBodyH * 0.055));
-          const subtitleTarget = Math.min(34, v1610SubtitleBoxH * 0.72);
-          fitTextToBoxV5(subtitle, subtitle, subtitleTarget, 18, {
-            horizontalPad: 8,
-            verticalPad: 0,
-            lineHeight: 1,
-            ignoreHeight: true
-          });
-        };
-
-        fitSubtitleFromBodyHeight(Math.max(1, body.clientHeight));
-
-        /* V18.10: Summary/SKINS/GEEK share the same exact 12px S25 title
-           top inset. It scales only by the device-height multiplier. */
-        const popupTopInsetV1810 = Math.max(1, Math.round(12 * getVerticalMetricsV188().multiplier));
-        els.modalBox.style.setProperty('--v16-summary-top-space', popupTopInsetV1810 + 'px');
-        document.documentElement.style.setProperty('--v1810-popup-top-inset', popupTopInsetV1810 + 'px');
-
-        fitSubtitleFromBodyHeight(Math.max(1, body.clientHeight));
-      }
+      /* V18.10 popup top inset remains unchanged. */
+      const popupTopInsetV1810 = Math.max(1, Math.round(12 * getVerticalMetricsV188().multiplier));
+      els.modalBox.style.setProperty('--v16-summary-top-space', popupTopInsetV1810 + 'px');
+      document.documentElement.style.setProperty('--v1810-popup-top-inset', popupTopInsetV1810 + 'px');
 
       applyTournamentSummaryGeometryV16(body, topGrid, lower, lowerRows);
 
@@ -20871,7 +20838,6 @@ let scoreTimingDetail =
         });
       });
 
-      requestAnimationFrame(positionSummaryNavigationV182);
     }
 
 
@@ -22569,7 +22535,6 @@ let scoreTimingDetail =
       els.modalInput.style.display = 'none';
 
       let html =
-        '<div class="tournament-summary-subtitle">' + (lastLeaderboardRows.length >= 10 ? 'TOP 10' : 'RESULTS') + '</div>' +
         '<div class="tournament-summary-grid">' +
         '<div class="tournament-summary-row header">' +
         '<div>#</div><div>TEAM</div><div>NET STROKES</div><div>NET +/-</div>' +
@@ -22637,12 +22602,11 @@ let scoreTimingDetail =
 
       els.modalBody.innerHTML = html;
       const geekAction = makeModalButton('GEEK MODE', 'summary-geek-button-v180', openGeekModeV180);
-      const back = makeModalButton('BACK', 'summary-back-v1845', closeModal);
+      const home = makeModalButton('HOME', 'summary-back-v1845 summary-home-footer-v1848', showHome);
       const skins = makeModalButton('SKINS', 'summary-skins-button-v1627', showSkinsPopupV1627);
       els.modalActions.className = 'modal-actions tournament-summary-actions-v1627';
-      els.modalActions.replaceChildren(geekAction, back, skins);
+      els.modalActions.replaceChildren(geekAction, home, skins);
       els.modalOverlay.classList.add('open');
-      installSummaryNavigationV182();
       const summaryRevealShieldV177 = beginDataRevealShieldV177('summary', [els.modalBody], '#fff', false, 5100);
 
       if (tournamentSummaryResizeObserver) {
