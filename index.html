@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 18.50-R6M2QK | BUILD KEY: 18.51-F4Q8NZ -->
+<!-- SSHCP | BASE KEY: 18.51-F4Q8NZ | BUILD KEY: 18.52-M8R4QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.51 — built directly from V18.50 R1 (BUILD 18.50-R6M2QK).
+        /* SSHCP V18.52 — built directly from V18.51 (BUILD 18.51-F4Q8NZ).
            V18.38 remains the declared GOLDEN rollback. V18.51 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry
@@ -11657,6 +11657,7 @@ body.team-qr-locked #scorecardView .score-table-head{
   --sshcp-gray-1-v1850:#f7f7f7;
   --sshcp-gray-2-v1850:#f2f2f2;
   --sshcp-gray-3-v1850:#e8e8e8;
+  --sshcp-gray-4-v1852:#a6a6a6;
   --sshcp-gray-5-v1850:#666666;
   --sshcp-gray-7-v1851:#444444;
   --sshcp-gray-9-v1850:#141414;
@@ -11831,12 +11832,14 @@ body.master-qr #scorecardView .score-team-select-button::after{
 
 
 button.sshcp-button-pressed-v172{
-  background:var(--sshcp-gray-9-v1850)!important;
-  border-color:var(--sshcp-gray-9-v1850)!important;
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
+  background:var(--sshcp-press-bg-v172,var(--sshcp-gray-9-v1850))!important;
+  border-color:var(--sshcp-press-border-v172,var(--sshcp-press-bg-v172,var(--sshcp-gray-9-v1850)))!important;
+  color:var(--sshcp-press-fg-v172,#fff)!important;
+  -webkit-text-fill-color:var(--sshcp-press-fg-v172,#fff)!important;
   box-shadow:none!important;
   filter:none!important;
+  transition:none!important;
+  animation:none!important;
 }
 
 
@@ -11930,6 +11933,55 @@ button.sshcp-button-pressed-v172{
   max-height:none!important;
   overflow:visible!important;
   text-align:center!important;
+}
+
+
+/* SSHCP V18.52 — surgical visual/press corrections. */
+#testLogView #testLogResetButton,
+#testLogView #testCopyLogButton,
+#testLogView #controlCenterGeekCheckButtonV188,
+#testLogView #controlCenterResultsCheckButtonV188,
+#testLogView #testAddParCurrentButton,
+#testLogView #testAddRandomCurrentButton,
+#testLogView #testAddRandom2CurrentButton,
+#testLogView .test-team-auth-toggle,
+#testLogView .test-bottom-nav-button:not(.home),
+#testLogView .control-center-nav-button{
+  background:var(--sshcp-gray-4-v1852)!important;
+  border-color:var(--sshcp-gray-4-v1852)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  box-shadow:none!important;
+}
+
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action.break-tie,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action.break-tie:hover,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action.break-tie:focus,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action.break-tie:focus-visible,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action.break-tie:active,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot .leader-final-action.break-tie.sshcp-button-pressed-v172{
+  border:0!important;
+  border-width:0!important;
+  border-style:none!important;
+  outline:0!important;
+  outline-width:0!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
+}
+
+#scorecardView .score-table-head > .score-running-header > span{
+  transform:translateY(-0.04em)!important;
+}
+
+#homeView .home-event-test-hotspot .home-event-info{
+  font-size:var(--v1852-home-event-font,15.5px)!important;
+}
+#homeView .home-version-info,
+#homeView .home-version-info > span,
+#homeView .home-version-info .home-version-number-v1835{
+  color:var(--sshcp-gray-5-v1850)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-5-v1850)!important;
+  font-size:var(--v1852-home-version-font,14.5px)!important;
 }
 
 </style>
@@ -12059,7 +12111,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.51</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.52</span></span>
         </button>
 
       </div>
@@ -15292,7 +15344,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.51 RESULT LOG',
+        'SSHCP V18.52 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15355,7 +15407,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.51 CONTROL CENTER LOG',
+        'SSHCP V18.52 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17639,6 +17691,8 @@ let scoreTimingDetail =
       root.setProperty('--v187-skins-mark-h', values.skinsMark + 'px');
       root.setProperty('--v187-main-button-h', values.mainButton + 'px');
       root.setProperty('--v1810-popup-top-inset', scaled(12) + 'px');
+      root.setProperty('--v1852-home-event-font', (15.5 * metrics.multiplier).toFixed(3) + 'px');
+      root.setProperty('--v1852-home-version-font', (14.5 * metrics.multiplier).toFixed(3) + 'px');
       return values;
     }
 
@@ -24113,7 +24167,7 @@ let scoreTimingDetail =
     let sshcpPressedButtonV172 = null;
     let sshcpPressedRestoreV172 = null;
     let sshcpPressedRestComputedV1850 = null;
-    let sshcpPressedTimerV1850 = null;
+    let sshcpPressedTransitionRestoreV1852 = null;
 
     function isExcludedPressButtonV172(button) {
       if (!button) return true;
@@ -24175,7 +24229,9 @@ let scoreTimingDetail =
         textFill: button.style.getPropertyValue('-webkit-text-fill-color'),
         textFillPriority: button.style.getPropertyPriority('-webkit-text-fill-color'),
         filter: button.style.getPropertyValue('filter'),
-        filterPriority: button.style.getPropertyPriority('filter')
+        filterPriority: button.style.getPropertyPriority('filter'),
+        transition: button.style.getPropertyValue('transition'),
+        transitionPriority: button.style.getPropertyPriority('transition')
       };
       const restComputed = {
         bg: computed.backgroundColor,
@@ -24185,80 +24241,117 @@ let scoreTimingDetail =
 
       const gray9 = getComputedStyle(document.documentElement)
         .getPropertyValue('--sshcp-gray-9-v1850').trim() || '#141414';
-      button.style.setProperty('background', gray9, 'important');
-      button.style.setProperty('color', '#fff', 'important');
-      button.style.setProperty('border-color', gray9, 'important');
-      button.style.setProperty('-webkit-text-fill-color', '#fff', 'important');
+      const darkPress = darkFilledButtonV185(button);
+      const pressBg = darkPress ? gray9 : '#fff';
+      const pressFg = darkPress ? '#fff' : '#000';
+      button.style.setProperty('--sshcp-press-bg-v172', pressBg);
+      button.style.setProperty('--sshcp-press-fg-v172', pressFg);
+      button.style.setProperty('--sshcp-press-border-v172', pressBg);
+      button.style.setProperty('background', pressBg, 'important');
+      button.style.setProperty('color', pressFg, 'important');
+      button.style.setProperty('border-color', pressBg, 'important');
+      button.style.setProperty('-webkit-text-fill-color', pressFg, 'important');
       button.style.setProperty('filter', 'none', 'important');
+      button.style.setProperty('transition', 'none', 'important');
       button.classList.add('sshcp-button-pressed-v172');
 
       sshcpPressedButtonV172 = button;
       sshcpPressedRestoreV172 = prior;
       sshcpPressedRestComputedV1850 = restComputed;
 
-      /* V18.50: the physical feedback is a fixed brief flash, not a loading
-         indicator. After 120 ms pin the exact resting colors inline so even a
-         lost pointerup / async navigation path cannot leave the button dark. */
-      sshcpPressedTimerV1850 = window.setTimeout(
-        releaseLiteralButtonVisualV1850,
-        120
-      );
-
+      /* V18.52: physical press only — dark controls snap to Gray 9, light
+         controls snap to white. No timer, pulse, fade, scale or loading cue. */
       if (!button.classList.contains('score-button')) triggerHapticV185(10);
     }
 
     function releaseLiteralButtonVisualV1850() {
       const button = sshcpPressedButtonV172;
       const rest = sshcpPressedRestComputedV1850;
+      const prior = sshcpPressedRestoreV172;
       if (!button || !rest) return;
 
+      button.style.setProperty('transition', 'none', 'important');
       button.classList.remove('sshcp-button-pressed-v172');
       button.style.setProperty('background', rest.bg, 'important');
       button.style.setProperty('color', rest.color, 'important');
       button.style.setProperty('border-color', rest.border, 'important');
       button.style.setProperty('-webkit-text-fill-color', rest.color, 'important');
       button.style.setProperty('filter', 'none', 'important');
-      sshcpPressedTimerV1850 = null;
+      button.style.removeProperty('--sshcp-press-bg-v172');
+      button.style.removeProperty('--sshcp-press-fg-v172');
+      button.style.removeProperty('--sshcp-press-border-v172');
+
+      if (sshcpPressedTransitionRestoreV1852 != null) {
+        cancelAnimationFrame(sshcpPressedTransitionRestoreV1852);
+      }
+      sshcpPressedTransitionRestoreV1852 = requestAnimationFrame(() => {
+        sshcpPressedTransitionRestoreV1852 = requestAnimationFrame(() => {
+          if (prior && prior.transition) {
+            button.style.setProperty('transition', prior.transition, prior.transitionPriority || '');
+          } else {
+            button.style.removeProperty('transition');
+          }
+          sshcpPressedTransitionRestoreV1852 = null;
+        });
+      });
     }
 
     function endLiteralButtonPressV172() {
       const button = sshcpPressedButtonV172;
       const prior = sshcpPressedRestoreV172;
-      if (sshcpPressedTimerV1850 != null) {
-        clearTimeout(sshcpPressedTimerV1850);
-        sshcpPressedTimerV1850 = null;
+      const rest = sshcpPressedRestComputedV1850;
+      if (sshcpPressedTransitionRestoreV1852 != null) {
+        cancelAnimationFrame(sshcpPressedTransitionRestoreV1852);
+        sshcpPressedTransitionRestoreV1852 = null;
       }
       if (!button) {
         sshcpPressedRestComputedV1850 = null;
         return;
       }
 
+      /* Restore the resting colors with transitions still disabled. This keeps
+         release literal too: no color fade/pulse after the finger comes up. */
+      button.style.setProperty('transition', 'none', 'important');
       button.classList.remove('sshcp-button-pressed-v172');
-
-      const restore = (name, value, priority) => {
-        if (value) button.style.setProperty(name, value, priority || '');
-        else button.style.removeProperty(name);
-      };
-      if (prior) {
-        restore('background', prior.bg, prior.bgPriority);
-        restore('color', prior.color, prior.colorPriority);
-        restore('border-color', prior.border, prior.borderPriority);
-        restore('-webkit-text-fill-color', prior.textFill, prior.textFillPriority);
-        restore('filter', prior.filter, prior.filterPriority);
-      } else {
-        button.style.removeProperty('background');
-        button.style.removeProperty('color');
-        button.style.removeProperty('border-color');
-        button.style.removeProperty('-webkit-text-fill-color');
-        button.style.removeProperty('filter');
+      if (rest) {
+        button.style.setProperty('background', rest.bg, 'important');
+        button.style.setProperty('color', rest.color, 'important');
+        button.style.setProperty('border-color', rest.border, 'important');
+        button.style.setProperty('-webkit-text-fill-color', rest.color, 'important');
       }
-
+      button.style.setProperty('filter', 'none', 'important');
       button.style.removeProperty('--sshcp-press-bg-v172');
       button.style.removeProperty('--sshcp-press-fg-v172');
       button.style.removeProperty('--sshcp-press-border-v172');
+
       sshcpPressedButtonV172 = null;
       sshcpPressedRestoreV172 = null;
       sshcpPressedRestComputedV1850 = null;
+
+      sshcpPressedTransitionRestoreV1852 = requestAnimationFrame(() => {
+        sshcpPressedTransitionRestoreV1852 = requestAnimationFrame(() => {
+          const restore = (name, value, priority) => {
+            if (value) button.style.setProperty(name, value, priority || '');
+            else button.style.removeProperty(name);
+          };
+          if (prior) {
+            restore('background', prior.bg, prior.bgPriority);
+            restore('color', prior.color, prior.colorPriority);
+            restore('border-color', prior.border, prior.borderPriority);
+            restore('-webkit-text-fill-color', prior.textFill, prior.textFillPriority);
+            restore('filter', prior.filter, prior.filterPriority);
+            restore('transition', prior.transition, prior.transitionPriority);
+          } else {
+            button.style.removeProperty('background');
+            button.style.removeProperty('color');
+            button.style.removeProperty('border-color');
+            button.style.removeProperty('-webkit-text-fill-color');
+            button.style.removeProperty('filter');
+            button.style.removeProperty('transition');
+          }
+          sshcpPressedTransitionRestoreV1852 = null;
+        });
+      });
     }
 
     document.addEventListener('pointerdown', event => {
