@@ -1,24 +1,22 @@
-<!-- SSHCP | BASE KEY: 18.58-Q5T2MX | BUILD KEY: 18.59-C8M4QX -->
+<!-- SSHCP | BASE KEY: 18.59-C8M4QX | BUILD KEY: 19.0-R4N8VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.59 — built directly from V18.58 (BUILD 18.58-Q5T2MX).
-           V18.38 remains the declared GOLDEN rollback. V18.59 preserves all
+        /* SSHCP V19.0 — built directly from V18.59 (BUILD 18.59-C8M4QX).
+           V18.38 remains the declared GOLDEN rollback. V19.0 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry,
            solve-for-X sizing, Control Center Gray 5 controls, V18.57 Quick Guide
-           sizing/copy, and the V18.56/V18.57 running-score box geometry. Surgical
-           presentation changes only: Scorecard and Leaderboard center brands now
-           display ROTB 26. V18.59 makes three presentation-only refinements:
-           GEEK MODE keeps the same 22-unit viewport system but category rows become
-           1.5X while stat rows remain 2X; ROTB 26 now targets the same font height as
-           HOME/INFO and shrinks only when its one-line width requires it; Quick Guide
-           BACK gets a small independent text-size bump. Free inertial scrolling stays
-           unchanged with no snap behavior added. No data, scoring, Worker, API or
-           Sheet changes. */
+           sizing/copy, V18.56/V18.57 running-score box geometry, and V18.59 ROTB 26
+           header sizing. Presentation-only changes: Leaderboard footer button gaps
+           now exactly match the 8px GEEK MODE BACK/FILTERS gap in both LIVE and
+           FINAL RESULTS layouts; GEEK MODE returns category rows from 1.5X to 1X
+           while stat rows remain 2X; category labels are bold and target 80% of the
+           category-row height. Free inertial scrolling remains unchanged with no
+           snap behavior. No data, scoring, Worker, API or Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -235,6 +233,18 @@
             bootV16Vars['--v16-score-table-footer-gap'] = v188RoundY(12.24);
             bootV16Vars['--v16-leader-table-footer-gap'] = v188RoundY(12.24);
           }
+
+          /* V19.0: Leaderboard footer uses the exact same 8px internal gap as
+             GEEK MODE BACK/FILTERS. Keep the FINAL RESULTS overlay anchored to
+             the true second-column edge from first paint. */
+          var v190LeaderFooterGap = 8;
+          var v190BootWidth = Math.max(1, Math.min(760, v16NowW));
+          var v190BootRail = Number(bootV16Vars['--v16-rail']) || 12;
+          bootV16Vars['--v190-leader-footer-gap'] = v190LeaderFooterGap;
+          bootV16Vars['--v190-final-action-left'] =
+            (v190BootWidth / 3) +
+            (v190BootRail / 3) +
+            ((v190LeaderFooterGap * 2) / 3);
 
           var v16RootStyle = document.documentElement.style;
           Object.keys(bootV16Vars).forEach(function (name) {
@@ -11681,7 +11691,7 @@ body.team-qr-locked #scorecardView .score-table-head{
   background:var(--sshcp-gray-5-v1850)!important;
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
-  font-weight:400!important;
+  font-weight:800!important;
 }
 
 
@@ -12138,6 +12148,16 @@ button.sshcp-button-pressed-v172{
   -webkit-text-fill-color:#fff!important;
 }
 
+
+/* SSHCP V19.0 — Leaderboard footer gap parity with GEEK MODE. */
+#leaderboardView .leader-bottom,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom{
+  gap:var(--v190-leader-footer-gap,8px)!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  left:var(--v190-final-action-left,calc(33.333333% + 9px))!important;
+}
+
 </style>
 </head>
 
@@ -12265,7 +12285,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.59</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.0</span></span>
         </button>
 
       </div>
@@ -15498,7 +15518,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.59 RESULT LOG',
+        'SSHCP V19.0 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15561,7 +15581,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.59 CONTROL CENTER LOG',
+        'SSHCP V19.0 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17986,6 +18006,15 @@ let scoreTimingDetail =
         (width / 3) +
         (vars['--v16-rail'] / 3) +
         ((vars['--v16-internal-gap'] * 2) / 3);
+
+      /* V19.0: match the GEEK MODE 8px BACK/FILTERS gap without changing the
+         shared nav/summary --v16-internal-gap used elsewhere. */
+      const leaderFooterGapV190 = 8;
+      vars['--v190-leader-footer-gap'] = leaderFooterGapV190;
+      vars['--v190-final-action-left'] =
+        (width / 3) +
+        (vars['--v16-rail'] / 3) +
+        ((leaderFooterGapV190 * 2) / 3);
 
       Object.entries(vars).forEach(([name, value]) => {
         view.style.setProperty(name, value + 'px');
@@ -21457,9 +21486,11 @@ let scoreTimingDetail =
       shell.querySelectorAll('.geek-row-v180.category .geek-cell-v180').forEach(cell => {
         const row = cell.closest('.geek-row-v180.category');
         const h = row ? (row.getBoundingClientRect().height || rowHeight) : rowHeight;
-        fitTextToBoxV5(cell, cell, h * 0.50, 8, {
+        /* V19.0: category labels are intentionally bold and target 80% of the
+           compact 1X category row, shrinking only when width requires it. */
+        fitTextToBoxV5(cell, cell, h * 0.80, 8, {
           horizontalPad: 12,
-          verticalPad: 4,
+          verticalPad: 2,
           wrap: false,
           lineHeight: 1
         });
@@ -21495,10 +21526,9 @@ let scoreTimingDetail =
       const height = shell.getBoundingClientRect().height;
       if (!(height > 0)) return;
 
-      /* V18.59: keep the V18.58 22-unit table viewport and fixed 46px S25
-         table-header × device multiplier, but give category rows more breathing room:
-         category row = 1.5X, stat row = 2X. Scrolling remains smooth/free with no
-         snap behavior added. */
+      /* V19.0: keep the 22-unit table viewport and fixed 46px S25 table-header
+         × device multiplier. Category row = 1X, stat row = 2X. Scrolling remains
+         smooth/free with no snap behavior added. */
       const sharedV187 = syncSharedGeometryV187();
       const headerHeight = sharedV187.tableHeader;
       const scrollViewport = shell.querySelector('.geek-table-scroll-v180');
@@ -21510,7 +21540,7 @@ let scoreTimingDetail =
         measuredViewportHeight > 0 ? measuredViewportHeight : (height - headerHeight)
       );
       const xUnit = dataPixels / 22;
-      const categoryHeight = xUnit * 1.5;
+      const categoryHeight = xUnit;
       const statHeight = xUnit * 2;
 
       shell.style.setProperty('--geek-row-h-v180', statHeight.toFixed(3) + 'px');
