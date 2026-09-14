@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 18.41-W8Q3NK | BUILD KEY: 18.42-Q6M8RX -->
+<!-- SSHCP | BASE KEY: 18.42-Q6M8RX | BUILD KEY: 18.43-F5N2QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.42 — built directly from V18.41 (BUILD 18.41-W8Q3NK).
-           V18.38 remains the declared GOLDEN rollback. V18.42 preserves all
+        /* SSHCP V18.43 — built directly from V18.42 (BUILD 18.42-Q6M8RX).
+           V18.38 remains the declared GOLDEN rollback. V18.43 preserves all
            V18.40 scoring, NESR / CLEAR timing, shotgun landmarks, Worker/API,
            Sheet behavior, Welcome ceiling, GEEK filtering/ownership and
            permanent post-round GEEK MODE + SKINS behavior.
@@ -9517,7 +9517,7 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 
 /* Generic modal actions are secondary accent-outline controls unless an
    existing semantic class explicitly makes them primary, testing or danger. */
-.modal-btn:not(.primary):not(.testing):not(.reset-danger):not(.tournament-summary-button){
+.modal-btn:where(:not(.primary):not(.testing):not(.reset-danger):not(.tournament-summary-button)){
   border-color:var(--accent)!important;
   color:var(--accent)!important;
 }
@@ -11846,7 +11846,7 @@ html:not(.sshcp-tournament-complete) #homeView #homeLeaderboardButton:active,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard:active,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .leader-refresh-button:active,
-.modal-btn:not(.primary):not(.testing):not(.reset-danger):not(.tournament-summary-button):not(.summary-skins-button-v1627):not(.summary-geek-button-v180):not(.geek-back-v180):not(.geek-detail-back-v182):not(.quick-guide-got-it-v175),
+.modal-btn:where(:not(.primary):not(.testing):not(.reset-danger):not(.tournament-summary-button):not(.summary-skins-button-v1627):not(.summary-geek-button-v180):not(.geek-back-v180):not(.geek-detail-back-v182):not(.quick-guide-got-it-v175)),
 .modal-overlay.tournament-summary .summary-nav-overlay-v182,
 .modal-overlay.tournament-summary .summary-nav-overlay-v182:active,
 .teams-popup-back,
@@ -11995,11 +11995,11 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
 
 
 /* =========================================================
-   SSHCP V18.42 — NUMBERED GRAY HIERARCHY / PRIMARY-ACTION PASS
+   SSHCP V18.43 — PRIMARY-CASCADE FIX / DARKEST SCORE-FOCUS CUES
    Gray 1 + Gray 2 retain the approved shotgun landmark shades.
-   Gray 3 is the OLD/current V18.41 header shade and now belongs to
-   secondary controls. Gray 4 is reserved for score/focus state only.
-   Gray 5 is the new darkest structural table-header shade. Gray 6 is
+   Gray 3 is the old header shade and belongs to secondary controls.
+   Gray 4 is reserved for the pending/unsaved score state. Gray 5 is the
+   darkest structural/header shade AND the popup-score / next-hole focus cue. Gray 6 is
    the momentary pressed-button shade. Primary actions stay tournament Blue.
    No geometry, scoring, Worker/API, Sheet, NESR timing or data logic changes.
    ========================================================= */
@@ -12017,8 +12017,9 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
   --sshcp-static-header-gray-v185:var(--sshcp-gray-5-v1842);
 }
 
-/* GRAY 5 — structural table/header rows only. Purposeful GEEK category rows,
-   THRU shading and the two shotgun landmark fills are intentionally untouched. */
+/* GRAY 5 — darkest structural table/header rows plus the popup score
+   selector and NESR / next-hole cue. Purposeful GEEK category rows, THRU
+   shading and the two shotgun landmark fills are intentionally untouched. */
 #scorecardView .score-table-head,
 #scorecardView .score-table-head > div,
 #scorecardView .score-table-head > .score-running-header > span,
@@ -12038,10 +12039,9 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
   -webkit-text-fill-color:#fff!important;
 }
 
-/* GRAY 4 — score/focus state ONLY: popup score display, pending score tile,
-   and NESR / next-hole hole-number cell. */
+/* GRAY 4 — pending/unsaved score tile only. */
 .score-entry-preview{
-  background:var(--sshcp-gray-4-v1842)!important;
+  background:var(--sshcp-gray-5-v1842)!important;
   color:#fff!important;
 }
 #scorecardView .score-button.unsaved{
@@ -12050,7 +12050,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
   color:#fff!important;
 }
 #scorecardView .hole-cell.next-hole-cell{
-  background:var(--sshcp-gray-4-v1842)!important;
+  background:var(--sshcp-gray-5-v1842)!important;
   color:#fff!important;
 }
 #scorecardView .hole-cell.next-hole-cell .hole-number{
@@ -12080,7 +12080,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow,
 #testLogView .test-copy-log,
 #testLogView .test-bottom-nav-button:not(.home),
 #testLogView .test-score-action:not(.delete):not(.primary),
-.modal-btn:not(.primary):not(.testing):not(.reset-danger):not(.tournament-summary-button):not(.summary-skins-button-v1627):not(.summary-geek-button-v180):not(.geek-detail-back-v182):not(.quick-guide-back-v173):not(.quick-guide-got-it-v175){
+.modal-btn:where(:not(.primary):not(.testing):not(.reset-danger):not(.tournament-summary-button):not(.summary-skins-button-v1627):not(.summary-geek-button-v180):not(.geek-detail-back-v182):not(.quick-guide-back-v173):not(.quick-guide-got-it-v175)){
   background:var(--sshcp-gray-3-v1842)!important;
   border-color:var(--sshcp-gray-3-v1842)!important;
   color:#fff!important;
@@ -12218,6 +12218,21 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
   border-color:var(--red)!important;
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
+}
+
+/* V18.43 semantic-primary safety: generic modal secondary rules are intentionally
+   lower-specificity via :where(), and these explicit primary actions stay Blue. */
+.modal-overlay.quick-guide .quick-guide-back-v173,
+.modal-overlay.quick-guide .quick-guide-got-it-v175,
+.modal-overlay.geek-mode-v180 .modal-actions .geek-filter-button-v186,
+.modal-overlay.geek-mode-v180 .geek-filter-apply-v186,
+.modal-overlay.skins-results-v1627 .modal-actions.skins-back-only-v181 .modal-btn,
+.modal-overlay.geek-detail-v180 .modal-actions > .modal-btn.geek-detail-back-v182{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:none!important;
 }
 
 /* GRAY 6 — every actual button press, regardless of resting role/color.
@@ -12359,7 +12374,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.42</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.43</span></span>
         </button>
 
       </div>
@@ -15592,7 +15607,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.42 RESULT LOG',
+        'SSHCP V18.43 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15655,7 +15670,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.42 CONTROL CENTER LOG',
+        'SSHCP V18.43 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
