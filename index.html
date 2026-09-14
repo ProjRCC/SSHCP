@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 19.1-L6Q2RW | BUILD KEY: 19.2-T5M8QH -->
+<!-- SSHCP | BASE KEY: 19.3-M7Q4VK | BUILD KEY: 19.4-P8R5LX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.2 — built directly from V19.1 (BUILD 19.1-L6Q2RW).
-           V18.38 remains the declared GOLDEN rollback. V19.2 preserves all
+        /* SSHCP V19.4 — built directly from V19.3 (BUILD 19.3-M7Q4VK).
+           V18.38 remains the declared GOLDEN rollback. V19.4 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry,
            solve-for-X sizing, Control Center Gray 5 controls, V18.57 Quick Guide
@@ -1896,7 +1896,6 @@
 .home-main-button{background:var(--gold);color:#eee;border-color:var(--gold)}
 .home-main-button:active{background:var(--gold);color:#eee}
 #homeLeaderboardButton{width:80%;align-self:center;background:var(--gold);color:#eee;border:2px solid var(--gold)}
-#homeLeaderboardButton:active{background:var(--gold);color:#eee}
 .submit-button:disabled{border-color:#888;background:#888;color:#ddd;opacity:1;cursor:default}
 .team-select-wrap{padding:6px 0}
 .team-select-wrap::after{right:20px}
@@ -2959,8 +2958,7 @@ body.score-team-menu-open .score-fixed-top{
   font-size: 26.4px !important;
 }
 
-#homeLeaderboardButton,
-#homeLeaderboardButton:active {
+#homeLeaderboardButton {
   background: #fff !important;
   color: #000 !important;
   border: 5px solid var(--gold) !important;
@@ -4250,8 +4248,7 @@ body.team-qr-locked #scoreTeamSelectButton{padding-left:18px!important;padding-r
 }
 
 
-#homeView #homeLeaderboardButton,
-#homeView #homeLeaderboardButton:active {
+#homeView #homeLeaderboardButton {
   border: 5px solid var(--gold) !important;
   background: #fff !important;
   color: #000 !important;
@@ -5921,7 +5918,10 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   max-width:760px!important;
   max-height:none!important;
   min-height:0!important;
-  padding:clamp(10px,2vw,18px)!important;
+  padding-top:clamp(10px,2vw,18px)!important;
+  padding-bottom:clamp(10px,2vw,18px)!important;
+  padding-left:12px!important;
+  padding-right:12px!important;
   display:grid!important;
   grid-template-rows:auto minmax(0,1fr) auto!important;
   overflow:hidden!important;
@@ -8023,7 +8023,6 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 
 
 #homeView #homeLeaderboardButton,
-#homeView #homeLeaderboardButton:active,
 .score-entry-clear,
 .test-switch-auth:not(.authorized),
 .switch-auth-button,
@@ -8922,8 +8921,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   appearance:none!important;
 }
 
-html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
-html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active{
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   background:var(--accent)!important;
   border-color:var(--accent)!important;
   color:var(--on-accent)!important;
@@ -9094,7 +9092,6 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 #scorecardView .nav-button,
 #leaderboardView .nav-button,
 #homeView #homeLeaderboardButton,
-#homeView #homeLeaderboardButton:active,
 #testLogView .test-log-utility-row .test-copy-log,
 #testLogView .test-bottom-nav-button:not(.home),
 .switch-auth-button{
@@ -9750,6 +9747,10 @@ button.sshcp-button-pressed-v172{
 }
 
 @media(max-width:420px){
+  .modal-overlay.tournament-summary .modal-box{
+    padding-left:9px!important;
+    padding-right:9px!important;
+  }
   .modal-overlay.geek-mode-v180 .modal-box{
     width:98vw!important;
     padding:9px!important;
@@ -11047,13 +11048,28 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
 }
 
 
-html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
-html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active,
-html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pressed-v172{
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   border-style:solid!important;
   border-width:0!important;
   transform:none!important;
   outline:0!important;
+}
+
+/* V19.3: completed HOME action uses the same physical press language as
+   every other filled action. This replaces the legacy blue-on-press
+   exception instead of stacking another visual override on top of it. */
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pressed-v172{
+  background:var(--sshcp-gray-9-v1850)!important;
+  border-color:var(--sshcp-gray-9-v1850)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  transform:none!important;
+  scale:none!important;
+  translate:none!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:none!important;
 }
 
 
@@ -11080,9 +11096,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 
-html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
-html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active,
-html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pressed-v172{
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   width:80%!important;
   min-width:80%!important;
   max-width:80%!important;
@@ -12285,7 +12299,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.2</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.4</span></span>
         </button>
 
       </div>
@@ -15518,7 +15532,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.2 RESULT LOG',
+        'SSHCP V19.4 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15581,7 +15595,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.2 CONTROL CENTER LOG',
+        'SSHCP V19.4 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
