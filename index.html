@@ -1,20 +1,21 @@
-<!-- SSHCP | BASE KEY: 18.52-M8R4QK | BUILD KEY: 18.53-K6T9RV -->
+<!-- SSHCP | BASE KEY: 18.53-K6T9RV | BUILD KEY: 18.54-P3W7LX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.53 — built directly from V18.52 (BUILD 18.52-M8R4QK).
-           V18.38 remains the declared GOLDEN rollback. V18.51 preserves all
+        /* SSHCP V18.54 — built directly from V18.53 (BUILD 18.53-K6T9RV).
+           V18.38 remains the declared GOLDEN rollback. V18.54 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
-           behavior, authorized-scorecard compaction, Scramble Summary geometry
-           and solve-for-X sizing. Surgical presentation fixes only: Control
-           Center neutral controls use Gray 2 with black text, GEEK Filters use
-           Gray 7, GEEK table scrolling never receives the Gray 9 press flash,
-           TIE BREAK has no dark ring, and Tie Break Result title/winner/body
-           use centered width-constrained natural-height text under the existing
-           S25 Delta multiplier. No data, scoring, Worker, API or Sheet changes. */
+           behavior, authorized-scorecard compaction, Scramble Summary geometry,
+           solve-for-X sizing, and all V18.53 presentation geometry. Surgical
+           presentation-only changes: Control Center neutral controls move one
+           step darker from Gray 4 to Gray 5; running GROSS/NET values receive
+           side-value-only optical vertical alignment; E/positive values keep
+           white fill with a thin Gray 3 buffer, while negative values remain red
+           with a thin white buffer. SCORE itself is unchanged. No data, scoring,
+           Worker, API or Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12040,6 +12041,47 @@ button.sshcp-button-pressed-v172{
   max-height:95dvh!important;
 }
 
+
+/* SSHCP V18.54 — CC Gray +1 and running-score contrast/alignment only. */
+#testLogView #testLogResetButton,
+#testLogView #testCopyLogButton,
+#testLogView #controlCenterGeekCheckButtonV188,
+#testLogView #controlCenterResultsCheckButtonV188,
+#testLogView #testAddParCurrentButton,
+#testLogView #testAddRandomCurrentButton,
+#testLogView #testAddRandom2CurrentButton,
+#testLogView .test-team-auth-toggle,
+#testLogView .test-bottom-nav-button:not(.home),
+#testLogView .control-center-nav-button{
+  background:var(--sshcp-gray-5-v1850)!important;
+  border-color:var(--sshcp-gray-5-v1850)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:none!important;
+}
+
+/* Side running values only: optical baseline correction + contrast buffer. */
+#scorecardView .score-table-head > .score-running-header > .score-running-gross,
+#scorecardView .score-table-head > .score-running-header > .score-running-net{
+  transform:translateY(-0.04em)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  -webkit-text-stroke:0.75px var(--sshcp-gray-3-v1850)!important;
+  paint-order:stroke fill!important;
+}
+#scorecardView .score-table-head > .score-running-header > .score-running-gross.under-par,
+#scorecardView .score-table-head > .score-running-header > .score-running-net.under-par{
+  color:#c93636!important;
+  -webkit-text-fill-color:#c93636!important;
+  -webkit-text-stroke:0.75px #fff!important;
+  paint-order:stroke fill!important;
+}
+#scorecardView .score-table-head > .score-running-header > span:nth-child(2){
+  transform:none!important;
+  -webkit-text-stroke:0 transparent!important;
+  paint-order:normal!important;
+}
+
 </style>
 </head>
 
@@ -12167,7 +12209,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.53</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.54</span></span>
         </button>
 
       </div>
@@ -15400,7 +15442,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.53 RESULT LOG',
+        'SSHCP V18.54 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15463,7 +15505,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.53 CONTROL CENTER LOG',
+        'SSHCP V18.54 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
