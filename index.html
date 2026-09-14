@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 18.51-F4Q8NZ | BUILD KEY: 18.52-M8R4QK -->
+<!-- SSHCP | BASE KEY: 18.52-M8R4QK | BUILD KEY: 18.53-K6T9RV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.52 — built directly from V18.51 (BUILD 18.51-F4Q8NZ).
+        /* SSHCP V18.53 — built directly from V18.52 (BUILD 18.52-M8R4QK).
            V18.38 remains the declared GOLDEN rollback. V18.51 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry
@@ -11984,6 +11984,62 @@ button.sshcp-button-pressed-v172{
   font-size:var(--v1852-home-version-font,14.5px)!important;
 }
 
+
+/* SSHCP V18.53 — Control Center legibility, running-score header geometry, Quick Guide breathing room. */
+#testLogView #testLogResetButton,
+#testLogView #testCopyLogButton,
+#testLogView #controlCenterGeekCheckButtonV188,
+#testLogView #controlCenterResultsCheckButtonV188,
+#testLogView #testAddParCurrentButton,
+#testLogView #testAddRandomCurrentButton,
+#testLogView #testAddRandom2CurrentButton,
+#testLogView .test-team-auth-toggle,
+#testLogView .test-bottom-nav-button:not(.home),
+#testLogView .control-center-nav-button{
+  background:var(--sshcp-gray-4-v1852)!important;
+  border-color:var(--sshcp-gray-4-v1852)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:none!important;
+}
+
+/* Running score header = three true zones: GROSS | SCORE | NET. */
+#scorecardView .score-table-head > .score-running-header{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  column-gap:0!important;
+}
+#scorecardView .score-table-head > .score-running-header > span{
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  line-height:1!important;
+  transform:none!important;
+}
+#scorecardView .score-table-head > .score-running-header > span:nth-child(2){
+  width:auto!important;
+  padding-left:5px!important;
+  padding-right:5px!important;
+}
+#scorecardView .score-table-head > .score-running-header > .score-running-gross.under-par,
+#scorecardView .score-table-head > .score-running-header > .score-running-net.under-par{
+  color:#c93636!important;
+  -webkit-text-fill-color:#c93636!important;
+}
+
+/* Quick Guide: retain every existing font size; use more of the available viewport. */
+.modal-overlay.quick-guide .modal-box{
+  height:95dvh!important;
+  max-height:95dvh!important;
+}
+
 </style>
 </head>
 
@@ -12111,7 +12167,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.52</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.53</span></span>
         </button>
 
       </div>
@@ -12193,9 +12249,9 @@ button.sshcp-button-pressed-v172{
           <div>YARDS</div>
 
           <div class="score-running-header">
-            <span id="scoreRunningGross" class="score-running-gross">(E)</span>
+            <span id="scoreRunningGross" class="score-running-gross">E</span>
             <span>SCORE</span>
-            <span id="scoreRunningNet" class="score-running-net">(E)</span>
+            <span id="scoreRunningNet" class="score-running-net">E</span>
           </div>
 
         </div>
@@ -12223,12 +12279,12 @@ button.sshcp-button-pressed-v172{
               rows.innerHTML = snap.rowsHtml;
 
               if (gross && snap.runningGross) {
-                gross.textContent = snap.runningGross.text || '(E)';
+                gross.textContent = String(snap.runningGross.text || 'E').replace(/^\((.*)\)$/, '$1');
                 gross.className = snap.runningGross.className || 'score-running-gross';
               }
 
               if (net && snap.runningNet) {
-                net.textContent = snap.runningNet.text || '(E)';
+                net.textContent = String(snap.runningNet.text || 'E').replace(/^\((.*)\)$/, '$1');
                 net.className = snap.runningNet.className || 'score-running-net';
               }
 
@@ -15344,7 +15400,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.52 RESULT LOG',
+        'SSHCP V18.53 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15407,7 +15463,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.52 CONTROL CENTER LOG',
+        'SSHCP V18.53 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17172,8 +17228,8 @@ let scoreTimingDetail =
       if (!els.scoreRunningGross || !els.scoreRunningNet) return;
 
       if (!selectedTeam) {
-        els.scoreRunningGross.textContent = '(E)';
-        els.scoreRunningNet.textContent = '(E)';
+        els.scoreRunningGross.textContent = 'E';
+        els.scoreRunningNet.textContent = 'E';
         els.scoreRunningGross.classList.remove('under-par');
         els.scoreRunningNet.classList.remove('under-par');
         return;
@@ -17197,10 +17253,10 @@ let scoreTimingDetail =
       const net = gross - scorecardHandicap(selectedTeam);
 
       els.scoreRunningGross.textContent =
-        '(' + formatScorecardRelative(gross) + ')';
+        formatScorecardRelative(gross);
 
       els.scoreRunningNet.textContent =
-        '(' + formatScorecardRelative(net) + ')';
+        formatScorecardRelative(net);
 
       els.scoreRunningGross.classList.toggle('under-par', gross < 0);
       els.scoreRunningNet.classList.toggle('under-par', net < 0);
@@ -17375,11 +17431,11 @@ let scoreTimingDetail =
           rowsHtml: els.scoreRows.innerHTML,
           scrollTop: els.scoreScroll.scrollTop || 0,
           runningGross: {
-            text: els.scoreRunningGross ? els.scoreRunningGross.textContent : '(E)',
+            text: els.scoreRunningGross ? els.scoreRunningGross.textContent : 'E',
             className: els.scoreRunningGross ? els.scoreRunningGross.className : 'score-running-gross'
           },
           runningNet: {
-            text: els.scoreRunningNet ? els.scoreRunningNet.textContent : '(E)',
+            text: els.scoreRunningNet ? els.scoreRunningNet.textContent : 'E',
             className: els.scoreRunningNet ? els.scoreRunningNet.className : 'score-running-net'
           }
         };
