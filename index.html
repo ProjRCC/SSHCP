@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 18.44-R4K7NW | BUILD KEY: 18.45-T8M3QX -->
+<!-- SSHCP | BASE KEY: 18.45-T8M3QX | BUILD KEY: 18.46-B7K4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.45 — built directly from V18.44 (BUILD 18.44-R4K7NW).
-           V18.38 remains the declared GOLDEN rollback. V18.45 preserves all
+        /* SSHCP V18.46 — built directly from V18.45 (BUILD 18.45-T8M3QX).
+           V18.38 remains the declared GOLDEN rollback. V18.46 preserves all
            V18.40 scoring, NESR / CLEAR timing, shotgun landmarks, Worker/API,
            Sheet behavior, Welcome ceiling, GEEK filtering/ownership and
            permanent post-round GEEK MODE + SKINS behavior.
@@ -18,10 +18,14 @@
            score +/- and ENTER). V18.44 temporarily removes the post-round Gold
            feature-label treatment: SCRAMBLE SUMMARY, SKINS and GEEK MODE
            use normal white text on Blue wherever that Gold label treatment
-           previously applied. V18.45 additionally fixes the Scramble Summary center BACK
-           action to the shared Gray 3 secondary treatment while GEEK MODE and
-           SKINS remain Blue primary actions. No data, scoring, Worker, API or
-           Sheet changes. */
+           previously applied. V18.46 simplifies the gray system: Gray 3 is the
+           single normal gray for headers, secondary controls, pending scores and
+           the popup score display; the old pressed Gray 6 becomes conceptual Gray 4
+           (near-black). NESR / next-hole is Blue. Score-popup CLEAR joins +/- and
+           ENTER as Blue primary scoring controls. Scramble Summary BACK remains
+           Gray 3 while GEEK MODE / SKINS stay Blue; the legacy Summary outline
+           selector is repaired at its source so it cannot recapture those buttons.
+           No data, scoring, Worker, API or Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -9272,9 +9276,10 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   gap:10px!important;
 }
 
-/* Hierarchy is functional, not positional: BACK is secondary; SKINS is the
-   forward/primary action. */
-.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn:not(.summary-action-placeholder-v1627):not(.summary-skins-button-v1627){
+/* Hierarchy is functional, not positional. Modern V18.46 exclusions below
+   keep legacy outline styling away from GEEK MODE and BACK so their explicit
+   semantic rules can own those actions; SKINS remains primary. */
+.modal-overlay.tournament-summary .modal-actions.tournament-summary-actions-v1627 > .modal-btn:not(.summary-action-placeholder-v1627):not(.summary-skins-button-v1627):not(.summary-geek-button-v180):not(.summary-back-v1845){
   border:2px solid var(--accent)!important;
   background:#fff!important;
   color:var(--accent)!important;
@@ -12003,18 +12008,18 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
 /* =========================================================
    SSHCP V18.43 — PRIMARY-CASCADE FIX / DARKEST SCORE-FOCUS CUES
    Gray 1 + Gray 2 retain the approved shotgun landmark shades.
-   Gray 3 is the old header shade and belongs to secondary controls.
-   Gray 4 is reserved for the pending/unsaved score state. Gray 5 is the
-   darkest structural/header shade AND the popup-score / next-hole focus cue. Gray 6 is
-   the momentary pressed-button shade. Primary actions stay tournament Blue.
+   V18.46 compatibility note: Gray 3 / old Gray 4 / old Gray 5 all resolve to
+   the same normal gray (#444444). The old Gray 6 variable is the new conceptual
+   Gray 4 pressed shade (#141414). NESR / next-hole is Blue; popup score display
+   and pending score use normal Gray 3. Primary actions stay tournament Blue.
    No geometry, scoring, Worker/API, Sheet, NESR timing or data logic changes.
    ========================================================= */
 :root{
   /* Gray 1 = existing front-nine landmark #f2f2f2 (unchanged). */
   /* Gray 2 = existing back-nine landmark  #e8e8e8 (unchanged). */
   --sshcp-gray-3-v1842:#444444;
-  --sshcp-gray-4-v1842:#363636;
-  --sshcp-gray-5-v1842:#282828;
+  --sshcp-gray-4-v1842:#444444;
+  --sshcp-gray-5-v1842:#444444;
   --sshcp-gray-6-v1842:#141414;
 
   /* Existing secondary selectors continue to work, but no longer follow
@@ -12023,8 +12028,8 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
   --sshcp-static-header-gray-v185:var(--sshcp-gray-5-v1842);
 }
 
-/* GRAY 5 — darkest structural table/header rows plus the popup score
-   selector and NESR / next-hole cue. Purposeful GEEK category rows, THRU
+/* NORMAL GRAY 3 — structural table/header rows plus the popup score
+   selector. Purposeful GEEK category rows, THRU
    shading and the two shotgun landmark fills are intentionally untouched. */
 #scorecardView .score-table-head,
 #scorecardView .score-table-head > div,
@@ -12045,7 +12050,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
   -webkit-text-fill-color:#fff!important;
 }
 
-/* GRAY 4 — pending/unsaved score tile only. */
+/* NORMAL GRAY 3 — pending/unsaved score tile; NESR itself is Blue. */
 .score-entry-preview{
   background:var(--sshcp-gray-5-v1842)!important;
   color:#fff!important;
@@ -12056,7 +12061,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
   color:#fff!important;
 }
 #scorecardView .hole-cell.next-hole-cell{
-  background:var(--sshcp-gray-5-v1842)!important;
+  background:var(--accent)!important;
   color:#fff!important;
 }
 #scorecardView .hole-cell.next-hole-cell .hole-number{
@@ -12074,7 +12079,6 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow,
 #leaderboardView .nav-button,
 #scorecardView .score-team-select-button,
 #scorecardView .score-team-select-button.has-team,
-.score-entry-clear,
 #leaderboardView .leader-bottom .leader-refresh-button,
 #leaderboardView .leaderboard-screen.tournament-complete .leader-bottom .access-scorecard,
 .modal-overlay.quick-guide .quick-guide-destination-v173,
@@ -12114,6 +12118,7 @@ html.sshcp-tournament-complete #homeView .home-scorecard-arrow::after{
 .qr-welcome-enter-v170,
 #scorecardView .bottom-action.leaderboard-button,
 .score-step-button,
+.score-entry-clear,
 .score-entry-enter,
 #leaderboardView .leader-bottom .access-scorecard,
 .modal-btn.primary:not(:disabled),
@@ -12252,7 +12257,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
   box-shadow:none!important;
 }
 
-/* GRAY 6 — every actual button press, regardless of resting role/color.
+/* PRESSED GRAY 4 (legacy Gray 6 variable) — every actual button press, regardless of resting role/color.
    Geometry remains untouched. */
 button:active:not(:disabled),
 button.sshcp-button-pressed-v172{
@@ -12264,6 +12269,17 @@ button.sshcp-button-pressed-v172{
   filter:none!important;
 }
 
+
+/* =========================================================
+   SSHCP V18.46 — SIMPLIFIED GRAY MODEL
+   Gray 1 = front-nine landmark (unchanged)
+   Gray 2 = back-nine landmark (unchanged)
+   Gray 3 = ALL normal gray UI: headers, secondary controls, pending score,
+            popup score display
+   Gray 4 = pressed state, near-black (legacy --sshcp-gray-6-v1842)
+   GEEK category gray remains independent and unchanged.
+   NESR hole-number cell is Blue. Score popup CLEAR / - / + / ENTER are Blue.
+   ========================================================= */
 </style>
 </head>
 
@@ -12391,7 +12407,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.45</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.46</span></span>
         </button>
 
       </div>
@@ -15624,7 +15640,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.45 RESULT LOG',
+        'SSHCP V18.46 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15687,7 +15703,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.45 CONTROL CENTER LOG',
+        'SSHCP V18.46 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
