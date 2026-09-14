@@ -1,20 +1,20 @@
-<!-- SSHCP | BASE KEY: 18.50-P7K3VX | BUILD KEY: 18.50-R6M2QK -->
+<!-- SSHCP | BASE KEY: 18.50-R6M2QK | BUILD KEY: 18.51-F4Q8NZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V18.50 — built directly from V18.49 (BUILD 18.49-L3Q8VN).
-           V18.38 remains the declared GOLDEN rollback. V18.50 preserves all
+        /* SSHCP V18.51 — built directly from V18.50 R1 (BUILD 18.50-R6M2QK).
+           V18.38 remains the declared GOLDEN rollback. V18.51 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry
-           and solve-for-X sizing. Presentation-only polish: permanent 1–10
-           gray scale, lighter Gray 5 working surfaces, Control Center Gray 1
-           readability treatment, three-section GEEK filter hierarchy, GEEK
-           category Gray 5 rails, corrected MASTER selector chevron, brief
-           Gray 9 press flash, and S25-multiplier Tie Break Result legibility.
-           No data, scoring, Worker, API or Sheet changes. */
+           and solve-for-X sizing. Surgical presentation fixes only: Control
+           Center neutral controls use Gray 2 with black text, GEEK Filters use
+           Gray 7, GEEK table scrolling never receives the Gray 9 press flash,
+           TIE BREAK has no dark ring, and Tie Break Result title/winner/body
+           use centered width-constrained natural-height text under the existing
+           S25 Delta multiplier. No data, scoring, Worker, API or Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11658,6 +11658,7 @@ body.team-qr-locked #scorecardView .score-table-head{
   --sshcp-gray-2-v1850:#f2f2f2;
   --sshcp-gray-3-v1850:#e8e8e8;
   --sshcp-gray-5-v1850:#666666;
+  --sshcp-gray-7-v1851:#444444;
   --sshcp-gray-9-v1850:#141414;
 
   
@@ -11680,8 +11681,8 @@ body.team-qr-locked #scorecardView .score-table-head{
 
 
 .modal-overlay.geek-mode-v180 .geek-filter-popover-v186{
-  background:var(--sshcp-gray-5-v1850)!important;
-  border-color:var(--sshcp-gray-5-v1850)!important;
+  background:var(--sshcp-gray-7-v1851)!important;
+  border-color:var(--sshcp-gray-7-v1851)!important;
   box-shadow:0 8px 24px rgba(0,0,0,.22)!important;
 }
 .modal-overlay.geek-mode-v180 .geek-filter-grid-v186{
@@ -11715,8 +11716,8 @@ body.team-qr-locked #scorecardView .score-table-head{
 #testLogView .test-bottom-nav-button:not(.home),
 #testLogView .test-team-auth-toggle,
 #testLogView .control-center-nav-button{
-  background:var(--sshcp-gray-1-v1850)!important;
-  border-color:var(--sshcp-gray-1-v1850)!important;
+  background:var(--sshcp-gray-2-v1850)!important;
+  border-color:var(--sshcp-gray-2-v1850)!important;
   color:#000!important;
   -webkit-text-fill-color:#000!important;
   box-shadow:none!important;
@@ -11836,6 +11837,99 @@ button.sshcp-button-pressed-v172{
   -webkit-text-fill-color:#fff!important;
   box-shadow:none!important;
   filter:none!important;
+}
+
+
+/* SSHCP V18.51 — final presentation corrections. */
+#testLogView #testLogResetButton,
+#testLogView #testCopyLogButton,
+#testLogView #controlCenterGeekCheckButtonV188,
+#testLogView #controlCenterResultsCheckButtonV188,
+#testLogView #testAddParCurrentButton,
+#testLogView #testAddRandomCurrentButton,
+#testLogView #testAddRandom2CurrentButton,
+#testLogView .test-team-auth-toggle,
+#testLogView .test-bottom-nav-button:not(.home),
+#testLogView .control-center-nav-button{
+  background:var(--sshcp-gray-2-v1850)!important;
+  border-color:var(--sshcp-gray-2-v1850)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  box-shadow:none!important;
+}
+
+.modal-overlay.geek-mode-v180 .geek-filter-popover-v186{
+  background:var(--sshcp-gray-7-v1851)!important;
+  border-color:var(--sshcp-gray-7-v1851)!important;
+}
+
+/* GEEK stat table is a scroll surface, not a literal press-feedback surface. */
+.modal-overlay.geek-mode-v180 .geek-table-scroll-v180 .geek-team-button-v180:active,
+.modal-overlay.geek-mode-v180 .geek-table-scroll-v180 .geek-team-button-v180.sshcp-button-pressed-v172{
+  background:inherit!important;
+  color:inherit!important;
+  -webkit-text-fill-color:inherit!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+}
+#leaderboardView .leader-final-action.break-tie,
+#leaderboardView .leader-final-action.break-tie:hover,
+#leaderboardView .leader-final-action.break-tie:focus,
+#leaderboardView .leader-final-action.break-tie:focus-visible,
+#leaderboardView .leader-final-action.break-tie:active,
+#leaderboardView .leader-final-action.break-tie.sshcp-button-pressed-v172{
+  background:var(--red)!important;
+  border:none!important;
+  border-width:0!important;
+  border-style:none!important;
+  outline:none!important;
+  box-shadow:none!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+
+.modal-overlay.tournament-result .modal-title{
+  width:100%!important;
+  max-width:100%!important;
+  align-self:stretch!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+}
+.modal-overlay.tournament-result .tiebreak-winner,
+.modal-overlay.tournament-result .tiebreak-explanation{
+  width:calc(100% - var(--v1851-tie-text-gutter,28px))!important;
+  max-width:calc(100% - var(--v1851-tie-text-gutter,28px))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+}
+.modal-overlay.tournament-result .tiebreak-winner{
+  white-space:normal!important;
+  overflow:visible!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+.modal-overlay.tournament-result .tiebreak-explanation,
+.modal-overlay.tournament-result .tiebreak-explanation-inner{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  text-align:center!important;
 }
 
 </style>
@@ -11965,7 +12059,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.50</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V18.51</span></span>
         </button>
 
       </div>
@@ -15198,7 +15292,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V18.50 RESULT LOG',
+        'SSHCP V18.51 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15261,7 +15355,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V18.50 CONTROL CENTER LOG',
+        'SSHCP V18.51 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -19821,6 +19915,7 @@ let scoreTimingDetail =
       setPx('--v1850-tie-title-font', 30, 24, 39);
       setPx('--v1850-tie-winner-gap', 14, 10, 19);
       setPx('--v1850-tie-winner-font', 36, 28, 47);
+      setPx('--v1851-tie-text-gutter', 28, 20, 38);
       setPx('--v1850-tie-body-font', 21, 17, 27);
       setPx('--v1850-tie-actions-gap', 18, 13, 24);
       setPx('--v1850-tie-button-gap', 10, 7, 13);
@@ -24021,8 +24116,11 @@ let scoreTimingDetail =
     let sshcpPressedTimerV1850 = null;
 
     function isExcludedPressButtonV172(button) {
-      /* V18.5 audit: every enabled literal BUTTON participates. */
-      return !button;
+      if (!button) return true;
+      /* V18.51: GEEK table buttons live inside a touch-scroll surface. A
+         pointerdown there may become a scroll gesture, so never flash Gray 9. */
+      if (button.closest && button.closest('.geek-table-scroll-v180')) return true;
+      return false;
     }
 
     function parseCssColorV172(value) {
