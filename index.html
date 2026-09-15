@@ -1,20 +1,20 @@
-<!-- SSHCP | BASE KEY: 19.26-N4K7VX | BUILD KEY: 19.27-C8Q5MR -->
+<!-- SSHCP | BASE KEY: 19.27-C8Q5MR | BUILD KEY: 19.28-P7V4QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.27 — built directly from V19.26 (BUILD 19.26-N4K7VX).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.27 preserves all
+        /* SSHCP V19.28 — built directly from V19.27 (BUILD 19.27-C8Q5MR).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.28 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
            HOME geometry, Scramble Summary/GEEK geometry, header rules, GEEK calculations,
-           V19.26 SHORT/LONG definitions, result wording, evidence logic, and detail sizing.
-           This pass gives every GEEK detail card a universal underlined secondary context
-           line (ALL HOLES when no narrower set is used), underlines only the actual RESULT
-           value, and makes every team name bold while retaining blue for the authorized
-           team and black for all others. Text underlines only; no divider bars. Visible
-           HOME version is V19.27. */
+           V19.26 SHORT/LONG definitions, result wording, evidence logic, and detail sizing,
+           plus V19.27 universal secondary context and bold-team hierarchy. This pass
+           removes all GEEK detail underline styling and places the RESULT label + value
+           inside one compact centered thin black rounded-corner box. Team names remain
+           bold, authorized team remains blue, and smaller gray evidence stays underneath.
+           Visible HOME version is V19.28. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12505,19 +12505,28 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   white-space:nowrap!important;
 }
 
-/* SSHCP V19.27 — universal GEEK detail hierarchy.
-   Underlines are text-only; no horizontal divider bars. */
-.geek-detail-proof-v1920{
-  text-decoration-line:underline!important;
-  text-decoration-thickness:1px!important;
-  text-underline-offset:.16em!important;
-  text-decoration-skip-ink:auto!important;
-}
+/* SSHCP V19.28 — universal GEEK detail hierarchy.
+   No underlines. RESULT label + value live in one compact bordered card. */
+.geek-detail-proof-v1920,
 .geek-detail-result-v180 .geek-detail-result-main-v1918{
-  text-decoration-line:underline!important;
-  text-decoration-thickness:1px!important;
-  text-underline-offset:.16em!important;
-  text-decoration-skip-ink:auto!important;
+  text-decoration:none!important;
+}
+.geek-detail-result-card-v1928{
+  display:table!important;
+  width:auto!important;
+  max-width:82%!important;
+  margin:0 auto 18px!important;
+  padding:8px 22px 9px!important;
+  border:1.5px solid #000!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  text-align:center!important;
+}
+.geek-detail-result-card-v1928 .geek-detail-section-v180{
+  margin:0 0 5px!important;
+}
+.geek-detail-result-card-v1928 .geek-detail-result-v180{
+  margin:0!important;
 }
 .geek-detail-team-name-v1920{
   font-weight:900!important;
@@ -12658,7 +12667,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.27</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.28</span></span>
         </button>
 
       </div>
@@ -15930,7 +15939,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.27 RESULT LOG',
+        'SSHCP V19.28 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15993,7 +16002,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.27 CONTROL CENTER LOG',
+        'SSHCP V19.28 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -23519,9 +23528,11 @@ let scoreTimingDetail =
           escapeHtml(geekDescriptionV180(stat && stat.stat)).replace(/\n/g, '<br>') +
         '</div>' +
         '<div class="geek-detail-proof-v1920">' + escapeHtml(proof) + '</div>' +
-        '<div class="geek-detail-section-v180">RESULT</div>' +
-        '<div class="geek-detail-result-v180">' +
-          geekDetailResultHtmlV1918(stat) +
+        '<div class="geek-detail-result-card-v1928">' +
+          '<div class="geek-detail-section-v180">RESULT</div>' +
+          '<div class="geek-detail-result-v180">' +
+            geekDetailResultHtmlV1918(stat) +
+          '</div>' +
         '</div>' +
         teamsHtml;
 
