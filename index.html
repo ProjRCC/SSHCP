@@ -1,17 +1,17 @@
-<!-- SSHCP | BASE KEY: 19.3-M7Q4VK | BUILD KEY: 19.4-P8R5LX -->
+<!-- SSHCP | BASE KEY: 19.4-P8R5LX | BUILD KEY: 19.5-H3N7QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.4 — built directly from V19.3 (BUILD 19.3-M7Q4VK).
-           V18.38 remains the declared GOLDEN rollback. V19.4 preserves all
+        /* SSHCP V19.5 — built directly from V19.4 (BUILD 19.4-P8R5LX).
+           V18.38 remains the declared GOLDEN rollback. V19.5 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry,
            solve-for-X sizing, Control Center Gray 5 controls, V18.57 Quick Guide
-           sizing/copy, V18.56/V18.57 running-score box geometry, and V18.59 ROTB 26
-           header sizing. Presentation-only changes: Leaderboard footer button gaps
+           sizing/copy, V18.56/V18.57 running-score box geometry, and the V19.5
+           authorization-identity center header. Presentation-only changes: Leaderboard footer button gaps
            now exactly match the 8px GEEK MODE BACK/FILTERS gap in both LIVE and
            FINAL RESULTS layouts; GEEK MODE returns category rows from 1.5X to 1X
            while stat rows remain 2X; category labels are bold and target 80% of the
@@ -12299,7 +12299,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.4</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.5</span></span>
         </button>
 
       </div>
@@ -12338,7 +12338,7 @@ button.sshcp-button-pressed-v172{
           <div
             id="scoreTiming"
             class="test-timing header-brand"
-          >ROTB 26</div>
+          ></div>
 
 
           <button
@@ -12502,7 +12502,7 @@ button.sshcp-button-pressed-v172{
           <div
             id="leaderTiming"
             class="leader-test-timing header-brand"
-          >ROTB 26</div>
+          ></div>
 
 
           <button
@@ -13643,13 +13643,54 @@ let scoreTimingDetail =
     }
 
 
+    function authorizationHeaderTextV195() {
+      if (isMasterQr()) return 'MASTER';
+
+      const team = String(
+        (isTeamQr() ? getQrTeam() : getAuthorizedTeam()) || ''
+      ).trim();
+
+      return team ? displayTeamName(team).toUpperCase() : '';
+    }
+
+
+    function fitAuthorizationHeaderV195(element) {
+      if (!element || !element.isConnected) return;
+
+      const nav = element.parentElement;
+      const homeButton = nav ? nav.querySelector('.nav-button') : null;
+      const homeHeight = homeButton ? homeButton.getBoundingClientRect().height : 0;
+      if (!(homeHeight > 0)) return;
+
+      fitTextToBoxV5(element, element, homeHeight * 0.80, 8, {
+        horizontalPad: 4,
+        verticalPad: 2,
+        wrap: false,
+        lineHeight: 1
+      });
+    }
+
+
+    function updateAuthorizationHeadersV195() {
+      const label = authorizationHeaderTextV195();
+
+      if (els.scoreTiming) els.scoreTiming.textContent = label;
+      if (els.leaderTiming) els.leaderTiming.textContent = label;
+
+      requestAnimationFrame(() => {
+        fitAuthorizationHeaderV195(els.scoreTiming);
+        fitAuthorizationHeaderV195(els.leaderTiming);
+      });
+    }
+
+
     function updateScoreTiming() {
-      els.scoreTiming.textContent = 'ROTB 26';
+      updateAuthorizationHeadersV195();
     }
 
 
     function updateLeaderboardTiming() {
-      els.leaderTiming.textContent = 'ROTB 26';
+      updateAuthorizationHeadersV195();
     }
 
     /* =========================================================
@@ -15532,7 +15573,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.4 RESULT LOG',
+        'SSHCP V19.5 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15595,7 +15636,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.4 CONTROL CENTER LOG',
+        'SSHCP V19.5 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16471,6 +16512,7 @@ let scoreTimingDetail =
 
     function updateHomeScorecardAccess() {
       syncTeamQrLockedUi();
+      updateAuthorizationHeadersV195();
       const authorized = getAuthorizedTeam();
       const rememberedForMaster = isMasterQr() ? getRememberedSelectedTeam() : '';
       const displayTeam = authorized || rememberedForMaster;
@@ -16788,6 +16830,8 @@ let scoreTimingDetail =
         'scorecard'
       );
 
+      updateAuthorizationHeadersV195();
+
 
       window.scrollTo(
         0,
@@ -16841,6 +16885,8 @@ let scoreTimingDetail =
       setActiveView(
         'leaderboard'
       );
+
+      updateAuthorizationHeadersV195();
 
 
       /* V16.8 — entering LIVE LEADERBOARD is an explicit orientation event.
@@ -18065,11 +18111,12 @@ let scoreTimingDetail =
 
       const brand = view.querySelector('.header-brand');
       if (brand) {
-        /* V18.59: ROTB 26 targets the same text height as HOME / INFO.
-           Keep it on one line and reduce only when the center width requires it. */
-        fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.52, 8, {
+        /* V19.5: center header is authorization identity, not event branding.
+           Target 80% of the HOME/INFO button height, keep one line, and shrink
+           only the identity text when the available center width requires it. */
+        fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.80, 8, {
           horizontalPad: 4,
-          verticalPad: 4,
+          verticalPad: 2,
           wrap: false,
           lineHeight: 1
         });
