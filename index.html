@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.38-R4N7VX | BUILD KEY: 19.39-B7N4QX -->
+<!-- SSHCP | BASE KEY: 19.39-B7N4QX | BUILD KEY: 19.40-J7M4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11064,6 +11064,9 @@ body option{
 #scrambleModeView .scramble-activity-v1938{flex:1 1 0!important;min-height:0!important;margin:0!important;border:var(--cc-border1-v1824) solid var(--line-strong)!important;border-radius:var(--cc-radius8-v1824)!important;overflow:hidden!important;background:rgba(255,255,255,.55)!important;display:flex!important;flex-direction:column!important}
 #scrambleModeView .scramble-activity-head-v1938{flex:0 0 var(--cc-log-head-h-v1824)!important;min-height:var(--cc-log-head-h-v1824)!important;height:var(--cc-log-head-h-v1824)!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 1.1%!important;border-bottom:1px solid var(--line)!important;background:rgba(255,255,255,.95)!important;color:#222!important;font-size:var(--cc-log-font-v1824)!important;font-weight:700!important;text-align:center!important}
 #scrambleModeView .scramble-activity-body-v1938{flex:1 1 auto!important;min-height:0!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;padding:var(--cc-cell-vpad-v1824) 1.1%!important;color:#666!important;font-size:var(--cc-log-font-v1824)!important;line-height:1.15!important;text-align:center!important}
+#scrambleModeView .scramble-activity-body-v1938{display:block!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+#scrambleModeView .scramble-activity-line-v1940{box-sizing:border-box!important;width:100%!important;min-height:var(--cc-log-row-min-v1824)!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:var(--cc-cell-vpad-v1824) 1.1%!important;border-bottom:1px solid var(--line)!important;color:#555!important;font-size:var(--cc-log-font-v1824)!important;line-height:1.15!important;text-align:center!important;overflow-wrap:anywhere!important}
+#scrambleModeView .scramble-activity-placeholder-v1940{box-sizing:border-box!important;width:100%!important;min-height:var(--cc-log-row-min-v1824)!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:var(--cc-cell-vpad-v1824) 1.1%!important;color:#666!important;font-size:var(--cc-log-font-v1824)!important;line-height:1.15!important;text-align:center!important}
 #scrambleModeView .scramble-bottom-stack-v1938{flex:0 0 auto!important;display:flex!important;flex-direction:column!important;gap:var(--cc-stack-gap-v1824)!important;margin-top:var(--cc-stack-top-v1824)!important}
 #scrambleModeView .scramble-actions-v1938{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;column-gap:1.944444%!important;margin:0!important}
 #scrambleModeView .scramble-action-button-v1938{box-sizing:border-box!important;width:100%!important;height:var(--cc-mode-h-v1824)!important;min-height:var(--cc-mode-h-v1824)!important;max-height:var(--cc-mode-h-v1824)!important;margin:0!important;padding:0 1.1%!important;border:var(--cc-border2-v1824) solid var(--accent)!important;border-radius:var(--cc-radius8-v1824)!important;background:var(--accent)!important;color:var(--on-accent)!important;-webkit-text-fill-color:var(--on-accent)!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;line-height:1!important}
@@ -12729,7 +12732,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.39</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.40</span></span>
         </button>
 
       </div>
@@ -16447,7 +16450,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.39 RESULT LOG',
+        'SSHCP V19.40 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16510,7 +16513,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.39 CONTROL CENTER LOG',
+        'SSHCP V19.40 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16637,18 +16640,65 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V19.39 — SCRAMBLE MODE FUNCTIONALITY
-       Layout remains V19.38. These functions only wire the accepted
-       START / COPY / DELETE actions to CF V2.4 + Audit.
+       SSHCP V19.40 — SCRAMBLE MODE FUNCTIONALITY
+       V19.38 geometry remains unchanged. V19.40 keeps START / COPY /
+       DELETE on CF V2.5 and changes the visible activity box into an
+       incremental tournament-wide feed of officially SAVED score events.
+       The 10-second refresh reads only Audit LOG column A and requests
+       rows after the last row already seen by this device.
        ========================================================= */
 
     let scrambleAuditActiveV1939 = false;
     let scrambleStatusTimerV1939 = null;
+    let scrambleFeedLastRowV1940 = 1;
+    let scrambleFeedSessionV1940 = '';
+    let scrambleFeedHasOfficialEntriesV1940 = false;
 
     function setScrambleLatestActivityV1939(value) {
       if (!els.scrambleLatestActivityV1938) return;
-      els.scrambleLatestActivityV1938.textContent =
-        String(value || '').trim() || 'NOT STARTED';
+
+      const placeholder = document.createElement('div');
+      placeholder.className = 'scramble-activity-placeholder-v1940';
+      placeholder.textContent = String(value || '').trim() || 'NOT STARTED';
+      els.scrambleLatestActivityV1938.replaceChildren(placeholder);
+      scrambleFeedHasOfficialEntriesV1940 = false;
+      els.scrambleLatestActivityV1938.scrollTop = 0;
+    }
+
+    function resetScrambleFeedV1940(message = 'WAITING FOR OFFICIAL SCORE SAVES') {
+      scrambleFeedLastRowV1940 = 1;
+      scrambleFeedSessionV1940 = '';
+      setScrambleLatestActivityV1939(message);
+    }
+
+    function appendScrambleFeedEntriesV1940(entries) {
+      if (!els.scrambleLatestActivityV1938 || !Array.isArray(entries) || !entries.length) {
+        return;
+      }
+
+      if (!scrambleFeedHasOfficialEntriesV1940) {
+        els.scrambleLatestActivityV1938.replaceChildren();
+        scrambleFeedHasOfficialEntriesV1940 = true;
+      }
+
+      for (const entry of entries) {
+        const text = String(entry && entry.text || '').trim();
+        if (!text) continue;
+
+        const line = document.createElement('div');
+        line.className = 'scramble-activity-line-v1940';
+        line.textContent = text;
+
+        const rowNumber = Number(entry && entry.row);
+        if (Number.isInteger(rowNumber) && rowNumber > 0) {
+          line.dataset.auditRow = String(rowNumber);
+        }
+
+        els.scrambleLatestActivityV1938.appendChild(line);
+      }
+
+      els.scrambleLatestActivityV1938.scrollTop =
+        els.scrambleLatestActivityV1938.scrollHeight;
     }
 
     function setScrambleButtonsDisabledV1939(disabled) {
@@ -16701,25 +16751,60 @@ let scoreTimingDetail =
     async function refreshScrambleStatusV1939(silent = false) {
       if (!isMasterQr()) {
         scrambleAuditActiveV1939 = false;
-        setScrambleLatestActivityV1939('NOT AUTHORIZED');
+        resetScrambleFeedV1940('NOT AUTHORIZED');
         return null;
       }
 
       try {
         if (!silent) startLoadingLine();
 
-        const data = await scrambleApiRequestV1939('scrambleStatus');
+        const data = await scrambleApiRequestV1939(
+          'scrambleStatus',
+          {
+            afterRow: scrambleFeedLastRowV1940,
+            session: scrambleFeedSessionV1940
+          }
+        );
+
         scrambleAuditActiveV1939 = Boolean(data.active);
 
-        setScrambleLatestActivityV1939(
-          data.latestScoreActivity ||
-          (data.active ? 'WAITING FOR SCORE ACTIVITY' : 'NOT STARTED')
+        if (!data.active) {
+          resetScrambleFeedV1940('NOT STARTED');
+          return data;
+        }
+
+        const incomingSession = String(data.sessionToken || '');
+        const sessionChanged = Boolean(
+          data.reset ||
+          (scrambleFeedSessionV1940 && incomingSession && incomingSession !== scrambleFeedSessionV1940)
         );
+
+        if (sessionChanged) {
+          setScrambleLatestActivityV1939('WAITING FOR OFFICIAL SCORE SAVES');
+          scrambleFeedLastRowV1940 = 1;
+        }
+
+        if (incomingSession) {
+          scrambleFeedSessionV1940 = incomingSession;
+        }
+
+        appendScrambleFeedEntriesV1940(data.feedEntries || []);
+
+        const returnedLastRow = Number(data.lastRow);
+        if (Number.isInteger(returnedLastRow) && returnedLastRow >= 1) {
+          scrambleFeedLastRowV1940 = returnedLastRow;
+        }
+
+        if (!scrambleFeedHasOfficialEntriesV1940) {
+          setScrambleLatestActivityV1939('WAITING FOR OFFICIAL SCORE SAVES');
+        }
 
         return data;
       }
       catch (error) {
-        setScrambleLatestActivityV1939('STATUS UNAVAILABLE');
+        if (!silent || !scrambleFeedHasOfficialEntriesV1940) {
+          setScrambleLatestActivityV1939('STATUS UNAVAILABLE');
+        }
         if (!silent) showScrambleErrorV1939(
           'SCRAMBLE LOG',
           error && error.message ? error.message : 'Status could not be loaded.'
@@ -16794,9 +16879,13 @@ let scoreTimingDetail =
         );
 
         scrambleAuditActiveV1939 = true;
-        setScrambleLatestActivityV1939(
-          data.latestScoreActivity || 'WAITING FOR SCORE ACTIVITY'
-        );
+        setScrambleLatestActivityV1939('WAITING FOR OFFICIAL SCORE SAVES');
+        scrambleFeedSessionV1940 = String(data.sessionToken || '');
+        const startLastRow = Number(data.lastRow);
+        scrambleFeedLastRowV1940 =
+          Number.isInteger(startLastRow) && startLastRow >= 1
+            ? startLastRow
+            : 1;
 
         addTestLog(
           'START SCRAMBLE',
@@ -16863,11 +16952,6 @@ let scoreTimingDetail =
         const data = await scrambleApiRequestV1939('scrambleRead');
         scrambleAuditActiveV1939 = Boolean(data.active);
 
-        setScrambleLatestActivityV1939(
-          data.latestScoreActivity ||
-          (data.active ? 'WAITING FOR SCORE ACTIVITY' : 'NOT STARTED')
-        );
-
         const copied = await copyTextToClipboardV1939(
           String(data.copyText || '')
         );
@@ -16928,7 +17012,7 @@ let scoreTimingDetail =
       try {
         await scrambleApiRequestV1939('scrambleDelete');
         scrambleAuditActiveV1939 = false;
-        setScrambleLatestActivityV1939('NOT STARTED');
+        resetScrambleFeedV1940('NOT STARTED');
         stopScrambleStatusPollV1939();
         addTestLog('DELETE SCRAMBLE LOG', 'OK', '—', 'AUDIT CLEARED / INACTIVE');
 
@@ -18215,10 +18299,10 @@ let scoreTimingDetail =
       updateTopCenterHeadersV196();
 
 
-      /* V19.30 — entering LIVE LEADERBOARD begins at the normal top position
-         and performs an immediate fresh read. The authorized team remains
-         highlighted wherever it ranks, but the page never auto-scrolls to it.
-         Manual scrolling remains fully user-controlled. */
+      /* V19.40 — LIVE LEADERBOARD still begins at the normal top position
+         while the immediate fresh read is in flight. After the fresh rows are
+         rendered, the long-standing authorized-team rule-based auto-position
+         is scheduled. Scramble Summary remains manual/no-auto-scroll. */
       cancelLeaderboardAutoScroll();
       if (els.leaderContent) {
         els.leaderContent.scrollTop = 0;
@@ -25387,8 +25471,9 @@ let scoreTimingDetail =
         els.leaderContent.scrollTop = Math.min(restoredScroll, maxScroll);
         saveLeaderboardSnapshotV53();
       });
-      /* V19.30 — leaderboard rendering never auto-positions to a team. */
-      cancelLeaderboardAutoScroll();
+      /* V19.40 — restore the existing V15.12 authorized-team placement rules.
+         This is Leaderboard-only; Scorecard NESR + 4 and Scramble Summary are untouched. */
+      scheduleLeaderboardAutoScroll();
 
     }
 
