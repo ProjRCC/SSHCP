@@ -1,21 +1,20 @@
-<!-- SSHCP | BASE KEY: 19.25-B7Q4MX | BUILD KEY: 19.26-N4K7VX -->
+<!-- SSHCP | BASE KEY: 19.26-N4K7VX | BUILD KEY: 19.27-C8Q5MR -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.26 — built directly from V19.25 (BUILD 19.25-B7Q4MX).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.26 preserves all
+        /* SSHCP V19.27 — built directly from V19.26 (BUILD 19.26-N4K7VX).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.27 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
-           HOME geometry, Scramble Summary/GEEK geometry, header rules, and the approved
-           V19.25 GEEK detail typography. This pass standardizes concise RESULT wording,
-           removes unnecessary prose dashes, applies HOLE/HOLES second-line evidence with
-           grouping only when a team has more than five holes, annotates SHORT/LONG proof
-           holes with par type, and changes LONG to Par 3 180+ / Par 4 420+ / Par 5 550+.
-           LONG VS PAR is recalculated from the same already-loaded raw scorecard evidence
-           so the displayed stat matches the new definition; all other GEEK calculations
-           remain Worker authoritative. Visible HOME version is V19.26. */
+           HOME geometry, Scramble Summary/GEEK geometry, header rules, GEEK calculations,
+           V19.26 SHORT/LONG definitions, result wording, evidence logic, and detail sizing.
+           This pass gives every GEEK detail card a universal underlined secondary context
+           line (ALL HOLES when no narrower set is used), underlines only the actual RESULT
+           value, and makes every team name bold while retaining blue for the authorized
+           team and black for all others. Text underlines only; no divider bars. Visible
+           HOME version is V19.27. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12506,6 +12505,32 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   white-space:nowrap!important;
 }
 
+/* SSHCP V19.27 — universal GEEK detail hierarchy.
+   Underlines are text-only; no horizontal divider bars. */
+.geek-detail-proof-v1920{
+  text-decoration-line:underline!important;
+  text-decoration-thickness:1px!important;
+  text-underline-offset:.16em!important;
+  text-decoration-skip-ink:auto!important;
+}
+.geek-detail-result-v180 .geek-detail-result-main-v1918{
+  text-decoration-line:underline!important;
+  text-decoration-thickness:1px!important;
+  text-underline-offset:.16em!important;
+  text-decoration-skip-ink:auto!important;
+}
+.geek-detail-team-name-v1920{
+  font-weight:900!important;
+}
+.geek-detail-teams-v180 li:not(.authorized) .geek-detail-team-name-v1920{
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+.geek-detail-teams-v180 li.authorized .geek-detail-team-name-v1920{
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+}
+
 </style>
 </head>
 
@@ -12633,7 +12658,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.26</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.27</span></span>
         </button>
 
       </div>
@@ -15905,7 +15930,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.26 RESULT LOG',
+        'SSHCP V19.27 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15968,7 +15993,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.26 CONTROL CENTER LOG',
+        'SSHCP V19.27 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -22431,6 +22456,17 @@ let scoreTimingDetail =
       }
     }
 
+    /* V19.27 — every detail card gets a secondary context/holes-used line.
+       Specialized proof wins; otherwise show the simplest truthful scope. */
+    function geekDetailSecondaryContextV1927(stat) {
+      const key = geekStatKeyV186(stat && stat.stat);
+      const proof = geekDetailProofV1920(stat);
+      if (proof) return proof;
+      if (key === 'front 9 vs par') return 'COURSE HOLES 1 THROUGH 9';
+      if (key === 'back 9 vs par') return 'COURSE HOLES 10 THROUGH 18';
+      return 'ALL HOLES';
+    }
+
     /* V19.26 — LONG definition changed after CF V2.2. Recompute only this
        one stat from the already-loaded scorecard evidence so main GEEK, detail,
        owner ties, and authorized-team US value all use 180 / 420 / 550. */
@@ -23477,14 +23513,12 @@ let scoreTimingDetail =
       }).join('');
       const teamsHtml = '<ul class="geek-detail-teams-v180">' + (teamItems || '<li>—</li>') + '</ul>';
 
-      const proof = geekDetailProofV1920(stat);
+      const proof = geekDetailSecondaryContextV1927(stat);
       els.modalBody.innerHTML =
         '<div class="geek-detail-description-v180">' +
           escapeHtml(geekDescriptionV180(stat && stat.stat)).replace(/\n/g, '<br>') +
         '</div>' +
-        (proof
-          ? '<div class="geek-detail-proof-v1920">' + escapeHtml(proof) + '</div>'
-          : '') +
+        '<div class="geek-detail-proof-v1920">' + escapeHtml(proof) + '</div>' +
         '<div class="geek-detail-section-v180">RESULT</div>' +
         '<div class="geek-detail-result-v180">' +
           geekDetailResultHtmlV1918(stat) +
