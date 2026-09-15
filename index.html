@@ -1,19 +1,19 @@
-<!-- SSHCP | BASE KEY: 19.8-J5Q9LV | BUILD KEY: 19.9-N7Q4VX -->
+<!-- SSHCP | BASE KEY: 19.9-N7Q4VX | BUILD KEY: 19.10-Q6M3RT -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.9 — built directly from V19.8 (BUILD 19.8-J5Q9LV).
-           V18.38 remains the declared GOLDEN rollback. V19.9 preserves all
+        /* SSHCP V19.10 — built directly from V19.9 (BUILD 19.9-N7Q4VX).
+           V18.38 remains the declared GOLDEN rollback. V19.10 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet
            behavior, HOME V19.8 baseline geometry, Scramble Summary/GEEK geometry,
-           and the split center-header rule. Presentation-only changes: replace the
-           four solid shotgun landmark-row fills with Gray 2 row-wide fade overlays
-           that wash over row content/score boxes while preserving the existing
-           divider/grid lines, and change Leaderboard/Final Results branding from
-           ROTB'26 to ROTB 2026. No data, scoring, Worker, API or Sheet changes. */
+           and the split center-header rule. Presentation-only change: correct the
+           V19.9 shotgun fade treatment so Gray 3 gradients are row background layers
+           beneath all row content/score boxes while preserving the existing divider
+           and grid lines. V19.9 ROTB 2026 branding is preserved unchanged. No data,
+           scoring, Worker, API or Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11204,45 +11204,20 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   background:transparent!important;
 }
 
-/* V19.9 — shotgun nine-hole landmarks are Gray 2 fades, not solid rows.
-   The overlay is attached to every cell so it sits above all row content —
-   including the score box/number/notation — while pointer-events remain free.
-   A 1px right/bottom inset leaves the existing grid lines crisp; the established
-   2px halfway dividers get a matching 2px protected inset. */
-#scorecardView .score-row.round-landmark-fade-start-v199 > div,
-#scorecardView .score-row.round-landmark-fade-end-v199 > div{
-  position:relative!important;
-}
-#scorecardView .score-row.round-landmark-fade-start-v199 > div::after,
-#scorecardView .score-row.round-landmark-fade-end-v199 > div::after{
-  content:"";
-  position:absolute!important;
-  left:0!important;
-  right:1px!important;
-  top:0!important;
-  bottom:1px!important;
-  z-index:50!important;
-  pointer-events:none!important;
-}
-#scorecardView .score-row.round-landmark-fade-start-v199 > div:last-child::after,
-#scorecardView .score-row.round-landmark-fade-end-v199 > div:last-child::after{
-  right:0!important;
-}
-#scorecardView .score-row.round-landmark-fade-start-v199 > div::after{
+/* V19.10 — shotgun nine-hole landmarks use Gray 3 gradient BACKGROUNDS.
+   This restores the original landmark layering model: the row owns the visual
+   background, while hole/par/yardage text, score box, score number/notation,
+   active-hole cues, cell grid lines, and halfway divider lines all render normally
+   above it. No pseudo-element overlay is used. */
+#scorecardView .score-row.round-landmark-fade-start-v1910{
   background:linear-gradient(to bottom,
-    var(--sshcp-gray-2-v1850,#f2f2f2) 0%,
-    rgba(242,242,242,0) 100%)!important;
+    var(--sshcp-gray-3-v1850,#e8e8e8) 0%,
+    rgba(232,232,232,0) 100%)!important;
 }
-#scorecardView .score-row.round-landmark-fade-end-v199 > div::after{
+#scorecardView .score-row.round-landmark-fade-end-v1910{
   background:linear-gradient(to bottom,
-    rgba(242,242,242,0) 0%,
-    var(--sshcp-gray-2-v1850,#f2f2f2) 100%)!important;
-}
-#scorecardView .score-row.halfway-divider-after-v1836 > div::after{
-  bottom:2px!important;
-}
-#scorecardView .score-row.halfway-divider-before-v1836 > div::after{
-  top:2px!important;
+    rgba(232,232,232,0) 0%,
+    var(--sshcp-gray-3-v1850,#e8e8e8) 100%)!important;
 }
 #scorecardView .score-row.halfway-divider-after-v1836{
   border-bottom:2px solid var(--sshcp-static-header-gray-v185,#444)!important;
@@ -11250,7 +11225,6 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 #scorecardView .score-row.halfway-divider-before-v1836{
   border-top:2px solid var(--sshcp-static-header-gray-v185,#444)!important;
 }
-
 
 
 
@@ -12563,7 +12537,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.9</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.10</span></span>
         </button>
 
       </div>
@@ -15835,7 +15809,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.9 RESULT LOG',
+        'SSHCP V19.10 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15898,7 +15872,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.9 CONTROL CENTER LOG',
+        'SSHCP V19.10 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -18778,11 +18752,11 @@ let scoreTimingDetail =
             'score-row';
 
           if (index === firstNineStartIndexV1836 || index === secondNineStartIndexV1836) {
-            row.classList.add('round-landmark-fade-start-v199');
+            row.classList.add('round-landmark-fade-start-v1910');
           }
 
           if (index === firstNineEndIndexV1836 || index === secondNineEndIndexV1836) {
-            row.classList.add('round-landmark-fade-end-v199');
+            row.classList.add('round-landmark-fade-end-v1910');
           }
 
           if (!halfwayWrapsV1836 && index === firstNineEndIndexV1836) {
