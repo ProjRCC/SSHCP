@@ -1,29 +1,22 @@
-<!-- SSHCP | BASE KEY: 19.21-C7R4MX | BUILD KEY: 19.22-G8T4NV -->
+<!-- SSHCP | BASE KEY: 19.22-G8T4NV | BUILD KEY: 19.23-K6M2QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.22 — built directly from V19.21 (BUILD 19.21-C7R4MX).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.22 preserves all
-           scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet
-           behavior, HOME V19.8 baseline geometry, Scramble Summary/GEEK geometry,
-           and the split center-header rule. GEEK-detail refinement only: course proof
-           lines now use explicit hole numbers without H/range compression; per-team
-           evidence remains compact with H/ranges; Par 3/4/5 wording is natural; tied
-           team evidence now falls back to the authoritative stat headline when owner
-           rows omit rawValue, enabling birdie/eagle/streak/high-low/hole-win evidence.
-           Team/evidence rows stay one line and may shrink to fit. Percent stats stay
-           uncluttered. Detail cards target 80dvh and may expand to 88dvh before
-           readable text is reduced. No GEEK calculation changes; the Worker GEEK
-           result remains authoritative. V19.19 main GEEK helper/header geometry remains intact.
-           Legacy note: eliminate the HOME refresh blink on ACCESS SCORECARD by
-           making the HOME access sync idempotent and updating its existing text spans in place
-           instead of rebuilding the entire button DOM during stored-authorization validation.
-           V19.15 Gray 3.5 / 25% universal boundary treatment, transparent score boxes, border-only
-           NESR press feedback, HOME geometry, and ROTB 2026 branding remain unchanged.
-           No data, scoring, Worker, API or Sheet changes. */
+        /* SSHCP V19.23 — built directly from V19.22 (BUILD 19.22-G8T4NV).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.23 preserves all
+           scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
+           HOME geometry, Scramble Summary/GEEK geometry, and header rules. GEEK detail
+           cleanup only: RESULT is the stat value only; the TEAMS label is removed;
+           top proof lists use explicit comma-separated holes with no ranges; FRONT/BACK
+           9 omit redundant proof lists; per-team proof moves below the team name at 60%
+           font with compact hyphen ranges and no H prefix; proof text is slightly larger;
+           cards may expand from 80dvh up to 95dvh when needed; and when a result includes
+           more than half the field, team names remain but per-team proof is suppressed.
+           Visible HOME version is corrected to V19.23. No GEEK calculation changes; the
+           Worker GEEK result remains authoritative. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12464,12 +12457,12 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   transform:none!important;
 }
 
-/* SSHCP V19.22 — GEEK detail proof-sheet pass, with guaranteed evidence source. */
+/* SSHCP V19.23 — cleaner GEEK detail proof cards. */
 .modal-overlay.geek-detail-v180 .modal-box{
   max-height:80dvh!important;
 }
 .modal-overlay.geek-detail-v180 .modal-box.geek-detail-expanded-v1920{
-  max-height:88dvh!important;
+  max-height:95dvh!important;
 }
 .geek-detail-proof-v1920{
   width:100%!important;
@@ -12478,7 +12471,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   box-sizing:border-box!important;
   color:var(--sshcp-gray-7-v1851,#444444)!important;
   -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
-  font-size:12px!important;
+  font-size:14px!important;
   font-weight:650!important;
   line-height:1.15!important;
   text-align:center!important;
@@ -12490,31 +12483,27 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   width:100%!important;
   text-align:center!important;
   white-space:nowrap!important;
+  overflow:visible!important;
 }
 .geek-detail-team-name-v1920{
-  display:inline!important;
+  display:block!important;
+  width:100%!important;
   font:inherit!important;
   font-weight:inherit!important;
   color:inherit!important;
   -webkit-text-fill-color:inherit!important;
+  white-space:nowrap!important;
 }
 .geek-detail-team-evidence-v1920{
-  display:inline-block!important;
-  margin-left:.34em!important;
-  font-size:.75em!important;
+  display:block!important;
+  width:100%!important;
+  margin:.08em 0 .10em!important;
+  font-size:.60em!important;
   font-weight:500!important;
   line-height:1!important;
-  vertical-align:baseline!important;
   color:var(--sshcp-gray-7-v1851,#444444)!important;
   -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
   white-space:nowrap!important;
-}
-
-/* SSHCP V19.22 — compact proof formatting. Team + evidence is one line;
-   the fit pass may reduce that line as needed but never wraps a team name. */
-.modal-overlay.geek-detail-v180 .geek-detail-teams-v180 li{
-  white-space:nowrap!important;
-  overflow:visible!important;
 }
 
 </style>
@@ -12644,7 +12633,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.21</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.23</span></span>
         </button>
 
       </div>
@@ -15916,7 +15905,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.22 RESULT LOG',
+        'SSHCP V19.23 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15979,7 +15968,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.22 CONTROL CENTER LOG',
+        'SSHCP V19.23 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -21939,20 +21928,12 @@ let scoreTimingDetail =
     }
 
     function geekDetailResultHtmlV1918(stat) {
-      const parts = geekDetailResultPartsV1918(stat);
-      if (!parts) {
-        return '<span class="geek-detail-result-main-v1918">' +
-          escapeHtml(geekDetailResultV180(stat)) +
-        '</span>';
-      }
-      return '<span class="geek-detail-result-main-v1918">' + escapeHtml(parts.main || '—') + '</span>' +
-        (parts.context
-          ? '<span class="geek-detail-result-context-v1918">(' + escapeHtml(parts.context) + ')</span>'
-          : '');
+      const value = geekMainValueV1813(stat, stat);
+      return '<span class="geek-detail-result-main-v1918">' + escapeHtml(value || '—') + '</span>';
     }
 
 
-    /* SSHCP V19.22 — rich GEEK detail evidence.
+    /* SSHCP V19.23 — rich GEEK detail evidence.
        Worker GEEK result remains authoritative. V19.21 also caches one raw
        scorecard-source read opened in parallel with GEEK so the detail popup
        always has the 18 course holes, team scores, and starting-hole order
@@ -22080,7 +22061,7 @@ let scoreTimingDetail =
         }
       }
       segments.push([start, end]);
-      return 'H' + segments.map(([a, b]) => a === b ? String(a) : a + '–' + b).join(',');
+      return segments.map(([a, b]) => a === b ? String(a) : a + '-' + b).join(',');
     }
 
     function geekCompactHoleSequenceV1920(numbers) {
@@ -22100,7 +22081,7 @@ let scoreTimingDetail =
         }
       }
       segments.push([start, end]);
-      return 'H' + segments.map(([a, b]) => a === b ? String(a) : a + '–' + b).join(',');
+      return segments.map(([a, b]) => a === b ? String(a) : a + '-' + b).join(',');
     }
 
     function geekOutcomeEvidenceV1920(stat, item, predicate) {
@@ -22206,7 +22187,7 @@ let scoreTimingDetail =
 
       if (key === 'best hole vs field' || key === 'worst hole vs field') {
         const hole = Number(detail.hole);
-        return Number.isInteger(hole) ? 'H' + hole : '';
+        return Number.isInteger(hole) ? String(hole) : '';
       }
 
       if (key === 'best 9-hole stretch' || key === 'worst 9-hole stretch') {
@@ -22306,16 +22287,15 @@ let scoreTimingDetail =
         .filter(item => predicate(item.hole || {}))
         .map(item => item.number);
       if (!numbers.length) return '';
-      return numbers.length + ' HOLES • ' + numbers.join(',');
+      return numbers.length + ' ' + (numbers.length === 1 ? 'HOLE' : 'HOLES') + ' • ' + numbers.join(',');
     }
 
     function geekDetailProofV1920(stat) {
       const key = geekStatKeyV186(stat && stat.stat);
       switch (key) {
         case 'front 9 vs par':
-          return '9 HOLES • 1,2,3,4,5,6,7,8,9';
         case 'back 9 vs par':
-          return '9 HOLES • 10,11,12,13,14,15,16,17,18';
+          return '';
         case 'par-3 birdies':
         case 'par-3 vs par':
           return geekProofHoleListV1920(hole => Number(hole.par) === 3);
@@ -23226,7 +23206,7 @@ let scoreTimingDetail =
       }
 
       if (proof) {
-        let proofSize = Math.max(10, vh * 0.017);
+        let proofSize = Math.max(11, vh * 0.020);
         proof.style.setProperty('font-size', proofSize + 'px', 'important');
         proof.style.setProperty('line-height', '1.1', 'important');
       }
@@ -23270,7 +23250,7 @@ let scoreTimingDetail =
 
         /* Normal detail cards stop at 80dvh.  If readable content still
            overflows, use the user's allowed flexibility and grow only this
-           card to 88dvh before shrinking team text further. */
+           card to 95dvh before shrinking team text further. */
         if (els.modalBox.scrollHeight > els.modalBox.clientHeight + 1) {
           els.modalBox.classList.add('geek-detail-expanded-v1920');
         }
@@ -23311,10 +23291,15 @@ let scoreTimingDetail =
 
       const authorized = geekAuthorizedTeamV180();
       const owners = stat && Array.isArray(stat.teams) ? stat.teams : [];
+      const evidenceModel = geekEvidenceModelV1920();
+      const totalTeams = evidenceModel && Array.isArray(evidenceModel.teams)
+        ? evidenceModel.teams.filter(team => String(team && team.name || '').trim()).length
+        : 0;
+      const suppressTeamEvidence = totalTeams > 0 && owners.length > (totalTeams / 2);
       const teamItems = owners.map(item => {
         const isAuthorized = authorized &&
           normalizeName(item && item.team) === authorized;
-        const evidence = geekTeamEvidenceV1920(stat, item);
+        const evidence = suppressTeamEvidence ? '' : geekTeamEvidenceV1920(stat, item);
         return '<li class="' + (isAuthorized ? 'authorized' : '') + '">' +
           '<span class="geek-detail-team-name-v1920">' +
             escapeHtml(String(item && item.team || '')) +
@@ -23324,9 +23309,7 @@ let scoreTimingDetail =
             : '') +
           '</li>';
       }).join('');
-      const teamsHtml = owners.length > 10
-        ? '<div class="geek-detail-tie-summary-v182">10 TEAMS TIED</div>'
-        : '<ul class="geek-detail-teams-v180">' + (teamItems || '<li>—</li>') + '</ul>';
+      const teamsHtml = '<ul class="geek-detail-teams-v180">' + (teamItems || '<li>—</li>') + '</ul>';
 
       const proof = geekDetailProofV1920(stat);
       els.modalBody.innerHTML =
@@ -23340,7 +23323,6 @@ let scoreTimingDetail =
         '<div class="geek-detail-result-v180">' +
           geekDetailResultHtmlV1918(stat) +
         '</div>' +
-        '<div class="geek-detail-section-v180">TEAMS</div>' +
         teamsHtml;
 
       const back = makeModalButton('BACK', 'geek-detail-back-v182', returnToGeekModeV180);
