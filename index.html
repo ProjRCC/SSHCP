@@ -1,22 +1,21 @@
-<!-- SSHCP | BASE KEY: 19.23-K6M2QW | BUILD KEY: 19.24-R7M5QX -->
+<!-- SSHCP | BASE KEY: 19.24-R7M5QX | BUILD KEY: 19.25-B7Q4MX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.24 — built directly from V19.23 (BUILD 19.23-K6M2QW).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.24 preserves all
+        /* SSHCP V19.25 — built directly from V19.24 (BUILD 19.24-R7M5QX).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.25 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
-           HOME geometry, Scramble Summary/GEEK geometry, and header rules. GEEK detail
-           polish only: RESULT stays intentionally non-redundant; per-team numeric hole
-           evidence now identifies itself as HOLE / HOLES on the 60% second line while
-           retaining compact hyphen ranges; top proof lists remain explicit, comma-only,
-           and range-free; FRONT/BACK 9 still omit obvious hole lists; proof text under
-           the description is slightly larger; cards may expand from 80dvh to 95dvh
-           when needed; and results shared by more than half the field still list teams
-           without per-team evidence. Visible HOME version is V19.24. No GEEK calculation
-           changes; the Worker GEEK result remains authoritative. */
+           HOME geometry, Scramble Summary/GEEK geometry, header rules, GEEK calculations,
+           and the V19.24 detail-content rules. Detail typography only: DESCRIPTION may
+           use up to three lines before shrinking; the qualifying HOLE/HOLES proof line
+           targets 125% of its prior size and always fits on one line; TEAM names target
+           125% of their prior size and still shrink locally to one line; the second-line
+           HOLE/HOLES evidence grows by the same 25% and also remains one line. Cards may
+           still expand from 80dvh to 95dvh when needed. Visible HOME version is V19.25.
+           No GEEK calculation changes; the Worker GEEK result remains authoritative. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12471,12 +12470,13 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   box-sizing:border-box!important;
   color:var(--sshcp-gray-7-v1851,#444444)!important;
   -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
-  font-size:15px!important;
+  font-size:18.75px!important;
   font-weight:650!important;
-  line-height:1.15!important;
+  line-height:1.1!important;
   text-align:center!important;
   letter-spacing:.02em!important;
-  white-space:normal!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
 }
 .geek-detail-teams-v180 li{
   display:block!important;
@@ -12633,7 +12633,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.24</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.25</span></span>
         </button>
 
       </div>
@@ -15905,7 +15905,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.24 RESULT LOG',
+        'SSHCP V19.25 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15968,7 +15968,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.24 CONTROL CENTER LOG',
+        'SSHCP V19.25 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -23200,8 +23200,8 @@ let scoreTimingDetail =
         });
       }
 
-      /* Description targets 3% viewport height and may use at most two lines.
-         Shrink only this description if its natural wrapping needs a third. */
+      /* V19.25: DESCRIPTION keeps the same 3% target but may use up to
+         three lines before shrinking. Only DESCRIPTION shrinks for this rule. */
       if (description) {
         let size = vh * 0.03;
         const minimum = 10;
@@ -23210,17 +23210,27 @@ let scoreTimingDetail =
         description.style.setProperty('overflow', 'hidden', 'important');
         while (size > minimum) {
           description.style.setProperty('font-size', size + 'px', 'important');
-          const maxTwoLines = (size * 1.05 * 2) + 1.5;
-          if (description.getBoundingClientRect().height <= maxTwoLines) break;
+          const maxThreeLines = (size * 1.05 * 3) + 1.5;
+          if (description.getBoundingClientRect().height <= maxThreeLines) break;
           size -= 0.5;
         }
         description.style.setProperty('font-size', Math.max(minimum, size) + 'px', 'important');
       }
 
+      /* V19.25: qualifying HOLE/HOLES information targets 125% of V19.24
+         and must remain one line. Shrink this line only when width requires it. */
       if (proof) {
-        let proofSize = Math.max(12, vh * 0.022);
-        proof.style.setProperty('font-size', proofSize + 'px', 'important');
-        proof.style.setProperty('line-height', '1.1', 'important');
+        const proofTarget = Math.max(15, vh * 0.0275);
+        fitTextToBoxV5(proof, proof, proofTarget, 10, {
+          horizontalPad: 12,
+          verticalPad: 0,
+          wrap: false,
+          lineHeight: 1.1,
+          ignoreHeight: true
+        });
+        proof.style.setProperty('white-space', 'nowrap', 'important');
+        proof.style.setProperty('overflow', 'hidden', 'important');
+        proof.style.setProperty('text-align', 'center', 'important');
       }
 
       /* RESULT is centered, capped at 3% viewport height, and always one line. */
@@ -23235,34 +23245,61 @@ let scoreTimingDetail =
         result.style.setProperty('text-align', 'center', 'important');
       }
 
-      /* Team names keep the approved look. Use one common fitted size for the
-         visible list and reduce only as necessary to keep the entire card,
-         including BACK, inside the popup. */
+      /* V19.25: TEAM and second-line score/hole evidence both target 125%
+         of V19.24. Each TEAM name must remain on one line and may shrink locally
+         to fit. The second line also stays on one line; its approved 60% ratio
+         is preserved, so increasing the TEAM target by 25% increases both. */
       const teamContainer = teams || tieSummary;
       if (teamContainer) {
-        let teamSize = vh * 0.03;
+        let teamSize = vh * 0.0375;
         const minimumTeam = Math.max(12, Math.min(15, vh * 0.018));
         const teamNodes = teams ? [...teams.querySelectorAll('li')] : [tieSummary];
 
-        teamNodes.forEach(node => {
-          const fitted = fitTextToBoxV5(node, node, teamSize, minimumTeam, {
-            horizontalPad: teams ? 6 : 0,
-            verticalPad: 0,
-            wrap: false,
-            lineHeight: 1.2,
-            ignoreHeight: true
+        const applyTeamSizeV1925 = baseSize => {
+          teamContainer.style.setProperty('font-size', baseSize + 'px', 'important');
+          teamNodes.forEach(node => {
+            node.style.setProperty('font-size', baseSize + 'px', 'important');
+            if (teams) {
+              node.style.setProperty('text-align', 'center', 'important');
+              const nameNode = node.querySelector('.geek-detail-team-name-v1920');
+              const evidenceNode = node.querySelector('.geek-detail-team-evidence-v1920');
+              if (nameNode) {
+                fitTextToBoxV5(nameNode, nameNode, baseSize, minimumTeam, {
+                  horizontalPad: 6,
+                  verticalPad: 0,
+                  wrap: false,
+                  lineHeight: 1,
+                  ignoreHeight: true
+                });
+                nameNode.style.setProperty('white-space', 'nowrap', 'important');
+              }
+              if (evidenceNode) {
+                fitTextToBoxV5(evidenceNode, evidenceNode, baseSize * 0.60, Math.max(8, minimumTeam * 0.60), {
+                  horizontalPad: 6,
+                  verticalPad: 0,
+                  wrap: false,
+                  lineHeight: 1,
+                  ignoreHeight: true
+                });
+                evidenceNode.style.setProperty('white-space', 'nowrap', 'important');
+              }
+            } else {
+              fitTextToBoxV5(node, node, baseSize, minimumTeam, {
+                horizontalPad: 0,
+                verticalPad: 0,
+                wrap: false,
+                lineHeight: 1.2,
+                ignoreHeight: true
+              });
+            }
           });
-          teamSize = Math.min(teamSize, fitted);
-        });
-        teamContainer.style.setProperty('font-size', teamSize + 'px', 'important');
-        teamNodes.forEach(node => {
-          node.style.setProperty('font-size', teamSize + 'px', 'important');
-          if (teams) node.style.setProperty('text-align', 'center', 'important');
-        });
+        };
 
-        /* Normal detail cards stop at 80dvh.  If readable content still
-           overflows, use the user's allowed flexibility and grow only this
-           card to 95dvh before shrinking team text further. */
+        applyTeamSizeV1925(teamSize);
+
+        /* Normal detail cards stop at 80dvh. If readable content still
+           overflows, grow only this card to the approved 95dvh before reducing
+           the TEAM/evidence base size. */
         if (els.modalBox.scrollHeight > els.modalBox.clientHeight + 1) {
           els.modalBox.classList.add('geek-detail-expanded-v1920');
         }
@@ -23270,11 +23307,7 @@ let scoreTimingDetail =
         let guard = 0;
         while (els.modalBox.scrollHeight > els.modalBox.clientHeight + 1 && teamSize > minimumTeam && guard < 80) {
           teamSize -= 0.5;
-          teamContainer.style.setProperty('font-size', teamSize + 'px', 'important');
-          teamNodes.forEach(node => {
-            node.style.setProperty('font-size', teamSize + 'px', 'important');
-            if (teams) node.style.setProperty('text-align', 'center', 'important');
-          });
+          applyTeamSizeV1925(teamSize);
           guard += 1;
         }
       }
