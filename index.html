@@ -1,23 +1,19 @@
-<!-- SSHCP | BASE KEY: 19.31-R5M8QZ | BUILD KEY: 19.32-T4Q7NX -->
+<!-- SSHCP | BASE KEY: 19.32-T4Q7NX | BUILD KEY: 19.33-C6R9MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.32 — built directly from V19.31 (BUILD 19.31-R5M8QZ).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.32 preserves all
+        /* SSHCP V19.33 — built directly from V19.32 (BUILD 19.32-T4Q7NX).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.33 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
-           HOME geometry, leaderboard behavior, GEEK calculations/detail presentation,
-           V19.26 SHORT/LONG definitions and evidence logic, V19.27 universal detail
-           hierarchy, V19.28 compact RESULT box, V19.29 single-winner two-line GEEK TEAM,
-           V19.30 large-tie detail collapse / no leaderboard auto-scroll, and V19.31
-           full-field Scramble Summary scrolling. V19.32 only clips that Summary scrollbar
-           inside its existing rounded lower-table boundary and replaces GEEK CHECK with a
-           fresh-session GEEK DETAIL AUDIT that validates the 32 loaded stats against the
-           raw evidence snapshot, including values, owners, per-team results, detail proof,
-           context lines, and large-tie state. Entering GEEK MODE resets prior GEEK-only log
-           entries and establishes the fresh calculation/evidence set used by that audit. */
+           HOME geometry, leaderboard behavior, Scramble Summary scrolling/containment,
+           GEEK calculations/detail presentation, and the V19.32 fresh-session GEEK DETAIL
+           AUDIT workflow. V19.33 corrects ONLY the audit itself: LOWEST HOLE SCORE now
+           uses minimum winner logic, 9-hole audit reconstruction uses the canonical
+           starting-hole resolver, and 9-hole failures report exact RAW versus GEEK values
+           plus available starting-hole evidence. No production GEEK calculation changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12710,7 +12706,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.32</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.33</span></span>
         </button>
 
       </div>
@@ -15349,7 +15345,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V19.32 — GEEK DETAIL AUDIT
+       SSHCP V19.33 — GEEK DETAIL AUDIT
        Uses ONLY the fresh GEEK MODE response + raw evidence snapshot already
        loaded by the visible GEEK MODE action. No Control Center fetch is added.
        ========================================================= */
@@ -15402,8 +15398,9 @@ let scoreTimingDetail =
         if (scores.some(score => !Number.isFinite(score) || score <= 0)) return null;
         const slotRaw = Number(team && team.slot);
         const slot = Number.isInteger(slotRaw) && slotRaw > 0 ? slotRaw : index + 1;
-        const startRaw = Number(team && team.startingHole);
-        const startingHole = Number.isInteger(startRaw) && startRaw >= 1 && startRaw <= 18 ? startRaw : 1;
+        /* V19.33 audit-only: mirror the app's established Starting Hole resolver
+           instead of assuming only team.startingHole exists. */
+        const startingHole = scorecardStartingHoleV16(team);
         const deltas = scores.map((score, holeIndex) => score - holes[holeIndex].par);
         let startIndex = holes.findIndex(item => item.hole === startingHole);
         if (startIndex < 0) startIndex = 0;
@@ -15546,7 +15543,7 @@ let scoreTimingDetail =
 
     const GEEK_DETAIL_AUDIT_MIN_KEYS_V1932 = new Set([
       'bogeys','bogey-or-worse %','front 9 vs par','back 9 vs par','best hole vs field','best 9-hole stretch',
-      'score range','par-3 vs par','par-4 vs par','par-5 vs par','short vs par','long vs par','9 easy holes vs par','9 hard holes vs par'
+      'lowest hole score','score range','par-3 vs par','par-4 vs par','par-5 vs par','short vs par','long vs par','9 easy holes vs par','9 hard holes vs par'
     ]);
 
     function geekAuditContextV1932(key, model) {
@@ -15613,6 +15610,34 @@ let scoreTimingDetail =
               'highest hole score','lowest hole score','score range'].includes(key);
     }
 
+    function geekAuditFormatMetricV1933(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return '—';
+      if (Math.abs(number - Math.round(number)) < 0.000001) return formatGolfScore(number);
+      return String(Math.round(number * 1000) / 1000);
+    }
+
+    function geekAuditNineHoleDetailV1933(key, team, expectedMetric, appItem, stat) {
+      if (key !== 'best 9-hole stretch' && key !== 'worst 9-hole stretch') return '';
+      const rawValue = expectedMetric ? expectedMetric.value : NaN;
+      const geekValue = appItem ? geekAuditNumberV1932(
+        Number.isFinite(geekAuditNumberV1932(appItem.rawValue)) ? appItem.rawValue : appItem.value
+      ) : NaN;
+      const rawStarts = expectedMetric && Array.isArray(expectedMetric.startHoles)
+        ? expectedMetric.startHoles.map(Number).filter(Number.isFinite) : [];
+      let geekStart = NaN;
+      if (appItem && appItem.detail) geekStart = Number(appItem.detail.startHole);
+      if (!Number.isFinite(geekStart) && stat && Array.isArray(stat.teams)) {
+        const owner = geekAuditFindTeamItemV1932(stat.teams, team);
+        if (owner && owner.detail) geekStart = Number(owner.detail.startHole);
+      }
+      return ' T' + team.slot +
+        ' RAW ' + geekAuditFormatMetricV1933(rawValue) +
+        (rawStarts.length ? ' @S' + rawStarts.join('/') : '') +
+        ' • GEEK ' + geekAuditFormatMetricV1933(geekValue) +
+        (Number.isFinite(geekStart) ? ' @S' + geekStart : ' @S?');
+    }
+
     function runGeekDetailAuditCoreV1932() {
       const errors = [];
       const model = geekAuditModelV1932();
@@ -15652,8 +15677,16 @@ let scoreTimingDetail =
         let resultMismatch = false;
         for (const row of expected.rows) {
           const appItem = geekAuditFindTeamItemV1932(results, row.team);
-          if (!appItem || !geekAuditCloseV1932(geekAuditNumberV1932(appItem.rawValue), row.metric.value, tolerance)) {
-            if (!resultMismatch) errors.push(key.toUpperCase() + ' PER-TEAM RESULT T' + row.team.slot + ' MISMATCH');
+          const appRawValue = appItem ? geekAuditNumberV1932(
+            Number.isFinite(geekAuditNumberV1932(appItem.rawValue)) ? appItem.rawValue : appItem.value
+          ) : NaN;
+          if (!appItem || !geekAuditCloseV1932(appRawValue, row.metric.value, tolerance)) {
+            if (!resultMismatch) {
+              const nineHole = geekAuditNineHoleDetailV1933(key, row.team, row.metric, appItem, stat);
+              errors.push(nineHole
+                ? key.toUpperCase() + nineHole
+                : key.toUpperCase() + ' PER-TEAM RESULT T' + row.team.slot + ' MISMATCH');
+            }
             resultMismatch = true;
             break;
           }
@@ -15674,7 +15707,16 @@ let scoreTimingDetail =
           if (key === 'best hole vs field' || key === 'worst hole vs field') {
             if (!owner.metric.holes.includes(Number(detail.hole))) detailMismatch = true;
           } else if (key === 'best 9-hole stretch' || key === 'worst 9-hole stretch') {
-            if (!owner.metric.startHoles.includes(Number(detail.startHole))) detailMismatch = true;
+            if (!owner.metric.startHoles.includes(Number(detail.startHole))) {
+              if (!detailMismatch) {
+                errors.push(
+                  key.toUpperCase() + ' T' + owner.team.slot +
+                  ' START RAW @S' + owner.metric.startHoles.join('/') +
+                  ' • GEEK @S' + (Number.isFinite(Number(detail.startHole)) ? Number(detail.startHole) : '?')
+                );
+              }
+              detailMismatch = true;
+            }
           } else if (key === 'back-9 comeback') {
             if (!geekAuditCloseV1932(detail.firstNine, owner.metric.firstNine) || !geekAuditCloseV1932(detail.backNine, owner.metric.backNine)) detailMismatch = true;
           }
@@ -15685,8 +15727,11 @@ let scoreTimingDetail =
             else checks.evidence += 1;
           }
         }
-        if (detailMismatch) errors.push(key.toUpperCase() + ' DETAIL PROOF MISMATCH');
-        else checks.detail += 1;
+        if (detailMismatch) {
+          if (key !== 'best 9-hole stretch' && key !== 'worst 9-hole stretch') {
+            errors.push(key.toUpperCase() + ' DETAIL PROOF MISMATCH');
+          }
+        } else checks.detail += 1;
         if (evidenceMismatch) errors.push(key.toUpperCase() + ' TEAM EVIDENCE MISSING');
 
         const ownerCount = expected.owners.length;
@@ -16323,7 +16368,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.32 RESULT LOG',
+        'SSHCP V19.33 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16386,7 +16431,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.32 CONTROL CENTER LOG',
+        'SSHCP V19.33 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -23597,7 +23642,7 @@ let scoreTimingDetail =
 
     async function openGeekModeV180() {
       syncSharedGeometryV187();
-      /* V19.32: every visible GEEK entry starts a fresh validation set and
+      /* V19.33: every visible GEEK entry starts a fresh validation set and
          retires only prior GEEK log rows; the rest of the Control Center run remains. */
       resetGeekAuditSessionV1932();
       /* This function remains the ONLY CF V2.1 Geek read entry point.
