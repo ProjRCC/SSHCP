@@ -1,19 +1,18 @@
-<!-- SSHCP | BASE KEY: 19.32-T4Q7NX | BUILD KEY: 19.33-C6R9MV -->
+<!-- SSHCP | BASE KEY: 19.33-C6R9MV | BUILD KEY: 19.34-F8Q2LV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.33 — built directly from V19.32 (BUILD 19.32-T4Q7NX).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.33 preserves all
+        /* SSHCP V19.34 — built directly from V19.33 (BUILD 19.33-C6R9MV).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.34 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
            HOME geometry, leaderboard behavior, Scramble Summary scrolling/containment,
-           GEEK calculations/detail presentation, and the V19.32 fresh-session GEEK DETAIL
-           AUDIT workflow. V19.33 corrects ONLY the audit itself: LOWEST HOLE SCORE now
-           uses minimum winner logic, 9-hole audit reconstruction uses the canonical
-           starting-hole resolver, and 9-hole failures report exact RAW versus GEEK values
-           plus available starting-hole evidence. No production GEEK calculation changes. */
+           production GEEK stat math/detail presentation, and the V19.33 GEEK DETAIL
+           AUDIT corrections. V19.34 changes ONLY GEEK detail evidence sourcing: the
+           fresh raw snapshot loaded with GEEK MODE is authoritative for popup team/hole
+           evidence whenever complete; older global scorecard arrays are fallback only. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12706,7 +12705,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.33</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.34</span></span>
         </button>
 
       </div>
@@ -15345,7 +15344,7 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V19.33 — GEEK DETAIL AUDIT
+       SSHCP V19.34 — GEEK DETAIL AUDIT
        Uses ONLY the fresh GEEK MODE response + raw evidence snapshot already
        loaded by the visible GEEK MODE action. No Control Center fetch is added.
        ========================================================= */
@@ -16368,7 +16367,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.33 RESULT LOG',
+        'SSHCP V19.34 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16431,7 +16430,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.33 CONTROL CENTER LOG',
+        'SSHCP V19.34 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -22470,17 +22469,18 @@ let scoreTimingDetail =
        always has the 18 course holes, team scores, and starting-hole order
        even when Scorecard/Skins has never been opened in this page session. */
     function geekEvidenceModelV1920() {
-      let sourceHoles = Array.isArray(holes) && holes.length === 18 ? holes : [];
-      let sourceTeams = Array.isArray(teams) && teams.length ? teams : [];
-
-      if (geekEvidenceSnapshotV1921) {
-        if (sourceHoles.length !== 18 && Array.isArray(geekEvidenceSnapshotV1921.holes)) {
-          sourceHoles = geekEvidenceSnapshotV1921.holes;
-        }
-        if (!sourceTeams.length && Array.isArray(geekEvidenceSnapshotV1921.teams)) {
-          sourceTeams = geekEvidenceSnapshotV1921.teams;
-        }
-      }
+      /* V19.34: the fresh raw snapshot loaded alongside GEEK MODE is the
+         authoritative evidence source whenever it is complete. Global
+         scorecard arrays can legitimately describe an older page state, so
+         they are only a fallback when the fresh GEEK snapshot is unavailable. */
+      let sourceHoles = geekEvidenceSnapshotV1921 &&
+        Array.isArray(geekEvidenceSnapshotV1921.holes) && geekEvidenceSnapshotV1921.holes.length === 18
+          ? geekEvidenceSnapshotV1921.holes
+          : (Array.isArray(holes) && holes.length === 18 ? holes : []);
+      let sourceTeams = geekEvidenceSnapshotV1921 &&
+        Array.isArray(geekEvidenceSnapshotV1921.teams) && geekEvidenceSnapshotV1921.teams.length
+          ? geekEvidenceSnapshotV1921.teams
+          : (Array.isArray(teams) && teams.length ? teams : []);
 
       if (sourceHoles.length !== 18 || !sourceTeams.length) {
         let snapshot = window.__sshcpBootScorecardSnapshot || null;
