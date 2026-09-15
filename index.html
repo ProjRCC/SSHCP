@@ -1,20 +1,20 @@
-<!-- SSHCP | BASE KEY: 19.27-C8Q5MR | BUILD KEY: 19.28-P7V4QK -->
+<!-- SSHCP | BASE KEY: 19.28-P7V4QK | BUILD KEY: 19.29-K6M2QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.28 — built directly from V19.27 (BUILD 19.27-C8Q5MR).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.28 preserves all
+        /* SSHCP V19.29 — built directly from V19.28 (BUILD 19.28-P7V4QK).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.29 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
            HOME geometry, Scramble Summary/GEEK geometry, header rules, GEEK calculations,
-           V19.26 SHORT/LONG definitions, result wording, evidence logic, and detail sizing,
-           plus V19.27 universal secondary context and bold-team hierarchy. This pass
-           removes all GEEK detail underline styling and places the RESULT label + value
-           inside one compact centered thin black rounded-corner box. Team names remain
-           bold, authorized team remains blue, and smaller gray evidence stays underneath.
-           Visible HOME version is V19.28. */
+           V19.26 SHORT/LONG definitions and evidence logic, V19.27 universal detail
+           hierarchy, and the V19.28 compact RESULT box. Main GEEK TEAM-column typography
+           only: when exactly one team owns a stat, that team name may use up to two lines,
+           with the complete block capped at 80% of the fixed row height and local shrink
+           as needed. Tie labels remain one line and row height never changes.
+           Visible HOME version is V19.29. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12667,7 +12667,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.28</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.29</span></span>
         </button>
 
       </div>
@@ -15939,7 +15939,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.28 RESULT LOG',
+        'SSHCP V19.29 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16002,7 +16002,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.28 CONTROL CENTER LOG',
+        'SSHCP V19.29 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -22705,12 +22705,29 @@ let scoreTimingDetail =
           });
         }
         if (team) {
-          fitTextToBoxV5(team, team, h * 0.45, 8, {
-            horizontalPad: 10,
-            verticalPad: 4,
-            wrap: false,
-            lineHeight: 1
-          });
+          /* V19.29: TEAM remains one line except when exactly one actual team
+             owns the stat. That single-owner case may use two lines, with the
+             complete block capped at 80% of this fixed-height row. */
+          if (team.classList.contains('single-owner-v1929')) {
+            const teamCell = row.querySelector('.geek-team-cell-v180') || team;
+            fitTwoLineTeamTextV58(
+              teamCell,
+              null,
+              team,
+              h,
+              h * 0.45,
+              8,
+              10,
+              0.80
+            );
+          } else {
+            fitTextToBoxV5(team, team, h * 0.45, 8, {
+              horizontalPad: 10,
+              verticalPad: 4,
+              wrap: false,
+              lineHeight: 1
+            });
+          }
         }
       });
 
@@ -22868,6 +22885,7 @@ let scoreTimingDetail =
         stats.forEach(stat => {
           const label = geekTeamLabelV180(stat);
           const isTie = Array.isArray(stat && stat.teams) && stat.teams.length > 1;
+          const singleOwnerV1929 = Array.isArray(stat && stat.teams) && stat.teams.length === 1;
           const tone = geekStatToneV186(stat && stat.stat);
           const usResultV1813 = geekAuthorizedResultV1813(stat);
           const usValueV1813 = geekMainValueV1813(stat, usResultV1813);
@@ -22889,7 +22907,10 @@ let scoreTimingDetail =
               '<div class="geek-cell-v180 geek-us-cell-v1813">' + escapeHtml(usValueV1813) + '</div>' +
               '<div class="geek-cell-v180 geek-all-cell-v1813">' + escapeHtml(allValueV1813) + '</div>' +
               '<div class="geek-cell-v180 geek-team-cell-v180">' +
-                '<button class="geek-team-button-v180' + (isTie ? ' tie-owner' : '') + '" type="button" tabindex="-1">' +
+                '<button class="geek-team-button-v180' +
+                  (isTie ? ' tie-owner' : '') +
+                  (singleOwnerV1929 ? ' single-owner-v1929' : '') +
+                  '" type="button" tabindex="-1">' +
                 escapeHtml(label) +
                 '</button>' +
               '</div>' +
