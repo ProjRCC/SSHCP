@@ -1,17 +1,18 @@
-<!-- SSHCP | BASE KEY: 19.4-P8R5LX | BUILD KEY: 19.5-H3N7QK -->
+<!-- SSHCP | BASE KEY: 19.6-C4V8MN | BUILD KEY: 19.7-R6K2VM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.5 — built directly from V19.4 (BUILD 19.4-P8R5LX).
-           V18.38 remains the declared GOLDEN rollback. V19.5 preserves all
+        /* SSHCP V19.7 — built directly from V19.6 (BUILD 19.6-C4V8MN).
+           V18.38 remains the declared GOLDEN rollback. V19.7 preserves all
            scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
            behavior, authorized-scorecard compaction, Scramble Summary geometry,
            solve-for-X sizing, Control Center Gray 5 controls, V18.57 Quick Guide
-           sizing/copy, V18.56/V18.57 running-score box geometry, and the V19.5
-           authorization-identity center header. Presentation-only changes: Leaderboard footer button gaps
+           sizing/copy, V18.56/V18.57 running-score box geometry, and the V19.6
+           split center-header rule: Scorecard shows authorization identity;
+           Leaderboard/Final Results show ROTB'26. Presentation-only changes: Leaderboard footer button gaps
            now exactly match the 8px GEEK MODE BACK/FILTERS gap in both LIVE and
            FINAL RESULTS layouts; GEEK MODE returns category rows from 1.5X to 1X
            while stat rows remain 2X; category labels are bold and target 80% of the
@@ -12172,6 +12173,238 @@ button.sshcp-button-pressed-v172{
   left:var(--v190-final-action-left,calc(33.333333% + 9px))!important;
 }
 
+
+/* SSHCP V19.7 — HOME S25 Chrome 384x724 baseline.
+   One bottom-up geometry ladder owns HOME presentation. The upper Splash_white.jpg
+   receives the exact vertical remainder. S25 baseline = multiplier 1.000. */
+#homeView,
+#homeView .home-shell{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  background:#fff!important;
+}
+#homeView .home-shell{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  max-width:760px!important;
+  margin:0 auto!important;
+  padding:0!important;
+}
+#homeView .home-actions{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  display:block!important;
+  top:auto!important;
+  gap:0!important;
+}
+#homeView .splash-image-wrap{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:0!important;
+  bottom:var(--v197-home-image-bottom,306px)!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#fff!important;
+}
+#homeView .splash-image{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  margin:0!important;
+  object-fit:contain!important;
+  object-position:center top!important;
+}
+
+/* Bottom-up action ladder. */
+#homeView #homeLeaderboardButton,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:var(--v197-home-primary-bottom,221px)!important;
+  width:var(--v197-home-primary-w,280px)!important;
+  min-width:var(--v197-home-primary-w,280px)!important;
+  max-width:var(--v197-home-primary-w,280px)!important;
+  height:var(--v197-home-primary-h,60px)!important;
+  min-height:var(--v197-home-primary-h,60px)!important;
+  max-height:var(--v197-home-primary-h,60px)!important;
+  margin:0 auto!important;
+  padding:0 10px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:var(--v197-home-primary-font,24px)!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#homeView .home-scorecard-access{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:var(--v197-home-score-bottom,131px)!important;
+  width:var(--v197-home-score-w,350px)!important;
+  min-width:var(--v197-home-score-w,350px)!important;
+  max-width:var(--v197-home-score-w,350px)!important;
+  height:var(--v197-home-score-h,80px)!important;
+  min-height:var(--v197-home-score-h,80px)!important;
+  max-height:var(--v197-home-score-h,80px)!important;
+  margin:0 auto!important;
+}
+#homeView .home-scorecard-split{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  grid-template-columns:minmax(0,1fr) var(--v197-home-arrow-w,48px)!important;
+}
+#homeView .home-scorecard-main{
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:0 0 0 var(--v197-home-arrow-w,48px)!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  line-height:1!important;
+}
+body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
+  padding-left:0!important;
+}
+#homeView .home-scorecard-action{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  font-size:var(--v197-home-score-action-font,24px)!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+}
+#homeView .home-scorecard-team,
+#homeView .home-scorecard-team.select-team{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  font-size:var(--v197-home-score-team-font,32px)!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+  overflow:hidden!important;
+}
+#homeView .home-scorecard-team{
+  font-weight:900!important;
+}
+#homeView .home-scorecard-team.select-team{
+  font-weight:600!important;
+}
+#homeView .home-scorecard-arrow{
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+
+#homeView .sshcp-home-guide-row{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:var(--v197-home-guide-bottom,72px)!important;
+  width:var(--v197-home-guide-w,224px)!important;
+  min-width:var(--v197-home-guide-w,224px)!important;
+  max-width:var(--v197-home-guide-w,224px)!important;
+  height:var(--v197-home-guide-h,44px)!important;
+  min-height:var(--v197-home-guide-h,44px)!important;
+  max-height:var(--v197-home-guide-h,44px)!important;
+  margin:0 auto!important;
+  padding:0!important;
+}
+#homeView .sshcp-home-guide-row .quick-guide-button{
+  width:100%!important;
+  min-width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0 8px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:var(--v197-home-guide-font,17.6px)!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+
+/* Event/version share one invisible bottom-anchored hotspot, but each line owns
+   its own S25 baseline height and bottom position. */
+#homeView .home-event-test-hotspot{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:var(--v197-home-version-bottom,28px)!important;
+  width:100%!important;
+  height:var(--v197-home-meta-stack-h,32px)!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  display:block!important;
+  background:transparent!important;
+  border:0!important;
+}
+#homeView .home-event-test-hotspot .home-event-info,
+#homeView .home-version-info{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0 6px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-align:center!important;
+  line-height:1!important;
+}
+#homeView .home-event-test-hotspot .home-event-info{
+  bottom:var(--v197-home-event-local-bottom,17px)!important;
+  height:var(--v197-home-event-h,15px)!important;
+  min-height:var(--v197-home-event-h,15px)!important;
+  max-height:var(--v197-home-event-h,15px)!important;
+}
+#homeView .home-version-info{
+  bottom:0!important;
+  height:var(--v197-home-version-h,12px)!important;
+  min-height:var(--v197-home-version-h,12px)!important;
+  max-height:var(--v197-home-version-h,12px)!important;
+}
+
 </style>
 </head>
 
@@ -12236,7 +12469,7 @@ button.sshcp-button-pressed-v172{
           class="home-main-button"
           type="button"
         >
-          VIEW LIVE LEADERBOARD
+          LEADERBOARD
         </button>
 
         <script>
@@ -12299,7 +12532,7 @@ button.sshcp-button-pressed-v172{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.5</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.7</span></span>
         </button>
 
       </div>
@@ -13643,7 +13876,7 @@ let scoreTimingDetail =
     }
 
 
-    function authorizationHeaderTextV195() {
+    function scorecardHeaderTextV196() {
       if (isMasterQr()) return 'MASTER';
 
       const team = String(
@@ -13654,7 +13887,7 @@ let scoreTimingDetail =
     }
 
 
-    function fitAuthorizationHeaderV195(element) {
+    function fitTopCenterHeaderV196(element) {
       if (!element || !element.isConnected) return;
 
       const nav = element.parentElement;
@@ -13671,26 +13904,24 @@ let scoreTimingDetail =
     }
 
 
-    function updateAuthorizationHeadersV195() {
-      const label = authorizationHeaderTextV195();
-
-      if (els.scoreTiming) els.scoreTiming.textContent = label;
-      if (els.leaderTiming) els.leaderTiming.textContent = label;
+    function updateTopCenterHeadersV196() {
+      if (els.scoreTiming) els.scoreTiming.textContent = scorecardHeaderTextV196();
+      if (els.leaderTiming) els.leaderTiming.textContent = "ROTB'26";
 
       requestAnimationFrame(() => {
-        fitAuthorizationHeaderV195(els.scoreTiming);
-        fitAuthorizationHeaderV195(els.leaderTiming);
+        fitTopCenterHeaderV196(els.scoreTiming);
+        fitTopCenterHeaderV196(els.leaderTiming);
       });
     }
 
 
     function updateScoreTiming() {
-      updateAuthorizationHeadersV195();
+      updateTopCenterHeadersV196();
     }
 
 
     function updateLeaderboardTiming() {
-      updateAuthorizationHeadersV195();
+      updateTopCenterHeadersV196();
     }
 
     /* =========================================================
@@ -15573,7 +15804,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.5 RESULT LOG',
+        'SSHCP V19.7 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15636,7 +15867,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.5 CONTROL CENTER LOG',
+        'SSHCP V19.7 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16492,14 +16723,19 @@ let scoreTimingDetail =
 
     function fitHomeScorecardTeamNameV55() {
       if (!els.homeScorecardButton) return;
+      syncSharedGeometryV187();
       const teamLine = els.homeScorecardButton.querySelector('.home-scorecard-team');
-      if (!teamLine || teamLine.classList.contains('select-team')) return;
+      if (!teamLine) return;
+
+      const buttonHeight = els.homeScorecardButton.getBoundingClientRect().height || 80;
+      const target = buttonHeight * 0.40;
+      const fullText = teamLine.dataset.fullTeamName || teamLine.textContent;
 
       fitSingleLineTeamTextV58(
         teamLine,
         teamLine,
-        teamLine.dataset.fullTeamName || teamLine.textContent,
-        19.5,
+        fullText,
+        target,
         8,
         {
           horizontalPad: 6,
@@ -16510,9 +16746,49 @@ let scoreTimingDetail =
       );
     }
 
+    function fitHomeActionTypographyV197() {
+      syncSharedGeometryV187();
+
+      if (els.homeLeaderboardButton) {
+        const h = els.homeLeaderboardButton.getBoundingClientRect().height || 60;
+        fitTextToBoxV5(els.homeLeaderboardButton, els.homeLeaderboardButton, h * 0.40, 10, {
+          horizontalPad: 20,
+          verticalPad: 0,
+          wrap: false,
+          lineHeight: 1
+        });
+      }
+
+      const guide = document.querySelector('#homeView .sshcp-home-guide-row .quick-guide-button');
+      if (guide) {
+        const h = guide.getBoundingClientRect().height || 44;
+        fitTextToBoxV5(guide, guide, h * 0.40, 9, {
+          horizontalPad: 16,
+          verticalPad: 0,
+          wrap: false,
+          lineHeight: 1
+        });
+      }
+
+      if (els.homeScorecardButton) {
+        const h = els.homeScorecardButton.getBoundingClientRect().height || 80;
+        const action = els.homeScorecardButton.querySelector('.home-scorecard-action');
+        if (action) {
+          fitTextToBoxV5(els.homeScorecardButton, action, h * 0.30, 10, {
+            horizontalPad: 12,
+            verticalPad: 0,
+            wrap: false,
+            lineHeight: 1,
+            ignoreHeight: true
+          });
+        }
+        fitHomeScorecardTeamNameV55();
+      }
+    }
+
     function updateHomeScorecardAccess() {
       syncTeamQrLockedUi();
-      updateAuthorizationHeadersV195();
+      updateTopCenterHeadersV196();
       const authorized = getAuthorizedTeam();
       const rememberedForMaster = isMasterQr() ? getRememberedSelectedTeam() : '';
       const displayTeam = authorized || rememberedForMaster;
@@ -16830,7 +17106,7 @@ let scoreTimingDetail =
         'scorecard'
       );
 
-      updateAuthorizationHeadersV195();
+      updateTopCenterHeadersV196();
 
 
       window.scrollTo(
@@ -16886,7 +17162,7 @@ let scoreTimingDetail =
         'leaderboard'
       );
 
-      updateAuthorizationHeadersV195();
+      updateTopCenterHeadersV196();
 
 
       /* V16.8 — entering LIVE LEADERBOARD is an explicit orientation event.
@@ -17987,6 +18263,60 @@ let scoreTimingDetail =
       root.setProperty('--v1810-popup-top-inset', scaled(12) + 'px');
       root.setProperty('--v1852-home-event-font', (15.5 * metrics.multiplier).toFixed(3) + 'px');
       root.setProperty('--v1852-home-version-font', (14.5 * metrics.multiplier).toFixed(3) + 'px');
+
+      /* V19.7 HOME: S25 Chrome 384x724 is the 1.000 baseline. Vertical
+         constants use the established viewport multiplier (0.70..1.30).
+         Horizontal constants scale from 384 CSS px and stop growing at 1.50x. */
+      const homeV = metrics.multiplier;
+      const homeH = Math.max(0.70, Math.min(1.50, metrics.visualWidth / 384));
+      const hv = value => Math.max(1, Math.round(value * homeV));
+      const hw = value => Math.max(1, Math.round(value * homeH));
+
+      const homeVersionBottom = hv(28);
+      const homeVersionH = hv(12);
+      const homeVersionEventGap = hv(5);
+      const homeEventH = hv(15);
+      const homeEventGuideGap = hv(12);
+      const homeGuideH = hv(44);
+      const homeGuideScoreGap = hv(15);
+      const homeScoreH = hv(80);
+      const homeScorePrimaryGap = hv(10);
+      const homePrimaryH = hv(60);
+      const homePrimaryImageGap = hv(25);
+
+      const homeEventBottom = homeVersionBottom + homeVersionH + homeVersionEventGap;
+      const homeGuideBottom = homeEventBottom + homeEventH + homeEventGuideGap;
+      const homeScoreBottom = homeGuideBottom + homeGuideH + homeGuideScoreGap;
+      const homePrimaryBottom = homeScoreBottom + homeScoreH + homeScorePrimaryGap;
+      const homeImageBottom = homePrimaryBottom + homePrimaryH + homePrimaryImageGap;
+
+      const availableHomeW = Math.max(1, metrics.visualWidth - 8);
+      const homeScoreW = Math.min(hw(350), availableHomeW);
+      const homePrimaryW = Math.min(hw(280), availableHomeW);
+      const homeGuideW = Math.min(hw(224), availableHomeW);
+      const homeArrowW = Math.min(hw(48), Math.max(32, homeScoreW * 0.20));
+
+      root.setProperty('--v197-home-version-bottom', homeVersionBottom + 'px');
+      root.setProperty('--v197-home-version-h', homeVersionH + 'px');
+      root.setProperty('--v197-home-event-h', homeEventH + 'px');
+      root.setProperty('--v197-home-event-local-bottom', (homeVersionH + homeVersionEventGap) + 'px');
+      root.setProperty('--v197-home-meta-stack-h', (homeVersionH + homeVersionEventGap + homeEventH) + 'px');
+      root.setProperty('--v197-home-guide-bottom', homeGuideBottom + 'px');
+      root.setProperty('--v197-home-guide-h', homeGuideH + 'px');
+      root.setProperty('--v197-home-score-bottom', homeScoreBottom + 'px');
+      root.setProperty('--v197-home-score-h', homeScoreH + 'px');
+      root.setProperty('--v197-home-primary-bottom', homePrimaryBottom + 'px');
+      root.setProperty('--v197-home-primary-h', homePrimaryH + 'px');
+      root.setProperty('--v197-home-image-bottom', homeImageBottom + 'px');
+      root.setProperty('--v197-home-score-w', homeScoreW + 'px');
+      root.setProperty('--v197-home-primary-w', homePrimaryW + 'px');
+      root.setProperty('--v197-home-guide-w', homeGuideW + 'px');
+      root.setProperty('--v197-home-arrow-w', homeArrowW + 'px');
+      root.setProperty('--v197-home-primary-font', (homePrimaryH * 0.40).toFixed(3) + 'px');
+      root.setProperty('--v197-home-guide-font', (homeGuideH * 0.40).toFixed(3) + 'px');
+      root.setProperty('--v197-home-score-action-font', (homeScoreH * 0.30).toFixed(3) + 'px');
+      root.setProperty('--v197-home-score-team-font', (homeScoreH * 0.40).toFixed(3) + 'px');
+
       return values;
     }
 
@@ -18111,9 +18441,9 @@ let scoreTimingDetail =
 
       const brand = view.querySelector('.header-brand');
       if (brand) {
-        /* V19.5: center header is authorization identity, not event branding.
-           Target 80% of the HOME/INFO button height, keep one line, and shrink
-           only the identity text when the available center width requires it. */
+        /* V19.6: center header uses the same 80% HOME/INFO-height fitting rule.
+           Scorecard content is authorization identity; Leaderboard/Final content
+           is fixed event branding (ROTB'26). Keep one line and shrink only if needed. */
         fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.80, 8, {
           horizontalPad: 4,
           verticalPad: 2,
@@ -20213,7 +20543,8 @@ let scoreTimingDetail =
       if (els.homeLeaderboardButton) {
         els.homeLeaderboardButton.textContent = isComplete
           ? 'SCRAMBLE SUMMARY'
-          : 'VIEW LIVE LEADERBOARD';
+          : 'LEADERBOARD';
+        requestAnimationFrame(fitHomeActionTypographyV197);
       }
     }
 
@@ -25472,6 +25803,7 @@ let scoreTimingDetail =
       const rememberedView =
         getRememberedView();
       const restoreTeamsPopupV1626 = false; /* V18.40: Control Center TEAMS row retired. */
+      syncSharedGeometryV187();
       syncHomeTournamentCompleteV1630(
         sessionStorage.getItem('sshcpTournamentComplete') === '1'
       );
@@ -25582,7 +25914,8 @@ let scoreTimingDetail =
           if (
             currentView === 'home'
           ) {
-            fitHomeScorecardTeamNameV55();
+            syncSharedGeometryV187();
+            fitHomeActionTypographyV197();
           }
 
           if (
@@ -25655,7 +25988,7 @@ let scoreTimingDetail =
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         requestAnimationFrame(() => {
-          fitHomeScorecardTeamNameV55();
+          fitHomeActionTypographyV197();
           fitScoreTeamSelectName();
           fitHomeTeamOptionsV58();
           fitScoreTeamOptionsV58();
