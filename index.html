@@ -1,20 +1,21 @@
-<!-- SSHCP | BASE KEY: 19.29-K6M2QW | BUILD KEY: 19.30-H8Q3NV -->
+<!-- SSHCP | BASE KEY: 19.30-H8Q3NV | BUILD KEY: 19.31-R5M8QZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.30 — built directly from V19.29 (BUILD 19.29-K6M2QW).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.30 preserves all
+        /* SSHCP V19.31 — built directly from V19.30 (BUILD 19.30-H8Q3NV).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.31 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
-           HOME geometry, Scramble Summary/GEEK geometry, header rules, GEEK calculations,
+           HOME geometry, leaderboard behavior, GEEK calculations/detail behavior,
            V19.26 SHORT/LONG definitions and evidence logic, V19.27 universal detail
-           hierarchy, and the V19.28 compact RESULT box. Main GEEK TEAM-column typography
-           only: when exactly one team owns a stat, that team name may use up to two lines,
-           with the complete block capped at 80% of the fixed row height and local shrink
-           as needed. Tie labels remain one line and row height never changes.
-           Visible HOME version is V19.29. */
+           hierarchy, V19.28 compact RESULT box, V19.29 single-winner two-line GEEK TEAM
+           handling, and V19.30 large-tie GEEK detail collapse / no leaderboard auto-scroll.
+           Scramble Summary only: places 1-3 and any tiebreak note remain fixed while the
+           lower standings area can manually scroll beyond place 10. Its viewport remains
+           sized for places 4-10, every fresh Summary entry starts at place 4 so the Top 10
+           are shown again, and no Summary scroll position is remembered. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12540,6 +12541,23 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   -webkit-text-fill-color:var(--accent)!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V19.31 — SCRAMBLE SUMMARY LOWER-STANDINGS SCROLL
+   - podium + tiebreak note stay fixed
+   - lower viewport keeps the established seven visible rows (places 4-10)
+   - places 11+ scroll manually inside only this lower table
+   - no auto-scroll / no position memory
+   ========================================================= */
+.modal-overlay.tournament-summary .tournament-summary-remaining{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
 </style>
 </head>
 
@@ -12667,7 +12685,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.30</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.31</span></span>
         </button>
 
       </div>
@@ -15750,7 +15768,9 @@ let scoreTimingDetail =
       }
 
       remaining.sort(byNetThenSlot);
-      const ordered = [...podium, ...remaining].slice(0, 10);
+      /* V19.31 — Scramble Summary now contains the complete field; keep the
+         independent audit aligned with every rendered standings row. */
+      const ordered = [...podium, ...remaining];
       const expectedRows = ordered.map((team, index) => {
         let place;
         if (index < 3) {
@@ -15939,7 +15959,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.30 RESULT LOG',
+        'SSHCP V19.31 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16002,7 +16022,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.30 CONTROL CENTER LOG',
+        'SSHCP V19.31 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -21192,6 +21212,13 @@ let scoreTimingDetail =
         lowerCount > 0 ? lowerRowPixels.map(value => value + 'px').join(' ') : '0px',
         'important'
       );
+      /* V19.31 — rows after the visible 4-10 block become implicit grid rows.
+         Match their height to the established lower-row geometry so manual scrolling
+         feels identical to the original seven-row Summary table. */
+      const lowerImplicitRowH = lowerRowPixels.length
+        ? Math.max(1, Math.round(lowerH / lowerRowPixels.length))
+        : 1;
+      lower.style.setProperty('grid-auto-rows', lowerImplicitRowH + 'px', 'important');
 
       if (notes) {
         notes.style.setProperty('height', noteSectionH + 'px', 'important');
@@ -21212,7 +21239,7 @@ let scoreTimingDetail =
       if (!topGrid || !lower) return;
 
       const lowerRows = Array.from(lower.querySelectorAll('.tournament-summary-remaining-row'));
-      document.documentElement.style.setProperty('--v5-summary-lower-count', String(Math.max(1, lowerRows.length)));
+      document.documentElement.style.setProperty('--v5-summary-lower-count', String(Math.max(1, Math.min(7, lowerRows.length))));
 
       /* V18.48: Summary keeps the established title, but no longer carries a
          RESULTS/TOP 10 subtitle. The standings grid begins immediately at the
@@ -23892,7 +23919,10 @@ let scoreTimingDetail =
       }
 
       const podium = buildTournamentPodium(lastLeaderboardRows);
-      const rows = podium.ordered.slice(0, 10);
+      /* V19.31 — render the complete resolved standings. The Summary shell still
+         shows the Top 10 initially: places 1-3 are fixed and places 4-10 occupy the
+         fixed-height lower viewport, with any additional places available by manual scroll. */
+      const rows = podium.ordered.slice();
       const summaryAuthorizedTeamV1827 = normalizeName(getAuthorizedTeam() || '');
 
       function summaryOwnsAuthorizedPlaceV1827(row) {
@@ -23979,6 +24009,11 @@ let scoreTimingDetail =
       html += '</div>';
 
       els.modalBody.innerHTML = html;
+      /* V19.31 — Summary never remembers lower-table position. Every fresh entry
+         begins with places 4-10 at the top of the lower viewport. A browser refresh
+         naturally recreates the same state. */
+      const summaryLowerV1931 = els.modalBody.querySelector('.tournament-summary-remaining');
+      if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
       const geekAction = makeModalButton('GEEK MODE', 'summary-geek-button-v180', openGeekModeV180);
       const home = makeModalButton('HOME', 'summary-back-v1845 summary-home-footer-v1848', showHome);
       const skins = makeModalButton('SKINS', 'summary-skins-button-v1627', showSkinsPopupV1627);
@@ -24000,7 +24035,10 @@ let scoreTimingDetail =
 
       tournamentSummaryResizeObserver.observe(els.modalBox);
 
-      requestAnimationFrame(fitTournamentSummaryRemaining);
+      requestAnimationFrame(() => {
+        fitTournamentSummaryRemaining();
+        if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
+      });
       requestAnimationFrame(() => captureTournamentSummaryAuditV189());
       revealDataShieldAfterLayoutV177('summary', summaryRevealShieldV177, 2, [els.modalBody]);
     }
