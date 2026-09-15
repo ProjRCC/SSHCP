@@ -1,23 +1,19 @@
-<!-- SSHCP | BASE KEY: 19.7-R6K2VM | BUILD KEY: 19.8-J5Q9LV -->
+<!-- SSHCP | BASE KEY: 19.8-J5Q9LV | BUILD KEY: 19.9-N7Q4VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.8 — built directly from V19.7 (BUILD 19.7-R6K2VM).
-           V18.38 remains the declared GOLDEN rollback. V19.8 preserves all
-           scoring, NESR/CLEAR timing, shotgun landmarks, Worker/API/Sheet
-           behavior, authorized-scorecard compaction, Scramble Summary geometry,
-           solve-for-X sizing, Control Center Gray 5 controls, V18.57 Quick Guide
-           sizing/copy, V18.56/V18.57 running-score box geometry, and the V19.6
-           split center-header rule: Scorecard shows authorization identity;
-           Leaderboard/Final Results show ROTB'26. Presentation-only changes: Leaderboard footer button gaps
-           now exactly match the 8px GEEK MODE BACK/FILTERS gap in both LIVE and
-           FINAL RESULTS layouts; GEEK MODE returns category rows from 1.5X to 1X
-           while stat rows remain 2X; category labels are bold and target 80% of the
-           category-row height. Free inertial scrolling remains unchanged with no
-           snap behavior. No data, scoring, Worker, API or Sheet changes. */
+        /* SSHCP V19.9 — built directly from V19.8 (BUILD 19.8-J5Q9LV).
+           V18.38 remains the declared GOLDEN rollback. V19.9 preserves all
+           scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet
+           behavior, HOME V19.8 baseline geometry, Scramble Summary/GEEK geometry,
+           and the split center-header rule. Presentation-only changes: replace the
+           four solid shotgun landmark-row fills with Gray 2 row-wide fade overlays
+           that wash over row content/score boxes while preserving the existing
+           divider/grid lines, and change Leaderboard/Final Results branding from
+           ROTB'26 to ROTB 2026. No data, scoring, Worker, API or Sheet changes. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -11207,11 +11203,46 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 #scorecardView .score-row.nine-end-row-v1815{
   background:transparent!important;
 }
-#scorecardView .score-row.round-landmark-light-v1836{
-  background:#f2f2f2!important;
+
+/* V19.9 — shotgun nine-hole landmarks are Gray 2 fades, not solid rows.
+   The overlay is attached to every cell so it sits above all row content —
+   including the score box/number/notation — while pointer-events remain free.
+   A 1px right/bottom inset leaves the existing grid lines crisp; the established
+   2px halfway dividers get a matching 2px protected inset. */
+#scorecardView .score-row.round-landmark-fade-start-v199 > div,
+#scorecardView .score-row.round-landmark-fade-end-v199 > div{
+  position:relative!important;
 }
-#scorecardView .score-row.round-landmark-dark-v1836{
-  background:#e8e8e8!important;
+#scorecardView .score-row.round-landmark-fade-start-v199 > div::after,
+#scorecardView .score-row.round-landmark-fade-end-v199 > div::after{
+  content:"";
+  position:absolute!important;
+  left:0!important;
+  right:1px!important;
+  top:0!important;
+  bottom:1px!important;
+  z-index:50!important;
+  pointer-events:none!important;
+}
+#scorecardView .score-row.round-landmark-fade-start-v199 > div:last-child::after,
+#scorecardView .score-row.round-landmark-fade-end-v199 > div:last-child::after{
+  right:0!important;
+}
+#scorecardView .score-row.round-landmark-fade-start-v199 > div::after{
+  background:linear-gradient(to bottom,
+    var(--sshcp-gray-2-v1850,#f2f2f2) 0%,
+    rgba(242,242,242,0) 100%)!important;
+}
+#scorecardView .score-row.round-landmark-fade-end-v199 > div::after{
+  background:linear-gradient(to bottom,
+    rgba(242,242,242,0) 0%,
+    var(--sshcp-gray-2-v1850,#f2f2f2) 100%)!important;
+}
+#scorecardView .score-row.halfway-divider-after-v1836 > div::after{
+  bottom:2px!important;
+}
+#scorecardView .score-row.halfway-divider-before-v1836 > div::after{
+  top:2px!important;
 }
 #scorecardView .score-row.halfway-divider-after-v1836{
   border-bottom:2px solid var(--sshcp-static-header-gray-v185,#444)!important;
@@ -12532,7 +12563,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.8</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.9</span></span>
         </button>
 
       </div>
@@ -15804,7 +15835,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.8 RESULT LOG',
+        'SSHCP V19.9 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15867,7 +15898,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.8 CONTROL CENTER LOG',
+        'SSHCP V19.9 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -18443,7 +18474,7 @@ let scoreTimingDetail =
       if (brand) {
         /* V19.6: center header uses the same 80% HOME/INFO-height fitting rule.
            Scorecard content is authorization identity; Leaderboard/Final content
-           is fixed event branding (ROTB'26). Keep one line and shrink only if needed. */
+           is fixed event branding (ROTB 2026). Keep one line and shrink only if needed. */
         fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.80, 8, {
           horizontalPad: 4,
           verticalPad: 2,
@@ -18746,12 +18777,12 @@ let scoreTimingDetail =
           row.className =
             'score-row';
 
-          if (index === firstNineStartIndexV1836 || index === firstNineEndIndexV1836) {
-            row.classList.add('round-landmark-light-v1836');
+          if (index === firstNineStartIndexV1836 || index === secondNineStartIndexV1836) {
+            row.classList.add('round-landmark-fade-start-v199');
           }
 
-          if (index === secondNineStartIndexV1836 || index === secondNineEndIndexV1836) {
-            row.classList.add('round-landmark-dark-v1836');
+          if (index === firstNineEndIndexV1836 || index === secondNineEndIndexV1836) {
+            row.classList.add('round-landmark-fade-end-v199');
           }
 
           if (!halfwayWrapsV1836 && index === firstNineEndIndexV1836) {
