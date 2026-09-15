@@ -1,21 +1,23 @@
-<!-- SSHCP | BASE KEY: 19.30-H8Q3NV | BUILD KEY: 19.31-R5M8QZ -->
+<!-- SSHCP | BASE KEY: 19.31-R5M8QZ | BUILD KEY: 19.32-T4Q7NX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.31 — built directly from V19.30 (BUILD 19.30-H8Q3NV).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.31 preserves all
+        /* SSHCP V19.32 — built directly from V19.31 (BUILD 19.31-R5M8QZ).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.32 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
-           HOME geometry, leaderboard behavior, GEEK calculations/detail behavior,
+           HOME geometry, leaderboard behavior, GEEK calculations/detail presentation,
            V19.26 SHORT/LONG definitions and evidence logic, V19.27 universal detail
-           hierarchy, V19.28 compact RESULT box, V19.29 single-winner two-line GEEK TEAM
-           handling, and V19.30 large-tie GEEK detail collapse / no leaderboard auto-scroll.
-           Scramble Summary only: places 1-3 and any tiebreak note remain fixed while the
-           lower standings area can manually scroll beyond place 10. Its viewport remains
-           sized for places 4-10, every fresh Summary entry starts at place 4 so the Top 10
-           are shown again, and no Summary scroll position is remembered. */
+           hierarchy, V19.28 compact RESULT box, V19.29 single-winner two-line GEEK TEAM,
+           V19.30 large-tie detail collapse / no leaderboard auto-scroll, and V19.31
+           full-field Scramble Summary scrolling. V19.32 only clips that Summary scrollbar
+           inside its existing rounded lower-table boundary and replaces GEEK CHECK with a
+           fresh-session GEEK DETAIL AUDIT that validates the 32 loaded stats against the
+           raw evidence snapshot, including values, owners, per-team results, detail proof,
+           context lines, and large-tie state. Entering GEEK MODE resets prior GEEK-only log
+           entries and establishes the fresh calculation/evidence set used by that audit. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12558,6 +12560,29 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   -webkit-overflow-scrolling:touch!important;
 }
 
+/* SSHCP V19.32 — Summary scrollbar containment only. The existing lower table
+   keeps every V19.31 dimension; this zero-geometry outer clip simply prevents
+   Android's overlay scrollbar from painting through the 9px rounded corners. */
+.modal-overlay.tournament-summary .tournament-summary-lower-clip-v1932{
+  grid-row:3!important;
+  position:relative!important;
+  min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+  border-radius:9px!important;
+}
+.modal-overlay.tournament-summary .tournament-summary-lower-clip-v1932 > .tournament-summary-remaining{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+}
+
 </style>
 </head>
 
@@ -12685,7 +12710,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.31</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.32</span></span>
         </button>
 
       </div>
@@ -13063,7 +13088,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
         </div>
 
         <div class="control-center-checks-v188" aria-label="Control Center checks">
-          <button id="controlCenterGeekCheckButtonV188" class="control-center-check-v188" type="button">GEEK CHECK</button>
+          <button id="controlCenterGeekCheckButtonV188" class="control-center-check-v188" type="button">GEEK DETAIL AUDIT</button>
           <button id="controlCenterResultsCheckButtonV188" class="control-center-check-v188" type="button">COPY RESULT LOG</button>
         </div>
 
@@ -15323,48 +15348,387 @@ let scoreTimingDetail =
         controlCenterViewportLineV188() + '\n' + controlCenterGeometryLineV188();
     }
 
+    /* =========================================================
+       SSHCP V19.32 — GEEK DETAIL AUDIT
+       Uses ONLY the fresh GEEK MODE response + raw evidence snapshot already
+       loaded by the visible GEEK MODE action. No Control Center fetch is added.
+       ========================================================= */
+    let geekDetailAuditReadyV1932 = false;
+    let geekDetailAuditRunIdV1932 = 0;
+
+    function resetGeekAuditSessionV1932() {
+      geekDetailAuditReadyV1932 = false;
+      geekDetailAuditRunIdV1932 = Date.now();
+      startGeekDiagnosticV180b();
+
+      /* A fresh GEEK entry retires only older GEEK validation rows. Keep the
+         user's RANDOM / Scorecard / Leaderboard / Result Audit history intact. */
+      const retired = new Set(['GEEK MODE LOAD', 'GEEK CHECK', 'GEEK DETAIL AUDIT']);
+      const kept = getTestLog().filter(entry => !retired.has(String(entry && entry.action || '').toUpperCase()));
+      localStorage.setItem(TEST_LOG_KEY, JSON.stringify(kept));
+      if (currentView === 'testlog') renderTestLog();
+    }
+
+    function geekAuditNumberV1932(value) {
+      if (value === null || value === undefined || value === '') return NaN;
+      const direct = Number(value);
+      if (Number.isFinite(direct)) return direct;
+      const parsed = Number(String(value).replace(/[^0-9.+-]/g, ''));
+      return Number.isFinite(parsed) ? parsed : NaN;
+    }
+
+    function geekAuditCloseV1932(a, b, tolerance = 0.001) {
+      return Number.isFinite(Number(a)) && Number.isFinite(Number(b)) &&
+        Math.abs(Number(a) - Number(b)) <= tolerance;
+    }
+
+    function geekAuditModelV1932() {
+      const snapshot = geekEvidenceSnapshotV1921;
+      if (!snapshot || !Array.isArray(snapshot.holes) || snapshot.holes.length !== 18 || !Array.isArray(snapshot.teams)) {
+        return null;
+      }
+      const holes = snapshot.holes.slice(0, 18).map((hole, index) => ({
+        raw:hole || {},
+        index,
+        hole:geekEvidenceHoleNumberV1920(hole || {}, index),
+        par:Number(hole && hole.par),
+        white:Number(hole && hole.white),
+        hcp:Number(hole && hole.hcp)
+      }));
+      const teams = snapshot.teams.map((team, index) => {
+        const name = String(team && team.name || '').trim();
+        if (!name) return null;
+        const scores = holes.map((_, holeIndex) => Number(team && Array.isArray(team.scores) ? team.scores[holeIndex] : NaN));
+        if (scores.some(score => !Number.isFinite(score) || score <= 0)) return null;
+        const slotRaw = Number(team && team.slot);
+        const slot = Number.isInteger(slotRaw) && slotRaw > 0 ? slotRaw : index + 1;
+        const startRaw = Number(team && team.startingHole);
+        const startingHole = Number.isInteger(startRaw) && startRaw >= 1 && startRaw <= 18 ? startRaw : 1;
+        const deltas = scores.map((score, holeIndex) => score - holes[holeIndex].par);
+        let startIndex = holes.findIndex(item => item.hole === startingHole);
+        if (startIndex < 0) startIndex = 0;
+        const order = Array.from({length:18}, (_, offset) => (startIndex + offset) % 18);
+        return { raw:team, slot, name, scores, deltas, startingHole, order };
+      }).filter(Boolean);
+      if (!teams.length) return null;
+      return { holes, teams };
+    }
+
+    function geekAuditTeamIdV1932(item) {
+      const slot = Number(item && item.slot);
+      if (Number.isInteger(slot) && slot > 0) return 'T' + slot;
+      return normalizeName(item && (item.team || item.name) || '');
+    }
+
+    function geekAuditRunMetricV1932(team, predicate, closingOnly = false) {
+      const sequence = team.order.map(index => ({ index, hole:index, delta:team.deltas[index] }));
+      if (closingOnly) {
+        let count = 0;
+        for (let i = sequence.length - 1; i >= 0; i--) {
+          if (!predicate(sequence[i].delta)) break;
+          count += 1;
+        }
+        return { value:count };
+      }
+      let longest = 0;
+      let current = 0;
+      for (const entry of sequence) {
+        if (predicate(entry.delta)) {
+          current += 1;
+          if (current > longest) longest = current;
+        } else current = 0;
+      }
+      return { value:longest };
+    }
+
+    function geekAuditTeamMetricV1932(key, team, model, fieldAverages) {
+      const holes = model.holes;
+      const scores = team.scores;
+      const deltas = team.deltas;
+      const holeNumbers = indexes => indexes.map(index => holes[index].hole);
+      const countIndexes = predicate => holes.map((_, index) => index).filter(index => predicate(index));
+      const sumIndexes = indexes => indexes.reduce((sum, index) => sum + deltas[index], 0);
+      const exact = target => countIndexes(index => deltas[index] === target);
+      const parIndexes = par => countIndexes(index => holes[index].par === par);
+      let indexes = [];
+
+      switch (key) {
+        case 'eagles':
+          indexes = exact(-2); return {value:indexes.length, holes:holeNumbers(indexes)};
+        case 'birdies':
+          indexes = exact(-1); return {value:indexes.length, holes:holeNumbers(indexes)};
+        case 'pars':
+          indexes = exact(0); return {value:indexes.length, holes:holeNumbers(indexes)};
+        case 'bogeys':
+          indexes = exact(1); return {value:indexes.length, holes:holeNumbers(indexes)};
+        case 'eagle %': return {value:exact(-2).length / 18 * 100};
+        case 'birdie %': return {value:exact(-1).length / 18 * 100};
+        case 'par-or-better %': return {value:countIndexes(index => deltas[index] <= 0).length / 18 * 100};
+        case 'bogey-or-worse %': return {value:countIndexes(index => deltas[index] >= 1).length / 18 * 100};
+        case 'front 9 vs par': return {value:sumIndexes(countIndexes(index => holes[index].hole >= 1 && holes[index].hole <= 9))};
+        case 'back 9 vs par': return {value:sumIndexes(countIndexes(index => holes[index].hole >= 10 && holes[index].hole <= 18))};
+        case 'par-3 birdies':
+          indexes = countIndexes(index => holes[index].par === 3 && deltas[index] === -1); return {value:indexes.length, holes:holeNumbers(indexes)};
+        case 'par-4 birdies':
+          indexes = countIndexes(index => holes[index].par === 4 && deltas[index] === -1); return {value:indexes.length, holes:holeNumbers(indexes)};
+        case 'par-5 birdies':
+          indexes = countIndexes(index => holes[index].par === 5 && deltas[index] === -1); return {value:indexes.length, holes:holeNumbers(indexes)};
+        case 'best hole vs field': {
+          const diffs = scores.map((score, index) => score - fieldAverages[index]);
+          const value = Math.min(...diffs);
+          indexes = diffs.map((v, index) => ({v,index})).filter(item => geekAuditCloseV1932(item.v, value, 0.000001)).map(item => item.index);
+          return {value, holes:holeNumbers(indexes)};
+        }
+        case 'worst hole vs field': {
+          const diffs = scores.map((score, index) => score - fieldAverages[index]);
+          const value = Math.max(...diffs);
+          indexes = diffs.map((v, index) => ({v,index})).filter(item => geekAuditCloseV1932(item.v, value, 0.000001)).map(item => item.index);
+          return {value, holes:holeNumbers(indexes)};
+        }
+        case 'best 9-hole stretch':
+        case 'worst 9-hole stretch': {
+          const windows = [];
+          for (let start = 0; start <= 9; start++) {
+            const windowIndexes = team.order.slice(start, start + 9);
+            windows.push({ value:sumIndexes(windowIndexes), startHole:holes[windowIndexes[0]].hole });
+          }
+          const values = windows.map(item => item.value);
+          const value = key === 'best 9-hole stretch' ? Math.min(...values) : Math.max(...values);
+          return {value, startHoles:windows.filter(item => item.value === value).map(item => item.startHole)};
+        }
+        case 'longest birdie streak': return geekAuditRunMetricV1932(team, delta => delta === -1, false);
+        case 'closing birdie streak': return geekAuditRunMetricV1932(team, delta => delta === -1, true);
+        case 'back-9 comeback': {
+          const firstNine = sumIndexes(team.order.slice(0, 9));
+          const backNine = sumIndexes(team.order.slice(9, 18));
+          return {value:firstNine - backNine, firstNine, backNine};
+        }
+        case 'longest par/under streak': return geekAuditRunMetricV1932(team, delta => delta <= 0, false);
+        case 'highest hole score': {
+          const value = Math.max(...scores);
+          indexes = scores.map((score,index) => score === value ? index : -1).filter(index => index >= 0);
+          return {value, holes:holeNumbers(indexes)};
+        }
+        case 'lowest hole score': {
+          const value = Math.min(...scores);
+          indexes = scores.map((score,index) => score === value ? index : -1).filter(index => index >= 0);
+          return {value, holes:holeNumbers(indexes)};
+        }
+        case 'score range': {
+          const low = Math.min(...scores), high = Math.max(...scores);
+          return {value:high - low, low, high};
+        }
+        case 'par-3 vs par': return {value:sumIndexes(parIndexes(3))};
+        case 'par-4 vs par': return {value:sumIndexes(parIndexes(4))};
+        case 'par-5 vs par': return {value:sumIndexes(parIndexes(5))};
+        case 'short vs par':
+          indexes = countIndexes(index => geekIsShortHoleV1926(holes[index].raw)); return {value:sumIndexes(indexes)};
+        case 'long vs par':
+          indexes = countIndexes(index => geekIsLongHoleV1926(holes[index].raw)); return {value:sumIndexes(indexes)};
+        case '9 easy holes vs par':
+          indexes = countIndexes(index => holes[index].hcp >= 10 && holes[index].hcp <= 18); return {value:sumIndexes(indexes)};
+        case '9 hard holes vs par':
+          indexes = countIndexes(index => holes[index].hcp >= 1 && holes[index].hcp <= 9); return {value:sumIndexes(indexes)};
+        case 'drivable par-4 birdies':
+          indexes = countIndexes(index => holes[index].par === 4 && Number.isFinite(holes[index].white) && holes[index].white < 300 && deltas[index] === -1);
+          return {value:indexes.length, holes:holeNumbers(indexes)};
+        default: return null;
+      }
+    }
+
+    const GEEK_DETAIL_AUDIT_KEYS_V1932 = [
+      'eagles','birdies','pars','bogeys','eagle %','birdie %','par-or-better %','bogey-or-worse %','front 9 vs par','back 9 vs par',
+      'par-3 birdies','par-4 birdies','par-5 birdies','best hole vs field','worst hole vs field',
+      'best 9-hole stretch','worst 9-hole stretch','longest birdie streak','closing birdie streak','back-9 comeback',
+      'longest par/under streak','highest hole score','lowest hole score','score range',
+      'par-3 vs par','par-4 vs par','par-5 vs par','short vs par','long vs par','9 easy holes vs par','9 hard holes vs par','drivable par-4 birdies'
+    ];
+
+    const GEEK_DETAIL_AUDIT_MIN_KEYS_V1932 = new Set([
+      'bogeys','bogey-or-worse %','front 9 vs par','back 9 vs par','best hole vs field','best 9-hole stretch',
+      'score range','par-3 vs par','par-4 vs par','par-5 vs par','short vs par','long vs par','9 easy holes vs par','9 hard holes vs par'
+    ]);
+
+    function geekAuditContextV1932(key, model) {
+      const list = (predicate, typed = false) => {
+        const items = model.holes.filter(predicate);
+        if (!items.length) return '';
+        const shown = items.map(item => typed ? (item.hole + '(P' + item.par + ')') : String(item.hole));
+        return items.length + ' ' + (items.length === 1 ? 'HOLE' : 'HOLES') + ' • ' + shown.join(',');
+      };
+      switch (key) {
+        case 'front 9 vs par': return 'COURSE HOLES 1 THROUGH 9';
+        case 'back 9 vs par': return 'COURSE HOLES 10 THROUGH 18';
+        case 'par-3 birdies': case 'par-3 vs par': return list(item => item.par === 3);
+        case 'par-4 birdies': case 'par-4 vs par': return list(item => item.par === 4);
+        case 'par-5 birdies': case 'par-5 vs par': return list(item => item.par === 5);
+        case 'short vs par': return list(item => geekIsShortHoleV1926(item.raw), true);
+        case 'long vs par': return list(item => geekIsLongHoleV1926(item.raw), true);
+        case 'drivable par-4 birdies': return list(item => item.par === 4 && Number.isFinite(item.white) && item.white < 300);
+        case '9 easy holes vs par': return list(item => item.hcp >= 10 && item.hcp <= 18);
+        case '9 hard holes vs par': return list(item => item.hcp >= 1 && item.hcp <= 9);
+        case 'best 9-hole stretch': case 'worst 9-hole stretch': return 'EVERY CONSECUTIVE 9 HOLE WINDOW • ACTUAL PLAY ORDER';
+        case 'longest birdie streak': case 'longest par/under streak': return 'ACTUAL PLAY ORDER FROM EACH TEAM’S STARTING HOLE';
+        case 'closing birdie streak': return 'CHECKED BACKWARD FROM EACH TEAM’S ACTUAL FINISHING HOLE';
+        case 'best hole vs field': case 'worst hole vs field': return 'ALL 18 HOLES COMPARED WITH THE LIVE FIELD';
+        default: return 'ALL HOLES';
+      }
+    }
+
+    function geekAuditExpectedV1932(key, model, fieldAverages) {
+      const rows = model.teams.map(team => ({
+        team,
+        metric:geekAuditTeamMetricV1932(key, team, model, fieldAverages)
+      })).filter(item => item.metric && Number.isFinite(Number(item.metric.value)));
+      if (!rows.length) return null;
+      const values = rows.map(item => Number(item.metric.value));
+      const winner = GEEK_DETAIL_AUDIT_MIN_KEYS_V1932.has(key) ? Math.min(...values) : Math.max(...values);
+      const owners = rows.filter(item => geekAuditCloseV1932(item.metric.value, winner, 0.000001));
+      return { key, winner, rows, owners, context:geekAuditContextV1932(key, model) };
+    }
+
+    function geekAuditStatRawV1932(stat) {
+      const raw = geekAuditNumberV1932(stat && stat.rawValue);
+      return Number.isFinite(raw) ? raw : geekAuditNumberV1932(stat && stat.value);
+    }
+
+    function geekAuditFindTeamItemV1932(items, team) {
+      const source = Array.isArray(items) ? items : [];
+      const slot = Number(team && team.slot);
+      if (Number.isInteger(slot) && slot > 0) {
+        const bySlot = source.find(item => Number(item && item.slot) === slot);
+        if (bySlot) return bySlot;
+      }
+      const target = normalizeName(team && team.name || '');
+      return source.find(item => normalizeName(item && item.team || '') === target) || null;
+    }
+
+    function geekAuditEvidenceExpectedV1932(key, metric) {
+      if (!metric) return false;
+      if (['eagles','birdies','pars','bogeys','par-3 birdies','par-4 birdies','par-5 birdies','drivable par-4 birdies',
+           'longest birdie streak','closing birdie streak','longest par/under streak'].includes(key)) {
+        return Number(metric.value) > 0;
+      }
+      return ['best hole vs field','worst hole vs field','best 9-hole stretch','worst 9-hole stretch','back-9 comeback',
+              'highest hole score','lowest hole score','score range'].includes(key);
+    }
+
+    function runGeekDetailAuditCoreV1932() {
+      const errors = [];
+      const model = geekAuditModelV1932();
+      const stats = allGeekStatsV181();
+      if (!geekDetailAuditReadyV1932 || !geekDataV180) {
+        return {errors:['OPEN GEEK MODE FIRST'], stats:0, teams:0, checks:{}};
+      }
+      if (!model) return {errors:['FRESH RAW GEEK EVIDENCE UNAVAILABLE'], stats:stats.length, teams:0, checks:{}};
+      if (stats.length !== 32) errors.push('STAT COUNT EXPECTED 32 GOT ' + stats.length);
+      if (model.teams.length < 1) errors.push('NO COMPLETE TEAMS');
+
+      const statMap = new Map(stats.map(stat => [geekStatKeyV186(stat && stat.stat), stat]));
+      const fieldAverages = model.holes.map((_, index) =>
+        model.teams.reduce((sum, team) => sum + team.scores[index], 0) / model.teams.length
+      );
+      const checks = {values:0, owners:0, results:0, context:0, evidence:0, detail:0, largeTies:0};
+
+      for (const key of GEEK_DETAIL_AUDIT_KEYS_V1932) {
+        const stat = statMap.get(key);
+        if (!stat) { errors.push(key.toUpperCase() + ' MISSING'); continue; }
+        const expected = geekAuditExpectedV1932(key, model, fieldAverages);
+        if (!expected) { errors.push(key.toUpperCase() + ' RAW CALC FAILED'); continue; }
+
+        const actualRaw = geekAuditStatRawV1932(stat);
+        const tolerance = key.includes('%') ? 0.12 : ((key === 'best hole vs field' || key === 'worst hole vs field') ? 0.015 : 0.001);
+        if (!geekAuditCloseV1932(actualRaw, expected.winner, tolerance)) {
+          errors.push(key.toUpperCase() + ' VALUE ' + String(actualRaw) + '!=' + String(expected.winner));
+        } else checks.values += 1;
+
+        const expectedOwners = expected.owners.map(item => 'T' + item.team.slot).sort();
+        const actualOwners = (Array.isArray(stat.teams) ? stat.teams : []).map(geekAuditTeamIdV1932).sort();
+        if (expectedOwners.join(',') !== actualOwners.join(',')) {
+          errors.push(key.toUpperCase() + ' OWNERS ' + actualOwners.join(',') + '!=' + expectedOwners.join(','));
+        } else checks.owners += 1;
+
+        const results = Array.isArray(stat.results) ? stat.results : [];
+        let resultMismatch = false;
+        for (const row of expected.rows) {
+          const appItem = geekAuditFindTeamItemV1932(results, row.team);
+          if (!appItem || !geekAuditCloseV1932(geekAuditNumberV1932(appItem.rawValue), row.metric.value, tolerance)) {
+            if (!resultMismatch) errors.push(key.toUpperCase() + ' PER-TEAM RESULT T' + row.team.slot + ' MISMATCH');
+            resultMismatch = true;
+            break;
+          }
+        }
+        if (!resultMismatch) checks.results += expected.rows.length;
+
+        const actualContext = geekDetailSecondaryContextV1927(stat);
+        if (actualContext !== expected.context) {
+          errors.push(key.toUpperCase() + ' CONTEXT MISMATCH');
+        } else checks.context += 1;
+
+        let detailMismatch = false;
+        let evidenceMismatch = false;
+        for (const owner of expected.owners) {
+          const appOwner = geekAuditFindTeamItemV1932(stat.teams, owner.team);
+          if (!appOwner) { detailMismatch = true; break; }
+          const detail = appOwner && appOwner.detail ? appOwner.detail : {};
+          if (key === 'best hole vs field' || key === 'worst hole vs field') {
+            if (!owner.metric.holes.includes(Number(detail.hole))) detailMismatch = true;
+          } else if (key === 'best 9-hole stretch' || key === 'worst 9-hole stretch') {
+            if (!owner.metric.startHoles.includes(Number(detail.startHole))) detailMismatch = true;
+          } else if (key === 'back-9 comeback') {
+            if (!geekAuditCloseV1932(detail.firstNine, owner.metric.firstNine) || !geekAuditCloseV1932(detail.backNine, owner.metric.backNine)) detailMismatch = true;
+          }
+
+          if (geekAuditEvidenceExpectedV1932(key, owner.metric)) {
+            const evidence = geekTeamEvidenceDisplayV1924(geekTeamEvidenceV1920(stat, appOwner));
+            if (!evidence) evidenceMismatch = true;
+            else checks.evidence += 1;
+          }
+        }
+        if (detailMismatch) errors.push(key.toUpperCase() + ' DETAIL PROOF MISMATCH');
+        else checks.detail += 1;
+        if (evidenceMismatch) errors.push(key.toUpperCase() + ' TEAM EVIDENCE MISSING');
+
+        const ownerCount = expected.owners.length;
+        if (ownerCount >= 8) {
+          const shouldLabel = ownerCount + ' TEAMS TIED';
+          const currentLabel = String((stat.teams || []).length) + ' TEAMS TIED';
+          if (currentLabel !== shouldLabel) errors.push(key.toUpperCase() + ' LARGE-TIE LABEL MISMATCH');
+          else checks.largeTies += 1;
+        }
+      }
+
+      return {errors, stats:stats.length, teams:model.teams.length, checks};
+    }
+
     async function runControlCenterGeekCheckV188() {
       const started = timerStart();
       startLoadingLine();
-
       try {
-        const response = await fetch(
-          CLOUDFLARE_API_URL +
-            '?action=geekMode' +
-            '&refresh=' + Date.now() + '-control-center',
-          { cache:'no-store' }
-        );
-        const data = await response.json();
-        if (!response.ok || !data || data.ok !== true || data.action !== 'geekMode') {
-          throw new Error((data && data.error) || 'GEEK MODE data unavailable.');
+        const audit = runGeekDetailAuditCoreV1932();
+        if (audit.errors.length) {
+          addTestLog(
+            'GEEK DETAIL AUDIT',
+            'FAILED',
+            audit.stats + ' STATS',
+            audit.errors.slice(0, 8).join(' • ') + (audit.errors.length > 8 ? ' • +' + (audit.errors.length - 8) + ' MORE' : '')
+          );
+        } else {
+          const c = audit.checks;
+          addTestLog(
+            'GEEK DETAIL AUDIT',
+            'OK',
+            audit.stats + ' STATS',
+            audit.teams + ' TEAMS • VALUES ' + c.values + '/32 • OWNERS ' + c.owners + '/32 • TEAM RESULTS ' + c.results +
+            ' • CONTEXT ' + c.context + '/32 • DETAIL ' + c.detail + '/32 • EVIDENCE ' + c.evidence +
+            ' • LARGE TIES ' + c.largeTies + ' • RUN ' + geekDetailAuditRunIdV1932
+          );
         }
-
-        geekDataV180 = data;
-        startGeekDiagnosticV180b();
-        const report = buildGeekCompactLogV180b();
-        const categoryCount = Array.isArray(data.categories) ? data.categories.length : 0;
-        const statCount = Array.isArray(data.categories)
-          ? data.categories.reduce((sum, block) =>
-              sum + (Array.isArray(block && block.stats) ? block.stats.length : 0), 0)
-          : 0;
-
-        addTestLog(
-          'GEEK CHECK',
-          'OK',
-          statCount + ' STATS',
-          report.replace(/\n+/g, ' | ')
-        );
         completeLoadingLine();
       } catch (error) {
         stopLoadingLine();
-        addTestLog(
-          'GEEK CHECK',
-          'FAILED',
-          timerSeconds(started) + 's',
-          String(error && error.message || 'Request failed')
-        );
+        addTestLog('GEEK DETAIL AUDIT','FAILED',timerSeconds(started) + 's',String(error && error.message || 'Audit failed'));
       }
-
       renderTestLog();
       requestAnimationFrame(fitTestPageButtonText);
     }
@@ -15959,7 +16323,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.31 RESULT LOG',
+        'SSHCP V19.32 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16022,7 +16386,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.31 CONTROL CENTER LOG',
+        'SSHCP V19.32 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -23233,6 +23597,9 @@ let scoreTimingDetail =
 
     async function openGeekModeV180() {
       syncSharedGeometryV187();
+      /* V19.32: every visible GEEK entry starts a fresh validation set and
+         retires only prior GEEK log rows; the rest of the Control Center run remains. */
+      resetGeekAuditSessionV1932();
       /* This function remains the ONLY CF V2.1 Geek read entry point.
          No startup/scorecard/leaderboard/background Geek request exists. */
       geekScrollTopV180 = 0;
@@ -23265,6 +23632,11 @@ let scoreTimingDetail =
         geekDataV180 = data;
         geekEvidenceSnapshotV1921 = await evidencePromiseV1921;
         geekApplyLongVsParV1926();
+        geekDetailAuditReadyV1932 = Boolean(
+          geekEvidenceSnapshotV1921 &&
+          Array.isArray(geekEvidenceSnapshotV1921.holes) && geekEvidenceSnapshotV1921.holes.length === 18 &&
+          Array.isArray(geekEvidenceSnapshotV1921.teams) && geekEvidenceSnapshotV1921.teams.length
+        );
         if (geekDiagnosticActiveV180b) geekDiagnosticErrorV180b = '';
         renderGeekTableV180();
 
@@ -23293,6 +23665,7 @@ let scoreTimingDetail =
         );
       }
       catch (error) {
+        geekDetailAuditReadyV1932 = false;
         if (geekDiagnosticActiveV180b) {
           geekDiagnosticErrorV180b = String(error && error.message || 'REQUEST_FAILED');
         }
@@ -23985,7 +24358,7 @@ let scoreTimingDetail =
         ).join('') +
         '</div>';
 
-      html += '<div class="tournament-summary-remaining">';
+      html += '<div class="tournament-summary-lower-clip-v1932"><div class="tournament-summary-remaining">';
       rows.slice(3).forEach((row, index) => {
           const rowIndex = index + 3;
           const place = summaryPlaceLabel(rowIndex);
@@ -24006,7 +24379,7 @@ let scoreTimingDetail =
             escapeHtml(formatGolfScore(row.net)) + '</div>' +
             '</div>';
       });
-      html += '</div>';
+      html += '</div></div>';
 
       els.modalBody.innerHTML = html;
       /* V19.31 — Summary never remembers lower-table position. Every fresh entry
