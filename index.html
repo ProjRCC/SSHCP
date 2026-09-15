@@ -1,15 +1,15 @@
-<!-- SSHCP | BASE KEY: 19.19-P6M4QZ | BUILD KEY: 19.20-R8V3QK -->
+<!-- SSHCP | BASE KEY: 19.20-R8V3QK | BUILD KEY: 19.21-C7R4MX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.20 — built directly from V19.19 (BUILD 19.19-P6M4QZ).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.20 preserves all
+        /* SSHCP V19.21 — built directly from V19.20 (BUILD 19.20-R8V3QK).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.21 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet
            behavior, HOME V19.8 baseline geometry, Scramble Summary/GEEK geometry,
-           and the split center-header rule. GEEK-detail-only change: turn the popup into a compact proof sheet with stat-specific qualifying-hole context and per-team hole/span evidence when that evidence can be proven from the already-loaded scorecard snapshot or existing one-batch GEEK detail payload. Percent stats stay uncluttered. Detail cards target 80dvh and may expand to 88dvh before readable text is reduced. No extra network read and no GEEK calculation changes. V19.19 main GEEK helper/header geometry remains intact.
+           and the split center-header rule. GEEK-detail correction: the V19.20 proof-sheet renderer was correct, but its evidence source was often empty when GEEK MODE was opened before Scorecard/Skins, so hole counts and per-team hole evidence could not render. V19.21 starts one existing raw scorecard-source read in parallel with the GEEK read and caches its 18 course holes + team score arrays only for detail evidence. Percent stats stay uncluttered. Detail cards target 80dvh and may expand to 88dvh before readable text is reduced. No GEEK calculation changes; the Worker GEEK result remains authoritative. V19.19 main GEEK helper/header geometry remains intact.
            Legacy note: eliminate the HOME refresh blink on ACCESS SCORECARD by
            making the HOME access sync idempotent and updating its existing text spans in place
            instead of rebuilding the entire button DOM during stored-authorization validation.
@@ -12456,7 +12456,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   transform:none!important;
 }
 
-/* SSHCP V19.20 — GEEK detail proof-sheet pass. */
+/* SSHCP V19.21 — GEEK detail proof-sheet pass, with guaranteed evidence source. */
 .modal-overlay.geek-detail-v180 .modal-box{
   max-height:80dvh!important;
 }
@@ -12629,7 +12629,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.20</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.21</span></span>
         </button>
 
       </div>
@@ -15901,7 +15901,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.20 RESULT LOG',
+        'SSHCP V19.21 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15964,7 +15964,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.20 CONTROL CENTER LOG',
+        'SSHCP V19.21 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -21394,6 +21394,27 @@ let scoreTimingDetail =
 
     const GEEK_ENABLED_KEY_V180 = 'sshcpGeekModeEnabledV180';
     let geekDataV180 = null;
+    let geekEvidenceSnapshotV1921 = null;
+
+    async function fetchGeekEvidenceSnapshotV1921() {
+      try {
+        const response = await fetch(
+          CLOUDFLARE_API_URL + '?refresh=' + Date.now() + '-geek-evidence',
+          { cache:'no-store' }
+        );
+        if (!response.ok) return null;
+        const data = await response.json();
+        if (!data || data.ok !== true) return null;
+        const sourceHoles = Array.isArray(data.course && data.course.holes)
+          ? data.course.holes.slice(0, 18)
+          : [];
+        const sourceTeams = Array.isArray(data.teams) ? data.teams : [];
+        if (sourceHoles.length !== 18 || !sourceTeams.length) return null;
+        return { holes:sourceHoles, teams:sourceTeams };
+      } catch (_) {
+        return null;
+      }
+    }
 
     /* V18.40 committed filter state.
        ALL remains the true master. GOOD includes both green + neutral/gray
@@ -21817,6 +21838,9 @@ let scoreTimingDetail =
        displayed total was measured across. */
     function geekCourseHolesV1918() {
       if (Array.isArray(holes) && holes.length) return holes;
+      if (geekEvidenceSnapshotV1921 && Array.isArray(geekEvidenceSnapshotV1921.holes) && geekEvidenceSnapshotV1921.holes.length) {
+        return geekEvidenceSnapshotV1921.holes;
+      }
       if (geekDataV180 && geekDataV180.course && Array.isArray(geekDataV180.course.holes)) {
         return geekDataV180.course.holes;
       }
@@ -21913,13 +21937,23 @@ let scoreTimingDetail =
     }
 
 
-    /* SSHCP V19.20 — rich GEEK detail evidence without another network read.
-       Worker result remains authoritative.  Hole evidence is attached only
-       when it can be proven from the already-loaded scorecard model/snapshot
-       or from detail fields already returned in the one lazy GEEK payload. */
+    /* SSHCP V19.21 — rich GEEK detail evidence.
+       Worker GEEK result remains authoritative. V19.21 also caches one raw
+       scorecard-source read opened in parallel with GEEK so the detail popup
+       always has the 18 course holes, team scores, and starting-hole order
+       even when Scorecard/Skins has never been opened in this page session. */
     function geekEvidenceModelV1920() {
       let sourceHoles = Array.isArray(holes) && holes.length === 18 ? holes : [];
       let sourceTeams = Array.isArray(teams) && teams.length ? teams : [];
+
+      if (geekEvidenceSnapshotV1921) {
+        if (sourceHoles.length !== 18 && Array.isArray(geekEvidenceSnapshotV1921.holes)) {
+          sourceHoles = geekEvidenceSnapshotV1921.holes;
+        }
+        if (!sourceTeams.length && Array.isArray(geekEvidenceSnapshotV1921.teams)) {
+          sourceTeams = geekEvidenceSnapshotV1921.teams;
+        }
+      }
 
       if (sourceHoles.length !== 18 || !sourceTeams.length) {
         let snapshot = window.__sshcpBootScorecardSnapshot || null;
@@ -22940,11 +22974,13 @@ let scoreTimingDetail =
          same page session retain the last committed filter selection. */
       geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
       geekDataV180 = null;
+      geekEvidenceSnapshotV1921 = null;
 
       closeModal();
       renderGeekMainShellV180();
 
       const started = timerStart();
+      const evidencePromiseV1921 = fetchGeekEvidenceSnapshotV1921();
 
       try {
         const response = await fetch(
@@ -22961,6 +22997,7 @@ let scoreTimingDetail =
         }
 
         geekDataV180 = data;
+        geekEvidenceSnapshotV1921 = await evidencePromiseV1921;
         if (geekDiagnosticActiveV180b) geekDiagnosticErrorV180b = '';
         renderGeekTableV180();
 
