@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 19.28-P7V4QK | BUILD KEY: 19.29-K6M2QW -->
+<!-- SSHCP | BASE KEY: 19.29-K6M2QW | BUILD KEY: 19.30-H8Q3NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.29 — built directly from V19.28 (BUILD 19.28-P7V4QK).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.29 preserves all
+        /* SSHCP V19.30 — built directly from V19.29 (BUILD 19.29-K6M2QW).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.30 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
            HOME geometry, Scramble Summary/GEEK geometry, header rules, GEEK calculations,
            V19.26 SHORT/LONG definitions and evidence logic, V19.27 universal detail
@@ -12667,7 +12667,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.29</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.30</span></span>
         </button>
 
       </div>
@@ -15939,7 +15939,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.29 RESULT LOG',
+        'SSHCP V19.30 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16002,7 +16002,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.29 CONTROL CENTER LOG',
+        'SSHCP V19.30 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -17329,19 +17329,18 @@ let scoreTimingDetail =
       updateTopCenterHeadersV196();
 
 
-      /* V16.8 — entering LIVE LEADERBOARD is an explicit orientation event.
-         Always begin at the top, perform an immediate fresh read, then let the
-         established 1.5-second authorized-team positioning bring a team below
-         the visible eight rows into view. Manual REFRESH and the background
-         cycle intentionally preserve the golfer's current scroll position. */
+      /* V19.30 — entering LIVE LEADERBOARD begins at the normal top position
+         and performs an immediate fresh read. The authorized team remains
+         highlighted wherever it ranks, but the page never auto-scrolls to it.
+         Manual scrolling remains fully user-controlled. */
       cancelLeaderboardAutoScroll();
       if (els.leaderContent) {
         els.leaderContent.scrollTop = 0;
       }
 
       /* If ENTER SCORES is still being written/verified, do not race that
-         write. Stay at the top and queue the same fresh-read + auto-position
-         sequence for the instant the final score-save chain settles. */
+         write. Stay at the top and queue the same fresh-read sequence for the
+         instant the final score-save chain settles. */
       if (saveInProgress || saveQueued) {
         leaderboardRefreshAfterScoreSave = true;
         startLoadingLine();
@@ -17355,7 +17354,7 @@ let scoreTimingDetail =
 
         await loadLeaderboard(
           true,
-          true
+          false
         );
 
       }
@@ -20099,7 +20098,7 @@ let scoreTimingDetail =
 
           if (shouldRefreshNow) {
             setTimeout(
-              () => loadLeaderboard(false, true),
+              () => loadLeaderboard(false, false),
               0
             );
           } else {
@@ -20201,16 +20200,14 @@ let scoreTimingDetail =
           els.leaderboardView.classList.remove('leader-auto-refresh-active');
         }
 
-        /* V16.8 — the 10-second live auto-refresh uses the same orientation
-           contract as entering LIVE LEADERBOARD / browser pull-refresh:
-           start from the top, fresh-read immediately, then let the established
-           1.5-second authorized-team positioning bring a team below the visible
-           eight rows back into view. */
+        /* V19.30 — live auto-refresh keeps the normal top orientation and
+           refreshes without authorized-team auto-positioning. Highlighting
+           remains visual only; scrolling is always user-controlled. */
         cancelLeaderboardAutoScroll();
         if (els.leaderContent) {
           els.leaderContent.scrollTop = 0;
         }
-        await loadLeaderboard(false, true);
+        await loadLeaderboard(false, false);
       }, 10000);
     }
 
@@ -20411,13 +20408,9 @@ let scoreTimingDetail =
 
         if (!silentV182) completeLoadingLine();
 
-        /* V17.9 sequencing retained in V17.11: finished data -> .5s reveal -> only
-           then begin the existing 1.5s authorized-team auto-position delay.
-           Manual REFRESH still passes false and therefore never auto-scrolls. */
+        /* V19.30 — reveal completes with no automatic leaderboard positioning.
+           Authorized-team highlighting remains intact; the golfer controls scroll. */
         await leaderboardRevealDoneV179;
-        if (autoPositionAuthorized) {
-          scheduleLeaderboardAutoScroll();
-        }
 
 
       }
@@ -23527,20 +23520,36 @@ let scoreTimingDetail =
         ? evidenceModel.teams.filter(team => String(team && team.name || '').trim()).length
         : 0;
       const suppressTeamEvidence = totalTeams > 0 && owners.length > (totalTeams / 2);
-      const teamItems = owners.map(item => {
-        const isAuthorized = authorized &&
-          normalizeName(item && item.team) === authorized;
-        const rawEvidence = suppressTeamEvidence ? '' : geekTeamEvidenceV1920(stat, item);
-        const evidence = geekTeamEvidenceDisplayV1924(rawEvidence);
-        return '<li class="' + (isAuthorized ? 'authorized' : '') + '">' +
-          '<span class="geek-detail-team-name-v1920">' +
-            escapeHtml(String(item && item.team || '')) +
-          '</span>' +
-          (evidence
-            ? '<span class="geek-detail-team-evidence-v1920">(' + escapeHtml(evidence) + ')</span>'
-            : '') +
+      const collapseLargeTieV1930 = owners.length >= 8;
+      let teamItems = '';
+
+      if (collapseLargeTieV1930) {
+        const authorizedIsTiedV1930 = Boolean(authorized) && owners.some(item =>
+          normalizeName(item && item.team) === authorized
+        );
+        teamItems =
+          '<li class="' + (authorizedIsTiedV1930 ? 'authorized' : '') + '">' +
+            '<span class="geek-detail-team-name-v1920">' +
+              escapeHtml(String(owners.length) + ' TEAMS TIED') +
+            '</span>' +
           '</li>';
-      }).join('');
+      } else {
+        teamItems = owners.map(item => {
+          const isAuthorized = authorized &&
+            normalizeName(item && item.team) === authorized;
+          const rawEvidence = suppressTeamEvidence ? '' : geekTeamEvidenceV1920(stat, item);
+          const evidence = geekTeamEvidenceDisplayV1924(rawEvidence);
+          return '<li class="' + (isAuthorized ? 'authorized' : '') + '">' +
+            '<span class="geek-detail-team-name-v1920">' +
+              escapeHtml(String(item && item.team || '')) +
+            '</span>' +
+            (evidence
+              ? '<span class="geek-detail-team-evidence-v1920">(' + escapeHtml(evidence) + ')</span>'
+              : '') +
+            '</li>';
+        }).join('');
+      }
+
       const teamsHtml = '<ul class="geek-detail-teams-v180">' + (teamItems || '<li>—</li>') + '</ul>';
 
       const proof = geekDetailSecondaryContextV1927(stat);
@@ -24012,8 +24021,7 @@ let scoreTimingDetail =
 
 
     function renderLeaderboard(
-      rows,
-      allowAutoScroll = true
+      rows
     ) {
 
       const priorLeaderboardScroll = els.leaderContent
@@ -24429,11 +24437,8 @@ let scoreTimingDetail =
         els.leaderContent.scrollTop = Math.min(restoredScroll, maxScroll);
         saveLeaderboardSnapshotV53();
       });
-      if (allowAutoScroll) {
-        scheduleLeaderboardAutoScroll();
-      } else {
-        cancelLeaderboardAutoScroll();
-      }
+      /* V19.30 — leaderboard rendering never auto-positions to a team. */
+      cancelLeaderboardAutoScroll();
 
     }
 
