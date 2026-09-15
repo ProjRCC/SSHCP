@@ -1,21 +1,21 @@
-<!-- SSHCP | BASE KEY: 19.24-R7M5QX | BUILD KEY: 19.25-B7Q4MX -->
+<!-- SSHCP | BASE KEY: 19.25-B7Q4MX | BUILD KEY: 19.26-N4K7VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.25 — built directly from V19.24 (BUILD 19.24-R7M5QX).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.25 preserves all
+        /* SSHCP V19.26 — built directly from V19.25 (BUILD 19.25-B7Q4MX).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.26 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
-           HOME geometry, Scramble Summary/GEEK geometry, header rules, GEEK calculations,
-           and the V19.24 detail-content rules. Detail typography only: DESCRIPTION may
-           use up to three lines before shrinking; the qualifying HOLE/HOLES proof line
-           targets 125% of its prior size and always fits on one line; TEAM names target
-           125% of their prior size and still shrink locally to one line; the second-line
-           HOLE/HOLES evidence grows by the same 25% and also remains one line. Cards may
-           still expand from 80dvh to 95dvh when needed. Visible HOME version is V19.25.
-           No GEEK calculation changes; the Worker GEEK result remains authoritative. */
+           HOME geometry, Scramble Summary/GEEK geometry, header rules, and the approved
+           V19.25 GEEK detail typography. This pass standardizes concise RESULT wording,
+           removes unnecessary prose dashes, applies HOLE/HOLES second-line evidence with
+           grouping only when a team has more than five holes, annotates SHORT/LONG proof
+           holes with par type, and changes LONG to Par 3 180+ / Par 4 420+ / Par 5 550+.
+           LONG VS PAR is recalculated from the same already-loaded raw scorecard evidence
+           so the displayed stat matches the new definition; all other GEEK calculations
+           remain Worker authoritative. Visible HOME version is V19.26. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12633,7 +12633,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.25</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.26</span></span>
         </button>
 
       </div>
@@ -15905,7 +15905,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.25 RESULT LOG',
+        'SSHCP V19.26 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15968,7 +15968,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.25 CONTROL CENTER LOG',
+        'SSHCP V19.26 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -21512,8 +21512,8 @@ let scoreTimingDetail =
       'par-4 birdies':'Most birdies made on Par 4 holes.',
       'par-5 birdies':'Most birdies made on Par 5 holes.',
       'hole wins':'Most holes won outright with the lowest gross score in the field. A tied low score does not count.',
-      'best hole vs field':'Largest single-hole advantage compared with the field average.',
-      'worst hole vs field':'Largest single-hole disadvantage compared with the field average.',
+      'best hole vs field':'Largest single hole advantage compared with the field average.',
+      'worst hole vs field':'Largest single hole disadvantage compared with the field average.',
       'withdrew':'18 holes later… we finished.',
       'best 9-hole stretch':'Best score versus par over any consecutive nine holes in actual play order.',
       'worst 9-hole stretch':'Worst score versus par over any consecutive nine holes in actual play order.',
@@ -21521,19 +21521,19 @@ let scoreTimingDetail =
       'closing birdie streak':'Longest consecutive streak of exact birdies to finish the team’s round.',
       'longest birdie streak':'Longest consecutive streak of exact birdies anywhere in the round.',
       'bogeeee train':'C’mon, ride the train. Longest streak of exact bogeys; a double breaks it.',
-      'highest hole score':'Highest single-hole score recorded during the round.',
-      'lowest hole score':'Lowest single-hole score recorded during the round.',
+      'highest hole score':'Highest single hole score recorded during the round.',
+      'lowest hole score':'Lowest single hole score recorded during the round.',
       'longest par/under streak':'Longest consecutive streak of holes played at par or better.',
       'score range':'Smallest difference between a team’s highest and lowest raw hole scores.',
       'par train':'Pars win majors.',
       'par-3 vs par':'Best total score versus par on all Par 3 holes.',
       'par-4 vs par':'Best total score versus par on all Par 4 holes.',
       'par-5 vs par':'Best total score versus par on all Par 5 holes.',
-      'short vs par':'Best total vs par on SHORT holes. SHORT = Par 3 <150 • Par 4 <350 • Par 5 <500 yards from the WHITE tees.',
-      'long vs par':'Best total vs par on LONG holes. LONG = Par 3 150+ • Par 4 350+ • Par 5 500+ yards from the WHITE tees.',
+      'short vs par':'Best total vs par on SHORT holes.\nSHORT = Par 3 <150 • Par 4 <350 • Par 5 <500',
+      'long vs par':'Best total vs par on LONG holes.\nLONG = Par 3 180+ • Par 4 420+ • Par 5 550+',
       '9 easy holes vs par':'Best score versus par on handicap holes 10 through 18.',
       '9 hard holes vs par':'Best score versus par on handicap holes 1 through 9.',
-      'drivable par-4 birdies':'Most birdies on Par 4 holes under 300 yards from the WHITE tees.',
+      'drivable par-4 birdies':'Most birdies on Par 4 holes under 300 yards.',
       'water ball':'Where did it enter?'
     };
 
@@ -21863,16 +21863,30 @@ let scoreTimingDetail =
       return geekHoleCountV1918(hole => Number(hole.par) === target);
     }
 
+    /* V19.26 — SHORT keeps the approved lower thresholds. LONG now has an
+       intentional middle band so only obviously long holes qualify. */
+    function geekIsShortHoleV1926(hole) {
+      const par = Number(hole && hole.par);
+      const white = Number(hole && hole.white);
+      if (!Number.isFinite(par) || !Number.isFinite(white)) return false;
+      if (par === 3) return white < 150;
+      if (par === 4) return white < 350;
+      if (par === 5) return white < 500;
+      return false;
+    }
+
+    function geekIsLongHoleV1926(hole) {
+      const par = Number(hole && hole.par);
+      const white = Number(hole && hole.white);
+      if (!Number.isFinite(par) || !Number.isFinite(white)) return false;
+      if (par === 3) return white >= 180;
+      if (par === 4) return white >= 420;
+      if (par === 5) return white >= 550;
+      return false;
+    }
+
     function geekShortHoleCountV1918() {
-      return geekHoleCountV1918(hole => {
-        const par = Number(hole.par);
-        const white = Number(hole.white);
-        if (!Number.isFinite(par) || !Number.isFinite(white)) return false;
-        if (par === 3) return white < 150;
-        if (par === 4) return white < 350;
-        if (par === 5) return white < 500;
-        return false;
-      });
+      return geekHoleCountV1918(geekIsShortHoleV1926);
     }
 
     function geekDrivablePar4CountV1918() {
@@ -21927,8 +21941,62 @@ let scoreTimingDetail =
       }
     }
 
+    function geekResultUnitV1926(value, singular, plural) {
+      const n = Number(String(value == null ? '' : value).replace(/[^0-9.+-]/g, ''));
+      return Number.isFinite(n) && Math.abs(n) === 1 ? singular : plural;
+    }
+
+    /* V19.26 — RESULT says only what helps interpret the number. The stat title
+       and description already carry the rest of the meaning. No prose dashes. */
+    function geekDetailResultTextV1926(stat) {
+      const key = geekStatKeyV186(stat && stat.stat);
+      const value = geekMainValueV1813(stat, stat) || '—';
+      if (key.includes('%')) return value;
+
+      switch (key) {
+        case 'eagles':
+          return value + ' ' + geekResultUnitV1926(value, 'EAGLE', 'EAGLES');
+        case 'birdies':
+          return value + ' ' + geekResultUnitV1926(value, 'BIRDIE', 'BIRDIES');
+        case 'pars':
+          return value + ' ' + geekResultUnitV1926(value, 'PAR', 'PARS');
+        case 'bogeys':
+          return value + ' ' + geekResultUnitV1926(value, 'BOGEY', 'BOGEYS');
+        case 'we doubled':
+          return value + ' ' + geekResultUnitV1926(value, 'DOUBLE BOGEY', 'DOUBLE BOGEYS');
+        case 'par-3 birdies':
+        case 'par-4 birdies':
+        case 'par-5 birdies':
+        case 'drivable par-4 birdies':
+          return value + ' ' + geekResultUnitV1926(value, 'BIRDIE', 'BIRDIES');
+        case 'hole wins':
+          return value + ' ' + geekResultUnitV1926(value, 'HOLE WIN', 'HOLE WINS');
+        case 'best hole vs field':
+        case 'worst hole vs field':
+          return value + ' ' + geekResultUnitV1926(value, 'STROKE', 'STROKES');
+        case 'back-9 comeback': {
+          const raw = Number(stat && stat.rawValue);
+          const count = Number.isFinite(raw) ? Math.abs(raw) : Math.abs(Number(value));
+          const shown = Number.isFinite(count) ? String(count).replace(/\.0+$/, '') : value;
+          return shown + ' ' + geekResultUnitV1926(shown, 'STROKE', 'STROKES') + ' IMPROVEMENT';
+        }
+        case 'closing birdie streak':
+        case 'longest birdie streak':
+        case 'bogeeee train':
+        case 'par train':
+        case 'longest par/under streak':
+          return value + ' HOLE STREAK';
+        case 'highest hole score':
+        case 'lowest hole score':
+        case 'score range':
+          return value + ' ' + geekResultUnitV1926(value, 'STROKE', 'STROKES');
+        default:
+          return value;
+      }
+    }
+
     function geekDetailResultHtmlV1918(stat) {
-      const value = geekMainValueV1813(stat, stat);
+      const value = geekDetailResultTextV1926(stat);
       return '<span class="geek-detail-result-main-v1918">' + escapeHtml(value || '—') + '</span>';
     }
 
@@ -22047,6 +22115,9 @@ let scoreTimingDetail =
       const values = [...new Set((numbers || []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= 18))]
         .sort((a, b) => a - b);
       if (!values.length) return '';
+      /* V19.26: under each TEAM, spell out 1-5 holes. Start grouping only
+         when the evidence contains more than five holes. */
+      if (values.length <= 5) return values.join(',');
       const segments = [];
       let start = values[0];
       let end = values[0];
@@ -22067,6 +22138,7 @@ let scoreTimingDetail =
     function geekCompactHoleSequenceV1920(numbers) {
       const values = (numbers || []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= 18);
       if (!values.length) return '';
+      if (values.length <= 5) return values.join(',');
       const segments = [];
       let start = values[0];
       let end = values[0];
@@ -22302,6 +22374,20 @@ let scoreTimingDetail =
       return numbers.length + ' ' + (numbers.length === 1 ? 'HOLE' : 'HOLES') + ' • ' + numbers.join(',');
     }
 
+    function geekProofTypedHoleListV1926(predicate) {
+      const source = geekCourseHolesV1918();
+      if (!source.length) return '';
+      const items = source
+        .map((hole, index) => ({
+          hole:hole || {},
+          number:geekEvidenceHoleNumberV1920(hole, index)
+        }))
+        .filter(item => predicate(item.hole))
+        .map(item => item.number + '(P' + Number(item.hole.par) + ')');
+      if (!items.length) return '';
+      return items.length + ' ' + (items.length === 1 ? 'HOLE' : 'HOLES') + ' • ' + items.join(',');
+    }
+
     function geekDetailProofV1920(stat) {
       const key = geekStatKeyV186(stat && stat.stat);
       switch (key) {
@@ -22318,25 +22404,9 @@ let scoreTimingDetail =
         case 'par-5 vs par':
           return geekProofHoleListV1920(hole => Number(hole.par) === 5);
         case 'short vs par':
-          return geekProofHoleListV1920(hole => {
-            const par = Number(hole.par);
-            const white = Number(hole.white);
-            return Number.isFinite(white) && (
-              (par === 3 && white < 150) ||
-              (par === 4 && white < 350) ||
-              (par === 5 && white < 500)
-            );
-          });
+          return geekProofTypedHoleListV1926(geekIsShortHoleV1926);
         case 'long vs par':
-          return geekProofHoleListV1920(hole => {
-            const par = Number(hole.par);
-            const white = Number(hole.white);
-            return Number.isFinite(white) && (
-              (par === 3 && white >= 150) ||
-              (par === 4 && white >= 350) ||
-              (par === 5 && white >= 500)
-            );
-          });
+          return geekProofTypedHoleListV1926(geekIsLongHoleV1926);
         case 'drivable par-4 birdies':
           return geekProofHoleListV1920(hole => Number(hole.par) === 4 && Number(hole.white) < 300);
         case '9 easy holes vs par':
@@ -22345,7 +22415,7 @@ let scoreTimingDetail =
           return geekProofHoleListV1920(hole => Number(hole.hcp) >= 1 && Number(hole.hcp) <= 9);
         case 'best 9-hole stretch':
         case 'worst 9-hole stretch':
-          return 'EVERY CONSECUTIVE 9-HOLE WINDOW • ACTUAL PLAY ORDER';
+          return 'EVERY CONSECUTIVE 9 HOLE WINDOW • ACTUAL PLAY ORDER';
         case 'longest birdie streak':
         case 'bogeeee train':
         case 'par train':
@@ -22358,6 +22428,55 @@ let scoreTimingDetail =
           return 'ALL 18 HOLES COMPARED WITH THE LIVE FIELD';
         default:
           return '';
+      }
+    }
+
+    /* V19.26 — LONG definition changed after CF V2.2. Recompute only this
+       one stat from the already-loaded scorecard evidence so main GEEK, detail,
+       owner ties, and authorized-team US value all use 180 / 420 / 550. */
+    function geekApplyLongVsParV1926() {
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return;
+      const model = geekEvidenceModelV1920();
+      if (!model || !Array.isArray(model.holes) || !Array.isArray(model.teams)) return;
+
+      const qualifying = model.holes
+        .map((hole, index) => ({ hole:hole || {}, index }))
+        .filter(item => geekIsLongHoleV1926(item.hole));
+      if (!qualifying.length) return;
+
+      const results = model.teams.map(team => {
+        const name = String(team && team.name || '').trim();
+        const scores = team && Array.isArray(team.scores) ? team.scores : [];
+        if (!name || !scores.length) return null;
+        let total = 0;
+        for (const item of qualifying) {
+          const score = Number(scores[item.index]);
+          const par = Number(item.hole.par);
+          if (!Number.isFinite(score) || score <= 0 || !Number.isFinite(par)) return null;
+          total += score - par;
+        }
+        return {
+          team:name,
+          slot:team && team.slot,
+          rawValue:total,
+          value:formatGolfScore(total)
+        };
+      }).filter(Boolean);
+
+      if (!results.length) return;
+      const best = Math.min(...results.map(item => Number(item.rawValue)));
+      const owners = results.filter(item => Number(item.rawValue) === best);
+
+      for (const block of geekDataV180.categories) {
+        if (!block || !Array.isArray(block.stats)) continue;
+        const stat = block.stats.find(item => geekStatKeyV186(item && item.stat) === 'long vs par');
+        if (!stat) continue;
+        stat.rawValue = best;
+        stat.value = formatGolfScore(best);
+        stat.results = results;
+        stat.teams = owners;
+        stat.supported = true;
+        break;
       }
     }
 
@@ -23059,6 +23178,7 @@ let scoreTimingDetail =
 
         geekDataV180 = data;
         geekEvidenceSnapshotV1921 = await evidencePromiseV1921;
+        geekApplyLongVsParV1926();
         if (geekDiagnosticActiveV180b) geekDiagnosticErrorV180b = '';
         renderGeekTableV180();
 
@@ -23360,7 +23480,7 @@ let scoreTimingDetail =
       const proof = geekDetailProofV1920(stat);
       els.modalBody.innerHTML =
         '<div class="geek-detail-description-v180">' +
-          escapeHtml(geekDescriptionV180(stat && stat.stat)) +
+          escapeHtml(geekDescriptionV180(stat && stat.stat)).replace(/\n/g, '<br>') +
         '</div>' +
         (proof
           ? '<div class="geek-detail-proof-v1920">' + escapeHtml(proof) + '</div>'
