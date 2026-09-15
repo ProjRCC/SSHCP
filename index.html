@@ -1,16 +1,16 @@
-<!-- SSHCP | BASE KEY: 19.9-N7Q4VX | BUILD KEY: 19.10-Q6M3RT -->
+<!-- SSHCP | BASE KEY: 19.10-Q6M3RT | BUILD KEY: 19.11-B8Q5NZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.10 — built directly from V19.9 (BUILD 19.9-N7Q4VX).
-           V18.38 remains the declared GOLDEN rollback. V19.10 preserves all
+        /* SSHCP V19.11 — built directly from V19.10 (BUILD 19.10-Q6M3RT).
+           V18.38 remains the declared GOLDEN rollback. V19.11 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet
            behavior, HOME V19.8 baseline geometry, Scramble Summary/GEEK geometry,
            and the split center-header rule. Presentation-only change: correct the
-           V19.9 shotgun fade treatment so Gray 3 gradients are row background layers
+           V19.10 shotgun fade treatment so Gray 5 gradients are row background layers with transparent empty score boxes
            beneath all row content/score boxes while preserving the existing divider
            and grid lines. V19.9 ROTB 2026 branding is preserved unchanged. No data,
            scoring, Worker, API or Sheet changes. */
@@ -11204,20 +11204,26 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   background:transparent!important;
 }
 
-/* V19.10 — shotgun nine-hole landmarks use Gray 3 gradient BACKGROUNDS.
-   This restores the original landmark layering model: the row owns the visual
-   background, while hole/par/yardage text, score box, score number/notation,
-   active-hole cues, cell grid lines, and halfway divider lines all render normally
-   above it. No pseudo-element overlay is used. */
-#scorecardView .score-row.round-landmark-fade-start-v1910{
+/* V19.11 — shotgun nine-hole landmarks use Gray 5 gradient BACKGROUNDS.
+   The row remains the base layer: content and grid lines render normally above it.
+   Empty score boxes are transparent so the landmark fade remains visible through
+   the score column. The verified next-hole cue is a Blue border around that same
+   transparent box; pending/saved score-state presentation remains unchanged. */
+#scorecardView .score-row.round-landmark-fade-start-v1911{
   background:linear-gradient(to bottom,
-    var(--sshcp-gray-3-v1850,#e8e8e8) 0%,
-    rgba(232,232,232,0) 100%)!important;
+    var(--sshcp-gray-5-v1850,#666666) 0%,
+    rgba(102,102,102,0) 100%)!important;
 }
-#scorecardView .score-row.round-landmark-fade-end-v1910{
+#scorecardView .score-row.round-landmark-fade-end-v1911{
   background:linear-gradient(to bottom,
-    rgba(232,232,232,0) 0%,
-    var(--sshcp-gray-3-v1850,#e8e8e8) 100%)!important;
+    rgba(102,102,102,0) 0%,
+    var(--sshcp-gray-5-v1850,#666666) 100%)!important;
+}
+#scorecardView .score-button.empty{
+  background:transparent!important;
+}
+#scorecardView .score-button.empty.active-hole-score{
+  background:transparent!important;
 }
 #scorecardView .score-row.halfway-divider-after-v1836{
   border-bottom:2px solid var(--sshcp-static-header-gray-v185,#444)!important;
@@ -12537,7 +12543,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.10</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.11</span></span>
         </button>
 
       </div>
@@ -15809,7 +15815,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.10 RESULT LOG',
+        'SSHCP V19.11 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15872,7 +15878,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.10 CONTROL CENTER LOG',
+        'SSHCP V19.11 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -18752,11 +18758,11 @@ let scoreTimingDetail =
             'score-row';
 
           if (index === firstNineStartIndexV1836 || index === secondNineStartIndexV1836) {
-            row.classList.add('round-landmark-fade-start-v1910');
+            row.classList.add('round-landmark-fade-start-v1911');
           }
 
           if (index === firstNineEndIndexV1836 || index === secondNineEndIndexV1836) {
-            row.classList.add('round-landmark-fade-end-v1910');
+            row.classList.add('round-landmark-fade-end-v1911');
           }
 
           if (!halfwayWrapsV1836 && index === firstNineEndIndexV1836) {
