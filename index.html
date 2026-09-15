@@ -1,15 +1,16 @@
-<!-- SSHCP | BASE KEY: 19.16-T7Q3MV | BUILD KEY: 19.17-H5N8QX -->
+<!-- SSHCP | BASE KEY: 19.19-P6M4QZ | BUILD KEY: 19.20-R8V3QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.17 — built directly from V19.16 (BUILD 19.16-T7Q3MV).
-           V18.38 remains the declared GOLDEN rollback. V19.17 preserves all
+        /* SSHCP V19.20 — built directly from V19.19 (BUILD 19.19-P6M4QZ).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.20 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet
            behavior, HOME V19.8 baseline geometry, Scramble Summary/GEEK geometry,
-           and the split center-header rule. Presentation-only change: eliminate the HOME refresh blink on ACCESS SCORECARD by
+           and the split center-header rule. GEEK-detail-only change: turn the popup into a compact proof sheet with stat-specific qualifying-hole context and per-team hole/span evidence when that evidence can be proven from the already-loaded scorecard snapshot or existing one-batch GEEK detail payload. Percent stats stay uncluttered. Detail cards target 80dvh and may expand to 88dvh before readable text is reduced. No extra network read and no GEEK calculation changes. V19.19 main GEEK helper/header geometry remains intact.
+           Legacy note: eliminate the HOME refresh blink on ACCESS SCORECARD by
            making the HOME access sync idempotent and updating its existing text spans in place
            instead of rebuilding the entire button DOM during stored-authorization validation.
            V19.15 Gray 3.5 / 25% universal boundary treatment, transparent score boxes, border-only
@@ -9402,7 +9403,7 @@ button.sshcp-button-pressed-v172{
 }
 .modal-overlay.geek-mode-v180 .modal-title{
   flex:0 0 auto!important;
-  margin:0 0 10px!important;
+  margin:0 0 2px!important;
   padding:0!important;
   color:var(--accent)!important;
   font-size:30px!important;
@@ -9422,6 +9423,20 @@ button.sshcp-button-pressed-v172{
   text-align:center!important;
   font-size:initial!important;
   line-height:1!important;
+}
+.geek-helper-v1919{
+  flex:0 0 auto!important;
+  width:100%!important;
+  margin:0 0 10px!important;
+  padding:0!important;
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
+  font-size:var(--geek-helper-font-v1919,10px)!important;
+  font-weight:600!important;
+  line-height:1!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
 }
 .geek-main-v180{
   position:relative!important;
@@ -10018,6 +10033,14 @@ body option{
 .geek-detail-result-v180{
   color:#000!important;
   -webkit-text-fill-color:#000!important;
+}
+/* SSHCP V19.18 — detail result = bold statistic + regular-weight accountability context. */
+.geek-detail-result-v180 .geek-detail-result-main-v1918{
+  font-weight:900!important;
+}
+.geek-detail-result-v180 .geek-detail-result-context-v1918{
+  font-weight:400!important;
+  margin-left:.28em!important;
 }
 .geek-detail-teams-v180{
   display:table!important;
@@ -12432,6 +12455,53 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   filter:none!important;
   transform:none!important;
 }
+
+/* SSHCP V19.20 — GEEK detail proof-sheet pass. */
+.modal-overlay.geek-detail-v180 .modal-box{
+  max-height:80dvh!important;
+}
+.modal-overlay.geek-detail-v180 .modal-box.geek-detail-expanded-v1920{
+  max-height:88dvh!important;
+}
+.geek-detail-proof-v1920{
+  width:100%!important;
+  margin:-8px 0 16px!important;
+  padding:0 8px!important;
+  box-sizing:border-box!important;
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
+  font-size:12px!important;
+  font-weight:650!important;
+  line-height:1.15!important;
+  text-align:center!important;
+  letter-spacing:.02em!important;
+  white-space:normal!important;
+}
+.geek-detail-teams-v180 li{
+  display:block!important;
+  width:100%!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+.geek-detail-team-name-v1920{
+  display:inline!important;
+  font:inherit!important;
+  font-weight:inherit!important;
+  color:inherit!important;
+  -webkit-text-fill-color:inherit!important;
+}
+.geek-detail-team-evidence-v1920{
+  display:inline-block!important;
+  margin-left:.34em!important;
+  font-size:.75em!important;
+  font-weight:500!important;
+  line-height:1!important;
+  vertical-align:baseline!important;
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
+  white-space:nowrap!important;
+}
+
 </style>
 </head>
 
@@ -12559,7 +12629,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.17</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.20</span></span>
         </button>
 
       </div>
@@ -15831,7 +15901,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.17 RESULT LOG',
+        'SSHCP V19.20 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15894,7 +15964,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.17 CONTROL CENTER LOG',
+        'SSHCP V19.20 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -21434,11 +21504,11 @@ let scoreTimingDetail =
       'par-3 vs par':'Best total score versus par on all par-3 holes.',
       'par-4 vs par':'Best total score versus par on all par-4 holes.',
       'par-5 vs par':'Best total score versus par on all par-5 holes.',
-      'short vs par':'Best score versus par on SHORT holes using WHITE tee yardage thresholds.',
+      'short vs par':'Best total vs par on SHORT holes. SHORT = P3 <150 / P4 <350 / P5 <500 yards from the WHITE tees.',
       'long vs par':'Best score versus par on LONG holes using WHITE tee yardage thresholds.',
       '9 easy holes vs par':'Best score versus par on handicap holes 10 through 18.',
       '9 hard holes vs par':'Best score versus par on handicap holes 1 through 9.',
-      'drivable par-4 birdies':'Most birdies on par-4 holes under 300 yards from the WHITE tees.',
+      'drivable par-4 birdies':'Most birdies on drivable Par-4s. DRIVABLE = under 300 yards from the WHITE tees.',
       'water ball':'Where did it enter?'
     };
 
@@ -21742,6 +21812,460 @@ let scoreTimingDetail =
       box.appendChild(copy);
     }
 
+    /* SSHCP V19.18 — popup-only accountability context.  These helpers never
+       change a GEEK calculation; they only explain how many course holes the
+       displayed total was measured across. */
+    function geekCourseHolesV1918() {
+      if (Array.isArray(holes) && holes.length) return holes;
+      if (geekDataV180 && geekDataV180.course && Array.isArray(geekDataV180.course.holes)) {
+        return geekDataV180.course.holes;
+      }
+      if (geekDataV180 && Array.isArray(geekDataV180.holes)) return geekDataV180.holes;
+      return [];
+    }
+
+    function geekHoleCountV1918(predicate) {
+      const source = geekCourseHolesV1918();
+      if (!source.length) return 0;
+      return source.reduce((count, hole) => count + (predicate(hole || {}) ? 1 : 0), 0);
+    }
+
+    function geekParHoleCountV1918(par) {
+      const target = Number(par);
+      return geekHoleCountV1918(hole => Number(hole.par) === target);
+    }
+
+    function geekShortHoleCountV1918() {
+      return geekHoleCountV1918(hole => {
+        const par = Number(hole.par);
+        const white = Number(hole.white);
+        if (!Number.isFinite(par) || !Number.isFinite(white)) return false;
+        if (par === 3) return white < 150;
+        if (par === 4) return white < 350;
+        if (par === 5) return white < 500;
+        return false;
+      });
+    }
+
+    function geekDrivablePar4CountV1918() {
+      return geekHoleCountV1918(hole => Number(hole.par) === 4 && Number(hole.white) < 300);
+    }
+
+    function geekPluralV1918(value, singular, plural) {
+      const n = Number(String(value || '').replace(/[^0-9.-]/g, ''));
+      return Number.isFinite(n) && Math.abs(n) === 1 ? singular : plural;
+    }
+
+    function geekDetailResultPartsV1918(stat) {
+      const name = geekStatKeyV186(stat && stat.stat);
+      const roundedMainValueV1813 = geekMainValueV1813(stat, stat);
+      const value = name.includes('%')
+        ? roundedMainValueV1813
+        : String(stat && stat.value != null ? stat.value : '').trim();
+      let count = 0;
+
+      switch (name) {
+        case 'par-3 birdies':
+          count = geekParHoleCountV1918(3);
+          return { main:value + ' ' + geekPluralV1918(value, 'Birdie', 'Birdies'), context:count ? count + ' PAR-3s' : '' };
+        case 'par-4 birdies':
+          count = geekParHoleCountV1918(4);
+          return { main:value + ' ' + geekPluralV1918(value, 'Birdie', 'Birdies'), context:count ? count + ' PAR-4s' : '' };
+        case 'par-5 birdies':
+          count = geekParHoleCountV1918(5);
+          return { main:value + ' ' + geekPluralV1918(value, 'Birdie', 'Birdies'), context:count ? count + ' PAR-5s' : '' };
+        case 'par-3 vs par':
+          count = geekParHoleCountV1918(3);
+          return { main:value, context:count ? count + ' PAR-3s' : '' };
+        case 'par-4 vs par':
+          count = geekParHoleCountV1918(4);
+          return { main:value, context:count ? count + ' PAR-4s' : '' };
+        case 'par-5 vs par':
+          count = geekParHoleCountV1918(5);
+          return { main:value, context:count ? count + ' PAR-5s' : '' };
+        case 'short vs par':
+          count = geekShortHoleCountV1918();
+          return { main:value, context:count ? count + ' HOLES' : '' };
+        case 'drivable par-4 birdies':
+          count = geekDrivablePar4CountV1918();
+          return { main:value + ' ' + geekPluralV1918(value, 'Birdie', 'Birdies'), context:count ? count + ' HOLES' : '' };
+        case 'front 9 vs par':
+        case 'back 9 vs par':
+        case '9 easy holes vs par':
+        case '9 hard holes vs par':
+          return { main:value, context:'9 HOLES' };
+        default:
+          return null;
+      }
+    }
+
+    function geekDetailResultHtmlV1918(stat) {
+      const parts = geekDetailResultPartsV1918(stat);
+      if (!parts) {
+        return '<span class="geek-detail-result-main-v1918">' +
+          escapeHtml(geekDetailResultV180(stat)) +
+        '</span>';
+      }
+      return '<span class="geek-detail-result-main-v1918">' + escapeHtml(parts.main || '—') + '</span>' +
+        (parts.context
+          ? '<span class="geek-detail-result-context-v1918">(' + escapeHtml(parts.context) + ')</span>'
+          : '');
+    }
+
+
+    /* SSHCP V19.20 — rich GEEK detail evidence without another network read.
+       Worker result remains authoritative.  Hole evidence is attached only
+       when it can be proven from the already-loaded scorecard model/snapshot
+       or from detail fields already returned in the one lazy GEEK payload. */
+    function geekEvidenceModelV1920() {
+      let sourceHoles = Array.isArray(holes) && holes.length === 18 ? holes : [];
+      let sourceTeams = Array.isArray(teams) && teams.length ? teams : [];
+
+      if (sourceHoles.length !== 18 || !sourceTeams.length) {
+        let snapshot = window.__sshcpBootScorecardSnapshot || null;
+        if (!snapshot) {
+          try {
+            snapshot = JSON.parse(sessionStorage.getItem(SSHCP_SCORECARD_SNAPSHOT_KEY) || 'null');
+          } catch (_) {
+            snapshot = null;
+          }
+        }
+        if (snapshot && Array.isArray(snapshot.holes) && snapshot.holes.length === 18) {
+          sourceHoles = snapshot.holes;
+        }
+        if (snapshot && Array.isArray(snapshot.teams) && snapshot.teams.length) {
+          sourceTeams = snapshot.teams;
+        }
+      }
+
+      if (sourceHoles.length !== 18 || !sourceTeams.length) return null;
+      return { holes:sourceHoles, teams:sourceTeams };
+    }
+
+    function geekEvidenceHoleNumberV1920(hole, index) {
+      const n = Number(hole && hole.hole);
+      return Number.isInteger(n) && n >= 1 && n <= 18 ? n : index + 1;
+    }
+
+    function geekEvidenceTeamV1920(item, model) {
+      if (!item || !model) return null;
+      const slot = Number(item.slot);
+      if (Number.isInteger(slot)) {
+        const bySlot = model.teams.find(team => Number(team && team.slot) === slot);
+        if (bySlot) return bySlot;
+      }
+      const target = normalizeName(item.team || '');
+      return model.teams.find(team => normalizeName(team && team.name || '') === target) || null;
+    }
+
+    function geekEvidencePlayOrderV1920(team, model) {
+      if (!team || !model || !Array.isArray(model.holes) || !model.holes.length) return [];
+      const startHole = Number(team.startingHole) || 1;
+      let startIndex = model.holes.findIndex((hole, index) =>
+        geekEvidenceHoleNumberV1920(hole, index) === startHole
+      );
+      if (startIndex < 0) startIndex = 0;
+      return Array.from({ length:model.holes.length }, (_, offset) =>
+        (startIndex + offset) % model.holes.length
+      );
+    }
+
+    function geekEvidenceDeltasV1920(team, model) {
+      if (!team || !model || !Array.isArray(team.scores)) return [];
+      return model.holes.map((hole, index) => {
+        const score = Number(team.scores[index]);
+        const par = Number(hole && hole.par);
+        return {
+          index,
+          hole:geekEvidenceHoleNumberV1920(hole, index),
+          score,
+          par,
+          delta:Number.isFinite(score) && Number.isFinite(par) ? score - par : NaN,
+          white:Number(hole && hole.white),
+          hcp:Number(hole && hole.hcp)
+        };
+      });
+    }
+
+    function geekEvidenceCloseEnoughV1920(a, b) {
+      return Number.isFinite(Number(a)) && Number.isFinite(Number(b)) &&
+        Math.abs(Number(a) - Number(b)) < 0.000001;
+    }
+
+    function geekCompactHoleSetV1920(numbers) {
+      const values = [...new Set((numbers || []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= 18))]
+        .sort((a, b) => a - b);
+      if (!values.length) return '';
+      const segments = [];
+      let start = values[0];
+      let end = values[0];
+      for (let i = 1; i < values.length; i++) {
+        const value = values[i];
+        if (value === end + 1) {
+          end = value;
+        } else {
+          segments.push([start, end]);
+          start = value;
+          end = value;
+        }
+      }
+      segments.push([start, end]);
+      return 'H' + segments.map(([a, b]) => a === b ? String(a) : a + '–' + b).join(', ');
+    }
+
+    function geekCompactHoleSequenceV1920(numbers) {
+      const values = (numbers || []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= 18);
+      if (!values.length) return '';
+      const segments = [];
+      let start = values[0];
+      let end = values[0];
+      for (let i = 1; i < values.length; i++) {
+        const value = values[i];
+        if (value === end + 1) {
+          end = value;
+        } else {
+          segments.push([start, end]);
+          start = value;
+          end = value;
+        }
+      }
+      segments.push([start, end]);
+      return 'H' + segments.map(([a, b]) => a === b ? String(a) : a + '–' + b).join(', ');
+    }
+
+    function geekOutcomeEvidenceV1920(stat, item, predicate) {
+      const model = geekEvidenceModelV1920();
+      const team = geekEvidenceTeamV1920(item, model);
+      if (!model || !team) return '';
+      const matches = geekEvidenceDeltasV1920(team, model).filter(predicate);
+      const target = Number(item && item.rawValue);
+      if (!Number.isFinite(target) || matches.length !== Math.round(target)) return '';
+      return geekCompactHoleSetV1920(matches.map(entry => entry.hole));
+    }
+
+    function geekLongestRunEvidenceV1920(stat, item, predicate, closingOnly = false) {
+      const model = geekEvidenceModelV1920();
+      const team = geekEvidenceTeamV1920(item, model);
+      if (!model || !team) return '';
+      const deltas = geekEvidenceDeltasV1920(team, model);
+      const order = geekEvidencePlayOrderV1920(team, model);
+      if (!order.length) return '';
+      const target = Number(item && item.rawValue);
+      if (!Number.isFinite(target)) return '';
+
+      if (closingOnly) {
+        const sequence = [];
+        for (let pos = order.length - 1; pos >= 0; pos--) {
+          const entry = deltas[order[pos]];
+          if (!entry || !Number.isFinite(entry.delta) || !predicate(entry)) break;
+          sequence.unshift(entry.hole);
+        }
+        if (sequence.length !== Math.round(target) || !sequence.length) return '';
+        return geekCompactHoleSequenceV1920(sequence);
+      }
+
+      let longest = 0;
+      let current = [];
+      let winners = [];
+      for (const index of order) {
+        const entry = deltas[index];
+        if (entry && Number.isFinite(entry.delta) && predicate(entry)) {
+          current.push(entry.hole);
+          if (current.length > longest) {
+            longest = current.length;
+            winners = [current.slice()];
+          } else if (current.length === longest && longest > 0) {
+            winners.push(current.slice());
+          }
+        } else {
+          current = [];
+        }
+      }
+      if (longest !== Math.round(target) || !longest) return '';
+      const unique = [];
+      winners.forEach(sequence => {
+        if (sequence.length !== longest) return;
+        const text = geekCompactHoleSequenceV1920(sequence);
+        if (text && !unique.includes(text)) unique.push(text);
+      });
+      if (!unique.length) return '';
+      return unique.length <= 2 ? unique.join(' / ') : unique.slice(0, 2).join(' / ') + ' +' + (unique.length - 2);
+    }
+
+    function geekNineHoleEvidenceV1920(item) {
+      const detail = item && item.detail ? item.detail : {};
+      const startHole = Number(detail.startHole);
+      if (!Number.isInteger(startHole) || startHole < 1 || startHole > 18) return '';
+      const sequence = [];
+      for (let offset = 0; offset < 9; offset++) {
+        sequence.push(((startHole - 1 + offset) % 18) + 1);
+      }
+      return geekCompactHoleSequenceV1920(sequence);
+    }
+
+    function geekTeamEvidenceV1920(stat, item) {
+      const key = geekStatKeyV186(stat && stat.stat);
+      const detail = item && item.detail ? item.detail : {};
+
+      if (key.includes('%')) return '';
+
+      if (key === 'best hole vs field' || key === 'worst hole vs field') {
+        const hole = Number(detail.hole);
+        return Number.isInteger(hole) ? 'H' + hole : '';
+      }
+
+      if (key === 'best 9-hole stretch' || key === 'worst 9-hole stretch') {
+        return geekNineHoleEvidenceV1920(item);
+      }
+
+      if (key === 'back-9 comeback') {
+        const firstNine = Number(detail.firstNine);
+        const backNine = Number(detail.backNine);
+        if (Number.isFinite(firstNine) && Number.isFinite(backNine)) {
+          return 'F9 ' + formatGolfScore(firstNine) + ' → B9 ' + formatGolfScore(backNine);
+        }
+        return '';
+      }
+
+      const exactOutcome = {
+        'eagles':-2,
+        'birdies':-1,
+        'pars':0,
+        'bogeys':1,
+        'we doubled':2
+      };
+      if (Object.prototype.hasOwnProperty.call(exactOutcome, key)) {
+        const targetDelta = exactOutcome[key];
+        return geekOutcomeEvidenceV1920(stat, item, entry => entry.delta === targetDelta);
+      }
+
+      const parBirdie = {
+        'par-3 birdies':3,
+        'par-4 birdies':4,
+        'par-5 birdies':5
+      };
+      if (Object.prototype.hasOwnProperty.call(parBirdie, key)) {
+        const targetPar = parBirdie[key];
+        return geekOutcomeEvidenceV1920(stat, item, entry => entry.par === targetPar && entry.delta === -1);
+      }
+
+      if (key === 'drivable par-4 birdies') {
+        return geekOutcomeEvidenceV1920(stat, item, entry =>
+          entry.par === 4 && Number.isFinite(entry.white) && entry.white < 300 && entry.delta === -1
+        );
+      }
+
+      if (key === 'longest birdie streak') {
+        return geekLongestRunEvidenceV1920(stat, item, entry => entry.delta === -1, false);
+      }
+      if (key === 'closing birdie streak') {
+        return geekLongestRunEvidenceV1920(stat, item, entry => entry.delta === -1, true);
+      }
+      if (key === 'bogeeee train') {
+        return geekLongestRunEvidenceV1920(stat, item, entry => entry.delta === 1, false);
+      }
+      if (key === 'par train') {
+        return geekLongestRunEvidenceV1920(stat, item, entry => entry.delta === 0, false);
+      }
+      if (key === 'longest par/under streak') {
+        return geekLongestRunEvidenceV1920(stat, item, entry => entry.delta <= 0, false);
+      }
+
+      if (key === 'highest hole score' || key === 'lowest hole score') {
+        const model = geekEvidenceModelV1920();
+        const team = geekEvidenceTeamV1920(item, model);
+        if (!model || !team) return '';
+        const entries = geekEvidenceDeltasV1920(team, model).filter(entry => Number.isFinite(entry.score));
+        if (!entries.length) return '';
+        const extreme = key === 'highest hole score'
+          ? Math.max(...entries.map(entry => entry.score))
+          : Math.min(...entries.map(entry => entry.score));
+        if (!geekEvidenceCloseEnoughV1920(extreme, item && item.rawValue)) return '';
+        return geekCompactHoleSetV1920(entries.filter(entry => entry.score === extreme).map(entry => entry.hole));
+      }
+
+      if (key === 'score range') {
+        const model = geekEvidenceModelV1920();
+        const team = geekEvidenceTeamV1920(item, model);
+        if (!model || !team) return '';
+        const scores = geekEvidenceDeltasV1920(team, model).map(entry => entry.score).filter(Number.isFinite);
+        if (!scores.length) return '';
+        const low = Math.min(...scores);
+        const high = Math.max(...scores);
+        if (!geekEvidenceCloseEnoughV1920(high - low, item && item.rawValue)) return '';
+        return 'LOW ' + low + ' • HIGH ' + high;
+      }
+
+      return '';
+    }
+
+    function geekProofHoleListV1920(predicate) {
+      const source = geekCourseHolesV1918();
+      if (!source.length) return '';
+      const numbers = source
+        .map((hole, index) => ({ hole, number:geekEvidenceHoleNumberV1920(hole, index) }))
+        .filter(item => predicate(item.hole || {}))
+        .map(item => item.number);
+      if (!numbers.length) return '';
+      return numbers.length + ' HOLES • ' + geekCompactHoleSetV1920(numbers);
+    }
+
+    function geekDetailProofV1920(stat) {
+      const key = geekStatKeyV186(stat && stat.stat);
+      switch (key) {
+        case 'par-3 birdies':
+        case 'par-3 vs par':
+          return geekProofHoleListV1920(hole => Number(hole.par) === 3);
+        case 'par-4 birdies':
+        case 'par-4 vs par':
+          return geekProofHoleListV1920(hole => Number(hole.par) === 4);
+        case 'par-5 birdies':
+        case 'par-5 vs par':
+          return geekProofHoleListV1920(hole => Number(hole.par) === 5);
+        case 'short vs par':
+          return geekProofHoleListV1920(hole => {
+            const par = Number(hole.par);
+            const white = Number(hole.white);
+            return Number.isFinite(white) && (
+              (par === 3 && white < 150) ||
+              (par === 4 && white < 350) ||
+              (par === 5 && white < 500)
+            );
+          });
+        case 'long vs par':
+          return geekProofHoleListV1920(hole => {
+            const par = Number(hole.par);
+            const white = Number(hole.white);
+            return Number.isFinite(white) && (
+              (par === 3 && white >= 150) ||
+              (par === 4 && white >= 350) ||
+              (par === 5 && white >= 500)
+            );
+          });
+        case 'drivable par-4 birdies':
+          return geekProofHoleListV1920(hole => Number(hole.par) === 4 && Number(hole.white) < 300);
+        case '9 easy holes vs par':
+          return geekProofHoleListV1920(hole => Number(hole.hcp) >= 10 && Number(hole.hcp) <= 18);
+        case '9 hard holes vs par':
+          return geekProofHoleListV1920(hole => Number(hole.hcp) >= 1 && Number(hole.hcp) <= 9);
+        case 'best 9-hole stretch':
+        case 'worst 9-hole stretch':
+          return 'EVERY CONSECUTIVE 9-HOLE WINDOW • ACTUAL PLAY ORDER';
+        case 'longest birdie streak':
+        case 'bogeeee train':
+        case 'par train':
+        case 'longest par/under streak':
+          return 'ACTUAL STARTING-HOLE PLAY ORDER';
+        case 'closing birdie streak':
+          return 'CHECKED BACKWARD FROM EACH TEAM’S ACTUAL FINISHING HOLE';
+        case 'best hole vs field':
+        case 'worst hole vs field':
+          return 'ALL 18 HOLES COMPARED WITH THE LIVE FIELD';
+        default:
+          return '';
+      }
+    }
+
     function geekDetailResultV180(stat) {
       const name = geekStatKeyV186(stat && stat.stat);
       const roundedMainValueV1813 = geekMainValueV1813(stat, stat);
@@ -21948,9 +22472,12 @@ let scoreTimingDetail =
       const headerH = headerRow
         ? (headerRow.getBoundingClientRect().height || (rowHeight * 0.75))
         : (rowHeight * 0.75);
-      let sharedHeaderSize = headerH * 0.38;
+      /* V19.19: GEEK table header is 80% of its prior height; target label
+         size rises to 50% so the visible STAT / US / ALL / TEAM labels retain
+         essentially the same visual size, shrinking together only if needed. */
+      let sharedHeaderSize = headerH * 0.50;
       headerCells.forEach(cell => {
-        const fitted = fitTextToBoxV5(cell, cell, headerH * 0.38, 8, {
+        const fitted = fitTextToBoxV5(cell, cell, headerH * 0.50, 8, {
           horizontalPad: 10,
           verticalPad: 4,
           wrap: false,
@@ -21978,7 +22505,20 @@ let scoreTimingDetail =
          × device multiplier. Category row = 1X, stat row = 2X. Scrolling remains
          smooth/free with no snap behavior added. */
       const sharedV187 = syncSharedGeometryV187();
-      const headerHeight = sharedV187.tableHeader;
+      /* V19.19: GEEK alone uses an 80%-height table header. Other tables keep
+         the shared 46px×multiplier header. The helper line is 10px×multiplier. */
+      const headerHeight = Math.max(1, 36.8 * sharedV187.multiplier);
+      const helperFont = Math.max(1, 10 * sharedV187.multiplier);
+      const helper = els.modalBody.querySelector('.geek-helper-v1919');
+      if (helper) helper.style.setProperty('font-size', helperFont.toFixed(3) + 'px', 'important');
+      const headerRowV1919 = shell.querySelector('.geek-row-v180.header');
+      if (headerRowV1919) {
+        const hv = headerHeight.toFixed(3) + 'px';
+        headerRowV1919.style.setProperty('height', hv, 'important');
+        headerRowV1919.style.setProperty('min-height', hv, 'important');
+        headerRowV1919.style.setProperty('max-height', hv, 'important');
+        headerRowV1919.style.setProperty('flex-basis', hv, 'important');
+      }
       const scrollViewport = shell.querySelector('.geek-table-scroll-v180');
       const measuredViewportHeight = scrollViewport
         ? scrollViewport.getBoundingClientRect().height
@@ -22344,6 +22884,7 @@ let scoreTimingDetail =
       els.modalInput.style.display = 'none';
 
       els.modalBody.innerHTML =
+        '<div class="geek-helper-v1919">TAP TO SEE DETAILS</div>' +
         '<div class="geek-main-v180">' +
           '<div class="geek-table-shell-v180">' +
             '<div class="geek-row-v180 header">' +
@@ -22545,6 +23086,7 @@ let scoreTimingDetail =
       const vh = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 1);
       const title = els.modalTitle;
       const description = els.modalBody.querySelector('.geek-detail-description-v180');
+      const proof = els.modalBody.querySelector('.geek-detail-proof-v1920');
       const result = els.modalBody.querySelector('.geek-detail-result-v180');
       const teams = els.modalBody.querySelector('.geek-detail-teams-v180');
       const tieSummary = els.modalBody.querySelector('.geek-detail-tie-summary-v182');
@@ -22577,6 +23119,12 @@ let scoreTimingDetail =
         description.style.setProperty('font-size', Math.max(minimum, size) + 'px', 'important');
       }
 
+      if (proof) {
+        let proofSize = Math.max(10, vh * 0.017);
+        proof.style.setProperty('font-size', proofSize + 'px', 'important');
+        proof.style.setProperty('line-height', '1.1', 'important');
+      }
+
       /* RESULT is centered, capped at 3% viewport height, and always one line. */
       if (result) {
         fitTextToBoxV5(result, result, vh * 0.03, 10, {
@@ -22595,7 +23143,7 @@ let scoreTimingDetail =
       const teamContainer = teams || tieSummary;
       if (teamContainer) {
         let teamSize = vh * 0.03;
-        const minimumTeam = 9;
+        const minimumTeam = Math.max(12, Math.min(15, vh * 0.018));
         const teamNodes = teams ? [...teams.querySelectorAll('li')] : [tieSummary];
 
         teamNodes.forEach(node => {
@@ -22613,6 +23161,13 @@ let scoreTimingDetail =
           node.style.setProperty('font-size', teamSize + 'px', 'important');
           if (teams) node.style.setProperty('text-align', 'center', 'important');
         });
+
+        /* Normal detail cards stop at 80dvh.  If readable content still
+           overflows, use the user's allowed flexibility and grow only this
+           card to 88dvh before shrinking team text further. */
+        if (els.modalBox.scrollHeight > els.modalBox.clientHeight + 1) {
+          els.modalBox.classList.add('geek-detail-expanded-v1920');
+        }
 
         let guard = 0;
         while (els.modalBox.scrollHeight > els.modalBox.clientHeight + 1 && teamSize > minimumTeam && guard < 80) {
@@ -22643,6 +23198,7 @@ let scoreTimingDetail =
 
       closeModal();
       els.modalOverlay.classList.add('geek-detail-v180');
+      if (els.modalBox) els.modalBox.classList.remove('geek-detail-expanded-v1920');
       els.modalTitle.textContent = String(stat && stat.stat || 'GEEK MODE').toUpperCase();
       els.modalTitle.classList.remove('testing');
       els.modalInput.style.display = 'none';
@@ -22652,21 +23208,31 @@ let scoreTimingDetail =
       const teamItems = owners.map(item => {
         const isAuthorized = authorized &&
           normalizeName(item && item.team) === authorized;
+        const evidence = geekTeamEvidenceV1920(stat, item);
         return '<li class="' + (isAuthorized ? 'authorized' : '') + '">' +
-          escapeHtml(String(item && item.team || '')) +
+          '<span class="geek-detail-team-name-v1920">' +
+            escapeHtml(String(item && item.team || '')) +
+          '</span>' +
+          (evidence
+            ? '<span class="geek-detail-team-evidence-v1920">(' + escapeHtml(evidence) + ')</span>'
+            : '') +
           '</li>';
       }).join('');
       const teamsHtml = owners.length > 10
         ? '<div class="geek-detail-tie-summary-v182">10 TEAMS TIED</div>'
         : '<ul class="geek-detail-teams-v180">' + (teamItems || '<li>—</li>') + '</ul>';
 
+      const proof = geekDetailProofV1920(stat);
       els.modalBody.innerHTML =
         '<div class="geek-detail-description-v180">' +
           escapeHtml(geekDescriptionV180(stat && stat.stat)) +
         '</div>' +
+        (proof
+          ? '<div class="geek-detail-proof-v1920">' + escapeHtml(proof) + '</div>'
+          : '') +
         '<div class="geek-detail-section-v180">RESULT</div>' +
         '<div class="geek-detail-result-v180">' +
-          escapeHtml(geekDetailResultV180(stat)) +
+          geekDetailResultHtmlV1918(stat) +
         '</div>' +
         '<div class="geek-detail-section-v180">TEAMS</div>' +
         teamsHtml;
