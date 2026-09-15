@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.37-K5Q8NV | BUILD KEY: 19.38-R4N7VX -->
+<!-- SSHCP | BASE KEY: 19.38-R4N7VX | BUILD KEY: 19.39-B7N4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11051,9 +11051,9 @@ body option{
 }
 
 /* =========================================================
-   SSHCP V19.38 — SCRAMBLE MODE FRONTEND SHELL
-   Mirrors the proven Control Center geometry. Backend/audit actions are not
-   wired in this build; only Control Center -> Scramble Mode -> BACK is live.
+   SSHCP V19.39 — SCRAMBLE MODE / AUDIT
+   V19.38 geometry is preserved exactly. V19.39 wires the three accepted
+   actions to CF V2.4 / Audit without changing the Scramble Mode shell.
    ========================================================= */
 #testLogView .control-center-scramble-row-v1938{flex:0 0 auto!important;display:grid!important;grid-template-columns:1fr!important;margin:0!important}
 #testLogView .control-center-scramble-button-v1938{box-sizing:border-box!important;width:100%!important;height:var(--cc-mode-h-v1824)!important;min-height:var(--cc-mode-h-v1824)!important;max-height:var(--cc-mode-h-v1824)!important;margin:0!important;padding:0 1.1%!important;border:var(--cc-border2-v1824) solid var(--accent)!important;border-radius:var(--cc-radius8-v1824)!important;background:var(--accent)!important;color:var(--on-accent)!important;-webkit-text-fill-color:var(--on-accent)!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;line-height:1!important}
@@ -12729,7 +12729,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.38</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.39</span></span>
         </button>
 
       </div>
@@ -13148,7 +13148,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
 
   <!-- =======================================================
-       SCRAMBLE MODE — V19.38 FRONTEND SHELL
+       SCRAMBLE MODE — V19.39 AUDIT
        ======================================================= -->
   <section id="scrambleModeView" class="view">
     <div class="test-log-screen">
@@ -14362,7 +14362,7 @@ let scoreTimingDetail =
       const retry=makeModalButton('RETRY','primary',async()=>{
         closeModal();
         startLoadingLine();
-        const ok=await validateQrPasskey(passkey,true);
+        const ok=await validateQrPasskey(passkey,true,true);
         completeLoadingLine();
         if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
       });
@@ -14370,7 +14370,7 @@ let scoreTimingDetail =
       els.modalActions.replaceChildren(cancel,retry);
       els.modalOverlay.classList.add('open');
     }
-    async function validateQrPasskey(passkey, showFailure=true){
+    async function validateQrPasskey(passkey, showFailure=true, auditEvent=false){
       const clean=String(passkey||'').trim();
 
       if(!clean){
@@ -14395,6 +14395,7 @@ let scoreTimingDetail =
         const response=await fetch(
           CLOUDFLARE_API_URL+
           '?action=qrAuth&passkey='+encodeURIComponent(clean)+
+          (auditEvent ? '&audit=1' : '')+
           '&refresh='+Date.now(),
           fetchOptions
         );
@@ -14513,12 +14514,12 @@ let scoreTimingDetail =
       const params=new URLSearchParams(window.location.search);
       const incoming=params.get('passkey') || params.get('key') || '';
       if(incoming){
-        await validateQrPasskey(incoming,true);
+        await validateQrPasskey(incoming,true,true);
         params.delete('passkey'); params.delete('key');
         const q=params.toString();
         history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
       }else if(getQrPasskey()){
-        const storedOk = await validateQrPasskey(getQrPasskey(),false);
+        const storedOk = await validateQrPasskey(getQrPasskey(),false,false);
         if (storedOk === false) {
           clearQrAuthorization();
           localStorage.removeItem('rotbAuthorizedTeam');
@@ -14765,7 +14766,7 @@ let scoreTimingDetail =
       const enter=makeModalButton('AUTHORIZE','primary',async()=>{
         const value=els.modalInput.value;
         closeModal(); startLoadingLine();
-        const ok=await validateQrPasskey(value,true);
+        const ok=await validateQrPasskey(value,true,true);
         completeLoadingLine();
         if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
       });
@@ -14846,7 +14847,7 @@ let scoreTimingDetail =
         let passkey=raw;
         try{ const u=new URL(raw,window.location.href); passkey=u.searchParams.get('passkey')||u.searchParams.get('key')||raw; }catch(_){}
         startLoadingLine();
-        const ok=await validateQrPasskey(passkey,true);
+        const ok=await validateQrPasskey(passkey,true,true);
         completeLoadingLine();
         if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
       }catch(error){
@@ -14883,6 +14884,12 @@ let scoreTimingDetail =
       );
 
       updateHomeScorecardAccess();
+
+      /* V19.39 — if a live Scramble Audit exists, a MASTER-local scoring
+         authorization change gets one chronological team-column event. */
+      if (isMasterQr() && teamName) {
+        recordMasterTeamAuthorizationV1939(teamName);
+      }
 
     }
 
@@ -16440,7 +16447,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.38 RESULT LOG',
+        'SSHCP V19.39 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16503,7 +16510,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.38 CONTROL CENTER LOG',
+        'SSHCP V19.39 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16624,6 +16631,343 @@ let scoreTimingDetail =
       syncScrambleModeLayoutV1938();
       requestAnimationFrame(fitScrambleModeButtonTextV1938);
       window.scrollTo(0,0);
+      refreshScrambleStatusV1939(true);
+      startScrambleStatusPollV1939();
+    }
+
+
+    /* =========================================================
+       SSHCP V19.39 — SCRAMBLE MODE FUNCTIONALITY
+       Layout remains V19.38. These functions only wire the accepted
+       START / COPY / DELETE actions to CF V2.4 + Audit.
+       ========================================================= */
+
+    let scrambleAuditActiveV1939 = false;
+    let scrambleStatusTimerV1939 = null;
+
+    function setScrambleLatestActivityV1939(value) {
+      if (!els.scrambleLatestActivityV1938) return;
+      els.scrambleLatestActivityV1938.textContent =
+        String(value || '').trim() || 'NOT STARTED';
+    }
+
+    function setScrambleButtonsDisabledV1939(disabled) {
+      [
+        els.scrambleStartButtonV1938,
+        els.scrambleCopyLogButtonV1938,
+        els.scrambleDeleteLogButtonV1938,
+        els.scrambleBackButtonV1938
+      ].filter(Boolean).forEach(button => {
+        button.disabled = Boolean(disabled);
+      });
+    }
+
+    async function scrambleApiRequestV1939(action, extra = {}) {
+      const passkey = getQrPasskey();
+      if (!passkey) {
+        throw new Error('MASTER QR authorization is required.');
+      }
+
+      const params = new URLSearchParams({
+        action,
+        passkey,
+        refresh: String(Date.now())
+      });
+
+      Object.entries(extra || {}).forEach(([key, value]) => {
+        if (value === null || value === undefined || value === '') return;
+        params.set(key, String(value));
+      });
+
+      const response = await fetch(
+        CLOUDFLARE_API_URL + '?' + params.toString(),
+        { cache: 'no-store' }
+      );
+
+      let data = null;
+      try { data = await response.json(); } catch (_) {}
+
+      if (!response.ok || !data || data.ok !== true) {
+        const reason =
+          data && (data.reason || data.error)
+            ? String(data.reason || data.error)
+            : 'Scramble Audit request failed.';
+        throw new Error(reason);
+      }
+
+      return data;
+    }
+
+    async function refreshScrambleStatusV1939(silent = false) {
+      if (!isMasterQr()) {
+        scrambleAuditActiveV1939 = false;
+        setScrambleLatestActivityV1939('NOT AUTHORIZED');
+        return null;
+      }
+
+      try {
+        if (!silent) startLoadingLine();
+
+        const data = await scrambleApiRequestV1939('scrambleStatus');
+        scrambleAuditActiveV1939 = Boolean(data.active);
+
+        setScrambleLatestActivityV1939(
+          data.latestScoreActivity ||
+          (data.active ? 'WAITING FOR SCORE ACTIVITY' : 'NOT STARTED')
+        );
+
+        return data;
+      }
+      catch (error) {
+        setScrambleLatestActivityV1939('STATUS UNAVAILABLE');
+        if (!silent) showScrambleErrorV1939(
+          'SCRAMBLE LOG',
+          error && error.message ? error.message : 'Status could not be loaded.'
+        );
+        return null;
+      }
+      finally {
+        if (!silent) completeLoadingLine();
+      }
+    }
+
+    function stopScrambleStatusPollV1939() {
+      if (scrambleStatusTimerV1939) {
+        window.clearInterval(scrambleStatusTimerV1939);
+        scrambleStatusTimerV1939 = null;
+      }
+    }
+
+    function startScrambleStatusPollV1939() {
+      stopScrambleStatusPollV1939();
+
+      scrambleStatusTimerV1939 = window.setInterval(() => {
+        if (currentView !== 'scramble' || document.hidden) return;
+        refreshScrambleStatusV1939(true);
+      }, 10000);
+    }
+
+    function showScrambleErrorV1939(title, message) {
+      closeModal();
+      els.modalOverlay.classList.add('reset-authorization');
+      els.modalTitle.textContent = title;
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent = message;
+      els.modalInput.style.display = 'none';
+      const ok = makeModalButton('OK', '', closeModal);
+      els.modalActions.className = 'modal-actions single';
+      els.modalActions.replaceChildren(ok);
+      els.modalOverlay.classList.add('open');
+    }
+
+    async function runScrambleStartV1939(force = false) {
+      if (scrambleAuditActiveV1939 && !force) {
+        closeModal();
+        els.modalOverlay.classList.add('reset-authorization');
+        els.modalTitle.textContent = 'START NEW SCRAMBLE?';
+        els.modalTitle.classList.remove('testing');
+        els.modalBody.textContent =
+          'This clears the current Scramble Audit and starts a new log.';
+        els.modalInput.style.display = 'none';
+
+        const no = makeModalButton('NO', '', closeModal);
+        const yes = makeModalButton('START', 'primary', () => {
+          closeModal();
+          runScrambleStartV1939(true);
+        });
+
+        els.modalActions.className = 'modal-actions';
+        els.modalActions.replaceChildren(no, yes);
+        els.modalOverlay.classList.add('open');
+        return;
+      }
+
+      setScrambleButtonsDisabledV1939(true);
+      startLoadingLine();
+
+      try {
+        const data = await scrambleApiRequestV1939(
+          'scrambleStart',
+          {
+            team: getAuthorizedTeam()
+          }
+        );
+
+        scrambleAuditActiveV1939 = true;
+        setScrambleLatestActivityV1939(
+          data.latestScoreActivity || 'WAITING FOR SCORE ACTIVITY'
+        );
+
+        addTestLog(
+          'START SCRAMBLE',
+          'OK',
+          '—',
+          String(data.assignedTeams || 0) + ' ASSIGNED TEAMS'
+        );
+
+        startScrambleStatusPollV1939();
+      }
+      catch (error) {
+        showScrambleErrorV1939(
+          'START SCRAMBLE FAILED',
+          error && error.message ? error.message : 'Scramble Audit could not be started.'
+        );
+      }
+      finally {
+        completeLoadingLine();
+        setScrambleButtonsDisabledV1939(false);
+        requestAnimationFrame(fitScrambleModeButtonTextV1938);
+      }
+    }
+
+    async function copyTextToClipboardV1939(text) {
+      let copied = false;
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        }
+      } catch (_) {}
+
+      if (!copied) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          copied = document.execCommand('copy');
+        } catch (_) {
+          copied = false;
+        }
+
+        textarea.remove();
+      }
+
+      return copied;
+    }
+
+    async function runScrambleCopyLogV1939() {
+      if (!els.scrambleCopyLogButtonV1938) return;
+
+      setScrambleButtonsDisabledV1939(true);
+      startLoadingLine();
+
+      const original = 'COPY LOG';
+
+      try {
+        const data = await scrambleApiRequestV1939('scrambleRead');
+        scrambleAuditActiveV1939 = Boolean(data.active);
+
+        setScrambleLatestActivityV1939(
+          data.latestScoreActivity ||
+          (data.active ? 'WAITING FOR SCORE ACTIVITY' : 'NOT STARTED')
+        );
+
+        const copied = await copyTextToClipboardV1939(
+          String(data.copyText || '')
+        );
+
+        els.scrambleCopyLogButtonV1938.textContent =
+          copied ? 'COPIED' : 'COPY FAILED';
+
+        addTestLog(
+          'SCRAMBLE COPY LOG',
+          copied ? 'OK' : 'FAILED',
+          '—',
+          String(data.eventCount || 0) + ' AUDIT EVENTS'
+        );
+      }
+      catch (error) {
+        els.scrambleCopyLogButtonV1938.textContent = 'COPY FAILED';
+        showScrambleErrorV1939(
+          'COPY LOG FAILED',
+          error && error.message ? error.message : 'Scramble Audit could not be copied.'
+        );
+      }
+      finally {
+        completeLoadingLine();
+        setTimeout(() => {
+          if (els.scrambleCopyLogButtonV1938) {
+            els.scrambleCopyLogButtonV1938.textContent = original;
+            requestAnimationFrame(fitScrambleModeButtonTextV1938);
+          }
+        }, 1200);
+        setScrambleButtonsDisabledV1939(false);
+      }
+    }
+
+    function showScrambleDeleteLogConfirmV1939() {
+      closeModal();
+      els.modalOverlay.classList.add('reset-authorization');
+      els.modalTitle.textContent = 'DELETE SCRAMBLE LOG?';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent =
+        'This permanently clears the Audit tab. Logging stays off until START SCRAMBLE is pressed again.';
+      els.modalInput.style.display = 'none';
+
+      const no = makeModalButton('NO', '', closeModal);
+      const yes = makeModalButton('DELETE', 'reset-danger', () => {
+        closeModal();
+        runScrambleDeleteLogV1939();
+      });
+
+      els.modalActions.className = 'modal-actions';
+      els.modalActions.replaceChildren(no, yes);
+      els.modalOverlay.classList.add('open');
+    }
+
+    async function runScrambleDeleteLogV1939() {
+      setScrambleButtonsDisabledV1939(true);
+      startLoadingLine();
+
+      try {
+        await scrambleApiRequestV1939('scrambleDelete');
+        scrambleAuditActiveV1939 = false;
+        setScrambleLatestActivityV1939('NOT STARTED');
+        stopScrambleStatusPollV1939();
+        addTestLog('DELETE SCRAMBLE LOG', 'OK', '—', 'AUDIT CLEARED / INACTIVE');
+
+        if (els.scrambleDeleteLogButtonV1938) {
+          els.scrambleDeleteLogButtonV1938.textContent = 'DELETED';
+          setTimeout(() => {
+            if (els.scrambleDeleteLogButtonV1938) {
+              els.scrambleDeleteLogButtonV1938.textContent = 'DELETE LOG';
+              requestAnimationFrame(fitScrambleModeButtonTextV1938);
+            }
+          }, 1200);
+        }
+      }
+      catch (error) {
+        showScrambleErrorV1939(
+          'DELETE LOG FAILED',
+          error && error.message ? error.message : 'Scramble Audit could not be deleted.'
+        );
+      }
+      finally {
+        completeLoadingLine();
+        setScrambleButtonsDisabledV1939(false);
+      }
+    }
+
+    async function recordMasterTeamAuthorizationV1939(teamName) {
+      if (!isMasterQr() || !getQrPasskey() || !teamName) return;
+
+      try {
+        await scrambleApiRequestV1939(
+          'scrambleEvent',
+          {
+            type: 'authorization',
+            team: teamName
+          }
+        );
+      } catch (_) {
+        /* Audit is secondary to scoring authorization. Never block scoring. */
+      }
     }
 
     /* =========================================================
@@ -17023,6 +17367,29 @@ let scoreTimingDetail =
         ? getQrPasskey()
         : SSHCP_MASTER_TEST_KEY;
 
+      /* V19.39 — all bulk Control Center test generation starts from a
+         deleted/inactive Scramble Audit. RANDOM 2 uses saveScores repeatedly,
+         so clear the Audit once up front and suppress per-team audit writes. */
+      {
+        const clearResponse = await fetch(
+          CLOUDFLARE_API_URL +
+            '?action=scrambleDelete' +
+            '&passkey=' + encodeURIComponent(passkey) +
+            '&refresh=' + Date.now() + '-random2-audit-clear',
+          { cache: 'no-store' }
+        );
+
+        let clearData = null;
+        try { clearData = await clearResponse.json(); } catch (_) {}
+
+        if (!clearResponse.ok || !clearData || clearData.ok !== true) {
+          const reason = clearData && (clearData.reason || clearData.error)
+            ? String(clearData.reason || clearData.error)
+            : 'Audit clear failed';
+          throw new Error('ADD RANDOM 2 AUDIT CLEAR • ' + reason);
+        }
+      }
+
       const generated = [];
 
       /* Sequential verified writes avoid concurrent Google Sheets test writes.
@@ -17040,6 +17407,7 @@ let scoreTimingDetail =
                 '&slot=' + encodeURIComponent(Number(team.slot)) +
                 '&scores=' + encodeURIComponent(JSON.stringify(round.scores)) +
                 '&passkey=' + encodeURIComponent(passkey) +
+                '&audit=0' +
                 '&refresh=' + Date.now() + '-' + attempt,
               { cache: 'no-store' }
             );
@@ -17356,6 +17724,10 @@ let scoreTimingDetail =
       rememberCurrentView(
         view
       );
+
+      if (view !== 'scramble') {
+        stopScrambleStatusPollV1939();
+      }
 
       if (view !== 'leaderboard') {
         leaderboardRefreshPointerActiveV58 = false;
@@ -26728,6 +27100,9 @@ let scoreTimingDetail =
 
     els.testLogHotspot.addEventListener('click', showTestLog);
     if (els.controlCenterScrambleButtonV1938) els.controlCenterScrambleButtonV1938.addEventListener('click', showScrambleModeV1938);
+    if (els.scrambleStartButtonV1938) els.scrambleStartButtonV1938.addEventListener('click', () => runScrambleStartV1939(false));
+    if (els.scrambleCopyLogButtonV1938) els.scrambleCopyLogButtonV1938.addEventListener('click', runScrambleCopyLogV1939);
+    if (els.scrambleDeleteLogButtonV1938) els.scrambleDeleteLogButtonV1938.addEventListener('click', showScrambleDeleteLogConfirmV1939);
     if (els.scrambleBackButtonV1938) els.scrambleBackButtonV1938.addEventListener('click', showTestLog);
     els.testLogHomeButton.addEventListener('click', showHome);
     if (els.testLogLeaderboardButton) els.testLogLeaderboardButton.addEventListener('click', showLeaderboard);
@@ -26766,6 +27141,13 @@ let scoreTimingDetail =
       els.testTeamAuthorizationCheck.addEventListener('change', event => setTeamAuthorizationEnabled(event.target.checked));
     }
     if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && currentView === 'scramble') {
+        refreshScrambleStatusV1939(true);
+      }
+    });
+
     els.testAddParCurrentButton.addEventListener('click', () => showTestScoreWarning('par', 'current'));
     els.testAddRandomCurrentButton.addEventListener('click', () => showTestScoreWarning('random', 'current'));
     els.testAddRandom2CurrentButton.addEventListener('click', () => showTestScoreWarning('random2', 'current'));
