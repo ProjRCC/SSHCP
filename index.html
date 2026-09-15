@@ -1,22 +1,22 @@
-<!-- SSHCP | BASE KEY: 19.22-G8T4NV | BUILD KEY: 19.23-K6M2QW -->
+<!-- SSHCP | BASE KEY: 19.23-K6M2QW | BUILD KEY: 19.24-R7M5QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <script>
     (function () {
       try {
-        /* SSHCP V19.23 — built directly from V19.22 (BUILD 19.22-G8T4NV).
-           V19.17 remains the declared frontend GOLDEN rollback. V19.23 preserves all
+        /* SSHCP V19.24 — built directly from V19.23 (BUILD 19.23-K6M2QW).
+           V19.17 remains the declared frontend GOLDEN rollback. V19.24 preserves all
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
            HOME geometry, Scramble Summary/GEEK geometry, and header rules. GEEK detail
-           cleanup only: RESULT is the stat value only; the TEAMS label is removed;
-           top proof lists use explicit comma-separated holes with no ranges; FRONT/BACK
-           9 omit redundant proof lists; per-team proof moves below the team name at 60%
-           font with compact hyphen ranges and no H prefix; proof text is slightly larger;
-           cards may expand from 80dvh up to 95dvh when needed; and when a result includes
-           more than half the field, team names remain but per-team proof is suppressed.
-           Visible HOME version is corrected to V19.23. No GEEK calculation changes; the
-           Worker GEEK result remains authoritative. */
+           polish only: RESULT stays intentionally non-redundant; per-team numeric hole
+           evidence now identifies itself as HOLE / HOLES on the 60% second line while
+           retaining compact hyphen ranges; top proof lists remain explicit, comma-only,
+           and range-free; FRONT/BACK 9 still omit obvious hole lists; proof text under
+           the description is slightly larger; cards may expand from 80dvh to 95dvh
+           when needed; and results shared by more than half the field still list teams
+           without per-team evidence. Visible HOME version is V19.24. No GEEK calculation
+           changes; the Worker GEEK result remains authoritative. */
         var initialQrParams = new URLSearchParams(window.location.search);
         var hasIncomingQrWelcome = !!(
           initialQrParams.get('passkey') || initialQrParams.get('key')
@@ -12457,7 +12457,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   transform:none!important;
 }
 
-/* SSHCP V19.23 — cleaner GEEK detail proof cards. */
+/* SSHCP V19.24 — cleaner GEEK detail proof cards. */
 .modal-overlay.geek-detail-v180 .modal-box{
   max-height:80dvh!important;
 }
@@ -12471,7 +12471,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   box-sizing:border-box!important;
   color:var(--sshcp-gray-7-v1851,#444444)!important;
   -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
-  font-size:14px!important;
+  font-size:15px!important;
   font-weight:650!important;
   line-height:1.15!important;
   text-align:center!important;
@@ -12633,7 +12633,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.23</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.24</span></span>
         </button>
 
       </div>
@@ -15905,7 +15905,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.23 RESULT LOG',
+        'SSHCP V19.24 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -15968,7 +15968,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.23 CONTROL CENTER LOG',
+        'SSHCP V19.24 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -21933,7 +21933,7 @@ let scoreTimingDetail =
     }
 
 
-    /* SSHCP V19.23 — rich GEEK detail evidence.
+    /* SSHCP V19.24 — rich GEEK detail evidence.
        Worker GEEK result remains authoritative. V19.21 also caches one raw
        scorecard-source read opened in parallel with GEEK so the detail popup
        always has the 18 course holes, team scores, and starting-hole order
@@ -22277,6 +22277,18 @@ let scoreTimingDetail =
       }
 
       return '';
+    }
+
+    /* V19.24 — once hole evidence moved to its own second line, make that line
+       self-identifying without making RESULT repeat the stat name/unit.  Numeric
+       single-hole evidence reads HOLE n; compact sets/ranges read HOLES ... .
+       Non-hole evidence (F9/B9 comparison, LOW/HIGH range) is left untouched. */
+    function geekTeamEvidenceDisplayV1924(evidence) {
+      const text = String(evidence || '').trim();
+      if (!text) return '';
+      if (/^\d+$/.test(text)) return 'HOLE ' + text;
+      if (/^\d/.test(text)) return 'HOLES ' + text;
+      return text;
     }
 
     function geekProofHoleListV1920(predicate) {
@@ -23206,7 +23218,7 @@ let scoreTimingDetail =
       }
 
       if (proof) {
-        let proofSize = Math.max(11, vh * 0.020);
+        let proofSize = Math.max(12, vh * 0.022);
         proof.style.setProperty('font-size', proofSize + 'px', 'important');
         proof.style.setProperty('line-height', '1.1', 'important');
       }
@@ -23299,7 +23311,8 @@ let scoreTimingDetail =
       const teamItems = owners.map(item => {
         const isAuthorized = authorized &&
           normalizeName(item && item.team) === authorized;
-        const evidence = suppressTeamEvidence ? '' : geekTeamEvidenceV1920(stat, item);
+        const rawEvidence = suppressTeamEvidence ? '' : geekTeamEvidenceV1920(stat, item);
+        const evidence = geekTeamEvidenceDisplayV1924(rawEvidence);
         return '<li class="' + (isAuthorized ? 'authorized' : '') + '">' +
           '<span class="geek-detail-team-name-v1920">' +
             escapeHtml(String(item && item.team || '')) +
