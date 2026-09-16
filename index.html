@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.53-H6Q9NV | BUILD KEY: 19.54-Q8M5VX -->
+<!-- SSHCP | BASE KEY: 19.54-Q8M5VX | BUILD KEY: 19.55-C7N4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11051,7 +11051,7 @@ body option{
   line-height:1!important;
 }
 
-/* SSHCP V19.54 — CC/SM geometry normalization only: all rows 46px, all vertical stack gaps 7px, bottom-up; log/activity gets remainder. */
+/* SSHCP V19.55 — diagnostic export identity + rendered Summary team-name spacing only. */
 /* =========================================================
    SSHCP V19.39 — SCRAMBLE MODE / AUDIT
    V19.38 geometry is preserved exactly. V19.39 wires the three accepted
@@ -12750,7 +12750,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.54</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.55</span></span>
         </button>
 
       </div>
@@ -16219,6 +16219,22 @@ let scoreTimingDetail =
       return String(n) + 'th';
     }
 
+    function currentFrontendVersionLabelV1955() {
+      const node = document.querySelector('.home-version-number-v1835');
+      return normalizeAuditTextV189(node && node.textContent) || 'V19.55';
+    }
+
+    function auditRenderedSummaryTeamV1955(container) {
+      if (!container) return '';
+      const textEl = container.querySelector('.summary-team-text');
+      const preserved = textEl && (
+        textEl.dataset.v58Name ||
+        textEl.dataset.fullTeamName ||
+        textEl.textContent
+      );
+      return normalizeAuditTextV189(preserved || container.textContent);
+    }
+
     function snapshotRenderedSummaryV189() {
       if (!els.modalOverlay.classList.contains('tournament-summary')) return null;
       const body = els.modalBody;
@@ -16228,7 +16244,7 @@ let scoreTimingDetail =
       body.querySelectorAll('.tournament-summary-grid .tournament-summary-row:not(.header)').forEach(row => {
         rows.push({
           place: normalizeAuditTextV189(row.querySelector('.tournament-summary-place')?.textContent),
-          team: normalizeAuditTextV189(row.querySelector('.tournament-summary-team')?.textContent),
+          team: auditRenderedSummaryTeamV1955(row.querySelector('.tournament-summary-team')),
           strokes: normalizeAuditTextV189(row.querySelector('.tournament-summary-strokes')?.textContent),
           net: normalizeAuditTextV189(row.querySelector('.tournament-summary-net')?.textContent)
         });
@@ -16238,7 +16254,7 @@ let scoreTimingDetail =
         const cells = row.querySelectorAll('.tournament-summary-remaining-cell');
         rows.push({
           place: normalizeAuditTextV189(cells[0]?.textContent),
-          team: normalizeAuditTextV189(cells[1]?.textContent),
+          team: auditRenderedSummaryTeamV1955(cells[1]),
           strokes: normalizeAuditTextV189(cells[2]?.textContent),
           net: normalizeAuditTextV189(cells[3]?.textContent)
         });
@@ -16564,7 +16580,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.48 RESULT LOG',
+        'SSHCP ' + currentFrontendVersionLabelV1955() + ' RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16627,7 +16643,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.48 CONTROL CENTER LOG',
+        'SSHCP ' + currentFrontendVersionLabelV1955() + ' CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
