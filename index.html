@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.55-C7N4QX | BUILD KEY: 19.56-R8Q5NV -->
+<!-- SSHCP | BASE KEY: 19.56-R8Q5NV | BUILD KEY: 19.57-M6Q8TX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12750,7 +12750,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.56</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.57</span></span>
         </button>
 
       </div>
@@ -15854,6 +15854,29 @@ let scoreTimingDetail =
       for (const key of GEEK_DETAIL_AUDIT_KEYS_V1932) {
         const stat = statMap.get(key);
         if (!stat) { errors.push(key.toUpperCase() + ' MISSING'); continue; }
+        const emptyCategoryPredicatesV1957 = {
+          'short vs par':hole => geekIsShortHoleV1926(hole.raw),
+          'long vs par':hole => geekIsLongHoleV1926(hole.raw),
+          'drivable par-4 birdies':hole => hole.par === 4 && Number.isFinite(hole.white) && hole.white < 300
+        };
+        const emptyPredicateV1957 = emptyCategoryPredicatesV1957[key];
+        const noQualifyingHolesV1957 = Boolean(emptyPredicateV1957) && !model.holes.some(emptyPredicateV1957);
+        if (noQualifyingHolesV1957) {
+          const expectedContextV1957 = geekEmptyCategoryContextV1957(key);
+          const actualOwnersV1957 = Array.isArray(stat.teams) ? stat.teams : [];
+          const actualResultsV1957 = Array.isArray(stat.results) ? stat.results : [];
+          if (stat.__sshcpEmptyCourseCategoryV1957 !== true || String(stat.value || '').trim().toUpperCase() !== 'N/A') {
+            errors.push(key.toUpperCase() + ' EMPTY VALUE MISMATCH');
+          } else checks.values += 1;
+          if (actualOwnersV1957.length) errors.push(key.toUpperCase() + ' EMPTY OWNERS MISMATCH');
+          else checks.owners += 1;
+          if (actualResultsV1957.length) errors.push(key.toUpperCase() + ' EMPTY RESULTS MISMATCH');
+          if (geekDetailSecondaryContextV1927(stat) !== expectedContextV1957) errors.push(key.toUpperCase() + ' EMPTY CONTEXT MISMATCH');
+          else checks.context += 1;
+          checks.detail += 1;
+          continue;
+        }
+
         const expected = geekAuditExpectedV1932(key, model, fieldAverages);
         if (!expected) { errors.push(key.toUpperCase() + ' RAW CALC FAILED'); continue; }
 
@@ -16221,7 +16244,7 @@ let scoreTimingDetail =
 
     function currentFrontendVersionLabelV1955() {
       const node = document.querySelector('.home-version-number-v1835');
-      return normalizeAuditTextV189(node && node.textContent) || 'V19.56';
+      return normalizeAuditTextV189(node && node.textContent) || 'V19.57';
     }
 
     function auditRenderedSummaryTeamV1955(container) {
@@ -22712,6 +22735,7 @@ let scoreTimingDetail =
     function geekAuthorizedResultV1813(stat) {
       const authorized = geekAuthorizedTeamV180();
       if (!authorized || !stat) return null;
+      if (stat.__sshcpEmptyCourseCategoryV1957) return { rawValue:null, value:'N/A' };
 
       const results = Array.isArray(stat.results) ? stat.results : [];
       const match = results.find(item =>
@@ -23081,6 +23105,7 @@ let scoreTimingDetail =
        and description already carry the rest of the meaning. No prose dashes. */
     function geekDetailResultTextV1926(stat) {
       const key = geekStatKeyV186(stat && stat.stat);
+      if (stat && stat.__sshcpEmptyCourseCategoryV1957) return 'N/A';
       const value = geekMainValueV1813(stat, stat) || '—';
       if (key.includes('%')) return value;
 
@@ -23567,11 +23592,48 @@ let scoreTimingDetail =
        Specialized proof wins; otherwise show the simplest truthful scope. */
     function geekDetailSecondaryContextV1927(stat) {
       const key = geekStatKeyV186(stat && stat.stat);
+      if (stat && stat.__sshcpEmptyCourseCategoryV1957) return geekEmptyCategoryContextV1957(key);
       const proof = geekDetailProofV1920(stat);
       if (proof) return proof;
       if (key === 'front 9 vs par') return 'COURSE HOLES 1 THROUGH 9';
       if (key === 'back 9 vs par') return 'COURSE HOLES 10 THROUGH 18';
       return 'ALL HOLES';
+    }
+
+    /* V19.57 — three setup-dependent GEEK categories can legitimately have
+       zero qualifying holes on a course. Mark only those empty categories as
+       N/A so zero holes never manufacture a field-wide tie. */
+    function geekEmptyCategoryContextV1957(key) {
+      if (key === 'short vs par') return 'NO SHORT HOLES';
+      if (key === 'long vs par') return 'NO LONG HOLES';
+      if (key === 'drivable par-4 birdies') return 'NO DRIVABLE PAR 4s';
+      return '';
+    }
+
+    function geekApplyEmptyCourseCategoriesV1957() {
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return;
+      const model = geekEvidenceModelV1920();
+      if (!model || !Array.isArray(model.holes) || model.holes.length !== 18) return;
+
+      const counts = {
+        'short vs par':model.holes.filter(hole => geekIsShortHoleV1926(hole)).length,
+        'long vs par':model.holes.filter(hole => geekIsLongHoleV1926(hole)).length,
+        'drivable par-4 birdies':model.holes.filter(hole => Number(hole && hole.par) === 4 && Number.isFinite(Number(hole && hole.white)) && Number(hole.white) < 300).length
+      };
+
+      for (const block of geekDataV180.categories) {
+        if (!block || !Array.isArray(block.stats)) continue;
+        for (const stat of block.stats) {
+          const key = geekStatKeyV186(stat && stat.stat);
+          if (!Object.prototype.hasOwnProperty.call(counts, key) || counts[key] !== 0) continue;
+          stat.rawValue = null;
+          stat.value = 'N/A';
+          stat.results = [];
+          stat.teams = [];
+          stat.supported = true;
+          stat.__sshcpEmptyCourseCategoryV1957 = true;
+        }
+      }
     }
 
     /* V19.26 — LONG definition changed after CF V2.2. Recompute only this
@@ -24346,6 +24408,7 @@ let scoreTimingDetail =
         geekDataV180 = data;
         geekEvidenceSnapshotV1921 = await evidencePromiseV1921;
         geekApplyLongVsParV1926();
+        geekApplyEmptyCourseCategoriesV1957();
         geekDetailAuditReadyV1932 = Boolean(
           geekEvidenceSnapshotV1921 &&
           Array.isArray(geekEvidenceSnapshotV1921.holes) && geekEvidenceSnapshotV1921.holes.length === 18 &&
