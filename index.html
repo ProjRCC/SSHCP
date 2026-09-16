@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.46-L7Q3MW | BUILD KEY: 19.47-N5R8QX -->
+<!-- SSHCP | BASE KEY: 19.44-S8K5QW | BUILD KEY: 19.48-R7Q4MX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12608,6 +12608,19 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   margin:0!important;
 }
 
+/* =========================================================
+   SSHCP V19.48 — ACCIDENTAL PULL-TO-REFRESH GUARD
+   These four result overlays keep their established rendering/navigation.
+   This only contains vertical overscroll while they are open; it does not
+   persist, restore, rebuild, or alter authorization state.
+   ========================================================= */
+.modal-overlay.open.tournament-summary,
+.modal-overlay.open.geek-mode-v180,
+.modal-overlay.open.geek-detail-v180,
+.modal-overlay.open.skins-results-v1627{
+  overscroll-behavior-y:none!important;
+}
+
 </style>
 </head>
 
@@ -12735,7 +12748,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.47</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.48</span></span>
         </button>
 
       </div>
@@ -13625,6 +13638,96 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
         document.getElementById('scoreEntryCancel')
 
     };
+
+
+    /* =========================================================
+       SSHCP V19.48 — ACCIDENTAL PULL-TO-REFRESH GUARD
+       Scope is intentionally limited to Scramble Summary, GEEK main,
+       GEEK detail, and SKINS. Internal popup scrolling remains normal.
+       A downward overscroll at the top edge is consumed before it can
+       become a browser pull-to-refresh gesture. No popup state is stored.
+       ========================================================= */
+    const PULL_GUARD_MODAL_CLASSES_V1948 = [
+      'tournament-summary',
+      'geek-mode-v180',
+      'geek-detail-v180',
+      'skins-results-v1627'
+    ];
+
+    let pullGuardStartXV1948 = null;
+    let pullGuardStartYV1948 = null;
+
+    function pullGuardActiveV1948() {
+      const modal = els.modalOverlay;
+      return Boolean(
+        modal &&
+        modal.classList.contains('open') &&
+        PULL_GUARD_MODAL_CLASSES_V1948.some(className =>
+          modal.classList.contains(className)
+        )
+      );
+    }
+
+    function pullGuardScrollableAncestorV1948(target) {
+      let node = target instanceof Element ? target : null;
+      while (node && node !== els.modalOverlay) {
+        const style = window.getComputedStyle(node);
+        const overflowY = style ? style.overflowY : '';
+        if (
+          (overflowY === 'auto' || overflowY === 'scroll') &&
+          node.scrollHeight > node.clientHeight + 1
+        ) {
+          return node;
+        }
+        node = node.parentElement;
+      }
+      return null;
+    }
+
+    function resetPullGuardTouchV1948() {
+      pullGuardStartXV1948 = null;
+      pullGuardStartYV1948 = null;
+    }
+
+    document.addEventListener('touchstart', event => {
+      if (!pullGuardActiveV1948() || !event.touches || event.touches.length !== 1) {
+        resetPullGuardTouchV1948();
+        return;
+      }
+      pullGuardStartXV1948 = event.touches[0].clientX;
+      pullGuardStartYV1948 = event.touches[0].clientY;
+    }, { passive:true, capture:true });
+
+    document.addEventListener('touchmove', event => {
+      if (
+        !pullGuardActiveV1948() ||
+        pullGuardStartYV1948 === null ||
+        !event.touches ||
+        event.touches.length !== 1
+      ) return;
+
+      const dx = event.touches[0].clientX - pullGuardStartXV1948;
+      const dy = event.touches[0].clientY - pullGuardStartYV1948;
+
+      /* Upward swipes are normal table scrolling. Ignore tiny/horizontal moves. */
+      if (dy <= 6 || Math.abs(dy) <= Math.abs(dx)) return;
+
+      const scrollable = pullGuardScrollableAncestorV1948(event.target);
+      if (scrollable && scrollable.scrollTop > 0) return;
+
+      const rootTop = Math.max(
+        0,
+        window.scrollY || 0,
+        document.documentElement.scrollTop || 0,
+        document.body ? (document.body.scrollTop || 0) : 0
+      );
+      if (rootTop > 0) return;
+
+      event.preventDefault();
+    }, { passive:false, capture:true });
+
+    document.addEventListener('touchend', resetPullGuardTouchV1948, { passive:true, capture:true });
+    document.addEventListener('touchcancel', resetPullGuardTouchV1948, { passive:true, capture:true });
 
 
     let holes = [];
@@ -15317,100 +15420,6 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V19.47 — REFRESH CONTINUITY FOR BLACK-SURROUND RESULT VIEWS
-       Browser refresh continuity is intentionally narrow: Scramble Summary,
-       GEEK MODE main, and the exact GEEK detail remember their identity in
-       sessionStorage. Their existing reveal/white-curtain behavior remains the
-       only visual protection while the normal fresh-data path completes.
-       SKINS, Tie Break Result, Quick Guide, temporary confirmations/warnings,
-       authorization prompts, and the unsaved score-entry popup are not persisted.
-       ========================================================= */
-    const PERSISTENT_POPUP_KEY_V1945 = 'sshcpActivePopupV1945';
-
-    function rememberPersistentPopupV1945(type, detail = {}) {
-      if (!type) return;
-      try {
-        sessionStorage.setItem(
-          PERSISTENT_POPUP_KEY_V1945,
-          JSON.stringify({ type:String(type), ...(detail || {}) })
-        );
-      } catch (_) {}
-    }
-
-    function getPersistentPopupV1945() {
-      try {
-        const raw = sessionStorage.getItem(PERSISTENT_POPUP_KEY_V1945);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        return parsed && typeof parsed === 'object' && parsed.type
-          ? parsed
-          : null;
-      } catch (_) {
-        return null;
-      }
-    }
-
-    function clearPersistentPopupV1945() {
-      try { sessionStorage.removeItem(PERSISTENT_POPUP_KEY_V1945); } catch (_) {}
-    }
-
-    function geekDetailIdentityV1945(stat) {
-      const statName = String(stat && stat.stat || '');
-      let category = '';
-      if (geekDataV180 && Array.isArray(geekDataV180.categories)) {
-        const block = geekDataV180.categories.find(item =>
-          Array.isArray(item && item.stats) && item.stats.some(candidate => candidate === stat)
-        );
-        category = String(block && block.category || '').trim().toUpperCase();
-      }
-      return { stat:statName, category };
-    }
-
-    function findGeekDetailForRestoreV1945(state) {
-      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return null;
-      const wantedStat = String(state && state.stat || '');
-      const wantedCategory = String(state && state.category || '').trim().toUpperCase();
-      for (const block of geekDataV180.categories) {
-        const category = String(block && block.category || '').trim().toUpperCase();
-        if (wantedCategory && category !== wantedCategory) continue;
-        const stats = Array.isArray(block && block.stats) ? block.stats : [];
-        const found = stats.find(item => String(item && item.stat || '') === wantedStat);
-        if (found) return found;
-      }
-      return null;
-    }
-
-    async function restorePersistentPopupV1945(state) {
-      if (!state || !state.type) return false;
-      const type = String(state.type);
-
-      try {
-        if (type === 'tournament-summary') {
-          if (tournamentIsComplete(lastLeaderboardRows)) {
-            showTournamentSummary();
-            return true;
-          }
-        }
-
-        if (type === 'geek-mode' || type === 'geek-detail') {
-          if (tournamentIsComplete(lastLeaderboardRows)) {
-            await openGeekModeV180();
-            if (type === 'geek-detail') {
-              const stat = findGeekDetailForRestoreV1945(state);
-              if (stat) showGeekDetailV180(stat);
-            }
-            return true;
-          }
-        }
-      } catch (_) {
-        /* Fall through to the already-restored underlying view. */
-      }
-
-      clearPersistentPopupV1945();
-      return false;
-    }
-
-    /* =========================================================
        V14 — TOURNAMENT FINISH STATE
        The tiebreak acknowledgement is intentionally per-device.
        Returning to any incomplete tournament state clears it, which also
@@ -16553,7 +16562,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.47 RESULT LOG',
+        'SSHCP V19.48 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16616,7 +16625,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.47 CONTROL CENTER LOG',
+        'SSHCP V19.48 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -24310,7 +24319,6 @@ let scoreTimingDetail =
       geekEvidenceSnapshotV1921 = null;
 
       closeModal();
-      rememberPersistentPopupV1945('geek-mode');
       renderGeekMainShellV180();
 
       const started = timerStart();
@@ -24433,7 +24441,6 @@ let scoreTimingDetail =
 
     function returnToGeekModeV180() {
       closeModal();
-      rememberPersistentPopupV1945('geek-mode');
       renderGeekMainShellV180();
       renderGeekTableV180();
 
@@ -24609,9 +24616,7 @@ let scoreTimingDetail =
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) geekScrollTopV180 = scroll.scrollTop || 0;
 
-      const persistentDetailV1945 = geekDetailIdentityV1945(stat);
       closeModal();
-      rememberPersistentPopupV1945('geek-detail', persistentDetailV1945);
       els.modalOverlay.classList.add('geek-detail-v180');
       if (els.modalBox) els.modalBox.classList.remove('geek-detail-expanded-v1920');
       els.modalTitle.textContent = String(stat && stat.stat || 'GEEK MODE').toUpperCase();
@@ -25015,7 +25020,6 @@ let scoreTimingDetail =
       }
 
       closeModal();
-      rememberPersistentPopupV1945('tournament-summary');
       els.modalOverlay.classList.add('tournament-summary');
       els.modalTitle.textContent = 'SCRAMBLE SUMMARY';
       els.modalTitle.classList.remove('testing');
@@ -26840,7 +26844,6 @@ let scoreTimingDetail =
 
 
     function closeModal() {
-      clearPersistentPopupV1945();
       if (tournamentSummaryResizeObserver) {
         tournamentSummaryResizeObserver.disconnect();
         tournamentSummaryResizeObserver = null;
@@ -27894,7 +27897,6 @@ let scoreTimingDetail =
 
       const rememberedView =
         getRememberedView();
-      const rememberedPopupV1945 = getPersistentPopupV1945();
       const restoreTeamsPopupV1626 = false; /* V18.40: Control Center TEAMS row retired. */
       syncSharedGeometryV187();
       syncHomeTournamentCompleteV1630(
@@ -27938,7 +27940,6 @@ let scoreTimingDetail =
       ) {
 
         await showScorecard();
-        await restorePersistentPopupV1945(rememberedPopupV1945);
 
         return;
 
@@ -27951,7 +27952,6 @@ let scoreTimingDetail =
       ) {
 
         await showLeaderboard();
-        await restorePersistentPopupV1945(rememberedPopupV1945);
 
         return;
 
@@ -27964,7 +27964,6 @@ let scoreTimingDetail =
          device to visit the Leaderboard. */
       await refreshHomeTournamentStateV1831();
       showHome();
-      await restorePersistentPopupV1945(rememberedPopupV1945);
 
     }
 
