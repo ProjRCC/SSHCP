@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.39-B7N4QX | BUILD KEY: 19.40-J7M4QX -->
+<!-- SSHCP | BASE KEY: 19.40-J7M4QX | BUILD KEY: 19.41-P6R8VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11066,11 +11066,13 @@ body option{
 #scrambleModeView .scramble-activity-body-v1938{flex:1 1 auto!important;min-height:0!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;padding:var(--cc-cell-vpad-v1824) 1.1%!important;color:#666!important;font-size:var(--cc-log-font-v1824)!important;line-height:1.15!important;text-align:center!important}
 #scrambleModeView .scramble-activity-body-v1938{display:block!important;overflow-y:auto!important;overscroll-behavior:contain!important}
 #scrambleModeView .scramble-activity-line-v1940{box-sizing:border-box!important;width:100%!important;min-height:var(--cc-log-row-min-v1824)!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:var(--cc-cell-vpad-v1824) 1.1%!important;border-bottom:1px solid var(--line)!important;color:#555!important;font-size:var(--cc-log-font-v1824)!important;line-height:1.15!important;text-align:center!important;overflow-wrap:anywhere!important}
+#scrambleModeView .scramble-activity-line-v1940:first-child{font-weight:800!important}
 #scrambleModeView .scramble-activity-placeholder-v1940{box-sizing:border-box!important;width:100%!important;min-height:var(--cc-log-row-min-v1824)!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:var(--cc-cell-vpad-v1824) 1.1%!important;color:#666!important;font-size:var(--cc-log-font-v1824)!important;line-height:1.15!important;text-align:center!important}
 #scrambleModeView .scramble-bottom-stack-v1938{flex:0 0 auto!important;display:flex!important;flex-direction:column!important;gap:var(--cc-stack-gap-v1824)!important;margin-top:var(--cc-stack-top-v1824)!important}
 #scrambleModeView .scramble-actions-v1938{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;column-gap:1.944444%!important;margin:0!important}
 #scrambleModeView .scramble-action-button-v1938{box-sizing:border-box!important;width:100%!important;height:var(--cc-mode-h-v1824)!important;min-height:var(--cc-mode-h-v1824)!important;max-height:var(--cc-mode-h-v1824)!important;margin:0!important;padding:0 1.1%!important;border:var(--cc-border2-v1824) solid var(--accent)!important;border-radius:var(--cc-radius8-v1824)!important;background:var(--accent)!important;color:var(--on-accent)!important;-webkit-text-fill-color:var(--on-accent)!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;line-height:1!important}
 #scrambleModeView .scramble-action-button-v1938.delete{border-color:var(--red)!important;background:var(--red)!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+#scrambleModeView .scramble-nav-v1941{display:grid!important;grid-template-columns:minmax(0,2fr) minmax(0,1fr)!important;column-gap:1.944444%!important;margin:0!important}
 #scrambleModeView .scramble-back-v1938{box-sizing:border-box!important;width:100%!important;height:var(--cc-bottom-nav-h-v1824)!important;min-height:var(--cc-bottom-nav-h-v1824)!important;max-height:var(--cc-bottom-nav-h-v1824)!important;margin:0!important;padding:0 1.1%!important;border:var(--cc-border2-v1824) solid var(--accent)!important;border-radius:var(--cc-radius7-v1824)!important;background:var(--accent)!important;color:var(--on-accent)!important;-webkit-text-fill-color:var(--on-accent)!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;line-height:1!important}
 
 
@@ -12732,7 +12734,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.40</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.41</span></span>
         </button>
 
       </div>
@@ -13168,7 +13170,10 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
           <button id="scrambleCopyLogButtonV1938" class="scramble-action-button-v1938" type="button">COPY LOG</button>
           <button id="scrambleDeleteLogButtonV1938" class="scramble-action-button-v1938 delete" type="button">DELETE LOG</button>
         </div>
-        <button id="scrambleBackButtonV1938" class="scramble-back-v1938" type="button">BACK</button>
+        <div class="scramble-nav-v1941">
+          <button id="scrambleBackButtonV1938" class="scramble-back-v1938" type="button">BACK</button>
+          <button id="scrambleHomeButtonV1941" class="scramble-back-v1938" type="button">HOME</button>
+        </div>
       </div>
     </div>
   </section>
@@ -13411,6 +13416,9 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
       scrambleBackButtonV1938:
         document.getElementById('scrambleBackButtonV1938'),
+
+      scrambleHomeButtonV1941:
+        document.getElementById('scrambleHomeButtonV1941'),
 
       scrambleLatestActivityV1938:
         document.getElementById('scrambleLatestActivityV1938'),
@@ -16450,7 +16458,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.40 RESULT LOG',
+        'SSHCP V19.41 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16513,7 +16521,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.40 CONTROL CENTER LOG',
+        'SSHCP V19.41 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16640,12 +16648,10 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V19.40 — SCRAMBLE MODE FUNCTIONALITY
-       V19.38 geometry remains unchanged. V19.40 keeps START / COPY /
-       DELETE on CF V2.5 and changes the visible activity box into an
-       incremental tournament-wide feed of officially SAVED score events.
-       The 10-second refresh reads only Audit LOG column A and requests
-       rows after the last row already seen by this device.
+       SSHCP V19.41 — SCRAMBLE MODE FUNCTIONALITY
+       V19.40 incremental LOG-column refresh remains unchanged. V19.41
+       presents the official-save feed newest-first with only the newest row
+       bold, and adds a 67/33 BACK + HOME bottom navigation row.
        ========================================================= */
 
     let scrambleAuditActiveV1939 = false;
@@ -16694,11 +16700,10 @@ let scoreTimingDetail =
           line.dataset.auditRow = String(rowNumber);
         }
 
-        els.scrambleLatestActivityV1938.appendChild(line);
+        els.scrambleLatestActivityV1938.prepend(line);
       }
 
-      els.scrambleLatestActivityV1938.scrollTop =
-        els.scrambleLatestActivityV1938.scrollHeight;
+      els.scrambleLatestActivityV1938.scrollTop = 0;
     }
 
     function setScrambleButtonsDisabledV1939(disabled) {
@@ -16706,7 +16711,8 @@ let scoreTimingDetail =
         els.scrambleStartButtonV1938,
         els.scrambleCopyLogButtonV1938,
         els.scrambleDeleteLogButtonV1938,
-        els.scrambleBackButtonV1938
+        els.scrambleBackButtonV1938,
+        els.scrambleHomeButtonV1941
       ].filter(Boolean).forEach(button => {
         button.disabled = Boolean(disabled);
       });
@@ -19321,7 +19327,9 @@ let scoreTimingDetail =
           elements.forEach(el => el.style.setProperty('font-size',size+'px','important'));
         }
       }
-      if (els.scrambleBackButtonV1938) els.scrambleBackButtonV1938.style.setProperty('font-size',(12*multiplier)+'px','important');
+      [els.scrambleBackButtonV1938, els.scrambleHomeButtonV1941].filter(Boolean).forEach(button => {
+        button.style.setProperty('font-size',(12*multiplier)+'px','important');
+      });
     }
 
     function rememberResponsiveGeometryV5(patch = {}) {
@@ -27189,6 +27197,7 @@ let scoreTimingDetail =
     if (els.scrambleCopyLogButtonV1938) els.scrambleCopyLogButtonV1938.addEventListener('click', runScrambleCopyLogV1939);
     if (els.scrambleDeleteLogButtonV1938) els.scrambleDeleteLogButtonV1938.addEventListener('click', showScrambleDeleteLogConfirmV1939);
     if (els.scrambleBackButtonV1938) els.scrambleBackButtonV1938.addEventListener('click', showTestLog);
+    if (els.scrambleHomeButtonV1941) els.scrambleHomeButtonV1941.addEventListener('click', showHome);
     els.testLogHomeButton.addEventListener('click', showHome);
     if (els.testLogLeaderboardButton) els.testLogLeaderboardButton.addEventListener('click', showLeaderboard);
     if (els.testLogScorecardButton) els.testLogScorecardButton.addEventListener('click', showScorecard);
