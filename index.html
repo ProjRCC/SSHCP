@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.54-Q8M5VX | BUILD KEY: 19.55-C7N4QX -->
+<!-- SSHCP | BASE KEY: 19.55-C7N4QX | BUILD KEY: 19.56-R8Q5NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12750,7 +12750,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.55</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.56</span></span>
         </button>
 
       </div>
@@ -16221,7 +16221,7 @@ let scoreTimingDetail =
 
     function currentFrontendVersionLabelV1955() {
       const node = document.querySelector('.home-version-number-v1835');
-      return normalizeAuditTextV189(node && node.textContent) || 'V19.55';
+      return normalizeAuditTextV189(node && node.textContent) || 'V19.56';
     }
 
     function auditRenderedSummaryTeamV1955(container) {
@@ -24796,23 +24796,63 @@ let scoreTimingDetail =
       }
     }
 
+    /* SSHCP V19.56 — SKINS participation filter only.
+       CF V2.9 exposes TEAMS column G as `skins`. The tournament remains
+       unchanged everywhere else: only an explicit N is excluded, while
+       blank and Y remain eligible. Filter BEFORE the proven SKINS engine. */
     async function fetchSkinsSourceV1627() {
       const started = timerStart();
-      const response = await fetch(
-        CLOUDFLARE_API_URL + '?refresh=' + Date.now(),
-        { cache: 'no-store' }
+      const refreshKey = Date.now();
+      const [scorecardResponse, teamsResponse] = await Promise.all([
+        fetch(
+          CLOUDFLARE_API_URL + '?refresh=' + refreshKey,
+          { cache: 'no-store' }
+        ),
+        fetch(
+          CLOUDFLARE_API_URL + '?action=teams&refresh=' + refreshKey,
+          { cache: 'no-store' }
+        )
+      ]);
+
+      if (!scorecardResponse.ok) throw new Error('Skins scorecard read failed.');
+      if (!teamsResponse.ok) throw new Error('Skins eligibility read failed.');
+
+      const [scorecardData, teamsData] = await Promise.all([
+        scorecardResponse.json(),
+        teamsResponse.json()
+      ]);
+
+      if (!scorecardData || scorecardData.ok !== true) {
+        throw new Error((scorecardData && scorecardData.error) || 'Skins data unavailable.');
+      }
+      if (!teamsData || teamsData.ok !== true) {
+        throw new Error((teamsData && teamsData.error) || 'Skins eligibility unavailable.');
+      }
+
+      const allScorecardTeams = Array.isArray(scorecardData.teams) ? scorecardData.teams : [];
+      const teamConfig = Array.isArray(teamsData.teams) ? teamsData.teams : [];
+      const skinsBySlot = new Map(
+        teamConfig.map(team => [
+          Number(team && team.slot),
+          String((team && team.skins) || '').trim().toUpperCase()
+        ])
       );
-      if (!response.ok) throw new Error('Skins scorecard read failed.');
-      const data = await response.json();
-      if (!data || data.ok !== true) throw new Error((data && data.error) || 'Skins data unavailable.');
-      const sourceTeams = Array.isArray(data.teams) ? data.teams : [];
-      const sourceHoles = Array.isArray(data.course && data.course.holes) ? data.course.holes : [];
-      const timing = data.timing || {};
+
+      const sourceTeams = allScorecardTeams.filter(team =>
+        skinsBySlot.get(Number(team && team.slot)) !== 'N'
+      );
+      const sourceHoles = Array.isArray(scorecardData.course && scorecardData.course.holes)
+        ? scorecardData.course.holes
+        : [];
+      const excludedCount = Math.max(0, allScorecardTeams.length - sourceTeams.length);
+      const timing = scorecardData.timing || {};
       addTestLog(
         'SKINS LOAD',
         'OK',
         timerSeconds(started) + 's',
-        sourceTeams.length + ' TEAMS • READ ' + ((Number(timing.readMs) || 0) / 1000).toFixed(3) + 's • CF ' + ((Number(timing.totalMs) || 0) / 1000).toFixed(3) + 's'
+        sourceTeams.length + ' ELIGIBLE • ' + excludedCount + ' EXCLUDED • READ ' +
+          ((Number(timing.readMs) || 0) / 1000).toFixed(3) + 's • CF ' +
+          ((Number(timing.totalMs) || 0) / 1000).toFixed(3) + 's'
       );
       return { teams: sourceTeams, holes: sourceHoles };
     }
