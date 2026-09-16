@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.48-R7Q4MX | BUILD KEY: 19.49-K6Q8NV -->
+<!-- SSHCP | BASE KEY: 19.49-K6Q8NV | BUILD KEY: 19.50-M4Q7VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10813,8 +10813,8 @@ body option{
   --cc-auth-nav-gap-v1824:18px;
   --cc-log-head-h-v1824:28px;
   --cc-log-row-min-v1824:28px;
-  --cc-log-font-v1824:10px;
-  --cc-log-detail-v1824:8px;
+  --cc-log-font-v1824:11px;
+  --cc-log-detail-v1824:8.8px;
   --cc-cell-vpad-v1824:5px;
   --cc-detail-gap-v1824:2px;
   --cc-check-box-v1824:18px;
@@ -11057,7 +11057,7 @@ body option{
    ========================================================= */
 #testLogView .control-center-scramble-row-v1938{flex:0 0 auto!important;display:grid!important;grid-template-columns:1fr!important;margin:0!important}
 #testLogView .control-center-scramble-button-v1938{box-sizing:border-box!important;width:100%!important;height:var(--cc-mode-h-v1824)!important;min-height:var(--cc-mode-h-v1824)!important;max-height:var(--cc-mode-h-v1824)!important;margin:0!important;padding:0 1.1%!important;border:var(--cc-border2-v1824) solid var(--accent)!important;border-radius:var(--cc-radius8-v1824)!important;background:var(--accent)!important;color:var(--on-accent)!important;-webkit-text-fill-color:var(--on-accent)!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;line-height:1!important}
-#scrambleModeView{min-height:100dvh;--cc-mult-v1824:1;--cc-top-v1824:25px;--cc-bottom-v1824:8px;--cc-title-v1824:22px;--cc-title-gap-v1824:10px;--cc-stack-top-v1824:10px;--cc-stack-gap-v1824:7px;--cc-mode-h-v1824:46px;--cc-bottom-nav-h-v1824:42px;--cc-log-head-h-v1824:28px;--cc-log-row-min-v1824:28px;--cc-log-font-v1824:10px;--cc-cell-vpad-v1824:5px;--cc-radius7-v1824:7px;--cc-radius8-v1824:8px;--cc-border1-v1824:1px;--cc-border2-v1824:2px}
+#scrambleModeView{min-height:100dvh;--cc-mult-v1824:1;--cc-top-v1824:25px;--cc-bottom-v1824:8px;--cc-title-v1824:22px;--cc-title-gap-v1824:10px;--cc-stack-top-v1824:10px;--cc-stack-gap-v1824:7px;--cc-mode-h-v1824:46px;--cc-bottom-nav-h-v1824:42px;--cc-log-head-h-v1824:28px;--cc-log-row-min-v1824:28px;--cc-log-font-v1824:11px;--cc-cell-vpad-v1824:5px;--cc-radius7-v1824:7px;--cc-radius8-v1824:8px;--cc-border1-v1824:1px;--cc-border2-v1824:2px}
 #scrambleModeView .test-log-screen{box-sizing:border-box!important;width:min(760px,100%)!important;height:100dvh!important;min-height:100dvh!important;margin:0 auto!important;padding-top:calc(var(--cc-top-v1824) + env(safe-area-inset-top))!important;padding-right:min(3.125vw,23.75px)!important;padding-bottom:max(var(--cc-bottom-v1824),env(safe-area-inset-bottom))!important;padding-left:min(3.125vw,23.75px)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
 #scrambleModeView .test-log-header{flex:0 0 auto!important;display:block!important;margin:0 0 var(--cc-title-gap-v1824)!important}
 #scrambleModeView .test-log-title{margin:0!important;color:var(--accent)!important;font-size:var(--cc-title-v1824)!important;line-height:1!important;text-align:center!important;white-space:nowrap!important}
@@ -19306,8 +19306,8 @@ let scoreTimingDetail =
       setPx('--cc-auth-nav-gap-v1824', 18);
       setPx('--cc-log-head-h-v1824', 28);
       setPx('--cc-log-row-min-v1824', 28);
-      setPx('--cc-log-font-v1824', 10);
-      setPx('--cc-log-detail-v1824', 8);
+      setPx('--cc-log-font-v1824', 11);
+      setPx('--cc-log-detail-v1824', 8.8);
       setPx('--cc-cell-vpad-v1824', 5);
       setPx('--cc-detail-gap-v1824', 2);
       setPx('--cc-check-box-v1824', 18);
@@ -19325,54 +19325,37 @@ let scoreTimingDetail =
       const geometry = syncControlCenterLayoutV1824();
       const multiplier = geometry ? geometry.multiplier : getVerticalMetricsV188().multiplier;
 
-      function visibleFamilyMembers(row) {
-        if (!row) return [];
-        return Array.from(row.children).filter(element => {
-          if (!(element instanceof HTMLElement)) return false;
-          const style = getComputedStyle(element);
-          return style.display !== 'none' && element.clientWidth > 0 && element.clientHeight > 0;
-        });
-      }
+      function fitButton45(element) {
+        if (!(element instanceof HTMLElement)) return;
+        const style = getComputedStyle(element);
+        if (style.display === 'none' || element.clientWidth <= 0 || element.clientHeight <= 0) return;
 
-      function familyFitsOneLine(elements) {
-        return elements.every(element => {
-          const widthOkay = element.scrollWidth <= element.clientWidth + 1;
-          const heightOkay = element.scrollHeight <= element.clientHeight + 1;
-          return widthOkay && heightOkay;
-        });
-      }
-
-      function fitFamily(selector, targetBase, minimumBase) {
-        const row = els.testLogView.querySelector(selector);
-        const elements = visibleFamilyMembers(row);
-        if (!elements.length) return;
-
-        const target = targetBase * multiplier;
-        const minimum = minimumBase * multiplier;
+        const target = element.clientHeight * 0.45;
+        const minimum = 7 * multiplier;
         let size = target;
+        element.style.setProperty('white-space', 'nowrap', 'important');
+        element.style.setProperty('font-size', size + 'px', 'important');
 
-        elements.forEach(element => {
-          element.style.setProperty('font-size', size + 'px', 'important');
-          element.style.setProperty('white-space', 'nowrap', 'important');
-        });
-
-        while (size > minimum && !familyFitsOneLine(elements)) {
+        while (size > minimum && (element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)) {
           size = Math.max(minimum, size - 0.25);
-          elements.forEach(element => {
-            element.style.setProperty('font-size', size + 'px', 'important');
-          });
+          element.style.setProperty('font-size', size + 'px', 'important');
         }
       }
 
-      /* Every Control Center row is a typography family: one line only and one
-         shared font size. The longest label shrinks the entire family together. */
-      fitFamily('.test-log-utility-row', 11, 7);
-      fitFamily('.control-center-checks-v188', 12, 8);
-      fitFamily('.control-center-nav', 12, 8);
-      fitFamily('.test-score-controls', 10, 7);
-      fitFamily('.test-auth-button-row', 11, 7);
-      fitFamily('.test-bottom-nav', 12, 8);
-      fitFamily('.control-center-scramble-row-v1938', 12, 8);
+      /* V19.50: every actual Control Center button targets 45% of its own
+         rendered height. Only that label shrinks when width requires it. */
+      const selectors = [
+        '.test-log-utility-row button',
+        '.control-center-checks-v188 button',
+        '.control-center-nav button',
+        '.test-score-controls button',
+        '.test-auth-button-row button',
+        '.test-bottom-nav button',
+        '.control-center-scramble-row-v1938 button'
+      ];
+      selectors.forEach(selector => {
+        els.testLogView.querySelectorAll(selector).forEach(fitButton45);
+      });
     }
 
     function syncScrambleModeLayoutV1938() {
@@ -19385,7 +19368,7 @@ let scoreTimingDetail =
       setPx('--cc-top-v1824',25); setPx('--cc-bottom-v1824',8); setPx('--cc-title-v1824',22);
       setPx('--cc-title-gap-v1824',10); setPx('--cc-stack-top-v1824',10); setPx('--cc-stack-gap-v1824',7);
       setPx('--cc-mode-h-v1824',46); setPx('--cc-bottom-nav-h-v1824',42); setPx('--cc-log-head-h-v1824',28);
-      setPx('--cc-log-row-min-v1824',28); setPx('--cc-log-font-v1824',10); setPx('--cc-cell-vpad-v1824',5);
+      setPx('--cc-log-row-min-v1824',28); setPx('--cc-log-font-v1824',11); setPx('--cc-cell-vpad-v1824',5);
       setPx('--cc-radius7-v1824',7); setPx('--cc-radius8-v1824',8); setPx('--cc-border1-v1824',1); setPx('--cc-border2-v1824',2);
       return { metrics, multiplier };
     }
@@ -19394,21 +19377,25 @@ let scoreTimingDetail =
       if (!els.scrambleModeView || currentView !== 'scramble') return;
       const geometry = syncScrambleModeLayoutV1938();
       const multiplier = geometry ? geometry.multiplier : getVerticalMetricsV188().multiplier;
-      const row = els.scrambleModeView.querySelector('.scramble-actions-v1938');
-      const elements = row ? Array.from(row.children) : [];
-      if (elements.length) {
+
+      function fitButton45(element) {
+        if (!(element instanceof HTMLElement)) return;
+        const style = getComputedStyle(element);
+        if (style.display === 'none' || element.clientWidth <= 0 || element.clientHeight <= 0) return;
+
+        const target = element.clientHeight * 0.45;
         const minimum = 7 * multiplier;
-        let size = 11 * multiplier;
-        const fits = () => elements.every(el => el.scrollWidth <= el.clientWidth + 1 && el.scrollHeight <= el.clientHeight + 1);
-        elements.forEach(el => { el.style.setProperty('font-size',size+'px','important'); el.style.setProperty('white-space','nowrap','important'); });
-        while (size > minimum && !fits()) {
+        let size = target;
+        element.style.setProperty('white-space','nowrap','important');
+        element.style.setProperty('font-size',size+'px','important');
+        while (size > minimum && (element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)) {
           size = Math.max(minimum,size - 0.25);
-          elements.forEach(el => el.style.setProperty('font-size',size+'px','important'));
+          element.style.setProperty('font-size',size+'px','important');
         }
       }
-      [els.scrambleBackButtonV1938, els.scrambleHomeButtonV1941].filter(Boolean).forEach(button => {
-        button.style.setProperty('font-size',(12*multiplier)+'px','important');
-      });
+
+      /* V19.50: all Scramble Mode buttons use the same 45%-of-own-height target. */
+      els.scrambleModeView.querySelectorAll('.scramble-action-button-v1938, .scramble-back-v1938').forEach(fitButton45);
     }
 
     function rememberResponsiveGeometryV5(patch = {}) {
