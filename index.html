@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.43-H4Q8NZ | BUILD KEY: 19.44-S8K5QW -->
+<!-- SSHCP | BASE KEY: 19.45-D6R9KV | BUILD KEY: 19.46-L7Q3MW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7213,7 +7213,7 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   position:relative!important;
   display:grid!important;
   grid-template-columns:100%!important;
-  grid-template-rows:14.5% 28% 15% 28% 14.5%!important;
+  grid-template-rows:6.5% 35% 17% 35% 6.5%!important;
   align-items:stretch!important;
   justify-items:stretch!important;
   gap:0!important;
@@ -7282,10 +7282,10 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 #leaderboardView .leader-through-score,
 #leaderboardView .leader-through-value,
 #leaderboardView .leader-through-value.has-progress{
-  font-size:calc(var(--v5-leader-row-h,56px) * .28)!important;
+  font-size:calc(var(--v5-leader-row-h,56px) * .35)!important;
 }
 #leaderboardView .leader-through-word{
-  font-size:calc(var(--v5-leader-row-h,56px) * .15)!important;
+  font-size:calc(var(--v5-leader-row-h,56px) * .17)!important;
 }
 
 
@@ -12735,7 +12735,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.44</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.46</span></span>
         </button>
 
       </div>
@@ -15317,6 +15317,121 @@ let scoreTimingDetail =
 
 
     /* =========================================================
+       SSHCP V19.46 — REFRESH CONTINUITY FOR NAVIGATION POPUPS + LEADERBOARD ROUND TYPOGRAPHY
+       Meaningful navigation/result popups remember their identity in sessionStorage
+       so a browser refresh restores the same popup after the underlying HOME /
+       Scorecard / Leaderboard view has completed its normal fresh-data path.
+       Temporary confirmations, warnings, authorization prompts and the unsaved
+       score-entry popup are intentionally not persisted.
+       ========================================================= */
+    const PERSISTENT_POPUP_KEY_V1945 = 'sshcpActivePopupV1945';
+
+    function rememberPersistentPopupV1945(type, detail = {}) {
+      if (!type) return;
+      try {
+        sessionStorage.setItem(
+          PERSISTENT_POPUP_KEY_V1945,
+          JSON.stringify({ type:String(type), ...(detail || {}) })
+        );
+      } catch (_) {}
+    }
+
+    function getPersistentPopupV1945() {
+      try {
+        const raw = sessionStorage.getItem(PERSISTENT_POPUP_KEY_V1945);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' && parsed.type
+          ? parsed
+          : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function clearPersistentPopupV1945() {
+      try { sessionStorage.removeItem(PERSISTENT_POPUP_KEY_V1945); } catch (_) {}
+    }
+
+    function geekDetailIdentityV1945(stat) {
+      const statName = String(stat && stat.stat || '');
+      let category = '';
+      if (geekDataV180 && Array.isArray(geekDataV180.categories)) {
+        const block = geekDataV180.categories.find(item =>
+          Array.isArray(item && item.stats) && item.stats.some(candidate => candidate === stat)
+        );
+        category = String(block && block.category || '').trim().toUpperCase();
+      }
+      return { stat:statName, category };
+    }
+
+    function findGeekDetailForRestoreV1945(state) {
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return null;
+      const wantedStat = String(state && state.stat || '');
+      const wantedCategory = String(state && state.category || '').trim().toUpperCase();
+      for (const block of geekDataV180.categories) {
+        const category = String(block && block.category || '').trim().toUpperCase();
+        if (wantedCategory && category !== wantedCategory) continue;
+        const stats = Array.isArray(block && block.stats) ? block.stats : [];
+        const found = stats.find(item => String(item && item.stat || '') === wantedStat);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    async function restorePersistentPopupV1945(state) {
+      if (!state || !state.type) return false;
+      const type = String(state.type);
+
+      try {
+        if (type === 'quick-guide') {
+          showQuickGuide();
+          return true;
+        }
+
+        if (type === 'tournament-result') {
+          if (
+            tournamentIsComplete(lastLeaderboardRows) &&
+            firstPlaceTiedRows(lastLeaderboardRows).length >= 2
+          ) {
+            showTieBreakResult();
+            return true;
+          }
+        }
+
+        if (type === 'tournament-summary') {
+          if (tournamentIsComplete(lastLeaderboardRows)) {
+            showTournamentSummary();
+            return true;
+          }
+        }
+
+        if (type === 'skins') {
+          if (tournamentIsComplete(lastLeaderboardRows)) {
+            await showSkinsPopupV1627();
+            return true;
+          }
+        }
+
+        if (type === 'geek-mode' || type === 'geek-detail') {
+          if (tournamentIsComplete(lastLeaderboardRows)) {
+            await openGeekModeV180();
+            if (type === 'geek-detail') {
+              const stat = findGeekDetailForRestoreV1945(state);
+              if (stat) showGeekDetailV180(stat);
+            }
+            return true;
+          }
+        }
+      } catch (_) {
+        /* Fall through to the already-restored underlying view. */
+      }
+
+      clearPersistentPopupV1945();
+      return false;
+    }
+
+    /* =========================================================
        V14 — TOURNAMENT FINISH STATE
        The tiebreak acknowledgement is intentionally per-device.
        Returning to any incomplete tournament state clears it, which also
@@ -16459,7 +16574,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.44 RESULT LOG',
+        'SSHCP V19.46 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16522,7 +16637,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.44 CONTROL CENTER LOG',
+        'SSHCP V19.46 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -21838,6 +21953,7 @@ let scoreTimingDetail =
       renderLeaderboard(lastLeaderboardRows, false);
 
       closeModal();
+      rememberPersistentPopupV1945('tournament-result');
       els.modalOverlay.classList.add('tournament-result');
       syncTieBreakResultGeometryV1850();
       els.modalTitle.textContent = 'TIE BREAK RESULT';
@@ -24216,6 +24332,7 @@ let scoreTimingDetail =
       geekEvidenceSnapshotV1921 = null;
 
       closeModal();
+      rememberPersistentPopupV1945('geek-mode');
       renderGeekMainShellV180();
 
       const started = timerStart();
@@ -24338,6 +24455,7 @@ let scoreTimingDetail =
 
     function returnToGeekModeV180() {
       closeModal();
+      rememberPersistentPopupV1945('geek-mode');
       renderGeekMainShellV180();
       renderGeekTableV180();
 
@@ -24513,7 +24631,9 @@ let scoreTimingDetail =
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) geekScrollTopV180 = scroll.scrollTop || 0;
 
+      const persistentDetailV1945 = geekDetailIdentityV1945(stat);
       closeModal();
+      rememberPersistentPopupV1945('geek-detail', persistentDetailV1945);
       els.modalOverlay.classList.add('geek-detail-v180');
       if (els.modalBox) els.modalBox.classList.remove('geek-detail-expanded-v1920');
       els.modalTitle.textContent = String(stat && stat.stat || 'GEEK MODE').toUpperCase();
@@ -24712,6 +24832,7 @@ let scoreTimingDetail =
     function renderSkinsPopupV1627(results) {
       syncSharedGeometryV187();
       closeModal();
+      rememberPersistentPopupV1945('skins');
       els.modalOverlay.classList.add('skins-results-v1627');
       els.modalTitle.textContent = 'SKINS';
       els.modalInput.style.display = 'none';
@@ -24793,6 +24914,7 @@ let scoreTimingDetail =
         completeLoadingLine();
         addTestLog('SKINS LOAD', 'FAILED', '—', String(error && error.message || 'Request failed'));
         closeModal();
+        rememberPersistentPopupV1945('skins');
         els.modalTitle.textContent = 'SKINS';
         els.modalBody.textContent = 'SKINS DATA UNAVAILABLE';
         els.modalInput.style.display = 'none';
@@ -24917,6 +25039,7 @@ let scoreTimingDetail =
       }
 
       closeModal();
+      rememberPersistentPopupV1945('tournament-summary');
       els.modalOverlay.classList.add('tournament-summary');
       els.modalTitle.textContent = 'SCRAMBLE SUMMARY';
       els.modalTitle.classList.remove('testing');
@@ -26063,7 +26186,7 @@ let scoreTimingDetail =
         }
 
         if (score) {
-          fitTextToBoxV5(score, score, rowHeight * 0.32, 8, {
+          fitTextToBoxV5(score, score, rowHeight * 0.35, 8, {
             horizontalPad: 4,
             verticalPad: 1,
             lineHeight: 0.92
@@ -26072,7 +26195,7 @@ let scoreTimingDetail =
         }
 
         if (thruWord) {
-          fitTextToBoxV5(thruWord, thruWord, rowHeight * 0.16, 3, {
+          fitTextToBoxV5(thruWord, thruWord, rowHeight * 0.17, 3, {
             horizontalPad: 2,
             verticalPad: 0,
             wrap: false,
@@ -26082,7 +26205,7 @@ let scoreTimingDetail =
         }
 
         if (thruValue) {
-          fitTextToBoxV5(thruValue, thruValue, rowHeight * 0.32, 8, {
+          fitTextToBoxV5(thruValue, thruValue, rowHeight * 0.35, 8, {
             horizontalPad: 4,
             verticalPad: 1,
             wrap: false,
@@ -26595,6 +26718,7 @@ let scoreTimingDetail =
 
       syncQuickGuideBodyFontV1816();
       closeModal();
+      rememberPersistentPopupV1945('quick-guide');
 
       els.modalOverlay.classList.add(
         'quick-guide'
@@ -26741,6 +26865,7 @@ let scoreTimingDetail =
 
 
     function closeModal() {
+      clearPersistentPopupV1945();
       if (tournamentSummaryResizeObserver) {
         tournamentSummaryResizeObserver.disconnect();
         tournamentSummaryResizeObserver = null;
@@ -27794,6 +27919,7 @@ let scoreTimingDetail =
 
       const rememberedView =
         getRememberedView();
+      const rememberedPopupV1945 = getPersistentPopupV1945();
       const restoreTeamsPopupV1626 = false; /* V18.40: Control Center TEAMS row retired. */
       syncSharedGeometryV187();
       syncHomeTournamentCompleteV1630(
@@ -27837,6 +27963,7 @@ let scoreTimingDetail =
       ) {
 
         await showScorecard();
+        await restorePersistentPopupV1945(rememberedPopupV1945);
 
         return;
 
@@ -27849,6 +27976,7 @@ let scoreTimingDetail =
       ) {
 
         await showLeaderboard();
+        await restorePersistentPopupV1945(rememberedPopupV1945);
 
         return;
 
@@ -27861,6 +27989,7 @@ let scoreTimingDetail =
          device to visit the Leaderboard. */
       await refreshHomeTournamentStateV1831();
       showHome();
+      await restorePersistentPopupV1945(rememberedPopupV1945);
 
     }
 
