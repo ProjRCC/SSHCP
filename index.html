@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.51-P7N4QX | BUILD KEY: 19.52-T8Q5NV -->
+<!-- SSHCP | BASE KEY: 19.52-T8Q5NV | BUILD KEY: 19.53-H6Q9NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10804,7 +10804,7 @@ body option{
   --cc-stack-top-v1824:10px;
   --cc-stack-gap-v1824:7px;
   --cc-utility-h-v1824:42px;
-  --cc-metrics-h-v1824:34px;
+  --cc-metrics-h-v1824:38px;
   --cc-check-h-v1824:42px;
   --cc-mode-h-v1824:46px;
   --cc-score-h-v1824:46px;
@@ -10959,7 +10959,7 @@ body option{
   box-sizing:border-box!important;
   font-family:'Oswald',Arial,sans-serif!important;
   margin:0!important;
-  padding:calc(4px * var(--cc-mult-v1824)) 1.5%!important;
+  padding:calc(5px * var(--cc-mult-v1824)) 1.5%!important;
   border-width:var(--cc-border1-v1824)!important;
   border-radius:var(--cc-radius7-v1824)!important;
   font-size:calc(9px * var(--cc-mult-v1824))!important;
@@ -11056,7 +11056,7 @@ body option{
    V19.38 geometry is preserved exactly. V19.39 wires the three accepted
    actions to CF V2.4 / Audit without changing the Scramble Mode shell.
    ========================================================= */
-#testLogView .control-center-scramble-row-v1938{flex:0 0 auto!important;display:grid!important;grid-template-columns:1fr!important;margin:0!important}
+#testLogView .control-center-scramble-row-v1938{flex:0 0 auto!important;display:grid!important;grid-template-columns:1fr!important;margin:-4px 0 0!important}
 #testLogView .control-center-scramble-button-v1938{box-sizing:border-box!important;width:100%!important;height:var(--cc-mode-h-v1824)!important;min-height:var(--cc-mode-h-v1824)!important;max-height:var(--cc-mode-h-v1824)!important;margin:0!important;padding:0 1.1%!important;border:var(--cc-border2-v1824) solid var(--accent)!important;border-radius:var(--cc-radius8-v1824)!important;background:var(--accent)!important;color:var(--on-accent)!important;-webkit-text-fill-color:var(--on-accent)!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;line-height:1!important}
 #scrambleModeView{min-height:100dvh;--cc-mult-v1824:1;--cc-top-v1824:15px;--cc-bottom-v1824:8px;--cc-title-v1824:22px;--cc-title-gap-v1824:10px;--cc-stack-top-v1824:10px;--cc-stack-gap-v1824:7px;--cc-mode-h-v1824:46px;--cc-bottom-nav-h-v1824:42px;--cc-log-head-h-v1824:28px;--cc-log-row-min-v1824:28px;--cc-log-font-v1824:11px;--cc-cell-vpad-v1824:5px;--cc-radius7-v1824:7px;--cc-radius8-v1824:8px;--cc-border1-v1824:1px;--cc-border2-v1824:2px}
 #scrambleModeView .test-log-screen{box-sizing:border-box!important;width:min(760px,100%)!important;height:100dvh!important;min-height:100dvh!important;margin:0 auto!important;padding-top:calc(var(--cc-top-v1824) + env(safe-area-inset-top))!important;padding-right:min(3.125vw,23.75px)!important;padding-bottom:max(var(--cc-bottom-v1824),env(safe-area-inset-bottom))!important;padding-left:min(3.125vw,23.75px)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
@@ -12749,7 +12749,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.52</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.53</span></span>
         </button>
 
       </div>
@@ -15497,7 +15497,7 @@ let scoreTimingDetail =
         ' • SCREEN ' + screenCss +
         ' • DPR ' + Number(metrics.dpr).toFixed(2) +
         ' • PHYS≈' + physical +
-        ' • MULT ' + mult +
+        ' • MULT\u00A0' + mult +
         (metrics.isS25 ? ' • S25 BASE' : '')
       );
     }
@@ -19298,7 +19298,7 @@ let scoreTimingDetail =
       setPx('--cc-stack-top-v1824', 10);
       setPx('--cc-stack-gap-v1824', 7);
       setPx('--cc-utility-h-v1824', 42);
-      setPx('--cc-metrics-h-v1824', 34);
+      setPx('--cc-metrics-h-v1824', 38);
       setPx('--cc-check-h-v1824', 42);
       setPx('--cc-mode-h-v1824', 46);
       setPx('--cc-score-h-v1824', 46);
