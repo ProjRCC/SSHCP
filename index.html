@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.44-S8K5QW | BUILD KEY: 19.48-R7Q4MX -->
+<!-- SSHCP | BASE KEY: 19.48-R7Q4MX | BUILD KEY: 19.49-K6Q8NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27638,6 +27638,16 @@ let scoreTimingDetail =
             event.target ===
             els.modalOverlay
           ) {
+
+            /* SSHCP V19.49 — GEEK detail + SKINS backdrop is intentional
+               dead space. A touch/click outside the white card must not close
+               the modal or expose/navigate the underlying Leaderboard. */
+            if (
+              els.modalOverlay.classList.contains('geek-detail-v180') ||
+              els.modalOverlay.classList.contains('skins-results-v1627')
+            ) {
+              return;
+            }
 
             closeModal();
 
