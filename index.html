@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.42-Q7M3VX | BUILD KEY: 19.43-H4Q8NZ -->
+<!-- SSHCP | BASE KEY: 19.43-H4Q8NZ | BUILD KEY: 19.44-S8K5QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12470,8 +12470,9 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
 
 
-/* V19.14 — next-expected empty score box: border-only physical press feedback.
-   Keep the box transparent; blue border becomes black only while physically pressed. */
+/* V19.14 / V19.44 — next-expected empty score box: border-only physical press feedback.
+   Keep the box transparent; Blue border becomes black only while physically pressed.
+   V19.44 also protects this rule inside the global literal-button JS press handler. */
 #scorecardView .score-button.empty.active-hole-score:active,
 #scorecardView .score-button.empty.active-hole-score.sshcp-button-pressed-v172{
   background:transparent!important;
@@ -12734,7 +12735,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.43</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.44</span></span>
         </button>
 
       </div>
@@ -16458,7 +16459,7 @@ let scoreTimingDetail =
     function buildResultAuditReportV189() {
       const log = getResultAuditLogV189();
       const lines = [
-        'SSHCP V19.43 RESULT LOG',
+        'SSHCP V19.44 RESULT LOG',
         'Generated: ' + new Date().toISOString(),
         'Tests: ' + log.length,
         ''
@@ -16521,7 +16522,7 @@ let scoreTimingDetail =
       );
 
       const lines = [
-        'SSHCP V19.43 CONTROL CENTER LOG',
+        'SSHCP V19.44 CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
         'Geometry: ' + controlCenterGeometryLineV188(),
@@ -16648,7 +16649,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V19.43 — SCRAMBLE MODE FUNCTIONALITY
+       SSHCP V19.44 — SCRAMBLE MODE FUNCTIONALITY
        V19.43 keeps the V19.42 Scramble feed/nav behavior unchanged,
        but allows any currently valid QR/team or MASTER authorization to use
        Scramble Mode. The future MASTER-first entry gate is intentionally NOT
@@ -26922,14 +26923,24 @@ let scoreTimingDetail =
       const gray9 = getComputedStyle(document.documentElement)
         .getPropertyValue('--sshcp-gray-9-v1850').trim() || '#141414';
       const darkPress = darkFilledButtonV185(button);
-      const pressBg = darkPress ? gray9 : '#fff';
-      const pressFg = darkPress ? '#fff' : '#000';
+      /* V19.44 — preserve the established V19.14 NESR score-box press rule.
+         The global literal-button handler previously overwrote the CSS with
+         inline !important white background/border. For the EMPTY active NESR
+         score box only, keep the fill transparent and turn only the Blue
+         border black while the finger is physically down. */
+      const nesrEmptyScorePressV1944 = !!(
+        button.matches &&
+        button.matches('#scorecardView .score-button.empty.active-hole-score')
+      );
+      const pressBg = nesrEmptyScorePressV1944 ? 'transparent' : (darkPress ? gray9 : '#fff');
+      const pressFg = nesrEmptyScorePressV1944 ? computed.color : (darkPress ? '#fff' : '#000');
+      const pressBorder = nesrEmptyScorePressV1944 ? '#000' : pressBg;
       button.style.setProperty('--sshcp-press-bg-v172', pressBg);
       button.style.setProperty('--sshcp-press-fg-v172', pressFg);
-      button.style.setProperty('--sshcp-press-border-v172', pressBg);
+      button.style.setProperty('--sshcp-press-border-v172', pressBorder);
       button.style.setProperty('background', pressBg, 'important');
       button.style.setProperty('color', pressFg, 'important');
-      button.style.setProperty('border-color', pressBg, 'important');
+      button.style.setProperty('border-color', pressBorder, 'important');
       button.style.setProperty('-webkit-text-fill-color', pressFg, 'important');
       button.style.setProperty('filter', 'none', 'important');
       button.style.setProperty('transition', 'none', 'important');
