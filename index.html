@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.49-K6Q8NV | BUILD KEY: 19.50-M4Q7VX -->
+<!-- SSHCP | BASE KEY: 19.50-M4Q7VX | BUILD KEY: 19.51-P7N4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12748,7 +12748,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.48</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.51</span></span>
         </button>
 
       </div>
@@ -19325,12 +19325,12 @@ let scoreTimingDetail =
       const geometry = syncControlCenterLayoutV1824();
       const multiplier = geometry ? geometry.multiplier : getVerticalMetricsV188().multiplier;
 
-      function fitButton45(element) {
+      function fitButton38(element) {
         if (!(element instanceof HTMLElement)) return;
         const style = getComputedStyle(element);
         if (style.display === 'none' || element.clientWidth <= 0 || element.clientHeight <= 0) return;
 
-        const target = element.clientHeight * 0.45;
+        const target = element.clientHeight * 0.38;
         const minimum = 7 * multiplier;
         let size = target;
         element.style.setProperty('white-space', 'nowrap', 'important');
@@ -19342,7 +19342,7 @@ let scoreTimingDetail =
         }
       }
 
-      /* V19.50: every actual Control Center button targets 45% of its own
+      /* V19.51: every actual Control Center button targets 38% of its own
          rendered height. Only that label shrinks when width requires it. */
       const selectors = [
         '.test-log-utility-row button',
@@ -19354,7 +19354,7 @@ let scoreTimingDetail =
         '.control-center-scramble-row-v1938 button'
       ];
       selectors.forEach(selector => {
-        els.testLogView.querySelectorAll(selector).forEach(fitButton45);
+        els.testLogView.querySelectorAll(selector).forEach(fitButton38);
       });
     }
 
@@ -19378,12 +19378,12 @@ let scoreTimingDetail =
       const geometry = syncScrambleModeLayoutV1938();
       const multiplier = geometry ? geometry.multiplier : getVerticalMetricsV188().multiplier;
 
-      function fitButton45(element) {
+      function fitButton38(element) {
         if (!(element instanceof HTMLElement)) return;
         const style = getComputedStyle(element);
         if (style.display === 'none' || element.clientWidth <= 0 || element.clientHeight <= 0) return;
 
-        const target = element.clientHeight * 0.45;
+        const target = element.clientHeight * 0.38;
         const minimum = 7 * multiplier;
         let size = target;
         element.style.setProperty('white-space','nowrap','important');
@@ -19394,8 +19394,8 @@ let scoreTimingDetail =
         }
       }
 
-      /* V19.50: all Scramble Mode buttons use the same 45%-of-own-height target. */
-      els.scrambleModeView.querySelectorAll('.scramble-action-button-v1938, .scramble-back-v1938').forEach(fitButton45);
+      /* V19.51: all Scramble Mode buttons use the same 38%-of-own-height target. */
+      els.scrambleModeView.querySelectorAll('.scramble-action-button-v1938, .scramble-back-v1938').forEach(fitButton38);
     }
 
     function rememberResponsiveGeometryV5(patch = {}) {
