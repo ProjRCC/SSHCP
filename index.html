@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.65-N8Q4VK | BUILD KEY: 19.66-C6R8QW -->
+<!-- SSHCP | BASE KEY: 19.66-C6R8QW | BUILD KEY: 19.67-J5Q8RX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.66</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.67</span></span>
         </button>
 
       </div>
@@ -22271,6 +22271,106 @@ let scoreTimingDetail =
       }
     }
 
+    function fitSummaryTeamTextV1967(
+      container,
+      anchor,
+      textEl,
+      rowHeight,
+      targetSize,
+      horizontalPad,
+      twoLineHeightRatio = 0.80
+    ) {
+      if (!container || !textEl) return null;
+
+      const original = String(
+        textEl.dataset.v58Name ||
+        textEl.dataset.fullTeamName ||
+        textEl.textContent || ''
+      ).trim();
+      textEl.dataset.v58Name = original;
+      textEl.dataset.fullTeamName = original;
+      textEl.classList.remove('two-line');
+      textEl.textContent = original;
+      textEl.style.removeProperty('font-size');
+
+      if (anchor) {
+        anchor.style.setProperty('width', 'auto', 'important');
+        anchor.style.setProperty('max-width', '100%', 'important');
+      }
+
+      const availableWidth = Math.max(0.001, container.clientWidth - Math.max(0, Number(horizontalPad) || 0));
+      const availableTwoLineHeight = Math.max(0.001, rowHeight * Math.max(0.10, Math.min(1, Number(twoLineHeightRatio) || 0.80)));
+      const target = Math.max(0.001, Number(targetSize) || 0.001);
+
+      textEl.style.setProperty('font-size', target + 'px', 'important');
+      textEl.style.setProperty('line-height', '1.04', 'important');
+      textEl.style.setProperty('white-space', 'nowrap', 'important');
+      textEl.style.setProperty('overflow', 'visible', 'important');
+
+      if (
+        measureTeamLineWidthV58(textEl, original, target) <= availableWidth + 0.75 &&
+        target * 1.04 <= availableTwoLineHeight + 0.75
+      ) {
+        return { size: target, truncated: false, lines: 1 };
+      }
+
+      let two = twoLineTeamFitsV58(
+        textEl,
+        original,
+        target,
+        availableWidth,
+        availableTwoLineHeight,
+        splitLeaderboardTeamTwoLinesV58
+      );
+      renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
+      textEl.style.setProperty('font-size', target + 'px', 'important');
+      textEl.style.setProperty('line-height', '1.02', 'important');
+      textEl.style.setProperty('white-space', 'normal', 'important');
+      textEl.style.setProperty('overflow', 'visible', 'important');
+
+      if (two.fits) return { size: target, truncated: false, lines: 2 };
+
+      /* No design minimum: solve for the largest proportional two-line size
+         that fits the actual box. The tiny numerical lower bound is only the
+         binary-search endpoint, never a CSS/font floor. */
+      let low = 0;
+      let high = target;
+      let best = null;
+      for (let i = 0; i < 28; i++) {
+        const size = (low + high) / 2;
+        const candidate = twoLineTeamFitsV58(
+          textEl,
+          original,
+          size,
+          availableWidth,
+          availableTwoLineHeight,
+          splitLeaderboardTeamTwoLinesV58
+        );
+        if (candidate.fits) {
+          low = size;
+          best = { size, candidate };
+        } else {
+          high = size;
+        }
+      }
+
+      const finalSize = best ? best.size : Math.max(Number.EPSILON, target / Math.pow(2, 28));
+      const finalTwo = best ? best.candidate : twoLineTeamFitsV58(
+        textEl,
+        original,
+        finalSize,
+        availableWidth,
+        availableTwoLineHeight,
+        splitLeaderboardTeamTwoLinesV58
+      );
+      renderTwoLineTeamTextV58(textEl, finalTwo.line1, finalTwo.line2);
+      textEl.style.setProperty('font-size', finalSize + 'px', 'important');
+      textEl.style.setProperty('line-height', '1.02', 'important');
+      textEl.style.setProperty('white-space', 'normal', 'important');
+      textEl.style.setProperty('overflow', 'visible', 'important');
+      return { size: finalSize, truncated: false, lines: 2 };
+    }
+
     function fitTournamentSummaryRemaining() {
       if (!els.modalOverlay.classList.contains('tournament-summary')) return;
       if (!els.modalBox || !els.modalBody) return;
@@ -22313,15 +22413,12 @@ let scoreTimingDetail =
         });
       }
 
-      /* V18.17 Scramble Summary TEAM hierarchy:
-         - Every tier has a one-line ceiling of 45% of its OWN actual row height.
-         - Two-line names are allowed, but the complete two-line block may use
-           at most 80% of that row height.
-         - The ACTUAL fitted per-line font size cascades downward at 90%:
-           1st -> 2nd -> 3rd -> one shared size for 4th-10th.
-         - 15px is the absolute TEAM-name floor. There are no pixel maximums. */
-      const summaryTeamMinimumV1817 = 15;
-      let previousPodiumTeamSizeV1817 = null;
+      /* V19.67 Scramble Summary TEAM hierarchy — proportional on every screen.
+         1st starts at 45% of its actual calculated row height. Each podium tier
+         after that starts at 95% of the PREVIOUS tier's final fitted size.
+         4th starts at 95% of 3rd's final fitted size; places 4-end then share
+         one exact final size. TEAM names have no fixed pixel minimum. */
+      let previousPodiumTeamSizeV1967 = null;
 
       [1,2,3].forEach((place, index) => {
         const row = topGrid.querySelector('.tournament-summary-row.place-' + place);
@@ -22335,31 +22432,24 @@ let scoreTimingDetail =
         if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 9, {horizontalPad:4,verticalPad:5});
 
         if (team && teamText) {
-          const ownRowCeiling = row.clientHeight * 0.45;
-          const cascadeCeiling = Number.isFinite(previousPodiumTeamSizeV1817)
-            ? previousPodiumTeamSizeV1817 * 0.90
-            : ownRowCeiling;
-          const targetSize = Math.max(
-            summaryTeamMinimumV1817,
-            Math.min(ownRowCeiling, cascadeCeiling)
-          );
-          const fittedTeam = fitTwoLineTeamTextV58(
+          const targetSize = Number.isFinite(previousPodiumTeamSizeV1967)
+            ? previousPodiumTeamSizeV1967 * 0.95
+            : row.clientHeight * 0.45;
+          const fittedTeam = fitSummaryTeamTextV1967(
             team,
             teamAnchor,
             teamText,
             row.clientHeight,
             targetSize,
-            summaryTeamMinimumV1817,
             22,
             0.80
           );
-          previousPodiumTeamSizeV1817 = fittedTeam && Number.isFinite(fittedTeam.size)
+          previousPodiumTeamSizeV1967 = fittedTeam && Number.isFinite(fittedTeam.size)
             ? fittedTeam.size
             : targetSize;
         }
 
-        /* Keep the approved 60/55/50% podium NET +/- hierarchy, but remove
-           the old 46px hard maximum so it remains proportional to the row. */
+        /* Keep the approved 60/55/50% podium NET +/- hierarchy. */
         if (net) fitTextToBoxV5(net, net, row.clientHeight * ([0.60,0.55,0.50][index]), 12, {horizontalPad:6,verticalPad:5});
       });
 
@@ -22384,33 +22474,24 @@ let scoreTimingDetail =
       fitUniform(lowerPlace, 0.34, 9, 4);
 
       if (lowerTeam.length) {
-        const lowerRowHeights = lowerTeam
-          .map(cell => cell.clientHeight || cell.getBoundingClientRect().height || 0)
-          .filter(height => height > 0);
-        const shortestLowerRow = lowerRowHeights.length ? Math.min(...lowerRowHeights) : 1;
-        const ownLowerRowCeiling = shortestLowerRow * 0.45;
-        const cascadeLowerCeiling = Number.isFinite(previousPodiumTeamSizeV1817)
-          ? previousPodiumTeamSizeV1817 * 0.90
-          : ownLowerRowCeiling;
-        const sharedLowerTarget = Math.max(
-          summaryTeamMinimumV1817,
-          Math.min(ownLowerRowCeiling, cascadeLowerCeiling)
-        );
+        const firstLowerRowHeight = lowerTeam[0].clientHeight || lowerTeam[0].getBoundingClientRect().height || 1;
+        const sharedLowerTarget = Number.isFinite(previousPodiumTeamSizeV1967)
+          ? previousPodiumTeamSizeV1967 * 0.95
+          : firstLowerRowHeight * 0.45;
 
-        /* First pass discovers the smallest actual fit required by any of
-           places 4-10. Second pass applies that one exact size to all of them. */
+        /* Discover the smallest complete-name fit required anywhere in the
+           lower block, then apply that exact size to every row 4-end. */
         let sharedLowerActual = sharedLowerTarget;
         lowerTeam.forEach(teamCell => {
           const anchor = teamCell.querySelector('.summary-team-anchor');
           const teamText = teamCell.querySelector('.summary-team-text');
           if (!teamText) return;
-          const fitted = fitTwoLineTeamTextV58(
+          const fitted = fitSummaryTeamTextV1967(
             teamCell,
             anchor,
             teamText,
             teamCell.clientHeight,
             sharedLowerTarget,
-            summaryTeamMinimumV1817,
             10,
             0.80
           );
@@ -22419,18 +22500,16 @@ let scoreTimingDetail =
           }
         });
 
-        sharedLowerActual = Math.max(summaryTeamMinimumV1817, sharedLowerActual);
         lowerTeam.forEach(teamCell => {
           const anchor = teamCell.querySelector('.summary-team-anchor');
           const teamText = teamCell.querySelector('.summary-team-text');
           if (!teamText) return;
-          fitTwoLineTeamTextV58(
+          fitSummaryTeamTextV1967(
             teamCell,
             anchor,
             teamText,
             teamCell.clientHeight,
             sharedLowerActual,
-            summaryTeamMinimumV1817,
             10,
             0.80
           );
