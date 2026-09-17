@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.63-R6Q8NV | BUILD KEY: 19.64-T7M4QX -->
+<!-- SSHCP | BASE KEY: 19.64-T7M4QX | BUILD KEY: 19.65-N8Q4VK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.64</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.65</span></span>
         </button>
 
       </div>
@@ -17677,6 +17677,14 @@ let scoreTimingDetail =
             (data && data.error) ||
             (actionLabel + ' was not verified.')
           );
+        }
+
+        /* V19.65 — Control Center generator convenience only.
+           A successfully VERIFIED ADD PAR / ADD RANDOM / ADD RANDOM 2 starts
+           a fresh tiebreak-presentation cycle for that generated dataset.
+           DELETE ALL and normal tournament scoring/navigation do not reset it. */
+        if (isPar || isRandom || isRandom2) {
+          resetTournamentTieBreakViewed();
         }
 
         teams.forEach(team => {
