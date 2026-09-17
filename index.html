@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.67-J5Q8RX | BUILD KEY: 19.68-M7Q4NV -->
+<!-- SSHCP | BASE KEY: 19.68-M7Q4NV | BUILD KEY: 19.69-H4N7QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22212,9 +22212,13 @@ let scoreTimingDetail =
          The standings table now begins at the modal-body top, i.e. the former
          HOME / LEADERBOARD top position. The recovered height is distributed
          through the existing weighted standings rows. */
-      const noTieBuffer = 15;
-      const tieBuffer = 8;
-      const tieLineH = 15;
+      /* V19.69 — keep every Summary tiebreak explanation on one line, but
+         scale the established note band with the same device multiplier used
+         elsewhere instead of leaving its 15px line geometry phone-fixed. */
+      const summaryMultiplierV1969 = getVerticalMetricsV188().multiplier;
+      const noTieBuffer = 15 * summaryMultiplierV1969;
+      const tieBuffer = 8 * summaryMultiplierV1969;
+      const tieLineH = 15 * summaryMultiplierV1969;
       const noteSectionH = noteCount > 0
         ? tieBuffer + (noteCount * tieLineH) + tieBuffer
         : noTieBuffer;
@@ -22268,6 +22272,12 @@ let scoreTimingDetail =
         notes.style.setProperty('max-height', noteSectionH + 'px', 'important');
         notes.style.setProperty('padding-top', noteCount > 0 ? tieBuffer + 'px' : '0px', 'important');
         notes.style.setProperty('padding-bottom', noteCount > 0 ? tieBuffer + 'px' : '0px', 'important');
+        Array.from(notes.querySelectorAll('.tournament-summary-note')).forEach(note => {
+          note.style.setProperty('height', tieLineH + 'px', 'important');
+          note.style.setProperty('min-height', tieLineH + 'px', 'important');
+          note.style.setProperty('max-height', tieLineH + 'px', 'important');
+          note.style.setProperty('line-height', tieLineH + 'px', 'important');
+        });
       }
     }
 
@@ -22547,7 +22557,30 @@ let scoreTimingDetail =
         cell.style.setProperty('white-space', 'nowrap', 'important');
       });
 
-      document.documentElement.style.setProperty('--v5-summary-note-font', '13px');
+      /* V19.69 — preserve one-line tiebreak notes. Start from the established
+         13/15 text-to-line relationship at the current device multiplier, then
+         shrink all notes together only if the longest explanation needs it. */
+      const summaryNotesV1969 = Array.from(body.querySelectorAll('.tournament-summary-note'));
+      if (summaryNotesV1969.length) {
+        const noteTargetV1969 = 13 * getVerticalMetricsV188().multiplier;
+        let sharedNoteSizeV1969 = noteTargetV1969;
+        summaryNotesV1969.forEach(note => {
+          sharedNoteSizeV1969 = Math.min(
+            sharedNoteSizeV1969,
+            fitTextToBoxV5(note, note, noteTargetV1969, 0.001, {
+              horizontalPad: Math.max(4, note.clientWidth * 0.04),
+              verticalPad: 0,
+              wrap: false,
+              lineHeight: 1
+            })
+          );
+        });
+        summaryNotesV1969.forEach(note => {
+          note.style.setProperty('font-size', sharedNoteSizeV1969 + 'px', 'important');
+          note.style.setProperty('white-space', 'nowrap', 'important');
+        });
+        document.documentElement.style.setProperty('--v5-summary-note-font', sharedNoteSizeV1969 + 'px');
+      }
 
       [...els.modalActions.querySelectorAll('.modal-btn')].forEach(button => {
         if (button.classList.contains('summary-action-placeholder-v1627')) return;
@@ -26798,8 +26831,8 @@ let scoreTimingDetail =
       const available = Math.max(1, button.clientWidth - padLeft - padRight - 2);
       let size = startPx;
       button.style.fontSize = size + 'px';
-      while (size > 12 && button.scrollWidth > available + padLeft + padRight) {
-        size -= 0.5;
+      while (size > 0.5 && button.scrollWidth > available + padLeft + padRight) {
+        size = Math.max(0.5, size - 0.5);
         button.style.fontSize = size + 'px';
       }
       return size;
@@ -26808,17 +26841,17 @@ let scoreTimingDetail =
     function fitQuickGuideFooterV173(leaderboard, back, scorecard) {
       if (!leaderboard || !back || !scorecard) return;
 
-      /* V18.59: LEADERBOARD + SCORECARD retain their shared 50% row-height
-         target. BACK remains independent and gets a small bump to 55% of its own
-         row height so the short center label reads at the intended visual weight. */
-      const outerTarget = Math.max(12, Math.floor(leaderboard.clientHeight * 0.50));
+      /* V19.69 — Quick Guide footer typography is driven by the actual rendered
+         button height on every screen. LEADERBOARD + SCORECARD share one final
+         fitted size from a 40% target; BACK independently targets 50%. */
+      const outerTarget = Math.max(0.001, leaderboard.clientHeight * 0.40);
       const leaderboardFit = fitQuickGuideButtonTextV173(leaderboard, outerTarget);
       const scorecardFit = fitQuickGuideButtonTextV173(scorecard, outerTarget);
       const matchedOuter = Math.min(leaderboardFit, scorecardFit);
       leaderboard.style.fontSize = matchedOuter + 'px';
       scorecard.style.fontSize = matchedOuter + 'px';
 
-      const backTarget = Math.max(12, Math.floor(back.clientHeight * 0.55));
+      const backTarget = Math.max(0.001, back.clientHeight * 0.50);
       fitQuickGuideButtonTextV173(back, backTarget);
     }
 
