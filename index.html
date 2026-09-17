@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.61-V7Q3NK | BUILD KEY: 19.62-K4Q7MX -->
+<!-- SSHCP | BASE KEY: 19.62-K4Q7MX | BUILD KEY: 19.63-R6Q8NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.62</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.63</span></span>
         </button>
 
       </div>
@@ -18214,11 +18214,10 @@ let scoreTimingDetail =
       await showScorecard();
     }
 
-    function showHome() {
+    async function showHome() {
 
       closeModal();
       closeHomeTeamDropup();
-      updateHomeScorecardAccess();
 
       closeScoreEntry(
         false
@@ -18243,6 +18242,22 @@ let scoreTimingDetail =
       window.scrollTo(
         0,
         0
+      );
+
+      /* V19.63 — every HOME entry is resolved behind a white curtain over only
+         the mutable middle action zone. The logo and QUICK GUIDE stay visible.
+         Reuse the established reveal-shield fade/timing rather than introducing
+         a separate transition system. */
+      const homeRevealShieldV1963 = beginHomeRevealV1963();
+
+      await refreshHomeTournamentStateV1831();
+      updateHomeScorecardAccess();
+      fitHomeActionTypographyV197();
+
+      await revealDataShieldAfterLayoutV177(
+        'home',
+        homeRevealShieldV1963,
+        2
       );
 
     }
@@ -18290,6 +18305,26 @@ let scoreTimingDetail =
         if (!nav) return false;
         const navRect = nav.getBoundingClientRect();
         top = Math.floor(navRect.bottom);
+      } else if (mode === 'home') {
+        /* V19.63 — HOME uses the same hidden-refresh curtain as the established
+           data pages, but only across the mutable action zone. Keep the event
+           logo above and QUICK GUIDE below visible while HOME silently resolves
+           its current tournament / authorization presentation. */
+        const logoZone = els.homeView && els.homeView.querySelector('.splash-image-wrap');
+        const guide = els.homeView && els.homeView.querySelector('.sshcp-home-guide-row');
+        if (!logoZone || !guide) return false;
+        const logoRect = logoZone.getBoundingClientRect();
+        const guideRect = guide.getBoundingClientRect();
+        top = Math.floor(logoRect.bottom);
+        const bottom = Math.ceil(guideRect.top);
+        if (!(bottom > top)) return false;
+        shield.style.left = '0px';
+        shield.style.right = '0px';
+        shield.style.top = Math.max(0, top) + 'px';
+        shield.style.bottom = Math.max(0, viewportHeight - bottom) + 'px';
+        shield.style.width = 'auto';
+        shield.style.height = 'auto';
+        return true;
       } else {
         return false;
       }
@@ -18406,6 +18441,11 @@ let scoreTimingDetail =
       if (currentView !== 'leaderboard') return null;
       const header = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
       return beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false, 8800, 'leaderboard');
+    }
+
+    function beginHomeRevealV1963() {
+      if (currentView !== 'home') return null;
+      return beginDataRevealShieldV177('home', [], '#fff', false, 4800, 'home');
     }
 
     async function showScorecard() {
@@ -28188,8 +28228,7 @@ let scoreTimingDetail =
          current leaderboard completion first. This makes separate devices agree
          on VIEW LIVE LEADERBOARD vs SCRAMBLE SUMMARY without requiring either
          device to visit the Leaderboard. */
-      await refreshHomeTournamentStateV1831();
-      showHome();
+      await showHome();
 
     }
 
