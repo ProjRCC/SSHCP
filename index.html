@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.64-T7M4QX | BUILD KEY: 19.65-N8Q4VK -->
+<!-- SSHCP | BASE KEY: 19.65-N8Q4VK | BUILD KEY: 19.66-C6R8QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.65</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.66</span></span>
         </button>
 
       </div>
@@ -27874,14 +27874,26 @@ let scoreTimingDetail =
       els.modalInput.autocapitalize = 'characters';
       els.modalInput.value = '';
       const back = makeModalButton('BACK','',showBareEntryGateV1961);
-      const enter = makeModalButton('ENTER','primary',() => {
+      const enter = makeModalButton('ENTER','primary',async() => {
         if (String(els.modalInput.value || '').trim().toUpperCase() !== 'ENTER') {
           els.modalBody.textContent = 'INVALID PASSWORD';
           els.modalInput.select();
           return;
         }
+
+        /* V19.66 — the successful bare-entry password is the same real MASTER
+           authorization used by Control Center AUTHORIZE MASTER, with PREAUTH
+           enabled for immediate team switching. QR/direct-link entry is untouched. */
         closeModal();
-        dismissQrWelcomeAnimatedV172();
+        startLoadingLine();
+        const ok = await validateQrPasskey(SSHCP_MASTER_TEST_KEY,true,true);
+        completeLoadingLine();
+        if (ok) {
+          setPreAuthorizeEnabledV1958(true);
+          scorecardHasLoaded = false;
+          leaderboardHasLoaded = false;
+          dismissQrWelcomeAnimatedV172();
+        }
       });
       els.modalActions.className = 'modal-actions';
       els.modalActions.replaceChildren(back,enter);
