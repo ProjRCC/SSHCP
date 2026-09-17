@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.57-M6Q8TX | BUILD KEY: 19.58-P7Q4NV -->
+<!-- SSHCP | BASE KEY: 19.58-P7Q4NV | BUILD KEY: 19.59-H8Q3MX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4116,7 +4116,7 @@ body.score-team-menu-open .score-fixed-top{
 .switch-auth-buttons{grid-template-columns:1fr 1fr}
 .switch-auth-master-row{grid-template-columns:minmax(0,7fr) minmax(0,3fr)}
 .switch-auth-button,.switch-auth-preauth{height:54px;min-height:54px;max-height:54px;box-sizing:border-box}
-.switch-auth-preauth{display:flex;align-items:center;justify-content:center;gap:5px;padding:0 6px;border:2px solid var(--gold);border-radius:9px;background:#fafafa;color:#000;font-size:11px;font-weight:700;white-space:nowrap}
+.switch-auth-preauth{display:flex;align-items:center;justify-content:center;gap:4px;padding:0 5px;border:2px solid var(--gold);border-radius:9px;background:#fafafa;color:#000;font-size:10px;font-weight:700;white-space:nowrap}
 .switch-auth-preauth input{width:18px;height:18px;margin:0;accent-color:var(--gold);flex:0 0 auto}
 .modal-overlay.switch-authorization .modal-actions .modal-btn{height:54px;min-height:54px;max-height:54px}
 #testLogView .test-auth-button-row,#testLogView .test-auth-button-row.authorized,#testLogView .test-auth-button-row.master-authorized,#testLogView .test-auth-button-row.authorized:not(.master-authorized){grid-template-columns:repeat(2,minmax(0,1fr))!important}
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.57</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.59</span></span>
         </button>
 
       </div>
@@ -14436,10 +14436,9 @@ let scoreTimingDetail =
     }
     function setPreAuthorizeEnabledV1958(enabled){
       localStorage.setItem(SSHCP_PREAUTHORIZE_KEY, enabled ? '1' : '0');
-      /* PRE-AUTHORIZE owns only its synthetic team authorization. Turning the
-         mode off returns to the normal browse-then-authorize-on-score path. */
+      /* V19.59 — PREAUTH is a MASTER browsing/scoring convenience only.
+         It never converts MASTER into a fixed QR/team authorization. */
       if (!enabled && localStorage.getItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY) === '1') {
-        clearQrAuthorization();
         localStorage.removeItem('rotbAuthorizedTeam');
         localStorage.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
       }
@@ -14451,25 +14450,15 @@ let scoreTimingDetail =
 
     async function preAuthorizeTeamSelectionV1958(team){
       if (!isPreAuthorizeEnabledV1958() || !team) return true;
-      const directory = await loadAssignedPasskeys(false);
-      const match = (directory || []).find(item =>
-        item && item.qrId !== 'MASTER' && item.assigned && item.team &&
-        normalizeName(item.team) === normalizeName(team.name) && String(item.passkey || '').trim()
-      );
-      if (!match) {
-        showNotAuthorized();
-        return false;
-      }
-      invalidateQrAuthRequestsV1631();
-      saveQrAuthorization({
-        role:'QR', assigned:true, qrId:String(match.qrId || ''),
-        team:String(match.team), slot:match.slot || team.slot
-      }, String(match.passkey));
+      /* V19.59 — while MASTER + PREAUTH is active, the normal team selector
+         itself is the authorization step. MASTER remains MASTER, so HOME and
+         SCORECARD keep their selectors while team-aware views use this team. */
+      if (!isMasterQr()) return true;
       localStorage.setItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY, '1');
-      localStorage.setItem('rotbAuthorizedTeam', String(match.team));
-      rememberSelectedTeam(String(match.team));
+      setAuthorizedTeam(String(team.name));
+      rememberSelectedTeam(String(team.name));
       syncTestAuthorizationToggle();
-      updateHomeScorecardAccess();
+      updateScoreTeamSelectButton();
       return true;
     }
     function clearQrAuthorization(){
@@ -14916,7 +14905,7 @@ let scoreTimingDetail =
         '</div>' +
         '<div class="switch-auth-master-row">' +
           '<button id="switchAuthorizeMaster" class="switch-auth-button" type="button">AUTHORIZE MASTER</button>' +
-          '<label class="switch-auth-preauth"><input id="switchPreAuthorize" type="checkbox"><span>PRE-AUTHORIZE</span></label>' +
+          '<label class="switch-auth-preauth"><input id="switchPreAuthorize" type="checkbox"><span>PREAUTH</span></label>' +
         '</div>';
       els.modalInput.style.display='none';
       const close=makeModalButton('CLOSE','',closeModal);
@@ -16295,7 +16284,7 @@ let scoreTimingDetail =
 
     function currentFrontendVersionLabelV1955() {
       const node = document.querySelector('.home-version-number-v1835');
-      return normalizeAuditTextV189(node && node.textContent) || 'V19.57';
+      return normalizeAuditTextV189(node && node.textContent) || 'V19.59';
     }
 
     function auditRenderedSummaryTeamV1955(container) {
@@ -20505,6 +20494,14 @@ let scoreTimingDetail =
 
       if (isTeamQr()) {
         if (normalizeName(selectedTeam.name) !== normalizeName(getQrTeam())) { showNotAuthorized(); return; }
+        openScoreEntry(index);
+        return;
+      }
+
+      if (isMasterQr() && isPreAuthorizeEnabledV1958()) {
+        setAuthorizedTeam(selectedTeam.name);
+        localStorage.setItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY, '1');
+        rememberSelectedTeam(selectedTeam.name);
         openScoreEntry(index);
         return;
       }
