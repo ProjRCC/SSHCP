@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.56-R8Q5NV | BUILD KEY: 19.57-M6Q8TX -->
+<!-- SSHCP | BASE KEY: 19.57-M6Q8TX | BUILD KEY: 19.58-P7Q4NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4111,6 +4111,16 @@ body.score-team-menu-open .score-fixed-top{
 .passkey-team-option:last-child{border-bottom:0}
 .passkey-team-option:active{background:var(--gold);color:#000}
 .switch-auth-key{margin-top:14px;color:#999;font-family:monospace;font-size:8px;line-height:1.2;word-break:break-all;user-select:all;-webkit-user-select:all}
+/* SSHCP V19.58 — authorization popup test workflow. */
+.switch-auth-buttons,.switch-auth-master-row{display:grid;gap:10px;margin-top:8px}
+.switch-auth-buttons{grid-template-columns:1fr 1fr}
+.switch-auth-master-row{grid-template-columns:minmax(0,7fr) minmax(0,3fr)}
+.switch-auth-button,.switch-auth-preauth{height:54px;min-height:54px;max-height:54px;box-sizing:border-box}
+.switch-auth-preauth{display:flex;align-items:center;justify-content:center;gap:5px;padding:0 6px;border:2px solid var(--gold);border-radius:9px;background:#fafafa;color:#000;font-size:11px;font-weight:700;white-space:nowrap}
+.switch-auth-preauth input{width:18px;height:18px;margin:0;accent-color:var(--gold);flex:0 0 auto}
+.modal-overlay.switch-authorization .modal-actions .modal-btn{height:54px;min-height:54px;max-height:54px}
+#testLogView .test-auth-button-row,#testLogView .test-auth-button-row.authorized,#testLogView .test-auth-button-row.master-authorized,#testLogView .test-auth-button-row.authorized:not(.master-authorized){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#testLogView .test-switch-auth,#testLogView .test-auth-button-row.authorized:not(.master-authorized) .test-switch-auth{grid-column:2!important}
 .quick-guide-separator{width:78%;height:1px;margin:10px auto;background:#b9b9b9}
 .quick-guide-footnote{margin-top:13px;text-align:center;font-size:14px;font-weight:700;font-style:italic}
 @media(max-width:420px){.home-scorecard-team{font-size:19px!important}.test-score-action{font-size:9px!important}}
@@ -12624,6 +12634,19 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 }
 
 </style>
+
+<style id="sshcp-v1958-auth-final">
+/* V19.58 final cascade: Control Center auth row is never a 3-column row. */
+#testLogView .test-auth-button-row,
+#testLogView .test-auth-button-row.authorized,
+#testLogView .test-auth-button-row.master-authorized,
+#testLogView .test-auth-button-row.authorized:not(.master-authorized){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#testLogView .test-switch-auth,
+#testLogView .test-auth-button-row.authorized:not(.master-authorized) .test-switch-auth{grid-column:2!important}
+.modal-overlay.switch-authorization .switch-auth-button,
+.modal-overlay.switch-authorization .switch-auth-preauth,
+.modal-overlay.switch-authorization .modal-actions .modal-btn{height:54px!important;min-height:54px!important;max-height:54px!important;box-sizing:border-box!important}
+</style>
 </head>
 
 
@@ -13142,10 +13165,6 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
         <div class="test-auth-controls">
           <div id="testAuthorizationButtonRow" class="test-auth-button-row">
             <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTH</button>
-            <label class="test-team-auth-toggle">
-              <input id="testTeamAuthorizationCheck" type="checkbox">
-              <span>AUTH CHECK</span>
-            </label>
             <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTH</button>
           </div>
         </div>
@@ -14298,6 +14317,8 @@ let scoreTimingDetail =
     const SSHCP_QR_TEAM_KEY = 'sshcpQrTeam';
     const SSHCP_QR_SLOT_KEY = 'sshcpQrSlot';
     const SSHCP_TEAM_AUTH_KEY = 'sshcpTeamAuthorization';
+    const SSHCP_PREAUTHORIZE_KEY = 'sshcpPreAuthorizeV1958';
+    const SSHCP_PREAUTHORIZE_ACTIVE_KEY = 'sshcpPreAuthorizeActiveV1958';
     const SSHCP_MASTER_TEST_KEY = 'glmNnV63TWS42fcRB8z2yldF';
 
     /* V16.31 — one QR-auth owner at a time. This fixes the latent V16.30
@@ -14366,12 +14387,14 @@ let scoreTimingDetail =
     function isMasterQr(){ return getQrRole() === 'MASTER'; }
     function isTeamQr(){ return getQrRole() === 'QR'; }
     function isTeamAuthorizationEnabled(){ return localStorage.getItem(SSHCP_TEAM_AUTH_KEY) !== '0'; }
+    function isPreAuthorizeEnabledV1958(){ return localStorage.getItem(SSHCP_PREAUTHORIZE_KEY) === '1'; }
     function syncTeamQrLockedUi(){
-      const locked = isTeamQr() && !!getQrTeam();
+      const locked = isTeamQr() && !!getQrTeam() && !isPreAuthorizeEnabledV1958();
       const master = isMasterQr();
+      const preAuthorized = isPreAuthorizeEnabledV1958();
       document.body.classList.toggle('team-qr-locked', locked);
       document.body.classList.toggle('master-qr', master);
-      if (!master) {
+      if (!master && !preAuthorized) {
         closeScoreTeamDropdown();
       }
       if (locked) {
@@ -14385,16 +14408,6 @@ let scoreTimingDetail =
     }
 
     function syncTestAuthorizationToggle(){
-      if (els.testTeamAuthorizationCheck) {
-        if (isTeamQr()) {
-          els.testTeamAuthorizationCheck.checked = true;
-          els.testTeamAuthorizationCheck.disabled = true;
-        } else {
-          els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
-          els.testTeamAuthorizationCheck.disabled = false;
-        }
-      }
-
       const authorized = isMasterQr() || isTeamQr();
 
       if (els.testAuthorizationButtonRow) {
@@ -14413,13 +14426,51 @@ let scoreTimingDetail =
           els.testSwitchAuthorizationButton.textContent = 'GAIN AUTH';
         }
       }
-    
+
       requestAnimationFrame(fitTestPageButtonText);
     }
     function setTeamAuthorizationEnabled(enabled){
       localStorage.setItem(SSHCP_TEAM_AUTH_KEY, enabled ? '1' : '0');
       syncTestAuthorizationToggle();
       updateHomeScorecardAccess();
+    }
+    function setPreAuthorizeEnabledV1958(enabled){
+      localStorage.setItem(SSHCP_PREAUTHORIZE_KEY, enabled ? '1' : '0');
+      /* PRE-AUTHORIZE owns only its synthetic team authorization. Turning the
+         mode off returns to the normal browse-then-authorize-on-score path. */
+      if (!enabled && localStorage.getItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY) === '1') {
+        clearQrAuthorization();
+        localStorage.removeItem('rotbAuthorizedTeam');
+        localStorage.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
+      }
+      syncTeamQrLockedUi();
+      syncTestAuthorizationToggle();
+      updateHomeScorecardAccess();
+      updateScoreTeamSelectButton();
+    }
+
+    async function preAuthorizeTeamSelectionV1958(team){
+      if (!isPreAuthorizeEnabledV1958() || !team) return true;
+      const directory = await loadAssignedPasskeys(false);
+      const match = (directory || []).find(item =>
+        item && item.qrId !== 'MASTER' && item.assigned && item.team &&
+        normalizeName(item.team) === normalizeName(team.name) && String(item.passkey || '').trim()
+      );
+      if (!match) {
+        showNotAuthorized();
+        return false;
+      }
+      invalidateQrAuthRequestsV1631();
+      saveQrAuthorization({
+        role:'QR', assigned:true, qrId:String(match.qrId || ''),
+        team:String(match.team), slot:match.slot || team.slot
+      }, String(match.passkey));
+      localStorage.setItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY, '1');
+      localStorage.setItem('rotbAuthorizedTeam', String(match.team));
+      rememberSelectedTeam(String(match.team));
+      syncTestAuthorizationToggle();
+      updateHomeScorecardAccess();
+      return true;
     }
     function clearQrAuthorization(){
       [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
@@ -14429,12 +14480,14 @@ let scoreTimingDetail =
       invalidateQrAuthRequestsV1631();
       clearQrAuthorization();
       localStorage.removeItem('rotbAuthorizedTeam');
+      localStorage.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
       scorecardHasLoaded = false;
       leaderboardHasLoaded = false;
       syncTestAuthorizationToggle();
       updateHomeScorecardAccess();
     }
     function saveQrAuthorization(data, passkey){
+      localStorage.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
       localStorage.setItem(SSHCP_QR_PASSKEY_KEY, passkey);
       localStorage.setItem(SSHCP_QR_ROLE_KEY, data.role || 'NONE');
       localStorage.setItem(SSHCP_QR_ID_KEY, data.qrId || '');
@@ -14656,6 +14709,7 @@ let scoreTimingDetail =
     }
     function canNavigateToTeam(team){
       if(!team) return false;
+      if(isPreAuthorizeEnabledV1958()) return true;
       if(isTeamQr()) return normalizeName(team.name)===normalizeName(getQrTeam());
       return true;
     }
@@ -14836,9 +14890,7 @@ let scoreTimingDetail =
           return String(a.qrId).localeCompare(String(b.qrId), undefined, { numeric:true });
         });
 
-      menu.innerHTML =
-        '<button type="button" class="passkey-team-option" data-passkey="' + escapeHtml(SSHCP_MASTER_TEST_KEY) + '" data-label="MASTER">MASTER</button>' +
-        assigned.map(item =>
+      menu.innerHTML = assigned.map(item =>
           '<button type="button" class="passkey-team-option" data-passkey="' + escapeHtml(item.passkey) + '" data-label="' + escapeHtml(item.team.toUpperCase()) + '">' + escapeHtml(item.team.toUpperCase()) + '</button>'
         ).join('');
     }
@@ -14857,57 +14909,76 @@ let scoreTimingDetail =
       els.modalOverlay.classList.add('switch-authorization');
       els.modalTitle.textContent='SWITCH AUTHORIZATION';
       els.modalTitle.classList.remove('testing');
-      els.modalBody.innerHTML='<div class="switch-auth-buttons"><button id="switchScanQr" class="switch-auth-button" type="button">SCAN QR CODE</button><button id="switchEnterPasskey" class="switch-auth-button" type="button">ENTER PASSKEY</button></div><div class="switch-auth-key">'+SSHCP_MASTER_TEST_KEY+'</div>';
+      els.modalBody.innerHTML=
+        '<div class="switch-auth-buttons">' +
+          '<button id="switchScanQr" class="switch-auth-button" type="button">SCAN QR CODE</button>' +
+          '<button id="switchAuthTeam" class="switch-auth-button" type="button">AUTH TEAM</button>' +
+        '</div>' +
+        '<div class="switch-auth-master-row">' +
+          '<button id="switchAuthorizeMaster" class="switch-auth-button" type="button">AUTHORIZE MASTER</button>' +
+          '<label class="switch-auth-preauth"><input id="switchPreAuthorize" type="checkbox"><span>PRE-AUTHORIZE</span></label>' +
+        '</div>';
       els.modalInput.style.display='none';
       const close=makeModalButton('CLOSE','',closeModal);
       els.modalActions.className='modal-actions single';
       els.modalActions.replaceChildren(close);
       els.modalOverlay.classList.add('open');
-      document.getElementById('switchEnterPasskey').addEventListener('click',showEnterPasskey);
+
+      const pre = document.getElementById('switchPreAuthorize');
+      if (pre) {
+        pre.checked = isPreAuthorizeEnabledV1958();
+        pre.addEventListener('change', event => setPreAuthorizeEnabledV1958(Boolean(event.target.checked)));
+      }
+      document.getElementById('switchAuthTeam').addEventListener('click',showEnterPasskey);
+      document.getElementById('switchAuthorizeMaster').addEventListener('click',async()=>{
+        closeModal(); startLoadingLine();
+        const ok=await validateQrPasskey(SSHCP_MASTER_TEST_KEY,true,true);
+        completeLoadingLine();
+        if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
+      });
       document.getElementById('switchScanQr').addEventListener('click',()=>els.testQrCameraInput && els.testQrCameraInput.click());
     }
-    function showEnterPasskey(){
+
+    async function showEnterPasskey(){
+      let directory = readStoredTestQrDirectory();
+      if (!directory) {
+        startLoadingLine();
+        try { directory = await loadAssignedPasskeys(false); }
+        finally { completeLoadingLine(); }
+      }
+
       closeModal();
       els.modalOverlay.classList.add('switch-authorization');
-      els.modalTitle.textContent='ENTER PASSKEY';
+      els.modalTitle.textContent='AUTH TEAM';
       els.modalBody.innerHTML=
-        '<div>Enter the QR passkey.</div>' +
         '<div class="passkey-team-select-wrap">' +
-          '<button id="passkeyTeamButton" class="passkey-team-button" type="button" aria-haspopup="listbox" aria-expanded="false">MASTER</button>' +
+          '<button id="passkeyTeamButton" class="passkey-team-button" type="button" aria-haspopup="listbox" aria-expanded="false">SELECT TEAM</button>' +
           '<div id="passkeyTeamMenu" class="passkey-team-menu" role="listbox" aria-hidden="true"></div>' +
         '</div>';
-      els.modalInput.style.display='block';
-      els.modalInput.value=SSHCP_MASTER_TEST_KEY;
-      els.modalInput.placeholder='PASSKEY';
+      els.modalInput.style.display='none';
+      els.modalInput.value='';
       const cancel=makeModalButton('CANCEL','',showSwitchAuthorization);
       const enter=makeModalButton('AUTHORIZE','primary',async()=>{
         const value=els.modalInput.value;
+        if (!value) return;
         closeModal(); startLoadingLine();
         const ok=await validateQrPasskey(value,true,true);
         completeLoadingLine();
         if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
       });
+      enter.disabled = true;
       els.modalActions.className='modal-actions';
       els.modalActions.replaceChildren(cancel,enter);
       els.modalOverlay.classList.add('open');
 
       const button = document.getElementById('passkeyTeamButton');
       const menu = document.getElementById('passkeyTeamMenu');
-
       const closeTeamMenu = () => {
         if (!menu || !button) return;
-        menu.classList.remove('open');
-        menu.setAttribute('aria-hidden','true');
-        button.setAttribute('aria-expanded','false');
+        menu.classList.remove('open'); menu.setAttribute('aria-hidden','true'); button.setAttribute('aria-expanded','false');
       };
-
       const openTeamMenu = () => {
         if (!menu || !button) return;
-
-        /* SSHCP V5.2 — viewport-owned TEST dropdown.
-           It is fixed to the visible viewport rather than constrained by
-           the modal box. It may extend beyond the popup and stops roughly
-           35px above the actual visible bottom edge. */
         const buttonRect = button.getBoundingClientRect();
         const viewport = window.visualViewport;
         const viewportTop = viewport ? viewport.offsetTop : 0;
@@ -14915,42 +14986,23 @@ let scoreTimingDetail =
         const viewportBottom = viewportTop + viewportHeight;
         const menuTop = buttonRect.bottom + 6;
         const availableHeight = Math.max(120, viewportBottom - menuTop - 35);
-
-        menu.style.left = buttonRect.left + 'px';
-        menu.style.top = menuTop + 'px';
-        menu.style.width = buttonRect.width + 'px';
-        menu.style.maxHeight = availableHeight + 'px';
-        menu.classList.add('open');
-        menu.setAttribute('aria-hidden','false');
-        button.setAttribute('aria-expanded','true');
+        menu.style.left=buttonRect.left+'px'; menu.style.top=menuTop+'px'; menu.style.width=buttonRect.width+'px'; menu.style.maxHeight=availableHeight+'px';
+        menu.classList.add('open'); menu.setAttribute('aria-hidden','false'); button.setAttribute('aria-expanded','true');
         requestAnimationFrame(() => fitPasskeyTeamOptionsV58(menu));
       };
-
       if (button && menu) {
-        button.addEventListener('click', () => {
-          if (menu.classList.contains('open')) closeTeamMenu();
-          else openTeamMenu();
-        });
-
-        menu.addEventListener('click', event => {
-          const option = event.target.closest('.passkey-team-option');
-          if (!option) return;
-          button.textContent = option.dataset.label || 'MASTER';
-          button.dataset.fullTeamName = option.dataset.label || 'MASTER';
-          els.modalInput.value = option.dataset.passkey || SSHCP_MASTER_TEST_KEY;
-          closeTeamMenu();
-          requestAnimationFrame(() => fitPasskeyTeamButtonV58(button));
+        button.addEventListener('click',()=> menu.classList.contains('open') ? closeTeamMenu() : openTeamMenu());
+        menu.addEventListener('click',event=>{
+          const option=event.target.closest('.passkey-team-option'); if(!option) return;
+          button.textContent=option.dataset.label || 'SELECT TEAM';
+          button.dataset.fullTeamName=option.dataset.label || 'SELECT TEAM';
+          els.modalInput.value=option.dataset.passkey || '';
+          enter.disabled = !els.modalInput.value;
+          closeTeamMenu(); requestAnimationFrame(()=>fitPasskeyTeamButtonV58(button));
         });
       }
-
-      const directory = readStoredTestQrDirectory() || [
-        { qrId:'MASTER', passkey:SSHCP_MASTER_TEST_KEY, role:'MASTER', assigned:true, team:'MASTER' }
-      ];
-      populatePasskeyTeamSelect(document.getElementById('passkeyTeamMenu'), directory);
-      requestAnimationFrame(() => {
-        fitPasskeyTeamButtonV58(button);
-      });
-
+      populatePasskeyTeamSelect(menu, directory || []);
+      requestAnimationFrame(()=>fitPasskeyTeamButtonV58(button));
     }
     async function decodeQrImage(file){
       if(!file) return;
@@ -14970,7 +15022,7 @@ let scoreTimingDetail =
       }catch(error){
         closeModal();
         els.modalTitle.textContent='QR SCAN';
-        els.modalBody.textContent=(error&&error.message)||'QR code could not be read. Use ENTER PASSKEY or scan the QR with the phone camera.';
+        els.modalBody.textContent=(error&&error.message)||'QR code could not be read. Use AUTH TEAM or scan the QR with the phone camera.';
         els.modalInput.style.display='none';
         const ok=makeModalButton('OK','',showSwitchAuthorization);
         els.modalActions.className='modal-actions single';
@@ -14986,7 +15038,6 @@ let scoreTimingDetail =
 
     function getAuthorizedTeam() {
       if (isTeamQr()) return getQrTeam();
-      if (isMasterQr() && !isTeamAuthorizationEnabled()) return '';
       return localStorage.getItem('rotbAuthorizedTeam') || '';
     }
 
@@ -17755,10 +17806,7 @@ let scoreTimingDetail =
         if (isRandom2) {
           data = await runRandom2Current();
         } else {
-          const controlCenterPasskey =
-            mode === 'clear' && scope === 'all'
-              ? SSHCP_MASTER_TEST_KEY
-              : (isMasterQr() ? getQrPasskey() : '');
+          const controlCenterPasskey = SSHCP_MASTER_TEST_KEY;
 
           const response = await fetch(
             CLOUDFLARE_API_URL +
@@ -18108,6 +18156,7 @@ let scoreTimingDetail =
         button.addEventListener('click', async () => {
           closeHomeTeamDropup();
           if (!canNavigateToTeam(team)) { showNotAuthorized(); return; }
+          if (!(await preAuthorizeTeamSelectionV1958(team))) return;
 
           /* V18.29 — HOME -> Scorecard path normalization.
              Do not render/reposition the hidden Scorecard before showScorecard().
@@ -18122,7 +18171,7 @@ let scoreTimingDetail =
     }
 
     async function openHomeTeamDropup() {
-      if (isTeamQr() && getQrTeam()) return;
+      if (isTeamQr() && getQrTeam() && !isPreAuthorizeEnabledV1958()) return;
       if (!scorecardHasLoaded && !scorecardLoadInProgress) {
         await loadScorecard();
       }
@@ -18696,7 +18745,7 @@ let scoreTimingDetail =
         delete els.scoreTeamSelectButton.dataset.fullTeamName;
       }
       els.scoreTeamSelectButton.classList.toggle('has-team', !!selectedTeam);
-      const masterSelector = isMasterQr();
+      const masterSelector = isMasterQr() || isPreAuthorizeEnabledV1958();
       els.scoreTeamSelectButton.classList.toggle('master-team-selector', masterSelector);
       els.scoreTeamSelectButton.setAttribute('aria-haspopup', masterSelector ? 'listbox' : 'false');
       if (!masterSelector) els.scoreTeamSelectButton.setAttribute('aria-expanded', 'false');
@@ -18727,6 +18776,7 @@ let scoreTimingDetail =
         button.addEventListener('click', async () => {
           closeScoreTeamDropdown();
           if (!canNavigateToTeam(team)) { showNotAuthorized(); return; }
+          if (!(await preAuthorizeTeamSelectionV1958(team))) return;
 
           /*
             V15.5 — changing teams from inside the scorecard is an
@@ -18749,7 +18799,7 @@ let scoreTimingDetail =
     }
 
     function openScoreTeamDropdown() {
-      if (!isMasterQr()) return;
+      if (!(isMasterQr() || isPreAuthorizeEnabledV1958())) return;
       if (!els.scoreTeamDropdown || !els.scoreTeamSelectButton || !teams.length) return;
       renderScoreTeamDropdown();
       const buttonRect = els.scoreTeamSelectButton.getBoundingClientRect();
@@ -18766,7 +18816,7 @@ let scoreTimingDetail =
     }
 
     function toggleScoreTeamDropdown() {
-      if (!isMasterQr()) return;
+      if (!(isMasterQr() || isPreAuthorizeEnabledV1958())) return;
       if (els.scoreTeamDropdown.classList.contains('open')) closeScoreTeamDropdown();
       else openScoreTeamDropdown();
     }
@@ -20455,11 +20505,6 @@ let scoreTimingDetail =
 
       if (isTeamQr()) {
         if (normalizeName(selectedTeam.name) !== normalizeName(getQrTeam())) { showNotAuthorized(); return; }
-        openScoreEntry(index);
-        return;
-      }
-
-      if (isMasterQr() && !isTeamAuthorizationEnabled()) {
         openScoreEntry(index);
         return;
       }
@@ -27427,10 +27472,6 @@ let scoreTimingDetail =
     }
     if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
     if (els.testRemoveAuthorizationButton) els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
-    if (els.testTeamAuthorizationCheck) {
-      els.testTeamAuthorizationCheck.checked = isTeamAuthorizationEnabled();
-      els.testTeamAuthorizationCheck.addEventListener('change', event => setTeamAuthorizationEnabled(event.target.checked));
-    }
     if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
 
     document.addEventListener('visibilitychange', () => {
