@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.66-C6R8QW | BUILD KEY: 19.67-J5Q8RX -->
+<!-- SSHCP | BASE KEY: 19.67-J5Q8RX | BUILD KEY: 19.68-M7Q4NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7452,11 +7452,11 @@ body.master-qr #scorecardView .score-team-select-button:focus{
 }
 #leaderboardView #leaderRows .leader-through-score,
 #leaderboardView #leaderRows .leader-through-value{
-  font-size:calc(var(--leader-row-height,56px) * .32)!important;
+  font-size:calc(var(--leader-row-height,56px) * .35)!important;
   line-height:.92!important;
 }
 #leaderboardView #leaderRows .leader-through-word{
-  font-size:calc(var(--leader-row-height,56px) * .16)!important;
+  font-size:calc(var(--leader-row-height,56px) * .17)!important;
   line-height:1!important;
 }
 #leaderboardView #leaderRows .leader-through-label{display:none!important;}
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.67</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.68</span></span>
         </button>
 
       </div>
@@ -26294,33 +26294,32 @@ let scoreTimingDetail =
           });
         }
 
+        /* V19.68 — ROUND is governed directly by the approved rendered-row
+           proportions. Do not feed these three labels back through their own
+           content-height boxes: that old fit path capped growth as rows became
+           taller. No absolute font minimums are used here. */
         if (score) {
-          fitTextToBoxV5(score, score, rowHeight * 0.35, 8, {
-            horizontalPad: 4,
-            verticalPad: 1,
-            lineHeight: 0.92
-          });
+          score.style.setProperty('font-size', (rowHeight * 0.35) + 'px', 'important');
+          score.style.setProperty('line-height', '0.92', 'important');
+          score.style.setProperty('white-space', 'nowrap', 'important');
           score.style.setProperty('overflow', 'visible', 'important');
+          score.style.setProperty('text-align', 'center', 'important');
         }
 
         if (thruWord) {
-          fitTextToBoxV5(thruWord, thruWord, rowHeight * 0.17, 3, {
-            horizontalPad: 2,
-            verticalPad: 0,
-            wrap: false,
-            lineHeight: 1
-          });
+          thruWord.style.setProperty('font-size', (rowHeight * 0.17) + 'px', 'important');
+          thruWord.style.setProperty('line-height', '1', 'important');
+          thruWord.style.setProperty('white-space', 'nowrap', 'important');
           thruWord.style.setProperty('overflow', 'visible', 'important');
+          thruWord.style.setProperty('text-align', 'center', 'important');
         }
 
         if (thruValue) {
-          fitTextToBoxV5(thruValue, thruValue, rowHeight * 0.35, 8, {
-            horizontalPad: 4,
-            verticalPad: 1,
-            wrap: false,
-            lineHeight: 0.92
-          });
+          thruValue.style.setProperty('font-size', (rowHeight * 0.35) + 'px', 'important');
+          thruValue.style.setProperty('line-height', '0.92', 'important');
+          thruValue.style.setProperty('white-space', 'nowrap', 'important');
           thruValue.style.setProperty('overflow', 'visible', 'important');
+          thruValue.style.setProperty('text-align', 'center', 'important');
         }
       });
     }
