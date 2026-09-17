@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.71-9L5RVQ | BUILD KEY: 19.72-R8M4QK -->
+<!-- SSHCP | BASE KEY: 19.73-Q5N8VX | BUILD KEY: 19.74-N6Q4TZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12780,7 +12780,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.72</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.74</span></span>
         </button>
 
       </div>
@@ -17799,6 +17799,15 @@ let scoreTimingDetail =
       view
     ) {
 
+      /* V19.74 — a Leaderboard curtain may now be established before the
+         fresh read starts (for browser pull-refresh hydration or a pending
+         score-save handoff). If navigation leaves Leaderboard before that
+         read owns the curtain, remove only that Leaderboard shield so it
+         cannot remain fixed over another page. */
+      if (view !== 'leaderboard') {
+        removeDataRevealShieldV177('leaderboard');
+      }
+
       els.homeView
         .classList
         .toggle(
@@ -18290,6 +18299,29 @@ let scoreTimingDetail =
       return beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false, 8800, 'leaderboard');
     }
 
+    /* V19.74 — one Leaderboard curtain owns the complete visible refresh
+       transaction. Reuse an already-opaque Leaderboard shield when one was
+       deliberately established before hydration/auth or before waiting for a
+       verified score save. This prevents a late second shield from appearing
+       only after the wait has already exposed the underlying page. */
+    function ensureLeaderboardRevealV1974() {
+      if (currentView !== 'leaderboard') return null;
+
+      const active = sshcpRevealShieldsV177.get('leaderboard');
+      if (
+        active &&
+        active.isConnected &&
+        !active.classList.contains('is-revealing-v177')
+      ) {
+        const header = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
+        syncDataRevealShieldGeometryV177(active, [header, els.leaderContent]);
+        active.style.setProperty('z-index', '8800', 'important');
+        return active;
+      }
+
+      return beginLeaderboardRevealV177();
+    }
+
     function beginHomeRevealV1963() {
       if (currentView !== 'home') return null;
       return beginDataRevealShieldV177('home', [], '#fff', false, 4800, 'home');
@@ -18368,6 +18400,12 @@ let scoreTimingDetail =
       );
 
       updateTopCenterHeadersV196();
+
+      /* V19.74 — cover the mutable Leaderboard area at the moment the page
+         becomes active, not later when the fresh read finally starts. This is
+         especially important after the last score, when showLeaderboard() may
+         have to wait for the verified save chain before it can read standings. */
+      ensureLeaderboardRevealV1974();
 
 
       /* V19.40 — LIVE LEADERBOARD still begins at the normal top position
@@ -21296,7 +21334,7 @@ let scoreTimingDetail =
       leaderboardLoadInProgress =
         true;
 
-      const leaderboardRevealShieldV177 = beginLeaderboardRevealV177();
+      const leaderboardRevealShieldV177 = ensureLeaderboardRevealV1974();
 
       stopLeaderboardRefreshCycleV57();
 
@@ -21420,8 +21458,15 @@ let scoreTimingDetail =
             );
         }
 
-        /* V17.9 sequencing retained in V17.11: render/sizing can complete under the shield, but do not start
-           the authorized-team auto-scroll timer until the shield is gone. */
+        /* V19.73 — establish LIVE / FINAL RESULTS state while the Leaderboard
+           curtain is still fully opaque, before render/layout begins.  V19.72
+           started the reveal gate before updateTournamentFinishState(), so an
+           after-play refresh could begin fading while the completed-round class,
+           title/footer state and their follow-up layout were still changing.
+           Keep the existing curtain and fade system; correct only the sequencing. */
+        updateTournamentFinishState(
+          rows
+        );
         renderLeaderboard(
           rows,
           false
@@ -21431,9 +21476,6 @@ let scoreTimingDetail =
           leaderboardRevealShieldV177,
           2,
           [els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head'), els.leaderContent]
-        );
-        updateTournamentFinishState(
-          rows
         );
         saveLeaderboardSnapshotV53();
 
@@ -28195,6 +28237,19 @@ let scoreTimingDetail =
         rememberedView ===
         'leaderboard'
       ) {
+        /* V19.74 — browser pull-refresh used to hydrate the remembered
+           Leaderboard snapshot, then wait through authorization, and only later
+           create the white curtain inside loadLeaderboard(). That exposed the
+           old LIVE/FINAL page during the wait. Arm the existing Leaderboard
+           curtain before hydration so the same single shield spans snapshot ->
+           auth -> fresh read -> render -> established 0.5s reveal.
+
+           Do not place it over an active QR/COMPETITOR Welcome presentation;
+           that full-screen entry layer remains authoritative until its normal
+           authorization/reveal path finishes. */
+        if (!window.__sshcpIncomingQrWelcomeV170) {
+          ensureLeaderboardRevealV1974();
+        }
         hydrateLeaderboardSnapshotV53();
       }
 
@@ -28390,6 +28445,9 @@ let scoreTimingDetail =
 
     initialize()
       .catch(error => {
+        /* V19.74 safety: never strand an early-held Leaderboard curtain if
+           initialization fails before loadLeaderboard() can reveal it. */
+        removeDataRevealShieldV177('leaderboard');
         console.error('SSHCP initialization failed:', error);
       })
       .finally(() => {
