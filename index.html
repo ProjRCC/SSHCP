@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.62-K4Q7MX | BUILD KEY: 19.63-R6Q8NV -->
+<!-- SSHCP | BASE KEY: 19.63-R6Q8NV | BUILD KEY: 19.64-T7M4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.63</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.64</span></span>
         </button>
 
       </div>
@@ -17537,214 +17537,46 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V5.3 QUICK TEST-WRITE PATCH
-       - One retry for transient RANDOM 2 team writes.
-       - HTTP status + Worker reason logged for bulk test failures.
+       SSHCP V19.64 — CONTROL CENTER BULK TEST WRITES
+       ADD PAR / ADD RANDOM / ADD RANDOM 2 / DELETE ALL all use
+       the Worker testScores bulk path. RANDOM 2 keeps the accepted
+       68–74 total / 3–7 birdies / 3–7 bogeys / 0–2 eagles rules.
        ========================================================= */
 
-    /* =========================================================
-       TEST PAGE — BULK SCORE CONTROLS
-       ADD PAR / ADD RANDOM affect current teams. DELETE ALL clears all slots.
-       ADD RANDOM 2 uses the existing verified saveScores path to create a
-       stronger 68–74 round with 3–7 birdies, 3–7 bogeys and 0–2 eagles.
-       ========================================================= */
-
-    function randomIntInclusive(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function shuffledIndexes(values) {
-      const copy = [...values];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
-
-    function generateRandom2Round(courseHoles) {
-      const usable = Array.isArray(courseHoles) ? courseHoles.slice(0, 18) : [];
-      if (usable.length !== 18) {
-        throw new Error('ADD RANDOM 2 requires 18 course holes.');
-      }
-
-      const pars = usable.map(hole => Number(hole.par));
-      if (pars.some(par => !Number.isFinite(par) || par <= 0)) {
-        throw new Error('ADD RANDOM 2 could not read the course pars.');
-      }
-
-      const parTotal = pars.reduce((sum, par) => sum + par, 0);
-      const eagleEligible = usable
-        .map((hole, index) => Number(hole.par) >= 4 ? index : -1)
-        .filter(index => index >= 0);
-
-      const combinations = [];
-      for (let eagles = 0; eagles <= 2; eagles++) {
-        if (eagles > eagleEligible.length) continue;
-        for (let birdies = 3; birdies <= 7; birdies++) {
-          for (let bogeys = 3; bogeys <= 7; bogeys++) {
-            if (eagles + birdies + bogeys > 18) continue;
-            const total = parTotal - (2 * eagles) - birdies + bogeys;
-            if (total >= 68 && total <= 74) {
-              combinations.push({ eagles, birdies, bogeys, total });
-            }
-          }
-        }
-      }
-
-      if (!combinations.length) {
-        throw new Error('No 68–74 RANDOM 2 combination fits this course par.');
-      }
-
-      const combo = combinations[randomIntInclusive(0, combinations.length - 1)];
-      const scores = [...pars];
-      const used = new Set();
-
-      shuffledIndexes(eagleEligible)
-        .slice(0, combo.eagles)
-        .forEach(index => {
-          scores[index] = pars[index] - 2;
-          used.add(index);
-        });
-
-      const birdiePool = shuffledIndexes(
-        usable.map((_, index) => index).filter(index => !used.has(index))
-      );
-      birdiePool.slice(0, combo.birdies).forEach(index => {
-        scores[index] = pars[index] - 1;
-        used.add(index);
-      });
-
-      const bogeyPool = shuffledIndexes(
-        usable.map((_, index) => index).filter(index => !used.has(index))
-      );
-      bogeyPool.slice(0, combo.bogeys).forEach(index => {
-        scores[index] = pars[index] + 1;
-        used.add(index);
-      });
-
-      return { scores, ...combo };
-    }
-
-    async function loadFreshTestScoreSource() {
+    async function runRandom2Current() {
+      /* V19.64 — RANDOM 2 now uses the same Worker-side bulk TEST path as
+         ADD PAR / ADD RANDOM / DELETE ALL. The Worker generates every current
+         team card in memory, performs one batch score write, and verifies the
+         complete batch with one full-range readback. No per-team saveScores
+         loop remains on the active RANDOM 2 path. */
       const response = await fetch(
-        CLOUDFLARE_API_URL + '?refresh=' + Date.now() + '-random2',
+        CLOUDFLARE_API_URL +
+          '?action=testScores' +
+          '&mode=random2' +
+          '&scope=current' +
+          '&passkey=' + encodeURIComponent(SSHCP_MASTER_TEST_KEY) +
+          '&refresh=' + Date.now(),
         { cache: 'no-store' }
       );
 
+      let data = null;
+      try { data = await response.json(); } catch (_) {}
+
       if (!response.ok) {
-        throw new Error('ADD RANDOM 2 could not load current teams.');
+        const reason = data && (data.reason || data.error)
+          ? String(data.reason || data.error)
+          : 'request failed';
+        throw new Error('ADD RANDOM 2 failed • HTTP ' + response.status + ' • ' + reason);
       }
 
-      const data = await response.json();
-      if (!data || data.ok !== true) {
-        throw new Error((data && data.error) || 'ADD RANDOM 2 data unavailable.');
+      if (!data || data.ok !== true || data.verified !== true) {
+        throw new Error(
+          (data && data.error) ||
+          'ADD RANDOM 2 was not verified.'
+        );
       }
 
-      const freshHoles = Array.isArray(data.course && data.course.holes)
-        ? data.course.holes.slice(0, 18)
-        : [];
-      const freshTeams = Array.isArray(data.teams)
-        ? data.teams.filter(team => team && String(team.name || '').trim() !== '')
-        : [];
-
-      if (freshHoles.length !== 18 || !freshTeams.length) {
-        throw new Error('ADD RANDOM 2 needs 18 holes and at least one current team.');
-      }
-
-      holes = freshHoles;
-      teams = freshTeams;
-      return { freshHoles, freshTeams };
-    }
-
-    async function runRandom2Current() {
-      const { freshHoles, freshTeams } = await loadFreshTestScoreSource();
-      const passkey = isMasterQr() && getQrPasskey()
-        ? getQrPasskey()
-        : SSHCP_MASTER_TEST_KEY;
-
-      /* V19.43 — Control Center test generation never clears Scramble Audit.
-         RANDOM 2 continues to suppress its own score-audit writes with audit=0.
-         Only Scramble Mode DELETE LOG may clear the Scramble Audit. */
-
-      const generated = [];
-
-      /* Sequential verified writes avoid concurrent Google Sheets test writes.
-         A single transient Worker/Sheets failure gets one immediate retry. */
-      for (const team of freshTeams) {
-        const round = generateRandom2Round(freshHoles);
-        let lastError = null;
-        let verified = false;
-
-        for (let attempt = 1; attempt <= 2 && !verified; attempt++) {
-          try {
-            const response = await fetch(
-              CLOUDFLARE_API_URL +
-                '?action=saveScores' +
-                '&slot=' + encodeURIComponent(Number(team.slot)) +
-                '&scores=' + encodeURIComponent(JSON.stringify(round.scores)) +
-                '&passkey=' + encodeURIComponent(passkey) +
-                '&audit=0' +
-                '&refresh=' + Date.now() + '-' + attempt,
-              { cache: 'no-store' }
-            );
-
-            let data = null;
-            try { data = await response.json(); } catch (_) {}
-
-            if (!response.ok) {
-              const reason = data && (data.reason || data.error)
-                ? String(data.reason || data.error)
-                : 'request failed';
-              throw new Error('HTTP ' + response.status + ' • ' + reason);
-            }
-
-            if (
-              !data ||
-              data.ok !== true ||
-              data.verified !== true ||
-              !scoresEqual(data.verifiedScores, round.scores)
-            ) {
-              const reason = data && (data.reason || data.error)
-                ? String(data.reason || data.error)
-                : 'verification failed';
-              throw new Error('HTTP ' + response.status + ' • ' + reason);
-            }
-
-            verified = true;
-          } catch (error) {
-            lastError = error;
-            if (attempt === 1) {
-              await new Promise(resolve => setTimeout(resolve, 450));
-            }
-          }
-        }
-
-        if (!verified) {
-          throw new Error(
-            'ADD RANDOM 2 failed for ' + String(team.name || 'a team') +
-            (lastError && lastError.message ? ' • ' + lastError.message : '')
-          );
-        }
-
-        generated.push(round);
-      }
-
-      const totals = generated.map(round => round.total);
-      const birdies = generated.map(round => round.birdies);
-      const bogeys = generated.map(round => round.bogeys);
-      const eagles = generated.map(round => round.eagles);
-
-      return {
-        ok: true,
-        verified: true,
-        affectedTeams: generated.length,
-        random2Summary:
-          Math.min(...totals) + '–' + Math.max(...totals) + ' TOTAL • ' +
-          Math.min(...birdies) + '–' + Math.max(...birdies) + ' BIRDIES • ' +
-          Math.min(...bogeys) + '–' + Math.max(...bogeys) + ' BOGEYS • ' +
-          Math.min(...eagles) + '–' + Math.max(...eagles) + ' EAGLES'
-      };
+      return data;
     }
 
     function showTestScoreWarning(mode, scope) {
