@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.70-P6R9WK | BUILD KEY: 19.71-9L5RVQ -->
+<!-- SSHCP | BASE KEY: 19.71-9L5RVQ | BUILD KEY: 19.72-R8M4QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12633,6 +12633,13 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   overscroll-behavior-y:none!important;
 }
 
+
+/* SSHCP V19.72 — Quick Guide footer row height parity with Scorecard/Leaderboard. */
+.modal-overlay.quick-guide .quick-guide-actions-v172:not(.quick-guide-welcome-actions-v175) .modal-btn{
+  height:var(--v1972-quick-guide-footer-h,var(--v187-main-button-h,50px))!important;
+  min-height:var(--v1972-quick-guide-footer-h,var(--v187-main-button-h,50px))!important;
+  max-height:var(--v1972-quick-guide-footer-h,var(--v187-main-button-h,50px))!important;
+}
 </style>
 
 <style id="sshcp-v1958-auth-final">
@@ -12773,7 +12780,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.71</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.72</span></span>
         </button>
 
       </div>
@@ -26812,6 +26819,15 @@ let scoreTimingDetail =
     }
 
 
+    /* V19.72 — Quick Guide footer ROW HEIGHT only follows the same shared
+       50px × device-multiplier geometry used by Scorecard/Leaderboard footers.
+       V19.71 text-fitting rules remain unchanged. */
+    function syncQuickGuideFooterRowHeightV1972() {
+      const h = syncSharedGeometryV187().mainButton;
+      document.documentElement.style.setProperty('--v1972-quick-guide-footer-h', h + 'px');
+      return h;
+    }
+
     function syncQuickGuideBodyFontV1816() {
       const metrics = getVerticalMetricsV188();
       const size = Math.max(1, 19 * metrics.multiplier);
@@ -26979,6 +26995,8 @@ let scoreTimingDetail =
 
         return;
       }
+
+      syncQuickGuideFooterRowHeightV1972();
 
       const leaderboard =
         makeModalButton(
