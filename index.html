@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.58-P7Q4NV | BUILD KEY: 19.59-H8Q3MX -->
+<!-- SSHCP | BASE KEY: 19.60-Q5N8VR | BUILD KEY: 19.61-V7Q3NK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.59</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.61</span></span>
         </button>
 
       </div>
@@ -14389,12 +14389,12 @@ let scoreTimingDetail =
     function isTeamAuthorizationEnabled(){ return localStorage.getItem(SSHCP_TEAM_AUTH_KEY) !== '0'; }
     function isPreAuthorizeEnabledV1958(){ return localStorage.getItem(SSHCP_PREAUTHORIZE_KEY) === '1'; }
     function syncTeamQrLockedUi(){
-      const locked = isTeamQr() && !!getQrTeam() && !isPreAuthorizeEnabledV1958();
+      const locked = isTeamQr() && !!getQrTeam();
       const master = isMasterQr();
       const preAuthorized = isPreAuthorizeEnabledV1958();
       document.body.classList.toggle('team-qr-locked', locked);
       document.body.classList.toggle('master-qr', master);
-      if (!master && !preAuthorized) {
+      if (!master) {
         closeScoreTeamDropdown();
       }
       if (locked) {
@@ -14953,7 +14953,14 @@ let scoreTimingDetail =
         closeModal(); startLoadingLine();
         const ok=await validateQrPasskey(value,true,true);
         completeLoadingLine();
-        if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
+        if(ok){
+          /* V19.60 — AUTH TEAM is testing tooling. Remember PREAUTH as ON by
+             default so a later AUTHORIZE MASTER immediately enters the fast
+             team-switching mode. Fixed TEAM authorization itself stays locked
+             to that team exactly like a real QR authorization. */
+          setPreAuthorizeEnabledV1958(true);
+          scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog();
+        }
       });
       enter.disabled = true;
       els.modalActions.className='modal-actions';
@@ -15005,19 +15012,32 @@ let scoreTimingDetail =
         let passkey=raw;
         try{ const u=new URL(raw,window.location.href); passkey=u.searchParams.get('passkey')||u.searchParams.get('key')||raw; }catch(_){}
         startLoadingLine();
+        const welcomeGateScan = !!window.__sshcpWelcomeQrScanV1961;
         const ok=await validateQrPasskey(passkey,true,true);
         completeLoadingLine();
-        if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
+        if(ok){
+          scorecardHasLoaded=false; leaderboardHasLoaded=false;
+          if (welcomeGateScan) {
+            closeModal();
+            dismissQrWelcomeAnimatedV172();
+          } else {
+            showTestLog();
+          }
+        }
       }catch(error){
+        const welcomeGateScan = !!window.__sshcpWelcomeQrScanV1961;
         closeModal();
         els.modalTitle.textContent='QR SCAN';
-        els.modalBody.textContent=(error&&error.message)||'QR code could not be read. Use AUTH TEAM or scan the QR with the phone camera.';
+        els.modalBody.textContent=(error&&error.message)||'QR code could not be read.';
         els.modalInput.style.display='none';
-        const ok=makeModalButton('OK','',showSwitchAuthorization);
+        const ok=makeModalButton('OK','',welcomeGateScan ? showBareEntryGateV1961 : showSwitchAuthorization);
         els.modalActions.className='modal-actions single';
         els.modalActions.replaceChildren(ok);
         els.modalOverlay.classList.add('open');
-      }finally{ if(els.testQrCameraInput) els.testQrCameraInput.value=''; }
+      }finally{
+        window.__sshcpWelcomeQrScanV1961 = false;
+        if(els.testQrCameraInput) els.testQrCameraInput.value='';
+      }
     }
 
     /* =========================================================
@@ -16284,7 +16304,7 @@ let scoreTimingDetail =
 
     function currentFrontendVersionLabelV1955() {
       const node = document.querySelector('.home-version-number-v1835');
-      return normalizeAuditTextV189(node && node.textContent) || 'V19.59';
+      return normalizeAuditTextV189(node && node.textContent) || 'V19.61';
     }
 
     function auditRenderedSummaryTeamV1955(container) {
@@ -27939,7 +27959,57 @@ let scoreTimingDetail =
 
       overlay.setAttribute('aria-hidden', 'false');
       if (guide) guide.addEventListener('click', showQuickGuide, { once:false });
-      if (enter) enter.addEventListener('click', dismissQrWelcomeAnimatedV172, { once:true });
+      if (enter) enter.addEventListener('click', () => {
+        /* V19.61 — only a truly bare COMPETITOR entry is gated. Incoming QR/key
+           Welcome and already-authorized-device behavior remain unchanged. */
+        if (String(window.__sshcpWelcomeModeV180b || '') === 'COMPETITOR') {
+          showBareEntryGateV1961();
+          return;
+        }
+        dismissQrWelcomeAnimatedV172();
+      }, { once:false });
+    }
+
+    function showBareEntryGateV1961() {
+      closeModal();
+      els.modalTitle.textContent = 'WELCOME COMPETITOR';
+      els.modalBody.textContent = 'SCAN YOUR QR CODE OR ENTER THE ACCESS PASSWORD';
+      els.modalInput.style.display = 'none';
+      const scan = makeModalButton('SCAN QR CODE','',() => {
+        window.__sshcpWelcomeQrScanV1961 = true;
+        if (els.testQrCameraInput) els.testQrCameraInput.click();
+      });
+      const password = makeModalButton('ENTER PASSWORD','primary',showBareEntryPasswordV1961);
+      els.modalActions.className = 'modal-actions';
+      els.modalActions.replaceChildren(scan,password);
+      els.modalOverlay.classList.add('open');
+    }
+
+    function showBareEntryPasswordV1961() {
+      closeModal();
+      els.modalTitle.textContent = 'ENTER PASSWORD';
+      els.modalBody.textContent = '';
+      els.modalInput.style.display = '';
+      els.modalInput.type = 'text';
+      els.modalInput.autocapitalize = 'characters';
+      els.modalInput.value = '';
+      const back = makeModalButton('BACK','',showBareEntryGateV1961);
+      const enter = makeModalButton('ENTER','primary',() => {
+        if (String(els.modalInput.value || '').trim().toUpperCase() !== 'ENTER') {
+          els.modalBody.textContent = 'INVALID PASSWORD';
+          els.modalInput.select();
+          return;
+        }
+        closeModal();
+        dismissQrWelcomeAnimatedV172();
+      });
+      els.modalActions.className = 'modal-actions';
+      els.modalActions.replaceChildren(back,enter);
+      els.modalInput.onkeydown = event => {
+        if (event.key === 'Enter') { event.preventDefault(); enter.click(); }
+      };
+      els.modalOverlay.classList.add('open');
+      window.setTimeout(() => els.modalInput.focus(), 0);
     }
 
     function revealQrWelcomeAfterAuthV170() {
