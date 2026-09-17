@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.68-M7Q4NV | BUILD KEY: 19.70-P6R9WK -->
+<!-- SSHCP | BASE KEY: 19.70-P6R9WK | BUILD KEY: 19.71-9L5RVQ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.70</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.71</span></span>
         </button>
 
       </div>
@@ -26822,36 +26822,76 @@ let scoreTimingDetail =
       return size;
     }
 
-    function fitQuickGuideButtonTextV173(button, startPx) {
-      if (!button) return startPx;
+    function fitQuickGuideButtonTextV1971(button, targetPx) {
+      if (!button || !(targetPx > 0)) return null;
+
+      const rect = button.getBoundingClientRect();
+      if (!(rect.width > 0) || !(rect.height > 0)) return null;
+
       const computed = getComputedStyle(button);
       const padLeft = parseFloat(computed.paddingLeft) || 0;
       const padRight = parseFloat(computed.paddingRight) || 0;
-      const available = Math.max(1, button.clientWidth - padLeft - padRight - 2);
-      let size = startPx;
-      button.style.fontSize = size + 'px';
-      while (size > 0.5 && button.scrollWidth > available + padLeft + padRight) {
-        size = Math.max(0.5, size - 0.5);
-        button.style.fontSize = size + 'px';
+      const available = rect.width - padLeft - padRight;
+      if (!(available > 0)) return null;
+
+      button.style.fontSize = targetPx + 'px';
+
+      const textWidth = button.scrollWidth - padLeft - padRight;
+      if (textWidth > available && textWidth > 0) {
+        const fitted = targetPx * (available / textWidth);
+        button.style.fontSize = fitted + 'px';
+        return fitted;
       }
-      return size;
+
+      return targetPx;
     }
 
-    function fitQuickGuideFooterV173(leaderboard, back, scorecard) {
-      if (!leaderboard || !back || !scorecard) return;
+    function fitQuickGuideFooterV1971(leaderboard, back, scorecard) {
+      if (!leaderboard || !back || !scorecard) return false;
 
-      /* V19.70 — Quick Guide footer typography follows actual rendered button
-         height: LEADERBOARD + SCORECARD share a 40% target/final fitted size;
-         BACK independently targets 50%. */
-      const outerTarget = Math.max(0.001, leaderboard.clientHeight * 0.40);
-      const leaderboardFit = fitQuickGuideButtonTextV173(leaderboard, outerTarget);
-      const scorecardFit = fitQuickGuideButtonTextV173(scorecard, outerTarget);
+      const leaderboardRect = leaderboard.getBoundingClientRect();
+      const scorecardRect = scorecard.getBoundingClientRect();
+      const backRect = back.getBoundingClientRect();
+      if (!(leaderboardRect.height > 0) || !(scorecardRect.height > 0) || !(backRect.height > 0)) {
+        return false;
+      }
+
+      /* V19.71 — clean Quick Guide footer sizing from rendered geometry only.
+         LEADERBOARD and SCORECARD each target 40% of their own rendered button
+         height, then share the smaller fitted result. BACK independently targets
+         50% of its rendered button height. There is no fixed font floor/ceiling. */
+      const leaderboardFit = fitQuickGuideButtonTextV1971(
+        leaderboard,
+        leaderboardRect.height * 0.40
+      );
+      const scorecardFit = fitQuickGuideButtonTextV1971(
+        scorecard,
+        scorecardRect.height * 0.40
+      );
+
+      if (!(leaderboardFit > 0) || !(scorecardFit > 0)) return false;
+
       const matchedOuter = Math.min(leaderboardFit, scorecardFit);
       leaderboard.style.fontSize = matchedOuter + 'px';
       scorecard.style.fontSize = matchedOuter + 'px';
 
-      const backTarget = Math.max(0.001, back.clientHeight * 0.50);
-      fitQuickGuideButtonTextV173(back, backTarget);
+      const backFit = fitQuickGuideButtonTextV1971(
+        back,
+        backRect.height * 0.50
+      );
+      return backFit > 0;
+    }
+
+    function scheduleQuickGuideFooterFitV1971(leaderboard, back, scorecard) {
+      let attempts = 0;
+      const apply = () => {
+        attempts += 1;
+        if (fitQuickGuideFooterV1971(leaderboard, back, scorecard)) return;
+        if (attempts < 8 && els.modalOverlay.classList.contains('open')) {
+          requestAnimationFrame(apply);
+        }
+      };
+      requestAnimationFrame(apply);
     }
 
     function showQuickGuide() {
@@ -26993,11 +27033,7 @@ let scoreTimingDetail =
           'open'
         );
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          fitQuickGuideFooterV173(leaderboard, back, scorecard);
-        });
-      });
+      scheduleQuickGuideFooterFitV1971(leaderboard, back, scorecard);
 
     }
 
