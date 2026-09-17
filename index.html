@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.60-Q5N8VR | BUILD KEY: 19.61-V7Q3NK -->
+<!-- SSHCP | BASE KEY: 19.61-V7Q3NK | BUILD KEY: 19.62-K4Q7MX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12773,7 +12773,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.61</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.62</span></span>
         </button>
 
       </div>
@@ -14317,7 +14317,7 @@ let scoreTimingDetail =
     const SSHCP_QR_TEAM_KEY = 'sshcpQrTeam';
     const SSHCP_QR_SLOT_KEY = 'sshcpQrSlot';
     const SSHCP_TEAM_AUTH_KEY = 'sshcpTeamAuthorization';
-    const SSHCP_PREAUTHORIZE_KEY = 'sshcpPreAuthorizeV1958';
+    const SSHCP_PREAUTHORIZE_KEY = 'sshcpPreAuthorizeV1962';
     const SSHCP_PREAUTHORIZE_ACTIVE_KEY = 'sshcpPreAuthorizeActiveV1958';
     const SSHCP_MASTER_TEST_KEY = 'glmNnV63TWS42fcRB8z2yldF';
 
@@ -14387,7 +14387,7 @@ let scoreTimingDetail =
     function isMasterQr(){ return getQrRole() === 'MASTER'; }
     function isTeamQr(){ return getQrRole() === 'QR'; }
     function isTeamAuthorizationEnabled(){ return localStorage.getItem(SSHCP_TEAM_AUTH_KEY) !== '0'; }
-    function isPreAuthorizeEnabledV1958(){ return localStorage.getItem(SSHCP_PREAUTHORIZE_KEY) === '1'; }
+    function isPreAuthorizeEnabledV1958(){ return localStorage.getItem(SSHCP_PREAUTHORIZE_KEY) !== '0'; }
     function syncTeamQrLockedUi(){
       const locked = isTeamQr() && !!getQrTeam();
       const master = isMasterQr();
