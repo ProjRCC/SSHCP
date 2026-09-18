@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.84-K5R8NV | BUILD KEY: 19.85-P4N7QX -->
+<!-- SSHCP | BASE KEY: 19.85-P4N7QX | BUILD KEY: 19.86-M6Q2RV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9329,6 +9329,14 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   z-index:6100!important;
   background:#000!important;
 }
+/* V19.86 — HOME refresh/return polish adds a second, full-screen white curtain
+   above the rebuilt HOME page but below the existing mutable-zone curtain.
+   It fades in parallel for .6s, while the V19.85 middle curtain keeps its 1s
+   reveal. The Welcome splash path never receives this curtain. */
+.sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
+  background:#fff!important;
+  transition:opacity .6s ease-out!important;
+}
 
 
 .qr-welcome-overlay-v170.sshcp-welcome-exit-v172{
@@ -12822,7 +12830,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.85</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.86</span></span>
         </button>
 
       </div>
@@ -18406,6 +18414,20 @@ let scoreTimingDetail =
 
     async function showHome() {
 
+      /* V19.86 — HOME gets a second full-screen reveal only when HOME is being
+         refreshed or re-entered from Scorecard/Leaderboard. Initial Welcome ->
+         HOME is already fully constructed beneath the Welcome splash, so that
+         proven path deliberately skips the extra curtain. */
+      const homeEntryOriginV1986 = currentView;
+      const useHomeFullRevealV1986 = !!(
+        !window.__sshcpIncomingQrWelcomeV170 &&
+        (
+          homeEntryOriginV1986 === 'home' ||
+          homeEntryOriginV1986 === 'scorecard' ||
+          homeEntryOriginV1986 === 'leaderboard'
+        )
+      );
+
       cancelScorecardEntryCueHoldV1981();
       closeModal();
       closeHomeTeamDropup();
@@ -18423,6 +18445,15 @@ let scoreTimingDetail =
         rememberScorePosition();
 
       }
+
+
+      /* Arm the .6s full-screen layer before switching views so the old page
+         cannot flash while HOME becomes active. The existing HOME middle
+         curtain is mounted immediately after the view switch and remains the
+         slower 1.0s layer. */
+      const homeFullRevealShieldV1986 = useHomeFullRevealV1986
+        ? beginHomeFullRevealV1986()
+        : null;
 
 
       setActiveView(
@@ -18461,11 +18492,22 @@ let scoreTimingDetail =
         document.documentElement.classList.remove('sshcp-pre-home-v1976');
       }
 
-      await revealDataShieldAfterLayoutV177(
-        'home',
-        homeRevealShieldV1963,
-        2
-      );
+      /* V19.86 — reveal both HOME curtains from the same settled layout frame.
+         The full-screen layer completes at .6s; the established mutable-zone
+         layer continues independently to 1.0s. Welcome -> HOME has no full
+         layer, so its existing presentation remains unchanged. */
+      await Promise.all([
+        revealDataShieldAfterLayoutV177(
+          'home',
+          homeRevealShieldV1963,
+          2
+        ),
+        revealDataShieldAfterLayoutV177(
+          'home-full-v1986',
+          homeFullRevealShieldV1986,
+          2
+        )
+      ]);
 
     }
 
@@ -18613,9 +18655,14 @@ let scoreTimingDetail =
 
         shield.addEventListener('transitionend', onTransitionEnd);
         shield.classList.add('is-revealing-v177');
-        /* V19.85 — HOME alone fades for 1.0s. Keep its safety fallback just
-           beyond that transition; all other reveal shields remain at 560ms. */
-        window.setTimeout(finish, key === 'home' ? 1060 : 560);
+        /* V19.85/V19.86 — HOME middle fades for 1.0s, while V19.86's HOME
+           full-screen layer fades for .6s. Keep each safety fallback just past
+           its own transition; all other reveal shields remain at 560ms. */
+        const revealFallbackMsV1986 =
+          key === 'home' ? 1060 :
+          key === 'home-full-v1986' ? 660 :
+          560;
+        window.setTimeout(finish, revealFallbackMsV1986);
       });
     }
 
@@ -18679,6 +18726,21 @@ let scoreTimingDetail =
       if (currentView !== 'home') return null;
       const shield = beginDataRevealShieldV177('home', [], '#fff', false, 4800, 'home');
       if (shield) shield.classList.add('sshcp-home-reveal-v1985');
+      return shield;
+    }
+
+    function beginHomeFullRevealV1986() {
+      /* This layer is intentionally armed before setActiveView('home'), so it
+         must not require currentView === 'home'. Keep it below the 4800 HOME
+         middle curtain; outside that middle zone it still covers the full page. */
+      const shield = beginDataRevealShieldV177(
+        'home-full-v1986',
+        [],
+        '#fff',
+        true,
+        4790
+      );
+      if (shield) shield.classList.add('sshcp-home-full-reveal-v1986');
       return shield;
     }
 
