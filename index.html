@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.80-R5M8QK | BUILD KEY: 19.81-N4Q7MV -->
+<!-- SSHCP | BASE KEY: 19.81-N4Q7MV | BUILD KEY: 19.82-Q6M3RX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12809,7 +12809,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.81</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.82</span></span>
         </button>
 
       </div>
@@ -14427,7 +14427,7 @@ let scoreTimingDetail =
        from HOME or LEADERBOARD, keep the NESR HOLE Blue background and the
        verified NESR score-box Blue border withheld while the existing
        remembered-position / NESR + four-row positioning finishes. Once that
-       positioning settles (including the no-scroll case), wait 0.5s and then
+       positioning settles (including the no-scroll case), wait 0.3s and then
        reveal those exact two cues. ENTER/CLEAR progression while already on
        the Scorecard is deliberately untouched. */
     let scorecardEntryCueHoldV1981 = false;
@@ -14490,7 +14490,7 @@ let scoreTimingDetail =
 
         /* Let the Blue cue paint before any dependent popup timer starts. */
         requestAnimationFrame(doneV1981);
-      }, 500);
+      }, 300);
     }
 
     /* V16.31 — one QR-auth owner at a time. This fixes the latent V16.30
@@ -15429,10 +15429,10 @@ let scoreTimingDetail =
        active-hole state is visibly established before the popup appears.
 
        V19.81 adds a separate entry-only visual gate for HOME/LEADERBOARD ->
-       Scorecard: established positioning finishes first, then 0.5s later the
-       active HOLE + verified score-box Blue cues appear. The V19.80 popup hold
-       starts only after those cues paint. In-Scorecard ENTER/CLEAR timing is
-       unchanged. */
+       Scorecard: established positioning finishes first, then the active HOLE +
+       verified score-box Blue cues appear. V19.82 changes only that entry cue
+       hold from 0.5s to 0.3s. The V19.80 popup hold remains 0.5s and starts only
+       after those cues paint. In-Scorecard ENTER/CLEAR timing is unchanged. */
     let startingHoleIntroTimerV1978 = 0;
     let startingHoleIntroSequenceV1978 = 0;
 
@@ -15449,7 +15449,7 @@ let scoreTimingDetail =
         : '';
 
       restoreScorePosition(false, () => {
-        /* V19.81: HOME/LEADERBOARD entry owns a 0.5s post-position Blue-cue
+        /* V19.82: HOME/LEADERBOARD entry owns a 0.3s post-position Blue-cue
            reveal. Only after that reveal paints does the existing V19.80
            shotgun popup hold begin. Non-entry callers keep the V19.80 path. */
         releaseScorecardEntryCuesAfterPositionV1981(() => {
