@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.87-C8R5QM | BUILD KEY: 19.88-V5Q7NK -->
+<!-- SSHCP | BASE KEY: 19.88-V5Q7NK | BUILD KEY: 19.89-L6Q4RV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.88</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.89</span></span>
         </button>
 
       </div>
@@ -27576,7 +27576,18 @@ let scoreTimingDetail =
         makeModalButton(
           'BACK',
           '',
-          closeModal
+          async () => {
+            /* V19.89 — HOME Quick Guide is a real HOME return presentation.
+               Re-enter HOME through showHome() so it receives the same
+               full-screen .6s + middle 1.0s double-curtain reveal as every
+               other non-Welcome HOME return. Quick Guide opened from any
+               other page still closes normally and does not alter that page. */
+            if (currentView === 'home') {
+              await showHome();
+              return;
+            }
+            closeModal();
+          }
         );
       back.classList.add('quick-guide-back-v173');
 
