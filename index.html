@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.83-H7N4QW | BUILD KEY: 19.84-K5R8NV -->
+<!-- SSHCP | BASE KEY: 19.84-K5R8NV | BUILD KEY: 19.85-P4N7QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1518,6 +1518,12 @@
     .modal-title.testing {
       color:
         var(--test-blue);
+    }
+
+    /* V19.85 — the WELCOME COMPETITOR gate uses the established modal shell;
+       only its heading is centered. Body copy and action layout remain unchanged. */
+    .modal-overlay.welcome-competitor-v1985 .modal-title {
+      text-align: center;
     }
 
     .modal-text {
@@ -9305,6 +9311,13 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   transition:opacity .5s ease-out!important;
   will-change:opacity;
 }
+/* V19.85 — HOME only: slow the mutable-zone curtain fade so freshly resolved
+   HOME actions emerge through the curtain instead of visually popping in.
+   Scorecard/Leaderboard/other reveal shields retain the established .5s fade. */
+.sshcp-data-reveal-shield-v177.sshcp-home-reveal-v1985{
+  transition:opacity 1s ease-out!important;
+}
+
 .sshcp-data-reveal-shield-v177.is-revealing-v177{
   opacity:0!important;
   pointer-events:none!important;
@@ -12809,7 +12822,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.84</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.85</span></span>
         </button>
 
       </div>
@@ -18600,7 +18613,9 @@ let scoreTimingDetail =
 
         shield.addEventListener('transitionend', onTransitionEnd);
         shield.classList.add('is-revealing-v177');
-        window.setTimeout(finish, 560);
+        /* V19.85 — HOME alone fades for 1.0s. Keep its safety fallback just
+           beyond that transition; all other reveal shields remain at 560ms. */
+        window.setTimeout(finish, key === 'home' ? 1060 : 560);
       });
     }
 
@@ -18662,7 +18677,9 @@ let scoreTimingDetail =
 
     function beginHomeRevealV1963() {
       if (currentView !== 'home') return null;
-      return beginDataRevealShieldV177('home', [], '#fff', false, 4800, 'home');
+      const shield = beginDataRevealShieldV177('home', [], '#fff', false, 4800, 'home');
+      if (shield) shield.classList.add('sshcp-home-reveal-v1985');
+      return shield;
     }
 
     async function showScorecard() {
@@ -27513,7 +27530,8 @@ let scoreTimingDetail =
           'skins-results-v1627',
           'geek-mode-v180',
           'geek-detail-v180',
-          'score-save-warning'
+          'score-save-warning',
+          'welcome-competitor-v1985'
         );
 
 
@@ -28496,6 +28514,7 @@ let scoreTimingDetail =
 
     function showBareEntryGateV1961() {
       closeModal();
+      els.modalOverlay.classList.add('welcome-competitor-v1985');
       els.modalTitle.textContent = 'WELCOME COMPETITOR';
       els.modalBody.textContent = 'SCAN YOUR QR CODE OR ENTER THE ACCESS PASSWORD';
       els.modalInput.style.display = 'none';
