@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.89-L6Q4RV | BUILD KEY: 19.90-R7M3QX -->
+<!-- SSHCP | BASE KEY: 19.90-R7M3QX | BUILD KEY: 19.91-Q5N8VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.89</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.91</span></span>
         </button>
 
       </div>
@@ -23011,11 +23011,12 @@ let scoreTimingDetail =
         });
       }
 
-      /* V19.67 Scramble Summary TEAM hierarchy — proportional on every screen.
-         1st starts at 45% of its actual calculated row height. Each podium tier
-         after that starts at 95% of the PREVIOUS tier's final fitted size.
-         4th starts at 95% of 3rd's final fitted size; places 4-end then share
-         one exact final size. TEAM names have no fixed pixel minimum. */
+      /* V19.91 Scramble Summary TEAM hierarchy — proportional on every screen.
+         Preserve the locked podium chain: 1st starts at 45% of its actual row
+         height; 2nd starts at 95% of final 1st; 3rd starts at 95% of final 2nd.
+         Places 4-end all start independently at one shared target equal to 95%
+         of final 3rd, with each row's TEAM block capped at 80% of its own row
+         height. One long/two-line lower name must never shrink the other rows. */
       let previousPodiumTeamSizeV1967 = null;
 
       [1,2,3].forEach((place, index) => {
@@ -23077,27 +23078,10 @@ let scoreTimingDetail =
           ? previousPodiumTeamSizeV1967 * 0.95
           : firstLowerRowHeight * 0.45;
 
-        /* Discover the smallest complete-name fit required anywhere in the
-           lower block, then apply that exact size to every row 4-end. */
-        let sharedLowerActual = sharedLowerTarget;
-        lowerTeam.forEach(teamCell => {
-          const anchor = teamCell.querySelector('.summary-team-anchor');
-          const teamText = teamCell.querySelector('.summary-team-text');
-          if (!teamText) return;
-          const fitted = fitSummaryTeamTextV1967(
-            teamCell,
-            anchor,
-            teamText,
-            teamCell.clientHeight,
-            sharedLowerTarget,
-            10,
-            0.80
-          );
-          if (fitted && Number.isFinite(fitted.size)) {
-            sharedLowerActual = Math.min(sharedLowerActual, fitted.size);
-          }
-        });
-
+        /* V19.91 — 4th through end share only the STARTING target (95% of
+           final 3rd). Each TEAM cell then fits itself independently within the
+           existing 80% row-height envelope. A long/two-line name therefore
+           cannot force every other lower-row name down to its fitted size. */
         lowerTeam.forEach(teamCell => {
           const anchor = teamCell.querySelector('.summary-team-anchor');
           const teamText = teamCell.querySelector('.summary-team-text');
@@ -23107,7 +23091,7 @@ let scoreTimingDetail =
             anchor,
             teamText,
             teamCell.clientHeight,
-            sharedLowerActual,
+            sharedLowerTarget,
             10,
             0.80
           );
@@ -23116,32 +23100,19 @@ let scoreTimingDetail =
 
       fitUniform(lowerNet, 0.48, 12, 6);
 
-      /* V18.16: every NET STROKES cell, 1st through 10th, uses one common
-         target derived from the narrowest/shortest result row. The target is
-         exactly 40% of that narrowest row height; width fitting may reduce the
-         common size only if a NET STROKES value cannot fit its own cell. */
+      /* V19.91 — NET STROKES uses one intentional table-wide size tied to the
+         podium hierarchy: exactly 95% of the FINAL fitted 3rd-place TEAM font.
+         Apply that same size to every team so STROKES never varies by row/name. */
       const allStrokes = [
         ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
         ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-strokes'))
       ];
-      const strokeRowHeights = allStrokes
-        .map(cell => cell.getBoundingClientRect().height || cell.clientHeight || 0)
-        .filter(height => height > 0);
-      const narrowestStrokeRow = strokeRowHeights.length
-        ? Math.min(...strokeRowHeights)
-        : 42;
-      const strokesTarget = Math.max(8, narrowestStrokeRow * 0.40);
-      let strokesSize = strokesTarget;
+      const strokesSizeV1991 = Number.isFinite(previousPodiumTeamSizeV1967)
+        ? previousPodiumTeamSizeV1967 * 0.95
+        : 8;
       allStrokes.forEach(cell => {
-        strokesSize = Math.min(strokesSize, fitTextToBoxV5(cell, cell, strokesTarget, 8, {
-          horizontalPad: 4,
-          verticalPad: 4,
-          wrap: false,
-          lineHeight: 1
-        }));
-      });
-      allStrokes.forEach(cell => {
-        cell.style.setProperty('font-size', strokesSize + 'px', 'important');
+        cell.style.setProperty('font-size', strokesSizeV1991 + 'px', 'important');
+        cell.style.setProperty('line-height', '1', 'important');
         cell.style.setProperty('white-space', 'nowrap', 'important');
       });
 
