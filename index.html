@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.96-R4N7QX | BUILD KEY: 19.97-H6R3QX -->
+<!-- SSHCP | BASE KEY: 19.97-H6R3QX | BUILD KEY: 19.98-M7Q4RV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.97</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.98</span></span>
         </button>
 
       </div>
@@ -22788,9 +22788,12 @@ let scoreTimingDetail =
         5 + lowerCount,
         bodyPx - notePx - headerH
       );
+      /* V19.98 — podium row geometry is now an explicit 2 / 1.5 / 1.25 / 1
+         hierarchy. Tiebreak/handicap explanation space is still reserved first;
+         only the remaining standings height is distributed by these weights. */
       const weightedRows = distributeWeightedPixelsV188(
         weightedSpace,
-        [2, 1.5, 1.5, ...Array(lowerCount).fill(1)]
+        [2, 1.5, 1.25, ...Array(lowerCount).fill(1)]
       );
       const place1 = weightedRows[0] || 1;
       const place2 = weightedRows[1] || 1;
@@ -22838,12 +22841,11 @@ let scoreTimingDetail =
       }
     }
 
-    function fitSummaryTeamTextV1967(
+    function fitSummaryTeamTextV1998(
       container,
       anchor,
       textEl,
       rowHeight,
-      targetSize,
       horizontalPad,
       twoLineHeightRatio = 0.80,
       oneLineHeightRatio = 0.50
@@ -22866,53 +22868,67 @@ let scoreTimingDetail =
         anchor.style.setProperty('max-width', '100%', 'important');
       }
 
-      const availableWidth = Math.max(0.001, container.clientWidth - Math.max(0, Number(horizontalPad) || 0));
-      const availableOneLineHeight = Math.max(0.001, rowHeight * Math.max(0.10, Math.min(1, Number(oneLineHeightRatio) || 0.50)));
-      const availableTwoLineHeight = Math.max(0.001, rowHeight * Math.max(0.10, Math.min(1, Number(twoLineHeightRatio) || 0.80)));
-      const target = Math.max(0.001, Number(targetSize) || 0.001);
+      const availableWidth = Math.max(
+        0.001,
+        container.clientWidth - Math.max(0, Number(horizontalPad) || 0)
+      );
+      const availableOneLineHeight = Math.max(
+        0.001,
+        rowHeight * Math.max(0.10, Math.min(1, Number(oneLineHeightRatio) || 0.50))
+      );
+      const availableTwoLineHeight = Math.max(
+        0.001,
+        rowHeight * Math.max(0.10, Math.min(1, Number(twoLineHeightRatio) || 0.80))
+      );
 
-      textEl.style.setProperty('font-size', target + 'px', 'important');
+      /* V19.98 — TEAM names no longer inherit any font size from another team.
+         Every row owns its typography. A one-line TEAM targets a complete text
+         block equal to 50% of its own actual row height. If that target cannot
+         fit and the name has a real word break, the two-line form may use up to
+         80% of its own row height as a complete two-line block. Width fitting
+         may shrink either form, but one team's shrinkage never affects another. */
+      const oneLineTarget = Math.max(0.001, availableOneLineHeight / 1.04);
+      const twoLineTarget = Math.max(0.001, availableTwoLineHeight / (2 * 1.02));
+
+      textEl.style.setProperty('font-size', oneLineTarget + 'px', 'important');
       textEl.style.setProperty('line-height', '1.04', 'important');
       textEl.style.setProperty('white-space', 'nowrap', 'important');
       textEl.style.setProperty('overflow', 'visible', 'important');
 
-      /* V19.96 — preserve the existing hierarchy target and one-line/two-line
-         decision rules, but cap the FINAL rendered block against its own row.
-         A one-line TEAM may use at most 50% of the row; a two-line TEAM may use
-         at most 80%. The cap can reduce the inherited target but never enlarge it. */
-      const targetFitsOneLineWidth = measureTeamLineWidthV58(textEl, original, target) <= availableWidth + 0.75;
-      if (targetFitsOneLineWidth) {
-        const finalSize = Math.min(target, availableOneLineHeight / 1.04);
+      const fitsOneLineAtTarget =
+        measureTeamLineWidthV58(textEl, original, oneLineTarget) <= availableWidth + 0.75;
+
+      if (fitsOneLineAtTarget) {
         textEl.classList.remove('two-line');
         textEl.textContent = original;
-        textEl.style.setProperty('font-size', finalSize + 'px', 'important');
+        textEl.style.setProperty('font-size', oneLineTarget + 'px', 'important');
         textEl.style.setProperty('line-height', '1.04', 'important');
         textEl.style.setProperty('white-space', 'nowrap', 'important');
         textEl.style.setProperty('overflow', 'visible', 'important');
-        return { size: finalSize, truncated: false, lines: 1 };
+        return { size: oneLineTarget, truncated: false, lines: 1 };
       }
 
-      /* V19.90 — Scramble Summary must never manufacture a character-level
-         break inside a single-token team name (for example TEAM6 -> TEA / M6).
-         If there is no real whitespace break, preserve the complete token on
-         one line and solve proportionally for the largest size that fits the
-         actual TEAM cell. V19.96 additionally applies the 50% own-row cap. */
+      /* Preserve the V19.90 protection: a single-token team name can never be
+         broken at an arbitrary character. It stays on one line and only itself
+         shrinks until it fits the actual TEAM cell. */
       if (!/\s/.test(original)) {
         let low = 0;
-        let high = target;
+        let high = oneLineTarget;
         let best = 0;
         for (let i = 0; i < 28; i++) {
           const size = (low + high) / 2;
-          const widthFits = measureTeamLineWidthV58(textEl, original, size) <= availableWidth + 0.75;
-          const heightFits = size * 1.04 <= availableOneLineHeight + 0.75;
-          if (widthFits && heightFits) {
+          const widthFits =
+            measureTeamLineWidthV58(textEl, original, size) <= availableWidth + 0.75;
+          if (widthFits) {
             best = size;
             low = size;
           } else {
             high = size;
           }
         }
-        const finalSize = best > 0 ? best : Math.max(Number.EPSILON, target / Math.pow(2, 28));
+        const finalSize = best > 0
+          ? best
+          : Math.max(Number.EPSILON, oneLineTarget / Math.pow(2, 28));
         textEl.classList.remove('two-line');
         textEl.textContent = original;
         textEl.style.setProperty('font-size', finalSize + 'px', 'important');
@@ -22925,24 +22941,25 @@ let scoreTimingDetail =
       let two = twoLineTeamFitsV58(
         textEl,
         original,
-        target,
+        twoLineTarget,
         availableWidth,
         availableTwoLineHeight,
         splitLeaderboardTeamTwoLinesV58
       );
       renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
-      textEl.style.setProperty('font-size', target + 'px', 'important');
+      textEl.style.setProperty('font-size', twoLineTarget + 'px', 'important');
       textEl.style.setProperty('line-height', '1.02', 'important');
       textEl.style.setProperty('white-space', 'normal', 'important');
       textEl.style.setProperty('overflow', 'visible', 'important');
 
-      if (two.fits) return { size: target, truncated: false, lines: 2 };
+      if (two.fits) {
+        return { size: twoLineTarget, truncated: false, lines: 2 };
+      }
 
       /* No design minimum: solve for the largest proportional two-line size
-         that fits the actual box. The tiny numerical lower bound is only the
-         binary-search endpoint, never a CSS/font floor. */
+         that fits the actual box, bounded only by the 80%-of-row block ceiling. */
       let low = 0;
-      let high = target;
+      let high = twoLineTarget;
       let best = null;
       for (let i = 0; i < 28; i++) {
         const size = (low + high) / 2;
@@ -22962,7 +22979,9 @@ let scoreTimingDetail =
         }
       }
 
-      const finalSize = best ? best.size : Math.max(Number.EPSILON, target / Math.pow(2, 28));
+      const finalSize = best
+        ? best.size
+        : Math.max(Number.EPSILON, twoLineTarget / Math.pow(2, 28));
       const finalTwo = best ? best.candidate : twoLineTeamFitsV58(
         textEl,
         original,
@@ -23021,17 +23040,13 @@ let scoreTimingDetail =
         });
       }
 
-      /* V19.97 Scramble Summary TEAM hierarchy preserves the V19.96 own-row
-         safety caps and changes only the two-line podium step-down: 1st starts
-         at 50% of its actual row height; 2nd targets 90% of final 1st when 1st
-         is one line or 95% when 1st is two lines; 3rd applies the same 90/95
-         rule from final 2nd. Places 4-end remain 80% of final 3rd when 3rd is
-         one line or 90% when 3rd is two lines. Every final one-line TEAM block
-         may occupy at most 50% of its own row and every final two-line block at
-         most 80%. Width fitting and independent lower-row fitting are unchanged. */
-      let previousPodiumTeamSizeV1967 = null;
-      let previousPodiumTeamLinesV1995 = 1;
-      let thirdPlaceTeamLinesV1993 = 1;
+      /* V19.98 — Summary typography now follows the stable row geometry rather
+         than chaining one TEAM name into the next. NET +/- keeps its approved
+         60/55/50/48% own-row system. PLACE is exactly 75% of those same ratios.
+         TEAM names fit independently inside their own row: one line targets a
+         50%-of-row text block; a legal two-line name may use an 80%-of-row block. */
+      const podiumNetRatiosV1998 = [0.60, 0.55, 0.50];
+      const podiumPlaceRatiosV1998 = podiumNetRatiosV1998.map(ratio => ratio * 0.75);
 
       [1,2,3].forEach((place, index) => {
         const row = topGrid.querySelector('.tournament-summary-row.place-' + place);
@@ -23042,33 +23057,38 @@ let scoreTimingDetail =
         const teamText = row.querySelector('.summary-team-text') || team;
         const net = row.querySelector('.tournament-summary-net');
 
-        if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 9, {horizontalPad:4,verticalPad:5});
+        if (placeCell) {
+          fitTextToBoxV5(
+            placeCell,
+            placeCell,
+            row.clientHeight * podiumPlaceRatiosV1998[index],
+            9,
+            { horizontalPad: 4, verticalPad: 5 }
+          );
+        }
 
         if (team && teamText) {
-          const podiumStepRatioV1997 = previousPodiumTeamLinesV1995 === 2 ? 0.95 : 0.90;
-          const targetSize = Number.isFinite(previousPodiumTeamSizeV1967)
-            ? previousPodiumTeamSizeV1967 * podiumStepRatioV1997
-            : row.clientHeight * 0.50;
-          const fittedTeam = fitSummaryTeamTextV1967(
+          fitSummaryTeamTextV1998(
             team,
             teamAnchor,
             teamText,
             row.clientHeight,
-            targetSize,
             22,
-            0.80
+            0.80,
+            0.50
           );
-          previousPodiumTeamSizeV1967 = fittedTeam && Number.isFinite(fittedTeam.size)
-            ? fittedTeam.size
-            : targetSize;
-          previousPodiumTeamLinesV1995 = fittedTeam && fittedTeam.lines === 2 ? 2 : 1;
-          if (place === 3) {
-            thirdPlaceTeamLinesV1993 = previousPodiumTeamLinesV1995;
-          }
         }
 
         /* Keep the approved 60/55/50% podium NET +/- hierarchy. */
-        if (net) fitTextToBoxV5(net, net, row.clientHeight * ([0.60,0.55,0.50][index]), 12, {horizontalPad:6,verticalPad:5});
+        if (net) {
+          fitTextToBoxV5(
+            net,
+            net,
+            row.clientHeight * podiumNetRatiosV1998[index],
+            12,
+            { horizontalPad: 6, verticalPad: 5 }
+          );
+        }
       });
 
       const lowerPlace = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.place'));
@@ -23089,49 +23109,49 @@ let scoreTimingDetail =
         return chosen;
       };
 
-      fitUniform(lowerPlace, 0.34, 9, 4);
+      /* PLACE mirrors NET +/- at 75%: lower score 48% -> lower PLACE 36%.
+         Keep the established one-shared-size behavior for places 4-end. */
+      fitUniform(lowerPlace, 0.48 * 0.75, 9, 4);
 
-      if (lowerTeam.length) {
-        const firstLowerRowHeight = lowerTeam[0].clientHeight || lowerTeam[0].getBoundingClientRect().height || 1;
-        const lowerTargetRatioV1995 = thirdPlaceTeamLinesV1993 === 2 ? 0.90 : 0.80;
-        const sharedLowerTarget = Number.isFinite(previousPodiumTeamSizeV1967)
-          ? previousPodiumTeamSizeV1967 * lowerTargetRatioV1995
-          : firstLowerRowHeight * 0.45;
-
-        /* V19.96 — preserve the V19.95 lower-field starting targets exactly.
-           Every lower TEAM still fits itself independently; the shared fitter
-           now also enforces the 50% one-line / 80% two-line own-row area cap. */
-        lowerTeam.forEach(teamCell => {
-          const anchor = teamCell.querySelector('.summary-team-anchor');
-          const teamText = teamCell.querySelector('.summary-team-text');
-          if (!teamText) return;
-          fitSummaryTeamTextV1967(
-            teamCell,
-            anchor,
-            teamText,
-            teamCell.clientHeight,
-            sharedLowerTarget,
-            10,
-            0.80
-          );
-        });
-      }
+      /* Every lower TEAM is independent and uses the same own-row 50%/80%
+         architecture as the podium. No team name can resize another row. */
+      lowerTeam.forEach(teamCell => {
+        const anchor = teamCell.querySelector('.summary-team-anchor');
+        const teamText = teamCell.querySelector('.summary-team-text');
+        if (!teamText) return;
+        fitSummaryTeamTextV1998(
+          teamCell,
+          anchor,
+          teamText,
+          teamCell.clientHeight,
+          10,
+          0.80,
+          0.50
+        );
+      });
 
       fitUniform(lowerNet, 0.48, 12, 6);
 
-      /* V19.92 — NET STROKES is supporting information, not a visual headline.
-         Start the entire column at 80% of the FINAL fitted 3rd-place TEAM font,
-         keep every value on exactly one line, and use one shared final size for
-         places 1-end. If any rendered STROKES value is too wide, shrink the
-         shared size for EVERY row together until the widest value fits. */
+      /* V19.98 — NET STROKES now follows score typography, never TEAM text.
+         Its target is the smallest FINAL rendered NET +/- score font anywhere
+         in the Summary. Every NET STROKES value uses one shared one-line size;
+         if the widest value cannot fit, the whole column shrinks together. */
+      const allNetScoreCellsV1998 = [
+        ...Array.from(topGrid.querySelectorAll('.tournament-summary-net')),
+        ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-score'))
+      ];
+      const finalNetScoreFontsV1998 = allNetScoreCellsV1998
+        .map(cell => parseFloat(getComputedStyle(cell).fontSize))
+        .filter(size => Number.isFinite(size) && size > 0);
+      const strokesTargetV1998 = finalNetScoreFontsV1998.length
+        ? Math.min(...finalNetScoreFontsV1998)
+        : 8;
+
       const allStrokes = [
         ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
         ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-strokes'))
       ];
-      const strokesTargetV1992 = Number.isFinite(previousPodiumTeamSizeV1967)
-        ? previousPodiumTeamSizeV1967 * 0.80
-        : 8;
-      let strokesSizeV1992 = strokesTargetV1992;
+      let strokesSizeV1998 = strokesTargetV1998;
 
       allStrokes.forEach(cell => {
         cell.style.setProperty('line-height', '1', 'important');
@@ -23141,7 +23161,7 @@ let scoreTimingDetail =
         const text = String(cell.textContent || '').replace(/\s+/g, ' ').trim();
         const availableWidth = Math.max(0.001, cell.clientWidth - 4);
         const availableHeight = Math.max(0.001, cell.clientHeight - 4);
-        const highStart = Math.max(0.001, Math.min(strokesTargetV1992, availableHeight));
+        const highStart = Math.max(0.001, Math.min(strokesTargetV1998, availableHeight));
 
         let low = 0;
         let high = highStart;
@@ -23156,11 +23176,14 @@ let scoreTimingDetail =
             high = size;
           }
         }
-        strokesSizeV1992 = Math.min(strokesSizeV1992, best > 0 ? best : highStart);
+        strokesSizeV1998 = Math.min(
+          strokesSizeV1998,
+          best > 0 ? best : highStart
+        );
       });
 
       allStrokes.forEach(cell => {
-        cell.style.setProperty('font-size', strokesSizeV1992 + 'px', 'important');
+        cell.style.setProperty('font-size', strokesSizeV1998 + 'px', 'important');
         cell.style.setProperty('line-height', '1', 'important');
         cell.style.setProperty('white-space', 'nowrap', 'important');
         cell.style.setProperty('overflow', 'hidden', 'important');
