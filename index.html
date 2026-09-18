@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.3-V8Q2RM | BUILD KEY: 20.4-R6M3QW -->
+<!-- SSHCP | BASE KEY: 20.4-R6M3QW | BUILD KEY: 20.5-H7Q4NX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.4</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.5</span></span>
         </button>
 
       </div>
@@ -24510,10 +24510,11 @@ let scoreTimingDetail =
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
       if (headerCells.length !== 4) return;
 
-      /* V20.4: STAT remains 40% of actual data-row height. US / ALL remain at
-         their established 45% targets. TEAM now targets 60% of its own row
-         height and uses the same proven responsive fitter as Final Results /
-         Leaderboard: start at target, then shrink only if actual width requires it. */
+      /* V20.5: STAT remains 40% of actual data-row height. US / ALL remain at
+         their established 45% targets. TEAM remains 60% of its own row height,
+         but Geek now fits against the button's real rendered content width rather
+         than the surrounding cell box. Single-token names shrink intact until
+         they fit; multi-word names may use a second line only at a real space. */
       shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
         const statCell = row.querySelector('.geek-stat-cell-v180');
         const statLabel = row.querySelector('.geek-stat-label-v186');
@@ -24554,37 +24555,26 @@ let scoreTimingDetail =
           });
         }
         if (team) {
-          /* V20.4 root fix — remove V20.1's Geek-only scrollWidth safety loop.
-             A width:100% button reports scrollWidth >= clientWidth even when its
-             text already fits, so the old loop could never satisfy its stop test
-             and repeatedly reduced every single-owner TEAM font. That is why a
-             word such as CHAMPIONSHIP stayed visibly undersized despite unused
-             TEAM-cell width. Use the proven shared team fitter directly instead.
+          /* V20.5 root fix — the V20.4 fitter was still measuring the outer TEAM
+             cell, whose clientWidth includes the cell's own padding. The visible
+             text actually lives inside a width:100% button that has an additional
+             4px of padding on each side. That overstated usable width and allowed
+             long names such as CHAMPIONSHIP to clip at the right edge.
 
-             Contract: start at 60% of the actual rendered row height; use the
-             actual TEAM-cell width; shrink only the affected name if needed;
-             preserve a single token intact with no absolute minimum; multi-word
-             names may wrap only at real spaces. */
-          if (team.classList.contains('single-owner-v1929')) {
-            const teamCell = row.querySelector('.geek-team-cell-v180') || team;
-            fitTwoLineTeamTextV58(
-              teamCell,
-              null,
-              team,
-              h,
-              h * 0.60,
-              8,
-              10,
-              0.80
-            );
-          } else {
-            fitTextToBoxV5(team, team, h * 0.60, 8, {
-              horizontalPad: 10,
-              verticalPad: 4,
-              wrap: false,
-              lineHeight: 1
-            });
-          }
+             Fit the button against its own real rendered width and subtract its
+             actual 8px horizontal padding. The shared fitter then owns both cases:
+             one-word names remain one line and shrink until they fit; multi-word
+             names may use two lines only at real spaces and shrink if still needed. */
+          fitTwoLineTeamTextV58(
+            team,
+            null,
+            team,
+            h,
+            h * 0.60,
+            8,
+            8,
+            0.80
+          );
         }
       });
 
