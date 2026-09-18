@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.85-P4N7QX | BUILD KEY: 19.86-M6Q2RV -->
+<!-- SSHCP | BASE KEY: 19.86-M6Q2RV | BUILD KEY: 19.87-C8R5QM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,6 +69,11 @@
           !window.__sshcpIncomingQrWelcomeV170
         ) {
           document.documentElement.classList.add('sshcp-pre-home-v1976');
+          /* V19.87 — browser refresh that resolves directly back to HOME must
+             be white-covered from the first paint, before initialize()/showHome()
+             can mount V19.86's runtime full-screen curtain. This boot-only
+             layer hands off synchronously to that existing curtain later. */
+          document.documentElement.classList.add('sshcp-pre-home-full-v1987');
         }
 
         if (
@@ -5125,6 +5130,25 @@ html.sshcp-pre-leaderboard #leaderboardView{
 html.sshcp-pre-home-v1976 #homeView #homeLeaderboardButton,
 html.sshcp-pre-home-v1976 #homeView #homeScorecardAccess{
   visibility:hidden!important;
+}
+
+/* V19.87 — HOME-refresh first-paint curtain. The normal V19.86 runtime
+   full-screen curtain cannot exist until JavaScript startup reaches showHome().
+   Use a boot-only white body::after layer so no partially constructed HOME can
+   paint before that runtime curtain is mounted. It has no transition of its
+   own: showHome() removes this class synchronously only after the opaque
+   V19.86 full-screen curtain exists, producing a paint-gap-free handoff. */
+html.sshcp-pre-home-full-v1987 body::after{
+  content:""!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:4790!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:#fff!important;
+  opacity:1!important;
+  pointer-events:auto!important;
 }
 
 
@@ -12830,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.86</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.87</span></span>
         </button>
 
       </div>
@@ -18455,6 +18479,14 @@ let scoreTimingDetail =
         ? beginHomeFullRevealV1986()
         : null;
 
+      /* V19.87 — HOME refresh begins behind a CSS first-paint white layer.
+         Transfer ownership only after V19.86's opaque runtime full-screen
+         curtain is physically mounted. Both are white and this class removal
+         is synchronous, so there is no frame where the rebuilt HOME is exposed. */
+      if (homeFullRevealShieldV1986) {
+        document.documentElement.classList.remove('sshcp-pre-home-full-v1987');
+      }
+
 
       setActiveView(
         'home'
@@ -18490,6 +18522,13 @@ let scoreTimingDetail =
          state has finished resolving. */
       if (!homeRevealShieldV1963) {
         document.documentElement.classList.remove('sshcp-pre-home-v1976');
+      }
+
+      /* V19.87 fallback — a full-screen runtime curtain is expected on HOME
+         refresh, but never strand the boot first-paint layer if creation failed.
+         Fresh HOME state is settled here, so exposing it is safe. */
+      if (!homeFullRevealShieldV1986) {
+        document.documentElement.classList.remove('sshcp-pre-home-full-v1987');
       }
 
       /* V19.86 — reveal both HOME curtains from the same settled layout frame.
