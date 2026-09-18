@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.94-K7Q3MV | BUILD KEY: 19.95-W6R2QK -->
+<!-- SSHCP | BASE KEY: 19.95-W6R2QK | BUILD KEY: 19.96-R4N7QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.95</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.96</span></span>
         </button>
 
       </div>
@@ -22845,7 +22845,8 @@ let scoreTimingDetail =
       rowHeight,
       targetSize,
       horizontalPad,
-      twoLineHeightRatio = 0.80
+      twoLineHeightRatio = 0.80,
+      oneLineHeightRatio = 0.50
     ) {
       if (!container || !textEl) return null;
 
@@ -22866,6 +22867,7 @@ let scoreTimingDetail =
       }
 
       const availableWidth = Math.max(0.001, container.clientWidth - Math.max(0, Number(horizontalPad) || 0));
+      const availableOneLineHeight = Math.max(0.001, rowHeight * Math.max(0.10, Math.min(1, Number(oneLineHeightRatio) || 0.50)));
       const availableTwoLineHeight = Math.max(0.001, rowHeight * Math.max(0.10, Math.min(1, Number(twoLineHeightRatio) || 0.80)));
       const target = Math.max(0.001, Number(targetSize) || 0.001);
 
@@ -22874,19 +22876,27 @@ let scoreTimingDetail =
       textEl.style.setProperty('white-space', 'nowrap', 'important');
       textEl.style.setProperty('overflow', 'visible', 'important');
 
-      if (
-        measureTeamLineWidthV58(textEl, original, target) <= availableWidth + 0.75 &&
-        target * 1.04 <= availableTwoLineHeight + 0.75
-      ) {
-        return { size: target, truncated: false, lines: 1 };
+      /* V19.96 — preserve the existing hierarchy target and one-line/two-line
+         decision rules, but cap the FINAL rendered block against its own row.
+         A one-line TEAM may use at most 50% of the row; a two-line TEAM may use
+         at most 80%. The cap can reduce the inherited target but never enlarge it. */
+      const targetFitsOneLineWidth = measureTeamLineWidthV58(textEl, original, target) <= availableWidth + 0.75;
+      if (targetFitsOneLineWidth) {
+        const finalSize = Math.min(target, availableOneLineHeight / 1.04);
+        textEl.classList.remove('two-line');
+        textEl.textContent = original;
+        textEl.style.setProperty('font-size', finalSize + 'px', 'important');
+        textEl.style.setProperty('line-height', '1.04', 'important');
+        textEl.style.setProperty('white-space', 'nowrap', 'important');
+        textEl.style.setProperty('overflow', 'visible', 'important');
+        return { size: finalSize, truncated: false, lines: 1 };
       }
 
       /* V19.90 — Scramble Summary must never manufacture a character-level
          break inside a single-token team name (for example TEAM6 -> TEA / M6).
          If there is no real whitespace break, preserve the complete token on
          one line and solve proportionally for the largest size that fits the
-         actual TEAM cell. This changes only Summary fitting; the established
-         V19.67 podium cascade and all other team-name renderers stay intact. */
+         actual TEAM cell. V19.96 additionally applies the 50% own-row cap. */
       if (!/\s/.test(original)) {
         let low = 0;
         let high = target;
@@ -22894,7 +22904,7 @@ let scoreTimingDetail =
         for (let i = 0; i < 28; i++) {
           const size = (low + high) / 2;
           const widthFits = measureTeamLineWidthV58(textEl, original, size) <= availableWidth + 0.75;
-          const heightFits = size * 1.04 <= availableTwoLineHeight + 0.75;
+          const heightFits = size * 1.04 <= availableOneLineHeight + 0.75;
           if (widthFits && heightFits) {
             best = size;
             low = size;
@@ -23011,12 +23021,15 @@ let scoreTimingDetail =
         });
       }
 
-      /* V19.95 Scramble Summary TEAM hierarchy — 1st starts at 50% of its
-         actual row height. 2nd targets 90% of final 1st when 1st rendered on
-         one line, or 100% when 1st rendered on two lines. 3rd applies the same
-         rule from final 2nd. For places 4-end, branch from final 3rd: 80% when
-         3rd is one line, 90% when 3rd is two lines. Each lower TEAM still fits
-         independently within its own 80% row-height envelope. */
+      /* V19.96 Scramble Summary TEAM hierarchy keeps the V19.95 cascade
+         unchanged: 1st starts at 50% of its actual row height; 2nd targets
+         90% of final 1st when 1st is one line or 100% when 1st is two lines;
+         3rd applies the same rule from final 2nd; places 4-end target 80% of
+         final 3rd when 3rd is one line or 90% when 3rd is two lines. V19.96
+         adds only an own-row vertical safety area to every TEAM fit: a final
+         one-line block may occupy at most 50% of its row and a final two-line
+         block at most 80%. Width fitting and independent lower-row fitting
+         remain unchanged. */
       let previousPodiumTeamSizeV1967 = null;
       let previousPodiumTeamLinesV1995 = 1;
       let thirdPlaceTeamLinesV1993 = 1;
@@ -23086,10 +23099,9 @@ let scoreTimingDetail =
           ? previousPodiumTeamSizeV1967 * lowerTargetRatioV1995
           : firstLowerRowHeight * 0.45;
 
-        /* V19.95 — 4th through end share only the STARTING target. When 3rd
-           rendered on one line, use 80% of final 3rd. When 3rd rendered on two
-           lines, use 90% of final 3rd because that font is already reduced.
-           Every lower TEAM still fits itself independently. */
+        /* V19.96 — preserve the V19.95 lower-field starting targets exactly.
+           Every lower TEAM still fits itself independently; the shared fitter
+           now also enforces the 50% one-line / 80% two-line own-row area cap. */
         lowerTeam.forEach(teamCell => {
           const anchor = teamCell.querySelector('.summary-team-anchor');
           const teamText = teamCell.querySelector('.summary-team-text');
