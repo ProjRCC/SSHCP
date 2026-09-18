@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.77-V6M2QX | BUILD KEY: 19.78-H4Q7NZ -->
+<!-- SSHCP | BASE KEY: 19.78-H4Q7NZ | BUILD KEY: 19.79-T6Q2NX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12809,7 +12809,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.78</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.79</span></span>
         </button>
 
       </div>
@@ -14372,6 +14372,57 @@ let scoreTimingDetail =
     const SSHCP_PREAUTHORIZE_ACTIVE_KEY = 'sshcpPreAuthorizeActiveV1958';
     const SSHCP_MASTER_TEST_KEY = 'glmNnV63TWS42fcRB8z2yldF';
 
+    /* V19.79 — one first-Scorecard presentation is armed only by a genuinely
+       new QR / MASTER authorization identity. Stored-auth validation does not
+       re-arm it. The pending marker survives a same-tab refresh until the first
+       Scorecard entrance, then is consumed so Leaderboard -> Scorecard and all
+       later returns keep the established normal positioning behavior. */
+    const SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979 =
+      'sshcpFirstScorecardAfterAuthV1979';
+
+    function qrAuthorizationFingerprintV1979(role = getQrRole(), qrId = localStorage.getItem(SSHCP_QR_ID_KEY) || '', team = getQrTeam()) {
+      const cleanRoleV1979 = String(role || '').toUpperCase();
+      if (cleanRoleV1979 === 'QR') {
+        return 'QR|' + normalizeName(qrId) + '|' + normalizeName(team);
+      }
+      if (cleanRoleV1979 === 'MASTER') {
+        return 'MASTER|' + normalizeName(qrId || 'MASTER');
+      }
+      return '';
+    }
+
+    function armFirstScorecardAfterAuthorizationV1979(fingerprintV1979) {
+      const cleanV1979 = String(fingerprintV1979 || '');
+      if (!cleanV1979) return;
+      try {
+        sessionStorage.setItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979, cleanV1979);
+      } catch (_) {}
+    }
+
+    function clearFirstScorecardAfterAuthorizationV1979() {
+      try {
+        sessionStorage.removeItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979);
+      } catch (_) {}
+    }
+
+    function consumeFirstScorecardAfterAuthorizationV1979() {
+      let pendingV1979 = '';
+      try {
+        pendingV1979 = sessionStorage.getItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979) || '';
+      } catch (_) {}
+
+      const currentV1979 = qrAuthorizationFingerprintV1979();
+      if (!pendingV1979 || !currentV1979 || pendingV1979 !== currentV1979) {
+        return false;
+      }
+
+      clearFirstScorecardAfterAuthorizationV1979();
+      return true;
+    }
+
+    let firstScorecardTopIntentV1979 = false;
+    let firstScorecardTopActiveV1979 = false;
+
     /* V16.31 — one QR-auth owner at a time. This fixes the latent V16.30
        race where a slow, older request could finish after REMOVE AUTH and
        write authorization back into storage. */
@@ -14514,6 +14565,7 @@ let scoreTimingDetail =
     }
     function clearQrAuthorization(){
       [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
+      clearFirstScorecardAfterAuthorizationV1979();
       syncTeamQrLockedUi();
     }
     function removeQrAuthorization(){
@@ -14527,6 +14579,8 @@ let scoreTimingDetail =
       updateHomeScorecardAccess();
     }
     function saveQrAuthorization(data, passkey){
+      const priorFingerprintV1979 = qrAuthorizationFingerprintV1979();
+
       localStorage.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
       localStorage.setItem(SSHCP_QR_PASSKEY_KEY, passkey);
       localStorage.setItem(SSHCP_QR_ROLE_KEY, data.role || 'NONE');
@@ -14538,6 +14592,12 @@ let scoreTimingDetail =
         rememberSelectedTeam(data.team);
       }
       if (data.role === 'MASTER') localStorage.removeItem('rotbAuthorizedTeam');
+
+      const nextFingerprintV1979 = qrAuthorizationFingerprintV1979();
+      if (nextFingerprintV1979 && nextFingerprintV1979 !== priorFingerprintV1979) {
+        armFirstScorecardAfterAuthorizationV1979(nextFingerprintV1979);
+      }
+
       syncTeamQrLockedUi();
     }
     function showInvalidQrPasskey(){
@@ -15289,7 +15349,11 @@ let scoreTimingDetail =
        visual-ready sequence, not by page-load time. First finish the established
        NESR positioning. Then confirm that the NESR row is carrying both active
        Blue cues (HOLE cell + score-box border). After those cues are painted,
-       wait 0.1s and show the existing STARTING HOLE X modal. */
+       wait 0.1s and show the existing STARTING HOLE X modal.
+
+       V19.79 deliberately leaves this popup rule intact. Its only addition is
+       the first-post-authorization blank-shotgun presentation: the table is made
+       visible at Hole 1 before this same restore/popup sequence runs. */
     let startingHoleIntroTimerV1978 = 0;
     let startingHoleIntroSequenceV1978 = 0;
 
@@ -18480,6 +18544,13 @@ let scoreTimingDetail =
 
       const preserveHydratedPosition = scorecardHydratedFromSnapshotV53;
 
+      /* V19.79 — consume the authorization-scoped first-entry marker exactly
+         once. loadScorecard() will decide, from the fresh rendered data, whether
+         this entrance is the blank-shotgun case that should visibly begin at
+         Hole 1 before the existing NESR + four-row motion runs. */
+      firstScorecardTopIntentV1979 = consumeFirstScorecardAfterAuthorizationV1979();
+      firstScorecardTopActiveV1979 = false;
+
       if (leaderboardAutoScrollTimer) {
         clearTimeout(leaderboardAutoScrollTimer);
         leaderboardAutoScrollTimer = null;
@@ -18520,6 +18591,12 @@ let scoreTimingDetail =
       } else {
         restoreScorePositionThenStartingHoleIntroV1978();
       }
+
+      /* The special top-start is only an entrance presentation. The existing
+         V19.78 popup rule remains unchanged for later blank-card entries, while
+         every later Scorecard return uses the normal positioning path. */
+      firstScorecardTopIntentV1979 = false;
+      firstScorecardTopActiveV1979 = false;
 
     }
 
@@ -18685,6 +18762,26 @@ let scoreTimingDetail =
         buildTeamSelect();
         restoreOrSelectTeam();
         renderScorecard();
+
+        /* V19.79 — FIRST Scorecard entrance after a new authorization only:
+           when the freshly rendered card is completely blank and the tournament
+           is shotgun, establish Hole 1 / table-top underneath the existing white
+           reveal shield. After the reveal completes, showScorecard() calls the
+           unchanged V18.35 NESR + four-row positioning. Therefore Start Hole 2
+           naturally stays at the top, while a late start such as 16/17 visibly
+           travels from Hole 1 to the exact same normal NESR destination. */
+        firstScorecardTopActiveV1979 = Boolean(
+          firstScorecardTopIntentV1979 &&
+          currentView === 'scorecard' &&
+          selectedTeam &&
+          scorecardIsCompletelyBlankV1613(localScores) &&
+          tournamentUsesShotgunStartV1613()
+        );
+        if (firstScorecardTopActiveV1979 && els.scoreScroll) {
+          cancelScoreEnterBeautyScrollV1618();
+          els.scoreScroll.scrollTop = 0;
+        }
+
         const scorecardRevealDoneV179 = revealDataShieldAfterLayoutV177(
           'scorecard',
           scorecardRevealShieldV177,
