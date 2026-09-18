@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.2-K7R4NV | BUILD KEY: 20.3-V8Q2RM -->
+<!-- SSHCP | BASE KEY: 20.3-V8Q2RM | BUILD KEY: 20.4-R6M3QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.3</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.4</span></span>
         </button>
 
       </div>
@@ -24510,9 +24510,10 @@ let scoreTimingDetail =
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
       if (headerCells.length !== 4) return;
 
-      /* V20.3: STAT remains 40% of actual data-row height. US / ALL remain at
-         their established 45% targets. TEAM now targets 70% of its own row
-         height and still shrinks locally only when needed. */
+      /* V20.4: STAT remains 40% of actual data-row height. US / ALL remain at
+         their established 45% targets. TEAM now targets 60% of its own row
+         height and uses the same proven responsive fitter as Final Results /
+         Leaderboard: start at target, then shrink only if actual width requires it. */
       shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
         const statCell = row.querySelector('.geek-stat-cell-v180');
         const statLabel = row.querySelector('.geek-stat-label-v186');
@@ -24553,12 +24554,17 @@ let scoreTimingDetail =
           });
         }
         if (team) {
-          /* V20.3: Geek TEAM now targets 70% of its actual data-row height while keeping
-             the V20.0/V20.1 word-boundary and final DOM-width safety rules. It performs
-             one final DOM-width safety fit against the actual rendered button.
-             This catches right-edge / scrollbar clipping that measurement-only
-             fitting can miss. There is no absolute minimum: an intact word keeps
-             shrinking until the entire rendered word is visibly inside the cell. */
+          /* V20.4 root fix — remove V20.1's Geek-only scrollWidth safety loop.
+             A width:100% button reports scrollWidth >= clientWidth even when its
+             text already fits, so the old loop could never satisfy its stop test
+             and repeatedly reduced every single-owner TEAM font. That is why a
+             word such as CHAMPIONSHIP stayed visibly undersized despite unused
+             TEAM-cell width. Use the proven shared team fitter directly instead.
+
+             Contract: start at 60% of the actual rendered row height; use the
+             actual TEAM-cell width; shrink only the affected name if needed;
+             preserve a single token intact with no absolute minimum; multi-word
+             names may wrap only at real spaces. */
           if (team.classList.contains('single-owner-v1929')) {
             const teamCell = row.querySelector('.geek-team-cell-v180') || team;
             fitTwoLineTeamTextV58(
@@ -24566,23 +24572,13 @@ let scoreTimingDetail =
               null,
               team,
               h,
-              h * 0.70,
+              h * 0.60,
               8,
               10,
               0.80
             );
-
-            let geekSizeV201 = parseFloat(getComputedStyle(team).fontSize) || (h * 0.70);
-            for (let geekPassV201 = 0; geekPassV201 < 12; geekPassV201++) {
-              const visibleW = Math.max(1, team.clientWidth);
-              const neededW = Math.max(1, team.scrollWidth);
-              if (neededW <= visibleW - 1) break;
-              const ratio = Math.max(0.50, Math.min(0.995, (visibleW - 2) / neededW));
-              geekSizeV201 *= ratio;
-              team.style.setProperty('font-size', geekSizeV201 + 'px', 'important');
-            }
           } else {
-            fitTextToBoxV5(team, team, h * 0.70, 8, {
+            fitTextToBoxV5(team, team, h * 0.60, 8, {
               horizontalPad: 10,
               verticalPad: 4,
               wrap: false,
