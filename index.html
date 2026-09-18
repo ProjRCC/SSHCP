@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.4-R6M3QW | BUILD KEY: 20.5-H7Q4NX -->
+<!-- SSHCP | BASE KEY: 20.5-H7Q4NX | BUILD KEY: 20.6-Q5M8RV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.5</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.6</span></span>
         </button>
 
       </div>
@@ -24510,8 +24510,8 @@ let scoreTimingDetail =
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
       if (headerCells.length !== 4) return;
 
-      /* V20.5: STAT remains 40% of actual data-row height. US / ALL remain at
-         their established 45% targets. TEAM remains 60% of its own row height,
+      /* V20.6: STAT remains 40% of actual data-row height. US / ALL remain at
+         their established 45% targets. TEAM now targets 50% of its own row height,
          but Geek now fits against the button's real rendered content width rather
          than the surrounding cell box. Single-token names shrink intact until
          they fit; multi-word names may use a second line only at a real space. */
@@ -24570,7 +24570,7 @@ let scoreTimingDetail =
             null,
             team,
             h,
-            h * 0.60,
+            h * 0.50,
             8,
             8,
             0.80
