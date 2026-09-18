@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.88-V5Q7NK | BUILD KEY: 19.89-L6Q4RV -->
+<!-- SSHCP | BASE KEY: 19.89-L6Q4RV | BUILD KEY: 19.90-R7M3QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22879,6 +22879,37 @@ let scoreTimingDetail =
         target * 1.04 <= availableTwoLineHeight + 0.75
       ) {
         return { size: target, truncated: false, lines: 1 };
+      }
+
+      /* V19.90 — Scramble Summary must never manufacture a character-level
+         break inside a single-token team name (for example TEAM6 -> TEA / M6).
+         If there is no real whitespace break, preserve the complete token on
+         one line and solve proportionally for the largest size that fits the
+         actual TEAM cell. This changes only Summary fitting; the established
+         V19.67 podium cascade and all other team-name renderers stay intact. */
+      if (!/\s/.test(original)) {
+        let low = 0;
+        let high = target;
+        let best = 0;
+        for (let i = 0; i < 28; i++) {
+          const size = (low + high) / 2;
+          const widthFits = measureTeamLineWidthV58(textEl, original, size) <= availableWidth + 0.75;
+          const heightFits = size * 1.04 <= availableTwoLineHeight + 0.75;
+          if (widthFits && heightFits) {
+            best = size;
+            low = size;
+          } else {
+            high = size;
+          }
+        }
+        const finalSize = best > 0 ? best : Math.max(Number.EPSILON, target / Math.pow(2, 28));
+        textEl.classList.remove('two-line');
+        textEl.textContent = original;
+        textEl.style.setProperty('font-size', finalSize + 'px', 'important');
+        textEl.style.setProperty('line-height', '1.04', 'important');
+        textEl.style.setProperty('white-space', 'nowrap', 'important');
+        textEl.style.setProperty('overflow', 'visible', 'important');
+        return { size: finalSize, truncated: false, lines: 1 };
       }
 
       let two = twoLineTeamFitsV58(
