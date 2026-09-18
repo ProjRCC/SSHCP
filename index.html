@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.0-P6R4QX | BUILD KEY: 20.1-N5Q8RV -->
+<!-- SSHCP | BASE KEY: 20.1-N5Q8RV | BUILD KEY: 20.2-K7R4NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.1</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.2</span></span>
         </button>
 
       </div>
@@ -24510,8 +24510,9 @@ let scoreTimingDetail =
       const headerCells = [...shell.querySelectorAll('.geek-row-v180.header .geek-cell-v180')];
       if (headerCells.length !== 4) return;
 
-      /* V18.23: STAT targets 40% of actual data-row height. US / ALL / TEAM
-         retain their established 45% targets. Each element shrinks locally only if needed. */
+      /* V20.2: STAT remains 40% of actual data-row height. US / ALL remain at
+         their established 45% targets. TEAM now targets 55% of its own row
+         height and still shrinks locally only when needed. */
       shell.querySelectorAll('.geek-row-v180.stat').forEach(row => {
         const statCell = row.querySelector('.geek-stat-cell-v180');
         const statLabel = row.querySelector('.geek-stat-label-v186');
@@ -24552,7 +24553,8 @@ let scoreTimingDetail =
           });
         }
         if (team) {
-          /* V20.1: Geek TEAM keeps the V20.0 word-boundary rule, then performs
+          /* V20.2: Geek TEAM now targets 55% of its actual data-row height while keeping
+             the V20.0/V20.1 word-boundary and final DOM-width safety rules. It performs
              one final DOM-width safety fit against the actual rendered button.
              This catches right-edge / scrollbar clipping that measurement-only
              fitting can miss. There is no absolute minimum: an intact word keeps
@@ -24564,7 +24566,7 @@ let scoreTimingDetail =
               null,
               team,
               h,
-              h * 0.45,
+              h * 0.55,
               8,
               10,
               0.80
@@ -24580,7 +24582,7 @@ let scoreTimingDetail =
               team.style.setProperty('font-size', geekSizeV201 + 'px', 'important');
             }
           } else {
-            fitTextToBoxV5(team, team, h * 0.45, 8, {
+            fitTextToBoxV5(team, team, h * 0.55, 8, {
               horizontalPad: 10,
               verticalPad: 4,
               wrap: false,
