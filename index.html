@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.75-K8R3MV | BUILD KEY: 19.76-P7N4QW -->
+<!-- SSHCP | BASE KEY: 19.76-P7N4QW | BUILD KEY: 19.77-V6M2QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9237,9 +9237,13 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   justify-content:center!important;
   align-items:center!important;
 }
+/* V19.77 — Welcome Quick Guide GOT IT uses content-driven width instead of
+   the old fixed 25% slot. It may grow wider while staying centered; max-width
+   remains the action row so unusual narrow viewports can fall back to text fit. */
 .modal-overlay.quick-guide .quick-guide-got-it-v175{
-  flex:0 0 25%!important;
-  width:25%!important;
+  flex:0 1 auto!important;
+  width:auto!important;
+  max-width:100%!important;
   min-width:0!important;
   background:var(--accent)!important;
   border-color:var(--accent)!important;
@@ -12805,7 +12809,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.76</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.77</span></span>
         </button>
 
       </div>
@@ -27098,10 +27102,18 @@ let scoreTimingDetail =
             'open'
           );
 
+        /* V19.77 — keep the established 60%-of-button-height GOT IT target,
+           but let the button expand to its content before fitting. The former
+           V17.3 fitter reference no longer exists in the current source, so it
+           could not enforce the no-clipping fallback. Set the target first, let
+           content-driven width settle for a frame, then use the current V19.71
+           rendered-geometry fitter. If the viewport constrains the wider button,
+           shrink GOT IT only until it fits; never wrap or clip it. */
         requestAnimationFrame(() => {
+          const target = Math.max(12, Math.floor(gotIt.clientHeight * 0.60));
+          gotIt.style.fontSize = target + 'px';
           requestAnimationFrame(() => {
-            const target = Math.max(12, Math.floor(gotIt.clientHeight * 0.60));
-            fitQuickGuideButtonTextV173(gotIt, target);
+            fitQuickGuideButtonTextV1971(gotIt, target);
           });
         });
 
