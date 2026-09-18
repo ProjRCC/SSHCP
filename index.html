@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.90-R7M3QX | BUILD KEY: 19.91-Q5N8VX -->
+<!-- SSHCP | BASE KEY: 19.91-Q5N8VX | BUILD KEY: 19.92-N6R4QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.91</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.92</span></span>
         </button>
 
       </div>
@@ -23100,20 +23100,51 @@ let scoreTimingDetail =
 
       fitUniform(lowerNet, 0.48, 12, 6);
 
-      /* V19.91 — NET STROKES uses one intentional table-wide size tied to the
-         podium hierarchy: exactly 95% of the FINAL fitted 3rd-place TEAM font.
-         Apply that same size to every team so STROKES never varies by row/name. */
+      /* V19.92 — NET STROKES is supporting information, not a visual headline.
+         Start the entire column at 80% of the FINAL fitted 3rd-place TEAM font,
+         keep every value on exactly one line, and use one shared final size for
+         places 1-end. If any rendered STROKES value is too wide, shrink the
+         shared size for EVERY row together until the widest value fits. */
       const allStrokes = [
         ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
         ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-strokes'))
       ];
-      const strokesSizeV1991 = Number.isFinite(previousPodiumTeamSizeV1967)
-        ? previousPodiumTeamSizeV1967 * 0.95
+      const strokesTargetV1992 = Number.isFinite(previousPodiumTeamSizeV1967)
+        ? previousPodiumTeamSizeV1967 * 0.80
         : 8;
+      let strokesSizeV1992 = strokesTargetV1992;
+
       allStrokes.forEach(cell => {
-        cell.style.setProperty('font-size', strokesSizeV1991 + 'px', 'important');
         cell.style.setProperty('line-height', '1', 'important');
         cell.style.setProperty('white-space', 'nowrap', 'important');
+        cell.style.setProperty('overflow', 'hidden', 'important');
+
+        const text = String(cell.textContent || '').replace(/\s+/g, ' ').trim();
+        const availableWidth = Math.max(0.001, cell.clientWidth - 4);
+        const availableHeight = Math.max(0.001, cell.clientHeight - 4);
+        const highStart = Math.max(0.001, Math.min(strokesTargetV1992, availableHeight));
+
+        let low = 0;
+        let high = highStart;
+        let best = 0;
+        for (let i = 0; i < 28; i++) {
+          const size = (low + high) / 2;
+          const widthFits = measureTeamLineWidthV58(cell, text, size) <= availableWidth + 0.75;
+          if (widthFits) {
+            best = size;
+            low = size;
+          } else {
+            high = size;
+          }
+        }
+        strokesSizeV1992 = Math.min(strokesSizeV1992, best > 0 ? best : highStart);
+      });
+
+      allStrokes.forEach(cell => {
+        cell.style.setProperty('font-size', strokesSizeV1992 + 'px', 'important');
+        cell.style.setProperty('line-height', '1', 'important');
+        cell.style.setProperty('white-space', 'nowrap', 'important');
+        cell.style.setProperty('overflow', 'hidden', 'important');
       });
 
       /* V19.70 — start from the established 13/15 tiebreak text-to-row
