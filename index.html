@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.74-N6Q4TZ | BUILD KEY: 19.75-K8R3MV -->
+<!-- SSHCP | BASE KEY: 19.75-K8R3MV | BUILD KEY: 19.76-P7N4QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,6 +54,21 @@
         window.__sshcpBootView = rememberedView;
         if (rememberedView === 'scorecard' || rememberedView === 'leaderboard') {
           document.documentElement.classList.add('sshcp-pre-' + rememberedView);
+        }
+
+        /* V19.76 — HOME's V19.63 curtain is deliberately created later, after
+           normal startup/auth has enough runtime geometry to own the existing
+           logo-bottom -> QUICK GUIDE-top reveal zone. On a browser refresh,
+           however, the static boot HOME can paint before initialize()/showHome()
+           reaches that curtain. Conceal only the two mutable HOME actions from
+           the very first paint, then transfer them directly underneath the real
+           V19.63 curtain once it exists. Logo, QUICK GUIDE, event/version, and
+           Welcome presentation remain untouched. */
+        if (
+          rememberedView === 'home' &&
+          !window.__sshcpIncomingQrWelcomeV170
+        ) {
+          document.documentElement.classList.add('sshcp-pre-home-v1976');
         }
 
         if (
@@ -5094,6 +5109,16 @@ html.sshcp-pre-leaderboard #scorecardView{
 }
 html.sshcp-pre-leaderboard #leaderboardView{
   display:block!important;
+}
+
+/* V19.76 — first-paint HOME handoff.
+   The HOME reveal curtain intentionally covers only the mutable action zone.
+   Keep those same mutable controls non-painting during boot so stale session
+   state can never appear for a frame before the real V19.63 curtain is mounted.
+   The logo, QUICK GUIDE and footer/event copy remain visible exactly as before. */
+html.sshcp-pre-home-v1976 #homeView #homeLeaderboardButton,
+html.sshcp-pre-home-v1976 #homeView #homeScorecardAccess{
+  visibility:hidden!important;
 }
 
 
@@ -12780,7 +12805,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.75</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.76</span></span>
         </button>
 
       </div>
@@ -18135,9 +18160,25 @@ let scoreTimingDetail =
          a separate transition system. */
       const homeRevealShieldV1963 = beginHomeRevealV1963();
 
+      /* V19.76 — on a browser refresh HOME's mutable buttons were intentionally
+         concealed before first paint. Do not expose them until the established
+         HOME curtain is physically mounted above them. Removing the boot class
+         here is synchronous, so the browser never paints the stale buttons
+         between boot concealment and curtain ownership. */
+      if (homeRevealShieldV1963) {
+        document.documentElement.classList.remove('sshcp-pre-home-v1976');
+      }
+
       await refreshHomeTournamentStateV1831();
       updateHomeScorecardAccess();
       fitHomeActionTypographyV197();
+
+      /* Geometry failure is not expected, but never strand the HOME controls
+         hidden: if no curtain could be created, expose only after the fresh HOME
+         state has finished resolving. */
+      if (!homeRevealShieldV1963) {
+        document.documentElement.classList.remove('sshcp-pre-home-v1976');
+      }
 
       await revealDataShieldAfterLayoutV177(
         'home',
@@ -28483,6 +28524,7 @@ let scoreTimingDetail =
         document.documentElement.classList.remove(
           'sshcp-pre-scorecard',
           'sshcp-pre-leaderboard',
+          'sshcp-pre-home-v1976',
           'sshcp-pre-complete'
         );
       });
