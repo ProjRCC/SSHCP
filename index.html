@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.98-M7Q4RV | BUILD KEY: 19.99-Q8N5RV -->
+<!-- SSHCP | BASE KEY: 19.99-Q8N5RV | BUILD KEY: 20.0-P6R4QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6040,7 +6040,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   height:auto!important;
   max-height:none!important;
   display:grid!important;
-  grid-template-columns:10% 47% 23% 20%!important;
+  grid-template-columns:10% 55% 15% 20%!important;
   overflow:hidden!important;
 }
 
@@ -6099,7 +6099,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   max-height:none!important;
   margin:0!important;
   display:grid!important;
-  grid-template-columns:10% 47% 23% 20%!important;
+  grid-template-columns:10% 55% 15% 20%!important;
   grid-template-rows:repeat(var(--v5-summary-lower-count,7),minmax(0,1fr))!important;
   grid-auto-rows:unset!important;
   align-content:stretch!important;
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.99</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.0</span></span>
         </button>
 
       </div>
@@ -16851,7 +16851,7 @@ let scoreTimingDetail =
         return {
           place,
           team: normalizeAuditTextV189(team.team),
-          strokes: String(team.netStrokes) + ' (HCP ' + team.handicap + ')',
+          strokes: String(team.netStrokes),
           net: auditGolfScoreV189(team.netToPar),
           slot: team.slot
         };
@@ -23030,8 +23030,9 @@ let scoreTimingDetail =
 
       const header = topGrid.querySelector('.tournament-summary-row.header');
       if (header) {
-        Array.from(header.children).forEach((cell, index) => {
-          if (index === 2) return;
+        /* V20.0 — Summary header is one line across all four columns. NET is
+           intentionally score-only, so it uses the same shared header fitter. */
+        Array.from(header.children).forEach(cell => {
           fitTextToBoxV5(cell, cell, cell.clientHeight * 0.38, 10, {
             horizontalPad: 6,
             verticalPad: 4,
@@ -23039,44 +23040,6 @@ let scoreTimingDetail =
             lineHeight: 1
           });
         });
-
-        /* V19.99 — only the NET STROKES header is intentionally two lines.
-           Its complete NET / STROKES block may occupy at most 75% of the
-           actual shared header-row height. Width can shrink it further. */
-        const strokesHeaderV1999 = header.children[2];
-        if (strokesHeaderV1999) {
-          const headerLineHeightV1999 = 0.94;
-          const headerBlockH1999 = Math.max(0.001, strokesHeaderV1999.clientHeight * 0.75);
-          const headerTargetV1999 = Math.max(
-            0.001,
-            headerBlockH1999 / (2 * headerLineHeightV1999)
-          );
-          const headerAvailableWV1999 = Math.max(0.001, strokesHeaderV1999.clientWidth - 6);
-          let headerLowV1999 = 0;
-          let headerHighV1999 = headerTargetV1999;
-          let headerBestV1999 = 0;
-          for (let i = 0; i < 28; i++) {
-            const size = (headerLowV1999 + headerHighV1999) / 2;
-            const widthFits = Math.max(
-              measureTeamLineWidthV58(strokesHeaderV1999, 'NET', size),
-              measureTeamLineWidthV58(strokesHeaderV1999, 'STROKES', size)
-            ) <= headerAvailableWV1999 + 0.75;
-            if (widthFits) {
-              headerBestV1999 = size;
-              headerLowV1999 = size;
-            } else {
-              headerHighV1999 = size;
-            }
-          }
-          const headerSizeV1999 = headerBestV1999 > 0
-            ? headerBestV1999
-            : Math.max(Number.EPSILON, headerTargetV1999 / Math.pow(2, 28));
-          strokesHeaderV1999.style.setProperty('font-size', headerSizeV1999 + 'px', 'important');
-          strokesHeaderV1999.style.setProperty('line-height', String(headerLineHeightV1999), 'important');
-          strokesHeaderV1999.style.setProperty('white-space', 'normal', 'important');
-          strokesHeaderV1999.style.setProperty('overflow', 'hidden', 'important');
-          strokesHeaderV1999.style.setProperty('text-align', 'center', 'important');
-        }
       }
 
       /* V19.98 — Summary typography now follows the stable row geometry rather
@@ -23171,11 +23134,9 @@ let scoreTimingDetail =
 
       fitUniform(lowerNet, 0.48, 12, 6);
 
-      /* V19.99 — NET STROKES follows score typography, never TEAM text.
-         Its target is 80% of the smallest FINAL rendered NET +/- score font
-         anywhere in the Summary. Every NET STROKES value uses one shared
-         one-line size; if the widest value cannot fit, the whole column
-         shrinks together. */
+      /* V20.0 — Summary NET lists score only. It follows score typography,
+         never TEAM text: target 80% of the smallest FINAL rendered NET +/-
+         score font, shared one-line size for the entire NET column. */
       const allNetScoreCellsV1998 = [
         ...Array.from(topGrid.querySelectorAll('.tournament-summary-net')),
         ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-score'))
@@ -24591,9 +24552,9 @@ let scoreTimingDetail =
           });
         }
         if (team) {
-          /* V19.29: TEAM remains one line except when exactly one actual team
-             owns the stat. That single-owner case may use two lines, with the
-             complete block capped at 80% of this fixed-height row. */
+          /* V20.0: Geek TEAM never splits an actual word. Single-owner names may
+             use two lines only at real spaces; otherwise the intact word shrinks
+             with no absolute minimum. */
           if (team.classList.contains('single-owner-v1929')) {
             const teamCell = row.querySelector('.geek-team-cell-v180') || team;
             fitTwoLineTeamTextV58(
@@ -25862,15 +25823,12 @@ let scoreTimingDetail =
       let html =
         '<div class="tournament-summary-grid">' +
         '<div class="tournament-summary-row header">' +
-        '<div>#</div><div>TEAM</div><div class="summary-net-strokes-header-v1999">NET<br>STROKES</div><div>NET +/-</div>' +
+        '<div>#</div><div>TEAM</div><div>NET</div><div>NET +/-</div>' +
         '</div>';
 
       rows.slice(0, 3).forEach((row, index) => {
         const annotation = podium.annotations.get(row);
-        const hcp = getSummaryHandicap(row);
-        const strokesText =
-          String(row.totalStrokes ?? '') +
-          (hcp === null ? '' : ' (HCP ' + hcp + ')');
+        const strokesText = String(row.totalStrokes ?? '');
 
         html +=
           '<div class="tournament-summary-row place-' + (index + 1) + '">' +
@@ -25906,10 +25864,7 @@ let scoreTimingDetail =
       rows.slice(3).forEach((row, index) => {
           const rowIndex = index + 3;
           const place = summaryPlaceLabel(rowIndex);
-          const hcp = getSummaryHandicap(row);
-          const strokesText =
-            String(row.totalStrokes ?? '') +
-            (hcp === null ? '' : ' (HCP ' + hcp + ')');
+          const strokesText = String(row.totalStrokes ?? '');
           html +=
             '<div class="tournament-summary-remaining-row">' +
             '<div class="tournament-summary-remaining-cell place' +
@@ -26413,24 +26368,22 @@ let scoreTimingDetail =
 
     function splitLeaderboardTeamTwoLinesV55(text) {
       const value = String(text || '').trim();
-      if (!value) return ['', ''];
+      if (!value) return null;
 
+      /* V20.0 — Leaderboard / Geek TEAM names may wrap only at a real space.
+         A single word is never cut at an arbitrary character; it stays intact
+         and shrinks as far as necessary. */
       const midpoint = value.length / 2;
       const spaces = [];
       for (let i = 1; i < value.length - 1; i++) {
         if (value[i] === ' ') spaces.push(i);
       }
+      if (!spaces.length) return null;
 
-      let cut;
-      if (spaces.length) {
-        cut = spaces.reduce((best, index) =>
-          Math.abs(index - midpoint) < Math.abs(best - midpoint) ? index : best
-        , spaces[0]);
-        return [value.slice(0, cut).trim(), value.slice(cut + 1).trim()];
-      }
-
-      cut = Math.max(1, Math.min(value.length - 1, Math.round(midpoint)));
-      return [value.slice(0, cut), value.slice(cut)];
+      const cut = spaces.reduce((best, index) =>
+        Math.abs(index - midpoint) < Math.abs(best - midpoint) ? index : best
+      , spaces[0]);
+      return [value.slice(0, cut).trim(), value.slice(cut + 1).trim()];
     }
 
     function splitLeaderboardTeamTwoLinesV58(text) {
@@ -26631,7 +26584,11 @@ let scoreTimingDetail =
       availableHeight,
       splitter = splitLeaderboardTeamTwoLinesV58
     ) {
-      const [line1, line2] = splitter(value);
+      const split = splitter(value);
+      if (!Array.isArray(split) || split.length !== 2 || !split[0] || !split[1]) {
+        return { fits:false, line1:String(value || ''), line2:'' };
+      }
+      const [line1, line2] = split;
       const width1 = measureTeamLineWidthV58(textEl, line1, fontSize);
       const width2 = measureTeamLineWidthV58(textEl, line2, fontSize);
       const height = fontSize * 1.02 * 2;
@@ -26830,100 +26787,93 @@ let scoreTimingDetail =
         anchor.style.setProperty('max-width', '100%', 'important');
       }
 
-      const availableWidth = Math.max(
-        1,
-        container.clientWidth - Math.max(0, Number(horizontalPad) || 0)
-      );
+      const availableWidth = Math.max(0.001, container.clientWidth - Math.max(0, Number(horizontalPad) || 0));
       const safeTwoLineRatio = Math.max(0.10, Math.min(1, Number(twoLineHeightRatio) || 0.80));
-      const availableTwoLineHeight = Math.max(1, rowHeight * safeTwoLineRatio);
-      const minimum = Math.max(5, Number(minSize) || 8);
-      const target = Math.max(minimum, Number(targetSize) || minimum);
+      const availableTwoLineHeight = Math.max(0.001, rowHeight * safeTwoLineRatio);
+      const target = Math.max(0.001, Number(targetSize) || 0.001);
 
-      /* Target size, one line first. */
-      textEl.style.setProperty('font-size', target + 'px', 'important');
-      textEl.style.setProperty('line-height', '1.04', 'important');
-      textEl.style.setProperty('white-space', 'nowrap', 'important');
-      textEl.style.setProperty('overflow', 'visible', 'important');
+      const applyOneLine = size => {
+        textEl.classList.remove('two-line');
+        textEl.textContent = original;
+        textEl.style.setProperty('font-size', size + 'px', 'important');
+        textEl.style.setProperty('line-height', '1.04', 'important');
+        textEl.style.setProperty('white-space', 'nowrap', 'important');
+        textEl.style.setProperty('overflow', 'hidden', 'important');
+      };
 
-      if (
-        measureTeamLineWidthV58(textEl, original, target) <= availableWidth + 0.75 &&
-        target * 1.04 <= availableTwoLineHeight + 0.75
-      ) {
-        return { size: target, truncated: false, lines: 1 };
-      }
-
-      /* First fallback: two lines at the SAME target size. */
-      let two = twoLineTeamFitsV58(
-        textEl,
-        original,
-        target,
-        availableWidth,
-        availableTwoLineHeight,
-        splitter
+      const oneLineFits = size => (
+        measureTeamLineWidthV58(textEl, original, size) <= availableWidth + 0.75 &&
+        size * 1.04 <= availableTwoLineHeight + 0.75
       );
-      renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
-      textEl.style.setProperty('font-size', target + 'px', 'important');
-      textEl.style.setProperty('line-height', '1.02', 'important');
-      textEl.style.setProperty('white-space', 'normal', 'important');
-      textEl.style.setProperty('overflow', 'visible', 'important');
 
-      if (two.fits) {
-        return { size: target, truncated: false, lines: 2 };
+      applyOneLine(target);
+      if (oneLineFits(target)) {
+        return { size:target, truncated:false, lines:1 };
       }
 
-      /* Only now shrink the two-line block. */
-      let size = target;
-      while (size > minimum) {
-        size = Math.max(minimum, size - 0.5);
-        two = twoLineTeamFitsV58(
-          textEl,
-          original,
-          size,
-          availableWidth,
-          availableTwoLineHeight,
-          splitter
+      const legalSplit = splitter(original);
+      if (Array.isArray(legalSplit) && legalSplit.length === 2 && legalSplit[0] && legalSplit[1]) {
+        let two = twoLineTeamFitsV58(
+          textEl, original, target, availableWidth, availableTwoLineHeight, splitter
         );
         renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
-        textEl.style.setProperty('font-size', size + 'px', 'important');
-        if (two.fits) {
-          return { size, truncated: false, lines: 2 };
+        textEl.style.setProperty('font-size', target + 'px', 'important');
+        textEl.style.setProperty('line-height', '1.02', 'important');
+        textEl.style.setProperty('white-space', 'normal', 'important');
+        textEl.style.setProperty('overflow', 'hidden', 'important');
+        if (two.fits) return { size:target, truncated:false, lines:2 };
+
+        /* No absolute minimum: find the largest legal two-line size that fits. */
+        let low = 0;
+        let high = target;
+        let best = 0;
+        let bestTwo = two;
+        for (let i = 0; i < 32; i++) {
+          const size = (low + high) / 2;
+          const candidate = twoLineTeamFitsV58(
+            textEl, original, size, availableWidth, availableTwoLineHeight, splitter
+          );
+          if (candidate.fits) {
+            best = size;
+            bestTwo = candidate;
+            low = size;
+          } else {
+            high = size;
+          }
+        }
+        const finalSize = best > 0 ? best : Math.max(Number.EPSILON, target / Math.pow(2, 32));
+        renderTwoLineTeamTextV58(textEl, bestTwo.line1, bestTwo.line2);
+        textEl.style.setProperty('font-size', finalSize + 'px', 'important');
+        textEl.style.setProperty('line-height', '1.02', 'important');
+        textEl.style.setProperty('white-space', 'normal', 'important');
+        textEl.style.setProperty('overflow', 'hidden', 'important');
+        return { size:finalSize, truncated:false, lines:2 };
+      }
+
+      /* One actual word: never manufacture a line break and never truncate it.
+         Shrink the intact word with no absolute font-size minimum. */
+      let low = 0;
+      let high = target;
+      let best = 0;
+      for (let i = 0; i < 32; i++) {
+        const size = (low + high) / 2;
+        if (oneLineFits(size)) {
+          best = size;
+          low = size;
+        } else {
+          high = size;
         }
       }
-
-      /* Final fallback: only after two lines + minimum still cannot fit,
-         truncate to the longest fitting prefix and add |. */
-      for (let count = original.length - 1; count >= 1; count--) {
-        const prefix = original.slice(0, count).replace(/\s+$/, '');
-        if (!prefix) continue;
-        const candidate = prefix + '|';
-        const candidateFit = twoLineTeamFitsV58(
-          textEl,
-          candidate,
-          minimum,
-          availableWidth,
-          availableTwoLineHeight,
-          splitter
-        );
-        if (!candidateFit.fits) continue;
-
-        renderTwoLineTeamTextV58(textEl, candidateFit.line1, candidateFit.line2);
-        textEl.style.setProperty('font-size', minimum + 'px', 'important');
-        textEl.style.setProperty('line-height', '1.02', 'important');
-        return { size: minimum, truncated: true, lines: 2 };
-      }
-
-      textEl.textContent = '|';
-      textEl.classList.remove('two-line');
-      textEl.style.setProperty('font-size', minimum + 'px', 'important');
-      return { size: minimum, truncated: true, lines: 1 };
+      const finalSize = best > 0 ? best : Math.max(Number.EPSILON, target / Math.pow(2, 32));
+      applyOneLine(finalSize);
+      return { size:finalSize, truncated:false, lines:1 };
     }
 
     function fitLeaderboardTeamV55(teamCell, teamAnchor, team, rowHeight) {
       if (!teamCell || !team) return;
 
-      /* V18.17: fully proportional TEAM typography. Start at 40% of the
-         actual row height. One line is preferred; if two lines are needed,
-         the complete block may consume at most 75% of the row height. */
+      /* V20.0: Leaderboard TEAM targets 40% of actual row height. Wrapping is
+         legal only at real spaces; an intact word shrinks with no font minimum. */
       const targetSize = rowHeight * 0.40;
       fitTwoLineTeamTextV58(
         teamCell,
