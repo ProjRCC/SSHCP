@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.92-N6R4QW | BUILD KEY: 19.93-T4Q8NM -->
+<!-- SSHCP | BASE KEY: 19.93-T4Q8NM | BUILD KEY: 19.94-K7Q3MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.93</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.94</span></span>
         </button>
 
       </div>
@@ -23011,13 +23011,12 @@ let scoreTimingDetail =
         });
       }
 
-      /* V19.93 Scramble Summary TEAM hierarchy — preserve the locked podium
-         chain exactly: 1st starts at 45% of its actual row height; 2nd starts
-         at 95% of final 1st; 3rd starts at 95% of final 2nd. For places 4-end,
-         use a visual-hierarchy branch based on how 3rd actually rendered: if
-         3rd is one line, every lower TEAM starts at 80% of final 3rd; if 3rd
-         is two lines, every lower TEAM starts at 95% of final 3rd. Each lower
-         TEAM still fits independently within its own 80% row-height envelope. */
+      /* V19.94 Scramble Summary TEAM hierarchy — 1st starts at 50% of its
+         actual row height; 2nd starts at 90% of final 1st; 3rd starts at 90%
+         of final 2nd. For places 4-end, branch from final 3rd based on how 3rd
+         actually rendered: 75% when 3rd is one line, 85% when 3rd is two lines.
+         Each lower TEAM still fits independently within its own 80% row-height
+         envelope. */
       let previousPodiumTeamSizeV1967 = null;
       let thirdPlaceTeamLinesV1993 = 1;
 
@@ -23034,8 +23033,8 @@ let scoreTimingDetail =
 
         if (team && teamText) {
           const targetSize = Number.isFinite(previousPodiumTeamSizeV1967)
-            ? previousPodiumTeamSizeV1967 * 0.95
-            : row.clientHeight * 0.45;
+            ? previousPodiumTeamSizeV1967 * 0.90
+            : row.clientHeight * 0.50;
           const fittedTeam = fitSummaryTeamTextV1967(
             team,
             teamAnchor,
@@ -23079,15 +23078,15 @@ let scoreTimingDetail =
 
       if (lowerTeam.length) {
         const firstLowerRowHeight = lowerTeam[0].clientHeight || lowerTeam[0].getBoundingClientRect().height || 1;
-        const lowerTargetRatioV1993 = thirdPlaceTeamLinesV1993 === 2 ? 0.95 : 0.80;
+        const lowerTargetRatioV1994 = thirdPlaceTeamLinesV1993 === 2 ? 0.85 : 0.75;
         const sharedLowerTarget = Number.isFinite(previousPodiumTeamSizeV1967)
-          ? previousPodiumTeamSizeV1967 * lowerTargetRatioV1993
+          ? previousPodiumTeamSizeV1967 * lowerTargetRatioV1994
           : firstLowerRowHeight * 0.45;
 
-        /* V19.93 — 4th through end share only the STARTING target. When 3rd
-           rendered on one line, use 80% of final 3rd so short 3rd-place names
+        /* V19.94 — 4th through end share only the STARTING target. When 3rd
+           rendered on one line, use 75% of final 3rd so short 3rd-place names
            cannot make the 1x lower rows look oversized. When 3rd rendered on
-           two lines, use 95% of final 3rd because that font is already reduced.
+           two lines, use 85% of final 3rd because that font is already reduced.
            Every lower TEAM still fits itself independently. */
         lowerTeam.forEach(teamCell => {
           const anchor = teamCell.querySelector('.summary-team-anchor');
