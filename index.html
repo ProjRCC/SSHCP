@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.78-H4Q7NZ | BUILD KEY: 19.79-T6Q2NX -->
+<!-- SSHCP | BASE KEY: 19.79-T6Q2NX | BUILD KEY: 19.80-R5M8QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12809,7 +12809,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.79</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.80</span></span>
         </button>
 
       </div>
@@ -15349,11 +15349,14 @@ let scoreTimingDetail =
        visual-ready sequence, not by page-load time. First finish the established
        NESR positioning. Then confirm that the NESR row is carrying both active
        Blue cues (HOLE cell + score-box border). After those cues are painted,
-       wait 0.1s and show the existing STARTING HOLE X modal.
+       wait 0.5s and show the existing STARTING HOLE X modal.
 
-       V19.79 deliberately leaves this popup rule intact. Its only addition is
-       the first-post-authorization blank-shotgun presentation: the table is made
-       visible at Hole 1 before this same restore/popup sequence runs. */
+       V19.79 deliberately leaves the popup trigger and first-post-authorization
+       blank-shotgun presentation intact: the table is made visible at Hole 1
+       before this same restore/popup sequence runs.
+
+       V19.80 changes only the post-Blue-cue hold from 100ms to 500ms so the
+       active-hole state is visibly established before the popup appears. */
     let startingHoleIntroTimerV1978 = 0;
     let startingHoleIntroSequenceV1978 = 0;
 
@@ -15418,7 +15421,7 @@ let scoreTimingDetail =
             }
 
             showStartingHoleIntroV1613();
-          }, 100);
+          }, 500);
         });
       });
     }
