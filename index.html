@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.81-N4Q7MV | BUILD KEY: 19.82-Q6M3RX -->
+<!-- SSHCP | BASE KEY: 19.82-Q6M3RX | BUILD KEY: 19.83-H7N4QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12809,7 +12809,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.82</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.83</span></span>
         </button>
 
       </div>
@@ -14423,13 +14423,14 @@ let scoreTimingDetail =
     let firstScorecardTopIntentV1979 = false;
     let firstScorecardTopActiveV1979 = false;
 
-    /* V19.81 — Scorecard ENTRY cue sequencing only. When navigation comes
-       from HOME or LEADERBOARD, keep the NESR HOLE Blue background and the
-       verified NESR score-box Blue border withheld while the existing
-       remembered-position / NESR + four-row positioning finishes. Once that
-       positioning settles (including the no-scroll case), wait 0.3s and then
-       reveal those exact two cues. ENTER/CLEAR progression while already on
-       the Scorecard is deliberately untouched. */
+    /* V19.83 — Scorecard fresh-presentation cue sequencing. Keep the NESR
+       HOLE Blue background and verified NESR score-box Blue border withheld
+       while the existing remembered-position / NESR + four-row positioning
+       finishes whenever the Scorecard is freshly presented/rebuilt: navigation
+       in from another page, browser refresh that restores the Scorecard, or an
+       in-Scorecard team switch. Once positioning settles (including no-scroll),
+       wait 0.15s and reveal those exact two cues. ENTER and CLEAR from the score
+       popup keep their own established progression timing and are untouched. */
     let scorecardEntryCueHoldV1981 = false;
     let scorecardEntryCueTimerV1981 = 0;
     let scorecardEntryCueSequenceV1981 = 0;
@@ -14444,8 +14445,14 @@ let scoreTimingDetail =
     }
 
     function beginScorecardEntryCueHoldV1981(originV1981) {
+      /* A browser refresh is armed before snapshot hydration while currentView
+         is already SCORECARD. Preserve that pre-armed hold when showScorecard()
+         subsequently runs. All other same-Scorecard calls remain non-entry. */
+      if (originV1981 === 'scorecard' && scorecardEntryCueHoldV1981) return true;
+
       cancelScorecardEntryCueHoldV1981();
-      if (originV1981 !== 'home' && originV1981 !== 'leaderboard') return false;
+      if (originV1981 === 'scorecard') return false;
+
       scorecardEntryCueHoldV1981 = true;
       return true;
     }
@@ -14490,7 +14497,7 @@ let scoreTimingDetail =
 
         /* Let the Blue cue paint before any dependent popup timer starts. */
         requestAnimationFrame(doneV1981);
-      }, 300);
+      }, 150);
     }
 
     /* V16.31 — one QR-auth owner at a time. This fixes the latent V16.30
@@ -15430,9 +15437,11 @@ let scoreTimingDetail =
 
        V19.81 adds a separate entry-only visual gate for HOME/LEADERBOARD ->
        Scorecard: established positioning finishes first, then the active HOLE +
-       verified score-box Blue cues appear. V19.82 changes only that entry cue
-       hold from 0.5s to 0.3s. The V19.80 popup hold remains 0.5s and starts only
-       after those cues paint. In-Scorecard ENTER/CLEAR timing is unchanged. */
+       verified score-box Blue cues appear. V19.82 changes that entry cue hold
+       from 0.5s to 0.3s. V19.83 broadens the same gate to browser refreshes that
+       restore Scorecard and in-Scorecard team switches, and changes the hold to
+       0.15s. The V19.80 popup hold remains 0.5s and starts only after those cues
+       paint. ENTER/CLEAR score-popup progression timing remains unchanged. */
     let startingHoleIntroTimerV1978 = 0;
     let startingHoleIntroSequenceV1978 = 0;
 
@@ -15449,9 +15458,9 @@ let scoreTimingDetail =
         : '';
 
       restoreScorePosition(false, () => {
-        /* V19.82: HOME/LEADERBOARD entry owns a 0.3s post-position Blue-cue
-           reveal. Only after that reveal paints does the existing V19.80
-           shotgun popup hold begin. Non-entry callers keep the V19.80 path. */
+        /* V19.83: every fresh Scorecard presentation/rebuild except ENTER/CLEAR
+           owns a 0.15s post-position Blue-cue reveal. Only after that reveal
+           paints does the existing V19.80 shotgun popup hold begin. */
         releaseScorecardEntryCuesAfterPositionV1981(() => {
           requestAnimationFrame(() => {
             if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
@@ -19052,6 +19061,11 @@ let scoreTimingDetail =
             No scorecard polling is introduced.
           */
           rememberSelectedTeam(team.name);
+
+          /* V19.83 — selecting a different team while already on Scorecard is a
+             fresh Scorecard rebuild, so withhold NESR Blues until the normal
+             post-load positioning settles. ENTER/CLEAR paths never call this. */
+          beginScorecardEntryCueHoldV1981('team-select');
 
           if (!scorecardLoadInProgress) {
             await loadScorecard();
@@ -28579,6 +28593,11 @@ let scoreTimingDetail =
         rememberedView ===
         'scorecard'
       ) {
+        /* V19.83 — browser refresh that restores Scorecard is a fresh
+           presentation. Arm before snapshot hydration so even the hydrated
+           first paint withholds the NESR Blue cues until fresh load + normal
+           positioning are complete. */
+        beginScorecardEntryCueHoldV1981('refresh');
         hydrateScorecardSnapshotV53();
       }
       else if (
