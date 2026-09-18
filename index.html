@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.79-T6Q2NX | BUILD KEY: 19.80-R5M8QK -->
+<!-- SSHCP | BASE KEY: 19.80-R5M8QK | BUILD KEY: 19.81-N4Q7MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12809,7 +12809,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.80</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.81</span></span>
         </button>
 
       </div>
@@ -14423,6 +14423,76 @@ let scoreTimingDetail =
     let firstScorecardTopIntentV1979 = false;
     let firstScorecardTopActiveV1979 = false;
 
+    /* V19.81 — Scorecard ENTRY cue sequencing only. When navigation comes
+       from HOME or LEADERBOARD, keep the NESR HOLE Blue background and the
+       verified NESR score-box Blue border withheld while the existing
+       remembered-position / NESR + four-row positioning finishes. Once that
+       positioning settles (including the no-scroll case), wait 0.5s and then
+       reveal those exact two cues. ENTER/CLEAR progression while already on
+       the Scorecard is deliberately untouched. */
+    let scorecardEntryCueHoldV1981 = false;
+    let scorecardEntryCueTimerV1981 = 0;
+    let scorecardEntryCueSequenceV1981 = 0;
+
+    function cancelScorecardEntryCueHoldV1981() {
+      scorecardEntryCueSequenceV1981 += 1;
+      scorecardEntryCueHoldV1981 = false;
+      if (scorecardEntryCueTimerV1981) {
+        clearTimeout(scorecardEntryCueTimerV1981);
+        scorecardEntryCueTimerV1981 = 0;
+      }
+    }
+
+    function beginScorecardEntryCueHoldV1981(originV1981) {
+      cancelScorecardEntryCueHoldV1981();
+      if (originV1981 !== 'home' && originV1981 !== 'leaderboard') return false;
+      scorecardEntryCueHoldV1981 = true;
+      return true;
+    }
+
+    function releaseScorecardEntryCuesAfterPositionV1981(onReleasedV1981 = null) {
+      const doneV1981 = () => {
+        if (typeof onReleasedV1981 === 'function') onReleasedV1981();
+      };
+
+      if (!scorecardEntryCueHoldV1981) {
+        requestAnimationFrame(doneV1981);
+        return;
+      }
+
+      const sequenceV1981 = scorecardEntryCueSequenceV1981;
+      if (scorecardEntryCueTimerV1981) {
+        clearTimeout(scorecardEntryCueTimerV1981);
+      }
+
+      scorecardEntryCueTimerV1981 = setTimeout(() => {
+        scorecardEntryCueTimerV1981 = 0;
+        if (sequenceV1981 !== scorecardEntryCueSequenceV1981) return;
+        if (currentView !== 'scorecard') return;
+
+        scorecardEntryCueHoldV1981 = false;
+
+        const holeCueV1981 = els.scoreRows
+          ? els.scoreRows.querySelector('[data-entry-hole-cue-v1981="1"]')
+          : null;
+        const scoreCueV1981 = els.scoreRows
+          ? els.scoreRows.querySelector('[data-entry-score-cue-v1981="1"]')
+          : null;
+
+        if (holeCueV1981) {
+          holeCueV1981.classList.add('next-hole-cell');
+          delete holeCueV1981.dataset.entryHoleCueV1981;
+        }
+        if (scoreCueV1981) {
+          scoreCueV1981.classList.add('active-hole-score');
+          delete scoreCueV1981.dataset.entryScoreCueV1981;
+        }
+
+        /* Let the Blue cue paint before any dependent popup timer starts. */
+        requestAnimationFrame(doneV1981);
+      }, 500);
+    }
+
     /* V16.31 — one QR-auth owner at a time. This fixes the latent V16.30
        race where a slow, older request could finish after REMOVE AUTH and
        write authorization back into storage. */
@@ -15356,7 +15426,13 @@ let scoreTimingDetail =
        before this same restore/popup sequence runs.
 
        V19.80 changes only the post-Blue-cue hold from 100ms to 500ms so the
-       active-hole state is visibly established before the popup appears. */
+       active-hole state is visibly established before the popup appears.
+
+       V19.81 adds a separate entry-only visual gate for HOME/LEADERBOARD ->
+       Scorecard: established positioning finishes first, then 0.5s later the
+       active HOLE + verified score-box Blue cues appear. The V19.80 popup hold
+       starts only after those cues paint. In-Scorecard ENTER/CLEAR timing is
+       unchanged. */
     let startingHoleIntroTimerV1978 = 0;
     let startingHoleIntroSequenceV1978 = 0;
 
@@ -15373,55 +15449,60 @@ let scoreTimingDetail =
         : '';
 
       restoreScorePosition(false, () => {
-        requestAnimationFrame(() => {
-          if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
-          if (!selectedTeam || currentView !== 'scorecard') return;
-
-          const currentTeamKeyV1978 =
-            String(selectedTeam.slot || '') + '|' + normalizeName(selectedTeam.name);
-          if (currentTeamKeyV1978 !== teamKeyV1978) return;
-          if (!scorecardIsCompletelyBlankV1613(localScores)) return;
-          if (!tournamentUsesShotgunStartV1613()) return;
-
-          const nesrIndexV1978 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
-          const rowV1978 = els.scoreRows
-            ? els.scoreRows.querySelector('.score-row[data-score-index="' + String(nesrIndexV1978) + '"]')
-            : null;
-          const holeCueV1978 = rowV1978
-            ? rowV1978.querySelector('.hole-cell.next-hole-cell')
-            : null;
-          const scoreCueV1978 = rowV1978
-            ? rowV1978.querySelector('.score-button.active-hole-score')
-            : null;
-
-          if (!holeCueV1978 || !scoreCueV1978) return;
-
-          startingHoleIntroTimerV1978 = setTimeout(() => {
-            startingHoleIntroTimerV1978 = 0;
+        /* V19.81: HOME/LEADERBOARD entry owns a 0.5s post-position Blue-cue
+           reveal. Only after that reveal paints does the existing V19.80
+           shotgun popup hold begin. Non-entry callers keep the V19.80 path. */
+        releaseScorecardEntryCuesAfterPositionV1981(() => {
+          requestAnimationFrame(() => {
             if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
             if (!selectedTeam || currentView !== 'scorecard') return;
 
-            const latestTeamKeyV1978 =
+            const currentTeamKeyV1978 =
               String(selectedTeam.slot || '') + '|' + normalizeName(selectedTeam.name);
-            if (latestTeamKeyV1978 !== teamKeyV1978) return;
+            if (currentTeamKeyV1978 !== teamKeyV1978) return;
             if (!scorecardIsCompletelyBlankV1613(localScores)) return;
             if (!tournamentUsesShotgunStartV1613()) return;
 
-            const latestIndexV1978 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
-            const latestRowV1978 = els.scoreRows
-              ? els.scoreRows.querySelector('.score-row[data-score-index="' + String(latestIndexV1978) + '"]')
+            const nesrIndexV1978 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
+            const rowV1978 = els.scoreRows
+              ? els.scoreRows.querySelector('.score-row[data-score-index="' + String(nesrIndexV1978) + '"]')
+              : null;
+            const holeCueV1978 = rowV1978
+              ? rowV1978.querySelector('.hole-cell.next-hole-cell')
+              : null;
+            const scoreCueV1978 = rowV1978
+              ? rowV1978.querySelector('.score-button.active-hole-score')
               : null;
 
-            if (
-              !latestRowV1978 ||
-              !latestRowV1978.querySelector('.hole-cell.next-hole-cell') ||
-              !latestRowV1978.querySelector('.score-button.active-hole-score')
-            ) {
-              return;
-            }
+            if (!holeCueV1978 || !scoreCueV1978) return;
 
-            showStartingHoleIntroV1613();
-          }, 500);
+            startingHoleIntroTimerV1978 = setTimeout(() => {
+              startingHoleIntroTimerV1978 = 0;
+              if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
+              if (!selectedTeam || currentView !== 'scorecard') return;
+
+              const latestTeamKeyV1978 =
+                String(selectedTeam.slot || '') + '|' + normalizeName(selectedTeam.name);
+              if (latestTeamKeyV1978 !== teamKeyV1978) return;
+              if (!scorecardIsCompletelyBlankV1613(localScores)) return;
+              if (!tournamentUsesShotgunStartV1613()) return;
+
+              const latestIndexV1978 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
+              const latestRowV1978 = els.scoreRows
+                ? els.scoreRows.querySelector('.score-row[data-score-index="' + String(latestIndexV1978) + '"]')
+                : null;
+
+              if (
+                !latestRowV1978 ||
+                !latestRowV1978.querySelector('.hole-cell.next-hole-cell') ||
+                !latestRowV1978.querySelector('.score-button.active-hole-score')
+              ) {
+                return;
+              }
+
+              showStartingHoleIntroV1613();
+            }, 500);
+          });
         });
       });
     }
@@ -18272,6 +18353,7 @@ let scoreTimingDetail =
 
     async function showHome() {
 
+      cancelScorecardEntryCueHoldV1981();
       closeModal();
       closeHomeTeamDropup();
 
@@ -18545,6 +18627,9 @@ let scoreTimingDetail =
 
     async function showScorecard() {
 
+      const scorecardEntryOriginV1981 = currentView;
+      beginScorecardEntryCueHoldV1981(scorecardEntryOriginV1981);
+
       const preserveHydratedPosition = scorecardHydratedFromSnapshotV53;
 
       /* V19.79 — consume the authorization-scoped first-entry marker exactly
@@ -18605,6 +18690,7 @@ let scoreTimingDetail =
 
     async function showLeaderboard() {
 
+      cancelScorecardEntryCueHoldV1981();
       closeModal();
 
       closeScoreEntry(
@@ -20300,9 +20386,13 @@ let scoreTimingDetail =
             'hole-cell';
 
           if (index === nextHoleIndex) {
-            holeCell.classList.add(
-              'next-hole-cell'
-            );
+            if (scorecardEntryCueHoldV1981) {
+              holeCell.dataset.entryHoleCueV1981 = '1';
+            } else {
+              holeCell.classList.add(
+                'next-hole-cell'
+              );
+            }
           }
 
 
@@ -20419,7 +20509,11 @@ let scoreTimingDetail =
             'score-button';
 
           if (showVerifiedNextHoleBorder && index === nextHoleIndex) {
-            button.classList.add('active-hole-score');
+            if (scorecardEntryCueHoldV1981) {
+              button.dataset.entryScoreCueV1981 = '1';
+            } else {
+              button.classList.add('active-hole-score');
+            }
           }
 
 
