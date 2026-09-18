@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.76-P7N4QW | BUILD KEY: 19.77-V6M2QX -->
+<!-- SSHCP | BASE KEY: 19.77-V6M2QX | BUILD KEY: 19.78-H4Q7NZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12809,7 +12809,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.77</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.78</span></span>
         </button>
 
       </div>
@@ -15282,6 +15282,81 @@ let scoreTimingDetail =
       els.modalOverlay.classList.add('open');
 
       return true;
+    }
+
+
+    /* V19.78 — Starting Hole intro is released by the actual Scorecard
+       visual-ready sequence, not by page-load time. First finish the established
+       NESR positioning. Then confirm that the NESR row is carrying both active
+       Blue cues (HOLE cell + score-box border). After those cues are painted,
+       wait 0.1s and show the existing STARTING HOLE X modal. */
+    let startingHoleIntroTimerV1978 = 0;
+    let startingHoleIntroSequenceV1978 = 0;
+
+    function restoreScorePositionThenStartingHoleIntroV1978() {
+      const sequenceV1978 = ++startingHoleIntroSequenceV1978;
+
+      if (startingHoleIntroTimerV1978) {
+        clearTimeout(startingHoleIntroTimerV1978);
+        startingHoleIntroTimerV1978 = 0;
+      }
+
+      const teamKeyV1978 = selectedTeam
+        ? String(selectedTeam.slot || '') + '|' + normalizeName(selectedTeam.name)
+        : '';
+
+      restoreScorePosition(false, () => {
+        requestAnimationFrame(() => {
+          if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
+          if (!selectedTeam || currentView !== 'scorecard') return;
+
+          const currentTeamKeyV1978 =
+            String(selectedTeam.slot || '') + '|' + normalizeName(selectedTeam.name);
+          if (currentTeamKeyV1978 !== teamKeyV1978) return;
+          if (!scorecardIsCompletelyBlankV1613(localScores)) return;
+          if (!tournamentUsesShotgunStartV1613()) return;
+
+          const nesrIndexV1978 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
+          const rowV1978 = els.scoreRows
+            ? els.scoreRows.querySelector('.score-row[data-score-index="' + String(nesrIndexV1978) + '"]')
+            : null;
+          const holeCueV1978 = rowV1978
+            ? rowV1978.querySelector('.hole-cell.next-hole-cell')
+            : null;
+          const scoreCueV1978 = rowV1978
+            ? rowV1978.querySelector('.score-button.active-hole-score')
+            : null;
+
+          if (!holeCueV1978 || !scoreCueV1978) return;
+
+          startingHoleIntroTimerV1978 = setTimeout(() => {
+            startingHoleIntroTimerV1978 = 0;
+            if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
+            if (!selectedTeam || currentView !== 'scorecard') return;
+
+            const latestTeamKeyV1978 =
+              String(selectedTeam.slot || '') + '|' + normalizeName(selectedTeam.name);
+            if (latestTeamKeyV1978 !== teamKeyV1978) return;
+            if (!scorecardIsCompletelyBlankV1613(localScores)) return;
+            if (!tournamentUsesShotgunStartV1613()) return;
+
+            const latestIndexV1978 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
+            const latestRowV1978 = els.scoreRows
+              ? els.scoreRows.querySelector('.score-row[data-score-index="' + String(latestIndexV1978) + '"]')
+              : null;
+
+            if (
+              !latestRowV1978 ||
+              !latestRowV1978.querySelector('.hole-cell.next-hole-cell') ||
+              !latestRowV1978.querySelector('.score-button.active-hole-score')
+            ) {
+              return;
+            }
+
+            showStartingHoleIntroV1613();
+          }, 100);
+        });
+      });
     }
 
 
@@ -18441,12 +18516,10 @@ let scoreTimingDetail =
           positioning used when returning from Leaderboard to Scorecard.
         */
         scorecardHydratedFromSnapshotV53 = false;
-        restoreScorePosition();
+        restoreScorePositionThenStartingHoleIntroV1978();
       } else {
-        restoreScorePosition();
+        restoreScorePositionThenStartingHoleIntroV1978();
       }
-
-      showStartingHoleIntroV1613();
 
     }
 
@@ -18798,8 +18871,7 @@ let scoreTimingDetail =
             await loadScorecard();
           }
 
-          restoreScorePosition();
-          showStartingHoleIntroV1613();
+          restoreScorePositionThenStartingHoleIntroV1978();
           addTestLog('TEAM SELECT', 'OK', '—', team.name);
         });
         els.scoreTeamDropdown.appendChild(button);
