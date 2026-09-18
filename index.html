@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.82-Q6M3RX | BUILD KEY: 19.83-H7N4QW -->
+<!-- SSHCP | BASE KEY: 19.83-H7N4QW | BUILD KEY: 19.84-K5R8NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12809,7 +12809,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.83</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.84</span></span>
         </button>
 
       </div>
@@ -14699,6 +14699,21 @@ let scoreTimingDetail =
       els.modalActions.replaceChildren(ok);
       els.modalOverlay.classList.add('open');
     }
+    function showWelcomeQrNotIdentifiedV1984(){
+      /* V19.84 — incoming/Welcome QR failures stay inside the Welcome flow.
+         Invalid and valid-but-unassigned QR codes intentionally share one clear
+         competitor-facing message. OK advances directly to the established
+         WELCOME COMPETITOR gate so the golfer can scan again or enter password. */
+      closeModal();
+      els.modalTitle.textContent='QR CODE NOT IDENTIFIED';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent='This QR code is not assigned to a team or is invalid.';
+      els.modalInput.style.display='none';
+      const ok=makeModalButton('OK','',showBareEntryGateV1961);
+      els.modalActions.className='modal-actions single';
+      els.modalActions.replaceChildren(ok);
+      els.modalOverlay.classList.add('open');
+    }
     function showAuthorizationCheckFailed(passkey){
       closeModal();
       els.modalTitle.textContent='AUTHORIZATION CHECK FAILED';
@@ -14717,7 +14732,7 @@ let scoreTimingDetail =
       els.modalActions.replaceChildren(cancel,retry);
       els.modalOverlay.classList.add('open');
     }
-    async function validateQrPasskey(passkey, showFailure=true, auditEvent=false){
+    async function validateQrPasskey(passkey, showFailure=true, auditEvent=false, welcomeQrFailureV1984=false){
       const clean=String(passkey||'').trim();
 
       if(!clean){
@@ -14727,7 +14742,10 @@ let scoreTimingDetail =
         syncTestAuthorizationToggle();
         updateHomeScorecardAccess();
         addTestLog('QR AUTH CHECK','INVALID','—','EMPTY PASSKEY');
-        if(showFailure) showInvalidQrPasskey();
+        if(showFailure) {
+          if(welcomeQrFailureV1984) showWelcomeQrNotIdentifiedV1984();
+          else showInvalidQrPasskey();
+        }
         return false;
       }
 
@@ -14793,7 +14811,10 @@ let scoreTimingDetail =
             timerSeconds(started)+'s',
             'HTTP '+httpStatus+' • VALID FALSE'
           );
-          if(showFailure) showInvalidQrPasskey();
+          if(showFailure) {
+            if(welcomeQrFailureV1984) showWelcomeQrNotIdentifiedV1984();
+            else showInvalidQrPasskey();
+          }
           return false;
         }
 
@@ -14808,7 +14829,10 @@ let scoreTimingDetail =
             timerSeconds(started)+'s',
             'HTTP '+httpStatus+' • '+String(data.qrId||'QR')+' • VALID / NOT ASSIGNED'
           );
-          if(showFailure) showValidUnassignedQrPasskey();
+          if(showFailure) {
+            if(welcomeQrFailureV1984) showWelcomeQrNotIdentifiedV1984();
+            else showValidUnassignedQrPasskey();
+          }
           return false;
         }
 
@@ -14861,17 +14885,24 @@ let scoreTimingDetail =
       const params=new URLSearchParams(window.location.search);
       const incoming=params.get('passkey') || params.get('key') || '';
       if(incoming){
-        await validateQrPasskey(incoming,true,true);
+        /* V19.84 — the incoming QR Welcome owns invalid/unassigned presentation.
+           Return the result so initialize() can keep the full-screen Welcome
+           alive instead of falling through to HOME, whose normal closeModal()
+           would otherwise erase the failure explanation. */
+        const incomingOk = await validateQrPasskey(incoming,true,true,true);
         params.delete('passkey'); params.delete('key');
         const q=params.toString();
         history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
+        return { incoming:true, ok:incomingOk };
       }else if(getQrPasskey()){
         const storedOk = await validateQrPasskey(getQrPasskey(),false,false);
         if (storedOk === false) {
           clearQrAuthorization();
           localStorage.removeItem('rotbAuthorizedTeam');
         }
+        return { incoming:false, ok:storedOk };
       }
+      return { incoming:false, ok:null };
     }
     function showNotAuthorized(){
       closeModal();
@@ -15201,7 +15232,7 @@ let scoreTimingDetail =
         try{ const u=new URL(raw,window.location.href); passkey=u.searchParams.get('passkey')||u.searchParams.get('key')||raw; }catch(_){}
         startLoadingLine();
         const welcomeGateScan = !!window.__sshcpWelcomeQrScanV1961;
-        const ok=await validateQrPasskey(passkey,true,true);
+        const ok=await validateQrPasskey(passkey,true,true,welcomeGateScan);
         completeLoadingLine();
         if(ok){
           scorecardHasLoaded=false; leaderboardHasLoaded=false;
@@ -28309,19 +28340,17 @@ let scoreTimingDetail =
       return String(name || '').trim().toUpperCase();
     }
 
-    function fitQrWelcomeTeamV170() {
-      const team = document.getElementById('qrWelcomeTeamV170');
-      const welcome = document.querySelector('.qr-welcome-title-v170');
-      if (!team || !team.textContent) return;
-
-      /* V18.40: preserve the proven 85%-viewport horizontal fit. Short names
-         may still grow aggressively, but their TOP edge can never enter the
-         protected blank band below WELCOME. That band is exactly 50% of the
-         rendered WELCOME box height, so the same rule scales on phone/tablet. */
+    function fitQrWelcomeTeamElementV1984(team, welcome) {
+      /* V19.84 preserves V18.40's exact team-name sizing authority: 85% of
+         viewport width, 18px minimum, and the same protected blank band below
+         WELCOME. This helper is shared by the real team and an invisible LANA
+         reference measurement; it does not introduce a new font-size rule. */
       const targetWidth = Math.max(1, window.innerWidth * 0.85);
       const probeSize = 100;
       const minimum = 18;
 
+      team.style.top = '50%';
+      team.style.transform = 'translate(-50%,-100%)';
       team.style.width = 'max-content';
       team.style.maxWidth = 'none';
       team.style.fontSize = probeSize + 'px';
@@ -28347,6 +28376,53 @@ let scoreTimingDetail =
           team.style.fontSize = size.toFixed(2) + 'px';
         }
       }
+    }
+
+    function qrWelcomeLanaCenterPercentV1984(team, welcome) {
+      const overlay = document.getElementById('qrWelcomeOverlayV170');
+      const inner = overlay && overlay.querySelector('.qr-welcome-inner-v170');
+      if (!overlay || !inner || !welcome || !team) return 50;
+
+      /* Measure LANA using the pre-V19.84 geometry and exact existing sizing
+         rules. Its current visual center becomes the invariant vertical
+         centerline for every team name. The reference stays invisible and is
+         removed synchronously, so the golfer never sees the measurement. */
+      const probe = team.cloneNode(false);
+      probe.removeAttribute('id');
+      probe.textContent = 'LANA';
+      probe.style.visibility = 'hidden';
+      probe.style.opacity = '0';
+      probe.style.pointerEvents = 'none';
+      probe.style.animation = 'none';
+      probe.style.transition = 'none';
+      inner.appendChild(probe);
+
+      fitQrWelcomeTeamElementV1984(probe, welcome);
+
+      const overlayRect = overlay.getBoundingClientRect();
+      const probeRect = probe.getBoundingClientRect();
+      const center = probeRect.top + (probeRect.height / 2);
+      const percent = overlayRect.height > 0
+        ? ((center - overlayRect.top) / overlayRect.height) * 100
+        : 50;
+
+      probe.remove();
+      return Number.isFinite(percent) ? percent : 50;
+    }
+
+    function fitQrWelcomeTeamV170() {
+      const team = document.getElementById('qrWelcomeTeamV170');
+      const welcome = document.querySelector('.qr-welcome-title-v170');
+      if (!team || !team.textContent) return;
+
+      /* First calculate the real name exactly as V18.40 did. Then move only
+         the final rendered text block so its center matches LANA's established
+         centerline. LANA itself therefore stays visually where it already was;
+         smaller/longer names move only enough to share that same midpoint. */
+      fitQrWelcomeTeamElementV1984(team, welcome);
+      const centerPercent = qrWelcomeLanaCenterPercentV1984(team, welcome);
+      team.style.top = centerPercent.toFixed(4) + '%';
+      team.style.transform = 'translate(-50%,-50%)';
     }
 
     function dismissQrWelcomeV170() {
@@ -28621,13 +28697,33 @@ let scoreTimingDetail =
       }
 
       setupQrWelcomeV170();
-      await initializeQrAuthorization();
+      const qrInitializationV1984 = await initializeQrAuthorization();
       if (geekEnabledV180()) startGeekDiagnosticV180b();
+
+      const failedIncomingQrV1984 = !!(
+        qrInitializationV1984 &&
+        qrInitializationV1984.incoming === true &&
+        qrInitializationV1984.ok !== true &&
+        window.__sshcpIncomingQrWelcomeV170
+      );
+
+      /* V19.84 — invalid/unassigned incoming QR never falls through to HOME.
+         Recast the still-live Welcome as COMPETITOR so the established timing,
+         QUICK GUIDE and ENTER behavior remain native. The failure modal stays
+         on top; OK opens the normal WELCOME COMPETITOR scan/password gate. */
+      if (failedIncomingQrV1984) {
+        window.__sshcpWelcomeModeV180b = 'COMPETITOR';
+      }
+
       revealQrWelcomeAfterAuthV170();
       if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
       syncTestAuthorizationToggle();
       syncTeamQrLockedUi();
       updateHomeScorecardAccess();
+
+      if (failedIncomingQrV1984) {
+        return;
+      }
 
       /* V17.1 — retained behavior: browser refresh while TEAMS is open returns directly to the
          TEAMS workspace (and restores its table scroll position) instead of
