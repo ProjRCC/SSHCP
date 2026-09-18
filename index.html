@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 19.95-W6R2QK | BUILD KEY: 19.96-R4N7QX -->
+<!-- SSHCP | BASE KEY: 19.96-R4N7QX | BUILD KEY: 19.97-H6R3QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.96</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V19.97</span></span>
         </button>
 
       </div>
@@ -23021,15 +23021,14 @@ let scoreTimingDetail =
         });
       }
 
-      /* V19.96 Scramble Summary TEAM hierarchy keeps the V19.95 cascade
-         unchanged: 1st starts at 50% of its actual row height; 2nd targets
-         90% of final 1st when 1st is one line or 100% when 1st is two lines;
-         3rd applies the same rule from final 2nd; places 4-end target 80% of
-         final 3rd when 3rd is one line or 90% when 3rd is two lines. V19.96
-         adds only an own-row vertical safety area to every TEAM fit: a final
-         one-line block may occupy at most 50% of its row and a final two-line
-         block at most 80%. Width fitting and independent lower-row fitting
-         remain unchanged. */
+      /* V19.97 Scramble Summary TEAM hierarchy preserves the V19.96 own-row
+         safety caps and changes only the two-line podium step-down: 1st starts
+         at 50% of its actual row height; 2nd targets 90% of final 1st when 1st
+         is one line or 95% when 1st is two lines; 3rd applies the same 90/95
+         rule from final 2nd. Places 4-end remain 80% of final 3rd when 3rd is
+         one line or 90% when 3rd is two lines. Every final one-line TEAM block
+         may occupy at most 50% of its own row and every final two-line block at
+         most 80%. Width fitting and independent lower-row fitting are unchanged. */
       let previousPodiumTeamSizeV1967 = null;
       let previousPodiumTeamLinesV1995 = 1;
       let thirdPlaceTeamLinesV1993 = 1;
@@ -23046,9 +23045,9 @@ let scoreTimingDetail =
         if (placeCell) fitTextToBoxV5(placeCell, placeCell, row.clientHeight * 0.34, 9, {horizontalPad:4,verticalPad:5});
 
         if (team && teamText) {
-          const podiumStepRatioV1995 = previousPodiumTeamLinesV1995 === 2 ? 1.00 : 0.90;
+          const podiumStepRatioV1997 = previousPodiumTeamLinesV1995 === 2 ? 0.95 : 0.90;
           const targetSize = Number.isFinite(previousPodiumTeamSizeV1967)
-            ? previousPodiumTeamSizeV1967 * podiumStepRatioV1995
+            ? previousPodiumTeamSizeV1967 * podiumStepRatioV1997
             : row.clientHeight * 0.50;
           const fittedTeam = fitSummaryTeamTextV1967(
             team,
