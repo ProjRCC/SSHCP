@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.11-R5N8QK | BUILD KEY: 20.12-M6Q3RX -->
+<!-- SSHCP | BASE KEY: 20.12-M6Q3RX | BUILD KEY: 20.13-V7Q2NK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12645,8 +12645,8 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   overflow:visible!important;
 }
 
-/* SSHCP V19.28 — universal GEEK detail hierarchy.
-   No underlines. RESULT label + value live in one compact bordered card. */
+/* SSHCP V20.13 — universal GEEK detail hierarchy retained.
+   No underlines. The result value lives directly in the compact bordered card. */
 .geek-detail-proof-v1920,
 .geek-detail-result-v180 .geek-detail-result-main-v1918{
   text-decoration:none!important;
@@ -12880,7 +12880,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.12</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.13</span></span>
         </button>
 
       </div>
@@ -25338,21 +25338,6 @@ let scoreTimingDetail =
         proof.style.setProperty('text-align', 'center', 'important');
       }
 
-      /* V20.12 — with the redundant RESULT label removed in V20.11, keep the
-         bordered section card and increase the actual statistic value target by
-         exactly 50%: 3% -> 4.5% of viewport height. It remains one line and
-         shrinks only when its existing card width requires it. */
-      if (result) {
-        fitTextToBoxV5(result, result, vh * 0.045, 10, {
-          horizontalPad: 10,
-          verticalPad: 0,
-          wrap: false,
-          lineHeight: 1,
-          ignoreHeight: true
-        });
-        result.style.setProperty('text-align', 'center', 'important');
-      }
-
       /* V19.25: TEAM and second-line score/hole evidence both target 125%
          of V19.24. Each TEAM name must remain on one line and may shrink locally
          to fit. The second line also stays on one line; its approved 60% ratio
@@ -25365,6 +25350,19 @@ let scoreTimingDetail =
 
         const applyTeamSizeV1925 = baseSize => {
           teamContainer.style.setProperty('font-size', baseSize + 'px', 'important');
+
+          /* V20.13 — RESULT no longer has an independent percentage target.
+             Its visible value uses the exact same finalized base font size as
+             TEAM for this detail card. Because this runs inside the established
+             TEAM fitting pass, any vertical-space reduction applied to TEAM is
+             inherited by RESULT at the same time. The bordered result card stays. */
+          if (result) {
+            result.style.setProperty('font-size', baseSize + 'px', 'important');
+            result.style.setProperty('line-height', '1', 'important');
+            result.style.setProperty('white-space', 'nowrap', 'important');
+            result.style.setProperty('text-align', 'center', 'important');
+          }
+
           teamNodes.forEach(node => {
             node.style.setProperty('font-size', baseSize + 'px', 'important');
             if (teams) {
