@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.15-H6R4QW | BUILD KEY: 20.17-N4Q8VX -->
+<!-- SSHCP | BASE KEY: 20.17-N4Q8VX | BUILD KEY: 20.18-R7Q3MP -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -216,13 +216,20 @@
             Math.abs(v188PhysLong - 2340) <= 180;
           var v188ScreenLong = Math.max(v188ScreenW, v188ScreenH);
           var v189BootVisualH = Math.max(1, Number(window.visualViewport && window.visualViewport.height) || v16NowH);
-          /* V19.75 — viewport metadata now exists before this boot pass, so
-             first-paint shell width/height use the same CSS viewport as runtime.
-             Preserve the exact S25 physical-device baseline while other devices
-             continue using the established visual-viewport / 724 multiplier. */
-          var v188BootMultiplier = v188LikelyS25
-            ? 1.00
-            : Math.max(0.70, Math.min(1.30, v189BootVisualH / 724));
+          /* V20.18 — installed Android PWA refresh can briefly report the old
+             browser-sized visualViewport even though the standalone layout
+             viewport is already full height. In standalone mode, use innerHeight
+             for first-paint vertical scaling; normal browser mode keeps the
+             established visualViewport / 724 behavior unchanged. */
+          var v2018BootStandalone = !!(
+            (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+            window.navigator.standalone === true
+          );
+          var v2018BootSizingH = v2018BootStandalone ? v16NowH : v189BootVisualH;
+          var v188BootMultiplier = Math.max(
+            0.70,
+            Math.min(1.30, v2018BootSizingH / 724)
+          );
           var v188RoundY = function (value) {
             return Math.max(1, Math.round(value * v188BootMultiplier));
           };
@@ -299,7 +306,7 @@
 
   <meta name="theme-color" content="#ffffff">
 
-  <!-- SSHCP V20.17 — hidden PWA packaging only.
+  <!-- SSHCP V20.18 — hidden PWA packaging + standalone HOME viewport-settle fix.
        Normal QR/browser flow remains unchanged; no install UI is rendered by SSHCP. -->
   <meta name="application-name" content="SimpleScramble">
   <meta name="mobile-web-app-capable" content="yes">
@@ -12902,7 +12909,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.17</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.18</span></span>
         </button>
 
       </div>
@@ -20029,11 +20036,18 @@ let scoreTimingDetail =
       }
       if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
 
-      /* V18.9: device multiplier is based only on the app's visible browser
-         viewport. Samsung S25 measured visual viewport = 724 CSS px = 1.000. */
+      /* V20.18 — keep normal browser sizing on visualViewport (S25 Chrome
+         724 CSS px = 1.000), but use innerHeight in installed standalone mode.
+         Android can transiently report a browser-height visualViewport during
+         PWA refresh; innerHeight already represents the real standalone canvas. */
+      const standaloneV2018 = !!(
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        window.navigator.standalone === true
+      );
+      const verticalSizingHeightV2018 = standaloneV2018 ? innerHeight : visualHeight;
       const multiplier = Math.max(
         0.70,
-        Math.min(1.30, visualHeight / V189_S25_VISUAL_VIEWPORT_H)
+        Math.min(1.30, verticalSizingHeightV2018 / V189_S25_VISUAL_VIEWPORT_H)
       );
 
       return {
@@ -29243,6 +29257,19 @@ let scoreTimingDetail =
         passive: true
       }
     );
+
+    /* V20.18 — standalone Chrome can settle visualViewport independently of
+       window.resize. Feed that event into the existing geometry refit path so
+       HOME cannot remain on stale first-paint proportions. */
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener(
+        'resize',
+        refitVisibleGeometryV5,
+        {
+          passive: true
+        }
+      );
+    }
 
     if (currentView === 'scorecard') {
       sizeScorecardV5();
