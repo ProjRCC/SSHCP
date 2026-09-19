@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.13-V7Q2NK | BUILD KEY: 20.14-L8Q5RV -->
+<!-- SSHCP | BASE KEY: 20.14-L8Q5RV | BUILD KEY: 20.15-H6R4QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12645,9 +12645,9 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   overflow:visible!important;
 }
 
-/* SSHCP V20.14 — universal GEEK detail hierarchy retained.
-   No underlines. Keep the same compact result-card shape, but remove the
-   thin border and fill the card with the established gray-2 for consistency. */
+/* SSHCP V20.15 — universal GEEK detail hierarchy retained.
+   No underlines. Keep the compact result-card shape, with no border, using
+   the established gray-5 fill and white result text for app-wide consistency. */
 .geek-detail-proof-v1920,
 .geek-detail-result-v180 .geek-detail-result-main-v1918{
   text-decoration:none!important;
@@ -12660,8 +12660,13 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   padding:8px 22px 9px!important;
   border:none!important;
   border-radius:8px!important;
-  background:var(--sshcp-gray-2-v1850)!important;
+  background:var(--sshcp-gray-5-v1850)!important;
   text-align:center!important;
+}
+.geek-detail-result-card-v1928 .geek-detail-result-v180,
+.geek-detail-result-card-v1928 .geek-detail-result-main-v1918{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
 }
 .geek-detail-result-card-v1928 .geek-detail-section-v180{
   margin:0 0 5px!important;
@@ -12881,7 +12886,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.14</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.15</span></span>
         </button>
 
       </div>
@@ -25352,20 +25357,18 @@ let scoreTimingDetail =
         const applyTeamSizeV1925 = baseSize => {
           teamContainer.style.setProperty('font-size', baseSize + 'px', 'important');
 
-          /* V20.14 — RESULT should track the finalized TEAM hierarchy but sit
-             20% larger than the actual TEAM base size for this detail card.
-             Keep the same result-card shape, and let RESULT shrink only if its
-             own card width requires it. */
+          /* V20.15 — set RESULT from the same finalized TEAM base size, but
+             render it at exactly 120% of that size. Do not run the RESULT text
+             through fitTextToBoxV5 using itself as the box: that self-measurement
+             was what made V20.14 render smaller than TEAM despite a 120% target.
+             Current GEEK result strings are short enough for the established
+             result card; the card remains auto-width with an 82% maximum. */
           if (result) {
-            fitTextToBoxV5(result, result, baseSize * 1.20, Math.max(12, minimumTeam * 1.20), {
-              horizontalPad: 10,
-              verticalPad: 0,
-              wrap: false,
-              lineHeight: 1,
-              ignoreHeight: true
-            });
+            const resultSizeV2015 = baseSize * 1.20;
+            result.style.setProperty('font-size', resultSizeV2015 + 'px', 'important');
             result.style.setProperty('line-height', '1', 'important');
             result.style.setProperty('white-space', 'nowrap', 'important');
+            result.style.setProperty('overflow', 'visible', 'important');
             result.style.setProperty('text-align', 'center', 'important');
           }
 
@@ -25494,7 +25497,7 @@ let scoreTimingDetail =
         '<div class="geek-detail-proof-v1920">' + escapeHtml(proof) + '</div>' +
         '<div class="geek-detail-result-card-v1928">' +
           /* V20.11+ — the statistic card shows the result value directly.
-             RESULT label removed; V20.14 keeps the same card shape with gray-2 fill. */
+             RESULT label removed; V20.15 keeps the same card shape with gray-5 fill and white text. */
           '<div class="geek-detail-result-v180">' +
             geekDetailResultHtmlV1918(stat) +
           '</div>' +
