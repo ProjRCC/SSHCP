@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.20-Q8M5RV | BUILD KEY: 20.21-N6Q4VX -->
+<!-- SSHCP | BASE KEY: 20.21-N6Q4VX | BUILD KEY: 20.22-R5Q8NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12805,6 +12805,20 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
   padding-right:6px!important;
 }
 
+
+/* SSHCP V20.22 — completed HOME action hierarchy only.
+   AFTER PLAY:
+   - top button remains in the exact existing position/height, expands to the
+     exact bottom-button width, stays Blue, and reads SCRAMBLE SUMMARY;
+   - bottom split/team-selector remains in the exact existing position/geometry,
+     stays Home control Gray, and reads FINAL SCORECARD + TEAM.
+   QUICK GUIDE and its surrounding spacing are untouched. */
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
+  width:var(--v197-home-score-w,350px)!important;
+  min-width:var(--v197-home-score-w,350px)!important;
+  max-width:var(--v197-home-score-w,350px)!important;
+}
+
 </style>
 </head>
 
@@ -12901,6 +12915,9 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
               var team = window.__sshcpBootTeam || '';
               var locked = window.__sshcpBootLocked === true;
               var btn = document.getElementById('homeScorecardButton');
+              var actionLabel = window.__sshcpBootTournamentComplete === true
+                ? 'FINAL SCORECARD'
+                : 'ACCESS SCORECARD';
 
               if (locked) {
                 document.body.classList.add('team-qr-locked');
@@ -12912,7 +12929,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
               if (btn && team) {
                 btn.innerHTML =
-                  '<span class="home-scorecard-action">ACCESS SCORECARD</span>' +
+                  '<span class="home-scorecard-action">' + actionLabel + '</span>' +
                   '<span class="home-scorecard-team">' +
                   window.__sshcpBootDisplayTeamName(team).toUpperCase().replace(/[&<>"']/g, function (c) {
                     return {
@@ -12932,7 +12949,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.21</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.22</span></span>
         </button>
 
       </div>
@@ -18339,7 +18356,10 @@ let scoreTimingDetail =
 
       if (els.homeLeaderboardButton) {
         const h = els.homeLeaderboardButton.getBoundingClientRect().height || 60;
-        fitTextToBoxV5(els.homeLeaderboardButton, els.homeLeaderboardButton, h * 0.40, 10, {
+        const homePrimaryTarget = document.documentElement.classList.contains('sshcp-tournament-complete')
+          ? h * 0.60
+          : h * 0.40;
+        fitTextToBoxV5(els.homeLeaderboardButton, els.homeLeaderboardButton, homePrimaryTarget, 10, {
           horizontalPad: 20,
           verticalPad: 0,
           wrap: false,
@@ -18402,8 +18422,11 @@ let scoreTimingDetail =
         els.homeScorecardButton.append(actionLine, teamLine);
       }
 
-      if (actionLine.textContent !== 'ACCESS SCORECARD') {
-        actionLine.textContent = 'ACCESS SCORECARD';
+      const scorecardActionText = document.documentElement.classList.contains('sshcp-tournament-complete')
+        ? 'FINAL SCORECARD'
+        : 'ACCESS SCORECARD';
+      if (actionLine.textContent !== scorecardActionText) {
+        actionLine.textContent = scorecardActionText;
       }
 
       const wantsSelectTeam = !displayTeam;
@@ -22399,8 +22422,16 @@ let scoreTimingDetail =
         els.homeLeaderboardButton.textContent = isComplete
           ? 'SCRAMBLE SUMMARY'
           : 'LEADERBOARD';
-        requestAnimationFrame(fitHomeActionTypographyV197);
       }
+      if (els.homeScorecardButton) {
+        const actionLine = els.homeScorecardButton.querySelector('.home-scorecard-action');
+        if (actionLine) {
+          actionLine.textContent = isComplete
+            ? 'FINAL SCORECARD'
+            : 'ACCESS SCORECARD';
+        }
+      }
+      requestAnimationFrame(fitHomeActionTypographyV197);
     }
 
     /* V18.31 — HOME refresh truth comes from the backend, not this device's
