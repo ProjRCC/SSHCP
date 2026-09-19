@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.17-N4Q8VX | BUILD KEY: 20.18-R7Q3MP -->
+<!-- SSHCP | BASE KEY: 20.18-R7Q3MP | BUILD KEY: 20.19-K6R4QW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12909,7 +12909,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.18</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.19</span></span>
         </button>
 
       </div>
@@ -18577,6 +18577,7 @@ let scoreTimingDetail =
       await refreshHomeTournamentStateV1831();
       updateHomeScorecardAccess();
       fitHomeActionTypographyV197();
+      settleHomeGeometryV2019();
 
       /* Geometry failure is not expected, but never strand the HOME controls
          hidden: if no curtain could be created, expose only after the fresh HOME
@@ -20036,18 +20037,31 @@ let scoreTimingDetail =
       }
       if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
 
-      /* V20.18 — keep normal browser sizing on visualViewport (S25 Chrome
-         724 CSS px = 1.000), but use innerHeight in installed standalone mode.
-         Android can transiently report a browser-height visualViewport during
-         PWA refresh; innerHeight already represents the real standalone canvas. */
-      const standaloneV2018 = !!(
+      /* V20.19 — normal browser sizing remains exactly on visualViewport
+         (S25 Chrome 724 CSS px = 1.000). Installed standalone mode can expose
+         its final content height through innerHeight, documentElement height,
+         visualViewport, or the active 100dvh HOME shell at slightly different
+         moments during refresh. Use the largest valid standalone content
+         measurement so HOME cannot remain locked to the smaller browser height. */
+      const standaloneV2019 = !!(
         (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
         window.navigator.standalone === true
       );
-      const verticalSizingHeightV2018 = standaloneV2018 ? innerHeight : visualHeight;
+      const rootClientHeightV2019 = Math.max(
+        1,
+        Number(document.documentElement && document.documentElement.clientHeight) || 1
+      );
+      const homeShellV2019 = document.querySelector('#homeView .home-shell');
+      const homeShellHeightV2019 = Math.max(
+        1,
+        Number(homeShellV2019 && homeShellV2019.getBoundingClientRect().height) || 1
+      );
+      const verticalSizingHeightV2019 = standaloneV2019
+        ? Math.max(innerHeight, rootClientHeightV2019, visualHeight, homeShellHeightV2019)
+        : visualHeight;
       const multiplier = Math.max(
         0.70,
-        Math.min(1.30, verticalSizingHeightV2018 / V189_S25_VISUAL_VIEWPORT_H)
+        Math.min(1.30, verticalSizingHeightV2019 / V189_S25_VISUAL_VIEWPORT_H)
       );
 
       return {
@@ -20148,6 +20162,30 @@ let scoreTimingDetail =
       root.setProperty('--v197-home-score-team-font', (homeScoreH * 0.40).toFixed(3) + 'px');
 
       return values;
+    }
+
+    /* V20.19 — standalone HOME refresh geometry settle.
+       Navigation back to HOME was already correct because geometry was measured
+       after the PWA viewport had fully settled. A hard/pull refresh can finish
+       startup while Android is still reconciling standalone viewport metrics.
+       Re-run only the existing HOME geometry/typography path across a few
+       post-layout frames; no data, auth, scoring or navigation behavior changes. */
+    function settleHomeGeometryV2019() {
+      const run = () => {
+        if (currentView !== 'home') return;
+        syncSharedGeometryV187();
+        fitHomeActionTypographyV197();
+      };
+
+      run();
+      requestAnimationFrame(() => {
+        run();
+        requestAnimationFrame(run);
+      });
+
+      [90, 220, 450, 800].forEach(delay => {
+        window.setTimeout(run, delay);
+      });
     }
 
     function distributeIntegerPixelsV188(totalPixels, count) {
@@ -29257,6 +29295,17 @@ let scoreTimingDetail =
         passive: true
       }
     );
+
+    /* V20.19 — explicit refresh lifecycle checkpoints. Android standalone
+       can finish its final viewport transition without a useful terminal
+       resize event, so HOME gets the same proven geometry pass here too. */
+    window.addEventListener('pageshow', () => {
+      if (currentView === 'home') settleHomeGeometryV2019();
+    }, { passive: true });
+
+    window.addEventListener('load', () => {
+      if (currentView === 'home') settleHomeGeometryV2019();
+    }, { passive: true });
 
     /* V20.18 — standalone Chrome can settle visualViewport independently of
        window.resize. Feed that event into the existing geometry refit path so
