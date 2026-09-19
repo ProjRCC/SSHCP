@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.19-K6R4QW | BUILD KEY: 20.20-Q8M5RV -->
+<!-- SSHCP | BASE KEY: 20.20-Q8M5RV | BUILD KEY: 20.21-N6Q4VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12789,6 +12789,22 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 .modal-overlay.switch-authorization .switch-auth-button,
 .modal-overlay.switch-authorization .switch-auth-preauth,
 .modal-overlay.switch-authorization .modal-actions .modal-btn{height:54px!important;min-height:54px!important;max-height:54px!important;box-sizing:border-box!important}
+
+/* SSHCP V20.21 — tie-break result action-row correction only.
+   Give SCRAMBLE SUMMARY a little more horizontal room and a deliberately
+   smaller one-line label so browser and standalone viewport geometry cannot
+   crowd the text against the button edges. No tiebreak logic or summary logic changes. */
+.modal-overlay.tournament-result .modal-actions{
+  grid-template-columns:30fr 70fr!important;
+}
+.modal-overlay.tournament-result .modal-btn.tournament-summary-button{
+  min-width:0!important;
+  white-space:nowrap!important;
+  font-size:calc(var(--v1850-tie-button-font,20px) * .90)!important;
+  padding-left:6px!important;
+  padding-right:6px!important;
+}
+
 </style>
 </head>
 
@@ -12916,7 +12932,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.20</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.21</span></span>
         </button>
 
       </div>
