@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.8-N7Q4MV | BUILD KEY: 20.9-K8R5NV -->
+<!-- SSHCP | BASE KEY: 20.9-K8R5NV | BUILD KEY: 20.10-P7Q4RM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6925,6 +6925,26 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   color:var(--on-accent)!important;
 }
 
+/* V20.10 — authorized Blue Summary place cell is a Scorecard shortcut.
+   Preserve the visible 10% PLACE geometry; extend only the invisible hit target
+   10px into the TEAM side so edge taps are forgiving without changing layout. */
+.modal-overlay.tournament-summary .summary-authorized-place-v1827[role="button"]{
+  position:relative!important;
+  overflow:visible!important;
+  z-index:2!important;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+.modal-overlay.tournament-summary .summary-authorized-place-v1827[role="button"]::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:100%;
+  width:10px;
+  pointer-events:auto;
+}
+
 
 #homeView .home-scorecard-team,
 #scorecardView .score-team-select-button,
@@ -12860,7 +12880,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.9</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.10</span></span>
         </button>
 
       </div>
@@ -25852,6 +25872,13 @@ let scoreTimingDetail =
         );
       }
 
+      /* V20.10 — only the authorized Blue PLACE cell is interactive. */
+      function summaryAuthorizedScorecardAttrsV2010(row) {
+        return summaryOwnsAuthorizedPlaceV1827(row)
+          ? ' role="button" tabindex="0" aria-label="Open authorized team scorecard"'
+          : '';
+      }
+
       function summaryPlaceLabel(rowIndex) {
         return resolvedTournamentPlaceLabel(rows, rowIndex);
       }
@@ -25876,7 +25903,8 @@ let scoreTimingDetail =
           '<div class="tournament-summary-row place-' + (index + 1) + '">' +
           '<div class="tournament-summary-place' +
           (summaryOwnsAuthorizedPlaceV1827(row) ? ' summary-authorized-place-v1827' : '') +
-          '"><span class="summary-place-number">' + escapeHtml(String(index + 1)) +
+          '"' + summaryAuthorizedScorecardAttrsV2010(row) +
+          '><span class="summary-place-number">' + escapeHtml(String(index + 1)) +
           '</span></div>' +
           '<div class="tournament-summary-team"><span class="summary-team-anchor">' +
           '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
@@ -25911,7 +25939,8 @@ let scoreTimingDetail =
             '<div class="tournament-summary-remaining-row">' +
             '<div class="tournament-summary-remaining-cell place' +
             (summaryOwnsAuthorizedPlaceV1827(row) ? ' summary-authorized-place-v1827' : '') +
-            '">' + escapeHtml(String(place)) + '</div>' +
+            '"' + summaryAuthorizedScorecardAttrsV2010(row) +
+            '>' + escapeHtml(String(place)) + '</div>' +
             '<div class="tournament-summary-remaining-cell team"><span class="summary-team-anchor">' +
             '<span class="summary-team-text">' + escapeHtml(displayTeamName(row.team || '')) + '</span>' +
             '</span></div>' +
@@ -28391,16 +28420,20 @@ let scoreTimingDetail =
       );
 
 
-    /* V20.9 — authorized Blue leaderboard cell -> existing SCORECARD button.
-       Trigger the literal footer button instead of calling Scorecard rules directly,
-       so this shortcut inherits the same established navigation behavior. */
+    /* V20.10 — both authorized Blue standings shortcuts reuse the literal existing
+       SCORECARD footer button. No scorecard/auth/navigation rules are duplicated. */
+    const activateExistingScorecardShortcutV2010 = () => {
+      if (!els.leaderScorecardButton || els.leaderScorecardButton.disabled) return;
+      els.leaderScorecardButton.click();
+    };
+
+    /* V20.9 — authorized Blue leaderboard place cell shortcut retained. */
     const activateAuthorizedLeaderboardScorecardV209 = event => {
       const target = event && event.target instanceof Element
         ? event.target.closest('.leader-place-cell.authorized-place-cell[role="button"]')
         : null;
       if (!target || !els.leaderRows || !els.leaderRows.contains(target)) return;
-      if (!els.leaderScorecardButton || els.leaderScorecardButton.disabled) return;
-      els.leaderScorecardButton.click();
+      activateExistingScorecardShortcutV2010();
     };
 
     els.leaderRows.addEventListener(
@@ -28418,6 +28451,34 @@ let scoreTimingDetail =
         if (!target || !els.leaderRows.contains(target)) return;
         event.preventDefault();
         activateAuthorizedLeaderboardScorecardV209(event);
+      }
+    );
+
+    /* V20.10 — Summary authorized Blue PLACE cell -> same existing SCORECARD action. */
+    const activateAuthorizedSummaryScorecardV2010 = event => {
+      const target = event && event.target instanceof Element
+        ? event.target.closest('.summary-authorized-place-v1827[role="button"]')
+        : null;
+      if (!target || !els.modalBody || !els.modalBody.contains(target)) return;
+      if (!els.modalOverlay.classList.contains('tournament-summary')) return;
+      activateExistingScorecardShortcutV2010();
+    };
+
+    els.modalBody.addEventListener(
+      'click',
+      activateAuthorizedSummaryScorecardV2010
+    );
+
+    els.modalBody.addEventListener(
+      'keydown',
+      event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        const target = event.target instanceof Element
+          ? event.target.closest('.summary-authorized-place-v1827[role="button"]')
+          : null;
+        if (!target || !els.modalBody.contains(target)) return;
+        event.preventDefault();
+        activateAuthorizedSummaryScorecardV2010(event);
       }
     );
 
