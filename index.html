@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.5-H7Q4NX | BUILD KEY: 20.6-Q5M8RV -->
+<!-- SSHCP | BASE KEY: 20.6-Q5M8RV | BUILD KEY: 20.7-T6R3QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12854,7 +12854,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.6</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.7</span></span>
         </button>
 
       </div>
@@ -23042,13 +23042,12 @@ let scoreTimingDetail =
         });
       }
 
-      /* V19.98 — Summary typography now follows the stable row geometry rather
-         than chaining one TEAM name into the next. NET +/- keeps its approved
-         60/55/50/48% own-row system. PLACE is exactly 75% of those same ratios.
-         TEAM names fit independently inside their own row: one line targets a
-         50%-of-row text block; a legal two-line name may use an 80%-of-row block. */
+      /* V20.7 — Summary keeps the approved NET +/- 60/55/50/48% score hierarchy
+         and all existing TEAM fitting. PLACE no longer owns a separate row-height
+         ratio. Each PLACE number targets exactly 90% of the FINAL rendered NET +/-
+         score font in that same row, then independently shrinks only if its own
+         cell needs it. PLACE remains one line; every other Summary rule is unchanged. */
       const podiumNetRatiosV1998 = [0.60, 0.55, 0.50];
-      const podiumPlaceRatiosV1998 = podiumNetRatiosV1998.map(ratio => ratio * 0.75);
 
       [1,2,3].forEach((place, index) => {
         const row = topGrid.querySelector('.tournament-summary-row.place-' + place);
@@ -23058,16 +23057,6 @@ let scoreTimingDetail =
         const teamAnchor = row.querySelector('.summary-team-anchor');
         const teamText = row.querySelector('.summary-team-text') || team;
         const net = row.querySelector('.tournament-summary-net');
-
-        if (placeCell) {
-          fitTextToBoxV5(
-            placeCell,
-            placeCell,
-            row.clientHeight * podiumPlaceRatiosV1998[index],
-            9,
-            { horizontalPad: 4, verticalPad: 5 }
-          );
-        }
 
         if (team && teamText) {
           fitSummaryTeamTextV1998(
@@ -23091,6 +23080,30 @@ let scoreTimingDetail =
             { horizontalPad: 6, verticalPad: 5 }
           );
         }
+
+        /* V20.7 — PLACE follows the final corresponding NET +/- score at 90%. */
+        if (placeCell) {
+          const renderedNetSizeV207 = net
+            ? parseFloat(getComputedStyle(net).fontSize)
+            : NaN;
+          const placeTargetV207 =
+            Number.isFinite(renderedNetSizeV207) && renderedNetSizeV207 > 0
+              ? renderedNetSizeV207 * 0.90
+              : row.clientHeight * podiumNetRatiosV1998[index] * 0.90;
+
+          fitTextToBoxV5(
+            placeCell,
+            placeCell,
+            placeTargetV207,
+            1,
+            {
+              horizontalPad: 4,
+              verticalPad: 5,
+              wrap: false,
+              lineHeight: 1
+            }
+          );
+        }
       });
 
       const lowerPlace = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.place'));
@@ -23111,10 +23124,6 @@ let scoreTimingDetail =
         return chosen;
       };
 
-      /* PLACE mirrors NET +/- at 75%: lower score 48% -> lower PLACE 36%.
-         Keep the established one-shared-size behavior for places 4-end. */
-      fitUniform(lowerPlace, 0.48 * 0.75, 9, 4);
-
       /* Every lower TEAM is independent and uses the same own-row 50%/80%
          architecture as the podium. No team name can resize another row. */
       lowerTeam.forEach(teamCell => {
@@ -23133,6 +23142,32 @@ let scoreTimingDetail =
       });
 
       fitUniform(lowerNet, 0.48, 12, 6);
+
+      /* V20.7 — each lower PLACE targets 90% of its corresponding final NET +/-
+         score font. It stays one line and shrinks only if its own PLACE cell needs it. */
+      lowerPlace.forEach((placeCell, index) => {
+        const scoreCell = lowerNet[index] || null;
+        const renderedNetSizeV207 = scoreCell
+          ? parseFloat(getComputedStyle(scoreCell).fontSize)
+          : NaN;
+        const placeTargetV207 =
+          Number.isFinite(renderedNetSizeV207) && renderedNetSizeV207 > 0
+            ? renderedNetSizeV207 * 0.90
+            : placeCell.clientHeight * 0.48 * 0.90;
+
+        fitTextToBoxV5(
+          placeCell,
+          placeCell,
+          placeTargetV207,
+          1,
+          {
+            horizontalPad: 4,
+            verticalPad: 5,
+            wrap: false,
+            lineHeight: 1
+          }
+        );
+      });
 
       /* V20.0 — Summary NET lists score only. It follows score typography,
          never TEAM text: target 80% of the smallest FINAL rendered NET +/-
