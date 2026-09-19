@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.9-K8R5NV | BUILD KEY: 20.10-P7Q4RM -->
+<!-- SSHCP | BASE KEY: 20.11-R5N8QK | BUILD KEY: 20.12-M6Q3RX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12880,7 +12880,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.10</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.12</span></span>
         </button>
 
       </div>
@@ -25338,9 +25338,12 @@ let scoreTimingDetail =
         proof.style.setProperty('text-align', 'center', 'important');
       }
 
-      /* RESULT is centered, capped at 3% viewport height, and always one line. */
+      /* V20.12 — with the redundant RESULT label removed in V20.11, keep the
+         bordered section card and increase the actual statistic value target by
+         exactly 50%: 3% -> 4.5% of viewport height. It remains one line and
+         shrinks only when its existing card width requires it. */
       if (result) {
-        fitTextToBoxV5(result, result, vh * 0.03, 10, {
+        fitTextToBoxV5(result, result, vh * 0.045, 10, {
           horizontalPad: 10,
           verticalPad: 0,
           wrap: false,
@@ -25486,7 +25489,8 @@ let scoreTimingDetail =
         '</div>' +
         '<div class="geek-detail-proof-v1920">' + escapeHtml(proof) + '</div>' +
         '<div class="geek-detail-result-card-v1928">' +
-          '<div class="geek-detail-section-v180">RESULT</div>' +
+          /* V20.11 — the bordered statistic card now shows the result value directly.
+             The RESULT label was redundant once the detail hierarchy was established. */
           '<div class="geek-detail-result-v180">' +
             geekDetailResultHtmlV1918(stat) +
           '</div>' +
