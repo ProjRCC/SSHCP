@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.14-L8Q5RV | BUILD KEY: 20.15-H6R4QW -->
+<!-- SSHCP | BASE KEY: 20.15-H6R4QW | BUILD KEY: 20.17-N4Q8VX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -298,6 +298,22 @@
   </script>
 
   <meta name="theme-color" content="#ffffff">
+
+  <!-- SSHCP V20.17 — hidden PWA packaging only.
+       Normal QR/browser flow remains unchanged; no install UI is rendered by SSHCP. -->
+  <meta name="application-name" content="SimpleScramble">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SimpleScramble">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180.png">
+  <script>
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault();
+    });
+  </script>
 
   <title>ROTB 2026</title>
 
@@ -12886,7 +12902,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.15</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.17</span></span>
         </button>
 
       </div>
