@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.7-T6R3QK | BUILD KEY: 20.8-N7Q4MV -->
+<!-- SSHCP | BASE KEY: 20.8-N7Q4MV | BUILD KEY: 20.9-K8R5NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8085,6 +8085,12 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   color:var(--on-accent)!important;
 }
 
+/* V20.9 — authorized Blue place cell is a Scorecard shortcut; visual geometry unchanged. */
+#leaderboardView .leader-place-cell.authorized-place-cell[role="button"] {
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
 
 #homeView #homeLeaderboardButton,
 .score-entry-clear,
@@ -12854,7 +12860,7 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.7</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.9</span></span>
         </button>
 
       </div>
@@ -22770,13 +22776,13 @@ let scoreTimingDetail =
          The standings table now begins at the modal-body top, i.e. the former
          HOME / LEADERBOARD top position. The recovered height is distributed
          through the existing weighted standings rows. */
-      /* V20.8 — preserve the established one-line Summary tiebreak rows, but
-         increase the explanation text/line target by 50% while retaining the
-         established device multiplier and shrink-to-fit behavior. */
+      /* V20.9 — preserve the established one-line Summary tiebreak rows, but
+         increase the explanation text/line target by 30% from the V20.7 baseline
+         while retaining the established device multiplier and shrink-to-fit behavior. */
       const summaryMultiplierV1970 = getVerticalMetricsV188().multiplier;
       const noTieBuffer = 15 * summaryMultiplierV1970;
       const tieBuffer = 8 * summaryMultiplierV1970;
-      const tieLineH = 22.5 * summaryMultiplierV1970;
+      const tieLineH = 19.5 * summaryMultiplierV1970;
       const noteSectionH = noteCount > 0
         ? tieBuffer + (noteCount * tieLineH) + tieBuffer
         : noTieBuffer;
@@ -23226,12 +23232,12 @@ let scoreTimingDetail =
         cell.style.setProperty('overflow', 'hidden', 'important');
       });
 
-      /* V20.8 — tiebreak explanation target increased 50% from 13px to 19.5px
-         at the current device multiplier. Keep every explanation on one line and
-         shrink all explanation rows together only if width requires it. */
+      /* V20.9 — tiebreak explanation target increased 30% from the original 13px
+         baseline to 16.9px at the current device multiplier. Keep every explanation
+         on one line and shrink all explanation rows together only if width requires it. */
       const summaryNotesV1970 = Array.from(body.querySelectorAll('.tournament-summary-note'));
       if (summaryNotesV1970.length) {
-        const noteTargetV1970 = 19.5 * getVerticalMetricsV188().multiplier;
+        const noteTargetV1970 = 16.9 * getVerticalMetricsV188().multiplier;
         let sharedNoteSizeV1970 = noteTargetV1970;
         summaryNotesV1970.forEach(note => {
           sharedNoteSizeV1970 = Math.min(
@@ -26102,6 +26108,12 @@ let scoreTimingDetail =
             placeCell.classList.add(
               'authorized-place-cell'
             );
+            /* V20.9 — the existing authorized Blue leaderboard cell is a
+               shortcut to the exact existing SCORECARD footer action. The
+               navigation/authorization rules are not duplicated here. */
+            placeCell.setAttribute('role', 'button');
+            placeCell.setAttribute('tabindex', '0');
+            placeCell.setAttribute('aria-label', 'Open authorized team scorecard');
           }
 
 
@@ -28378,6 +28390,36 @@ let scoreTimingDetail =
         handleLeaderboardFinalAction
       );
 
+
+    /* V20.9 — authorized Blue leaderboard cell -> existing SCORECARD button.
+       Trigger the literal footer button instead of calling Scorecard rules directly,
+       so this shortcut inherits the same established navigation behavior. */
+    const activateAuthorizedLeaderboardScorecardV209 = event => {
+      const target = event && event.target instanceof Element
+        ? event.target.closest('.leader-place-cell.authorized-place-cell[role="button"]')
+        : null;
+      if (!target || !els.leaderRows || !els.leaderRows.contains(target)) return;
+      if (!els.leaderScorecardButton || els.leaderScorecardButton.disabled) return;
+      els.leaderScorecardButton.click();
+    };
+
+    els.leaderRows.addEventListener(
+      'click',
+      activateAuthorizedLeaderboardScorecardV209
+    );
+
+    els.leaderRows.addEventListener(
+      'keydown',
+      event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        const target = event.target instanceof Element
+          ? event.target.closest('.leader-place-cell.authorized-place-cell[role="button"]')
+          : null;
+        if (!target || !els.leaderRows.contains(target)) return;
+        event.preventDefault();
+        activateAuthorizedLeaderboardScorecardV209(event);
+      }
+    );
 
     els.leaderScorecardButton
       .addEventListener(
