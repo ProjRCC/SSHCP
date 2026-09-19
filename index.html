@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.6-Q5M8RV | BUILD KEY: 20.7-T6R3QK -->
+<!-- SSHCP | BASE KEY: 20.7-T6R3QK | BUILD KEY: 20.8-N7Q4MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22770,12 +22770,13 @@ let scoreTimingDetail =
          The standings table now begins at the modal-body top, i.e. the former
          HOME / LEADERBOARD top position. The recovered height is distributed
          through the existing weighted standings rows. */
-      /* V19.70 — preserve the established one-line Summary tiebreak rows while
-         scaling their existing geometry with the established device multiplier. */
+      /* V20.8 — preserve the established one-line Summary tiebreak rows, but
+         increase the explanation text/line target by 50% while retaining the
+         established device multiplier and shrink-to-fit behavior. */
       const summaryMultiplierV1970 = getVerticalMetricsV188().multiplier;
       const noTieBuffer = 15 * summaryMultiplierV1970;
       const tieBuffer = 8 * summaryMultiplierV1970;
-      const tieLineH = 15 * summaryMultiplierV1970;
+      const tieLineH = 22.5 * summaryMultiplierV1970;
       const noteSectionH = noteCount > 0
         ? tieBuffer + (noteCount * tieLineH) + tieBuffer
         : noTieBuffer;
@@ -23225,12 +23226,12 @@ let scoreTimingDetail =
         cell.style.setProperty('overflow', 'hidden', 'important');
       });
 
-      /* V19.70 — start from the established 13/15 tiebreak text-to-row
-         relationship at the current device multiplier. Keep every explanation
-         on one line and shrink all explanation rows together only if required. */
+      /* V20.8 — tiebreak explanation target increased 50% from 13px to 19.5px
+         at the current device multiplier. Keep every explanation on one line and
+         shrink all explanation rows together only if width requires it. */
       const summaryNotesV1970 = Array.from(body.querySelectorAll('.tournament-summary-note'));
       if (summaryNotesV1970.length) {
-        const noteTargetV1970 = 13 * getVerticalMetricsV188().multiplier;
+        const noteTargetV1970 = 19.5 * getVerticalMetricsV188().multiplier;
         let sharedNoteSizeV1970 = noteTargetV1970;
         summaryNotesV1970.forEach(note => {
           sharedNoteSizeV1970 = Math.min(
