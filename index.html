@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.32-K7M4QZ | BUILD KEY: 20.33-M8Q3RX -->
+<!-- SSHCP | BASE KEY: 20.33-M8Q3RX | BUILD KEY: 20.34-Q6R2MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13255,6 +13255,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
 <style id="teamInfoStyleV2032">
 /* =========================================================
+   SSHCP V20.34 — TEAM INFO popup / refresh-safe hotspot.
+   Top 25dvh is intentionally NOT tappable so pull-to-refresh can start there.
+   All V20.33 no-flash opening + standard HOME-return fade behavior is retained.
+
    SSHCP V20.32 — TEAM INFO popup.
    Built directly from exact V20.30. The HOME .home-actions layer covers the
    logo visually even where it is transparent, so V20.32 uses a dedicated
@@ -13268,7 +13272,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   position:absolute!important;
   left:0!important;
   right:0!important;
-  top:0!important;
+  /* V20.34 — reserve the top 25% of the viewport as a browser gesture zone.
+     A pull-down that STARTS in this band reaches the browser/PWA refresh path
+     instead of opening TEAM INFO. Only the lower logo region is tappable. */
+  top:25dvh!important;
   bottom:var(--v197-home-image-bottom,306px)!important;
   z-index:250!important;
   display:block!important;
@@ -13491,7 +13498,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.33</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.34</span></span>
         </button>
 
       </div>
