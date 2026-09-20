@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.28-Q6M3TZ | BUILD KEY: 20.29-V4K8QM -->
+<!-- SSHCP | BASE KEY: 20.29-V4K8QM | BUILD KEY: 20.30-H7R4NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13209,6 +13209,48 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   color:#000!important;
   -webkit-text-fill-color:#000!important;
 }
+
+
+/* =========================================================
+   SSHCP V20.30 — GAME MODE visual parity + Summary numeric-name repair.
+   - GAME MODE Summary action is explicitly Blue in the final cascade.
+   - GAME MODE SKINS/GAMES body rows share the exact SKINS row height.
+   - GAME and HOLE typography use the same 50%-of-row target as SKINS TEAM/HOLE.
+   - Hole-detail game title is larger, with more vertical separation before
+     HOLE and before WINNER.
+   - Summary names such as HERD 5 / TEAM 12 that have no legal two-line cut
+     remain intact on one line and shrink as needed instead of disappearing.
+   ========================================================= */
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026:active,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026.sshcp-button-pressed-v172{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+}
+
+.modal-overlay.game-mode-results-v2026 .game-mode-row-v2026:not(.header){
+  height:var(--v187-skins-row-h,38px)!important;
+  min-height:var(--v187-skins-row-h,38px)!important;
+  max-height:var(--v187-skins-row-h,38px)!important;
+  overflow:hidden!important;
+}
+.modal-overlay.game-mode-results-v2026 .game-mode-row-v2026:not(.header) .game-mode-cell-v2026{
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+.modal-overlay.game-hole-info-v2026 .modal-title{
+  margin-bottom:20px!important;
+  font-size:clamp(34px,6.6dvh,54px)!important;
+}
+.modal-overlay.game-hole-info-v2026 .game-hole-entry-v2026 > .game-hole-value-v2026 + .game-hole-label-v2026{
+  margin-top:17px!important;
+}
 </style>
 </head>
 
@@ -13339,7 +13381,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.29</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.30</span></span>
         </button>
 
       </div>
@@ -23540,10 +23582,18 @@ let scoreTimingDetail =
         return { size: oneLineTarget, truncated: false, lines: 1 };
       }
 
-      /* Preserve the V19.90 protection: a single-token team name can never be
-         broken at an arbitrary character. It stays on one line and only itself
-         shrinks until it fits the actual TEAM cell. */
-      if (!/\s/.test(original)) {
+      /* V20.30 — if the current wrap rules provide NO legal two-line cut,
+         the complete TEAM name stays intact on one line and only that row
+         shrinks. This includes the protected numeric-tail units introduced in
+         V20.27, e.g. HERD 5 / TEAM 12, as well as true single-token names. */
+      const legalSummarySplitV2030 = splitLeaderboardTeamTwoLinesV58(original);
+      if (
+        !/\s/.test(original) ||
+        !Array.isArray(legalSummarySplitV2030) ||
+        legalSummarySplitV2030.length !== 2 ||
+        !legalSummarySplitV2030[0] ||
+        !legalSummarySplitV2030[1]
+      ) {
         let low = 0;
         let high = oneLineTarget;
         let best = 0;
@@ -26374,11 +26424,11 @@ let scoreTimingDetail =
       }
     }
 
-    /* SSHCP V20.27 — Game Mode text fitting.
-       GAME and WINNER are preserved as intact single-line strings: quotes do
-       not create character-level break points. GAME targets 40% of its row
-       height. Combined-popup SKINS TEAM uses the same 50% target as the proven
-       standalone SKINS fitter. */
+    /* SSHCP V20.27/V20.30 — Game Mode text fitting.
+       GAME and WINNER preserve intact tokens: quotes do not create arbitrary
+       character-level break points. V20.30 raises GAME to the same 50%-of-row
+       target used by combined-popup SKINS TEAM and explicitly fits SKINS/GAMES
+       HOLE at that same 50% target. */
     function fitIntactSingleLineV2027(container, textEl, targetSize, horizontalPad = 10, lineHeight = 1) {
       if (!container || !textEl) return null;
       const original = String(textEl.dataset.v2027Text || textEl.textContent || '').trim();
@@ -26489,7 +26539,7 @@ let scoreTimingDetail =
     function fitGameHolePopupV2027() {
       if (!els.modalOverlay.classList.contains('game-hole-info-v2026')) return;
       if (els.modalTitle) {
-        fitIntactSingleLineV2027(els.modalBox, els.modalTitle, Math.min(40, els.modalBox.clientHeight * 0.065), 42, 1);
+        fitIntactSingleLineV2027(els.modalBox, els.modalTitle, Math.min(54, els.modalBox.clientHeight * 0.085), 42, 1);
       }
       els.modalBody.querySelectorAll('.game-hole-winner-v2026').forEach(winner => {
         const entry = winner.closest('.game-hole-entry-v2026') || winner;
@@ -26518,7 +26568,10 @@ let scoreTimingDetail =
       els.modalBody.querySelectorAll('.game-mode-row-v2026.skins:not(.header)').forEach(row => {
         const rowH = row.getBoundingClientRect().height || sharedV187.skinsRow;
         const team = row.querySelector('.game-mode-skins-team-v2027');
+        const cells = row.querySelectorAll('.game-mode-cell-v2026');
+        const hole = cells.length > 1 ? cells[1] : null;
         if (team) fitIntactSingleLineV2027(team, team, rowH * 0.50, 10, 1);
+        if (hole) fitIntactSingleLineV2027(hole, hole, rowH * 0.50, 8, 1);
       });
 
       els.modalBody.querySelectorAll('.game-mode-row-v2026.games:not(.header)').forEach(row => {
@@ -26526,7 +26579,7 @@ let scoreTimingDetail =
         const game = row.querySelector('.game-name-v2026');
         const hole = row.querySelector('.game-hole-v2027');
         const winner = row.querySelector('.game-winner-v2026');
-        if (game) fitIntactSingleLineV2027(game, game, rowH * 0.40, 10, 1);
+        if (game) fitIntactSingleLineV2027(game, game, rowH * 0.50, 10, 1);
         if (hole) fitIntactSingleLineV2027(hole, hole, rowH * 0.50, 8, 1);
         if (winner) {
           if (winner.classList.contains('has-quoted-winner-v2028')) {
