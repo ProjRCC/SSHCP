@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.34-Q6R2MV | BUILD KEY: 20.35-T4N8QK -->
+<!-- SSHCP | BASE KEY: 20.35-T4N8QK | BUILD KEY: 20.36-V7M3QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12965,20 +12965,24 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 .modal-overlay.game-mode-results-v2026 .modal-text{
   flex:1 1 auto!important;
   min-height:0!important;
-  width:100%!important;
-  margin:0!important;
-  padding:0 1px!important;
+  width:calc(100% - 10px)!important;
+  margin:0 auto!important;
+  padding:0!important;
   overflow-y:auto!important;
   overflow-x:hidden!important;
   overscroll-behavior:contain!important;
   -webkit-overflow-scrolling:touch!important;
+  scrollbar-gutter:stable!important;
+  clip-path:inset(0 round 9px)!important;
+  -webkit-clip-path:inset(0 round 9px)!important;
+  contain:paint!important;
   font-size:initial!important;
   line-height:1!important;
   text-align:center!important;
 }
 .game-mode-section-v2026{
   width:100%!important;
-  margin:0 0 16px!important;
+  margin:0 0 14px!important;
 }
 .game-mode-section-v2026:last-child{
   margin-bottom:2px!important;
@@ -13041,6 +13045,13 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   -webkit-text-fill-color:#fff!important;
   border-right-color:rgba(255,255,255,.48)!important;
   font-weight:900!important;
+}
+.game-mode-row-v2026.header .game-mode-group-label-v2036{
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
 }
 .game-mode-cell-v2026:last-child{
   border-right:0!important;
@@ -13110,6 +13121,17 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 }
 
 
+
+/* =========================================================
+   SSHCP V20.36 — GAME MODE table-header + Android scroll polish.
+   - Standalone SKINS/GAMES section headings are removed.
+   - First header cells are now SKINS / GAMES.
+   - Those two group labels target 50% of their header-row height.
+   - Combined GAME MODE scroll viewport is inset and clipped so Android's
+     scrollbar remains inside the table/content width like established tables.
+   No scoring, GAME MODE data, winner formatting, popup shell, or HOME behavior
+   is changed.
+   ========================================================= */
 
 /* =========================================================
    SSHCP V20.35 — shell parity + HOME refresh-safe zone.
@@ -13507,7 +13529,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.35</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.36</span></span>
         </button>
 
       </div>
@@ -26687,7 +26709,10 @@ let scoreTimingDetail =
       els.modalBody.querySelectorAll('.game-mode-row-v2026.header').forEach(row => {
         const rowH = row.getBoundingClientRect().height || sharedV187.skinsHeader;
         row.querySelectorAll('.game-mode-cell-v2026').forEach(cell => {
-          fitTextToBoxV5(cell, cell, rowH * 0.38, 8, {
+          const target = cell.classList.contains('game-mode-group-label-v2036')
+            ? rowH * 0.50
+            : rowH * 0.38;
+          fitTextToBoxV5(cell, cell, target, 8, {
             horizontalPad:8, verticalPad:4, wrap:false, lineHeight:1
           });
         });
@@ -26729,10 +26754,9 @@ let scoreTimingDetail =
     function buildGameModeSkinsTableV2026(results, unavailable = false) {
       let html =
         '<div class="game-mode-section-v2026">' +
-          '<div class="game-mode-section-title-v2026">SKINS</div>' +
           '<div class="game-mode-table-v2026">' +
             '<div class="game-mode-row-v2026 skins header">' +
-              '<div class="game-mode-cell-v2026">TEAM</div>' +
+              '<div class="game-mode-cell-v2026 game-mode-group-label-v2036">SKINS</div>' +
               '<div class="game-mode-cell-v2026">HOLE</div>' +
               '<div class="game-mode-cell-v2026">SCORE</div>' +
             '</div>';
@@ -26767,10 +26791,9 @@ let scoreTimingDetail =
     function buildGameModeGamesTableV2026(rows, unavailable = false) {
       let html =
         '<div class="game-mode-section-v2026">' +
-          '<div class="game-mode-section-title-v2026">GAMES</div>' +
           '<div class="game-mode-table-v2026">' +
             '<div class="game-mode-row-v2026 games header">' +
-              '<div class="game-mode-cell-v2026">GAME</div>' +
+              '<div class="game-mode-cell-v2026 game-mode-group-label-v2036">GAMES</div>' +
               '<div class="game-mode-cell-v2026">HOLE</div>' +
               '<div class="game-mode-cell-v2026">WINNER</div>' +
             '</div>';
