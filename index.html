@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.30-H7R4NV | BUILD KEY: 20.31-R5Q8MV -->
+<!-- SSHCP | BASE KEY: 20.30-H7R4NV | BUILD KEY: 20.32-K7M4QZ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13253,83 +13253,105 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 }
 </style>
 
-<style id="teamInfoStyleV2031">
+<style id="teamInfoStyleV2032">
 /* =========================================================
-   SSHCP V20.31 — TEAM INFO image popup.
-   Donor is exact V20.30. No GAME MODE / scoring / leaderboard /
-   Scramble Summary logic or geometry is changed.
+   SSHCP V20.32 — TEAM INFO popup.
+   Built directly from exact V20.30. The HOME .home-actions layer covers the
+   logo visually even where it is transparent, so V20.32 uses a dedicated
+   transparent hotspot above that layer instead of attaching the click to the
+   underlying splash wrapper. No V20.30 GAME MODE behavior is changed.
    ========================================================= */
-#homeView .splash-image-wrap{
-  cursor:pointer!important;
-  touch-action:manipulation;
+#homeView .home-shell{
+  position:relative!important;
 }
-.team-info-overlay-v2031{
-  position:fixed;
-  inset:0;
-  z-index:12000;
+#teamInfoLogoHotspotV2032{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:0!important;
+  bottom:var(--v197-home-image-bottom,306px)!important;
+  z-index:250!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  color:transparent!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+.team-info-overlay-v2032{
+  position:fixed!important;
+  inset:0!important;
+  z-index:12000!important;
   display:none;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  padding:0;
-  background:#fff;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  padding:0!important;
+  background:#fff!important;
 }
-.team-info-overlay-v2031.open{
-  display:flex;
+.team-info-overlay-v2032.open{
+  display:flex!important;
 }
-.team-info-shell-v2031{
-  width:min(98vw,760px);
-  height:98dvh;
-  max-height:98dvh;
-  min-height:0;
-  display:grid;
-  grid-template-rows:minmax(0,1fr) auto;
-  gap:8px;
-  overflow:hidden;
-  padding:0 8px;
-  box-sizing:border-box;
-  background:#fff;
+.team-info-shell-v2032{
+  width:min(98vw,760px)!important;
+  height:98dvh!important;
+  max-height:98dvh!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-rows:minmax(0,1fr) auto!important;
+  gap:8px!important;
+  overflow:hidden!important;
+  padding:0 8px!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
 }
-.team-info-image-wrap-v2031{
-  min-width:0;
-  min-height:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  background:#fff;
+.team-info-image-wrap-v2032{
+  min-width:0!important;
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#fff!important;
 }
-.team-info-image-v2031{
-  display:block;
-  width:auto;
-  height:auto;
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
-  object-position:center center;
-  margin:0;
-  padding:0;
+.team-info-image-v2032{
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  margin:0!important;
+  padding:0!important;
 }
-.team-info-back-v2031{
-  width:100%;
-  height:var(--v16-footer-h,50px);
-  min-height:50px;
-  max-height:62px;
-  margin:0 0 max(1dvh,env(safe-area-inset-bottom));
-  padding:0 12px;
-  border:1px solid var(--accent);
-  border-radius:9px;
-  background:var(--accent);
-  color:var(--on-accent);
-  -webkit-text-fill-color:var(--on-accent);
-  font-family:"Oswald",Arial,sans-serif;
-  font-size:20px;
-  font-weight:800;
-  line-height:1;
-  letter-spacing:.3px;
-  box-sizing:border-box;
+.team-info-back-v2032{
+  width:100%!important;
+  height:var(--v16-footer-h,50px)!important;
+  min-height:50px!important;
+  max-height:62px!important;
+  margin:0 0 max(1dvh,env(safe-area-inset-bottom))!important;
+  padding:0 12px!important;
+  border:1px solid var(--accent)!important;
+  border-radius:9px!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  font-size:20px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  letter-spacing:.3px!important;
+  box-sizing:border-box!important;
 }
-body.team-info-open-v2031{
+body.team-info-open-v2032{
   overflow:hidden!important;
 }
 </style>
@@ -13463,12 +13485,14 @@ body.team-info-open-v2031{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.31</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.32</span></span>
         </button>
 
       </div>
 
     </div>
+
+    <button id="teamInfoLogoHotspotV2032" type="button" aria-label="Open 2026 team information"></button>
 
   </section>
 
@@ -30360,68 +30384,65 @@ let scoreTimingDetail =
 </script>
 
 
-<div id="teamInfoOverlayV2031" class="team-info-overlay-v2031" aria-hidden="true">
-  <div class="team-info-shell-v2031" role="dialog" aria-modal="true" aria-label="2026 team information">
-    <div class="team-info-image-wrap-v2031">
-      <img id="teamInfoImageV2031" class="team-info-image-v2031" src="teaminfo.jpg" alt="2026 pairings and handicaps">
+<div id="teamInfoOverlayV2032" class="team-info-overlay-v2032" aria-hidden="true">
+  <div class="team-info-shell-v2032" role="dialog" aria-modal="true" aria-label="2026 team information">
+    <div class="team-info-image-wrap-v2032">
+      <img id="teamInfoImageV2032" class="team-info-image-v2032" src="teaminfo.jpg" alt="2026 pairings and handicaps">
     </div>
-    <button id="teamInfoBackV2031" class="team-info-back-v2031" type="button">BACK</button>
+    <button id="teamInfoBackV2032" class="team-info-back-v2032" type="button">BACK</button>
   </div>
 </div>
 
-<script id="teamInfoScriptV2031">
+<script id="teamInfoScriptV2032">
 (function(){
-  function readyV2031(){
-    var logo = document.querySelector('#homeView .splash-image-wrap');
-    var overlay = document.getElementById('teamInfoOverlayV2031');
-    var back = document.getElementById('teamInfoBackV2031');
-    if (!logo || !overlay || !back) return;
+  function readyV2032(){
+    var hotspot = document.getElementById('teamInfoLogoHotspotV2032');
+    var overlay = document.getElementById('teamInfoOverlayV2032');
+    var back = document.getElementById('teamInfoBackV2032');
+    if (!hotspot || !overlay || !back) return;
 
-    logo.setAttribute('role','button');
-    logo.setAttribute('tabindex','0');
-    logo.setAttribute('aria-label','Open 2026 team information');
-
-    function openTeamInfoV2031(){
+    function openTeamInfoV2032(event){
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden','false');
-      document.body.classList.add('team-info-open-v2031');
+      document.body.classList.add('team-info-open-v2032');
       if (typeof window.triggerHapticV185 === 'function') {
         try { window.triggerHapticV185(10); } catch (_) {}
       }
-      requestAnimationFrame(function(){
-        try { back.focus({preventScroll:true}); } catch (_) { try { back.focus(); } catch (_) {} }
-      });
     }
 
-    function closeTeamInfoV2031(){
+    function closeTeamInfoV2032(event){
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden','true');
-      document.body.classList.remove('team-info-open-v2031');
-      requestAnimationFrame(function(){
-        try { logo.focus({preventScroll:true}); } catch (_) {}
-      });
+      document.body.classList.remove('team-info-open-v2032');
     }
 
-    logo.addEventListener('click', openTeamInfoV2031);
-    logo.addEventListener('keydown', function(event){
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        openTeamInfoV2031();
+    hotspot.addEventListener('pointerdown', function(){
+      if (typeof window.triggerHapticV185 === 'function') {
+        try { window.triggerHapticV185(6); } catch (_) {}
       }
-    });
-    back.addEventListener('click', closeTeamInfoV2031);
+    }, {passive:true});
+    hotspot.addEventListener('click', openTeamInfoV2032);
+    back.addEventListener('click', closeTeamInfoV2032);
+
     window.addEventListener('keydown', function(event){
       if (event.key === 'Escape' && overlay.classList.contains('open')) {
-        event.preventDefault();
-        closeTeamInfoV2031();
+        closeTeamInfoV2032(event);
       }
     });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', readyV2031, {once:true});
+    document.addEventListener('DOMContentLoaded', readyV2032, {once:true});
   } else {
-    readyV2031();
+    readyV2032();
   }
 })();
 </script>
