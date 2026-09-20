@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.22-R5Q8NV | BUILD KEY: 20.23-K7M4QX -->
+<!-- SSHCP | BASE KEY: 20.23-K7M4QX | BUILD KEY: 20.24-H8Q5RM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12949,7 +12949,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.23</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.24</span></span>
         </button>
 
       </div>
@@ -26932,7 +26932,8 @@ let scoreTimingDetail =
       minSize,
       horizontalPad,
       twoLineHeightRatio = 0.80,
-      splitter = splitLeaderboardTeamTwoLinesV58
+      splitter = splitLeaderboardTeamTwoLinesV58,
+      twoLineTargetSize = targetSize
     ) {
       if (!container || !textEl) return;
 
@@ -26956,6 +26957,10 @@ let scoreTimingDetail =
       const safeTwoLineRatio = Math.max(0.10, Math.min(1, Number(twoLineHeightRatio) || 0.80));
       const availableTwoLineHeight = Math.max(0.001, rowHeight * safeTwoLineRatio);
       const target = Math.max(0.001, Number(targetSize) || 0.001);
+      const twoLineTarget = Math.max(
+        0.001,
+        Number(twoLineTargetSize) || target
+      );
 
       const applyOneLine = size => {
         textEl.classList.remove('two-line');
@@ -26979,18 +26984,18 @@ let scoreTimingDetail =
       const legalSplit = splitter(original);
       if (Array.isArray(legalSplit) && legalSplit.length === 2 && legalSplit[0] && legalSplit[1]) {
         let two = twoLineTeamFitsV58(
-          textEl, original, target, availableWidth, availableTwoLineHeight, splitter
+          textEl, original, twoLineTarget, availableWidth, availableTwoLineHeight, splitter
         );
         renderTwoLineTeamTextV58(textEl, two.line1, two.line2);
-        textEl.style.setProperty('font-size', target + 'px', 'important');
+        textEl.style.setProperty('font-size', twoLineTarget + 'px', 'important');
         textEl.style.setProperty('line-height', '1.02', 'important');
         textEl.style.setProperty('white-space', 'normal', 'important');
         textEl.style.setProperty('overflow', 'hidden', 'important');
-        if (two.fits) return { size:target, truncated:false, lines:2 };
+        if (two.fits) return { size:twoLineTarget, truncated:false, lines:2 };
 
         /* No absolute minimum: find the largest legal two-line size that fits. */
         let low = 0;
-        let high = target;
+        let high = twoLineTarget;
         let best = 0;
         let bestTwo = two;
         for (let i = 0; i < 32; i++) {
@@ -27006,7 +27011,7 @@ let scoreTimingDetail =
             high = size;
           }
         }
-        const finalSize = best > 0 ? best : Math.max(Number.EPSILON, target / Math.pow(2, 32));
+        const finalSize = best > 0 ? best : Math.max(Number.EPSILON, twoLineTarget / Math.pow(2, 32));
         renderTwoLineTeamTextV58(textEl, bestTwo.line1, bestTwo.line2);
         textEl.style.setProperty('font-size', finalSize + 'px', 'important');
         textEl.style.setProperty('line-height', '1.02', 'important');
@@ -27037,18 +27042,23 @@ let scoreTimingDetail =
     function fitLeaderboardTeamV55(teamCell, teamAnchor, team, rowHeight) {
       if (!teamCell || !team) return;
 
-      /* V20.0: Leaderboard TEAM targets 40% of actual row height. Wrapping is
-         legal only at real spaces; an intact word shrinks with no font minimum. */
-      const targetSize = rowHeight * 0.40;
+      /* V20.24: Leaderboard TEAM uses an independent per-row target:
+         one-line names target 50% of actual row height; if a real-space wrap is
+         required, the established two-line target remains 40%. An intact word
+         never splits and only that word shrinks as necessary. */
+      const oneLineTargetSize = rowHeight * 0.50;
+      const twoLineTargetSize = rowHeight * 0.40;
       fitTwoLineTeamTextV58(
         teamCell,
         teamAnchor,
         team,
         rowHeight,
-        targetSize,
+        oneLineTargetSize,
         13,
         14,
-        0.75
+        0.75,
+        splitLeaderboardTeamTwoLinesV58,
+        twoLineTargetSize
       );
     }
 
