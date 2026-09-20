@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.33-M8Q3RX | BUILD KEY: 20.34-Q6R2MV -->
+<!-- SSHCP | BASE KEY: 20.34-Q6R2MV | BUILD KEY: 20.35-T4N8QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12922,8 +12922,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   display:none!important;
   align-items:center!important;
   justify-content:center!important;
-  padding:0 10px!important;
-  background:#000!important;
+  padding:0!important;
+  background:rgba(0,0,0,.88)!important;
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important;
   overflow:hidden!important;
@@ -12936,11 +12936,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   inset:auto!important;
   transform:none!important;
   width:min(98vw,760px)!important;
-  height:90dvh!important;
-  min-height:90dvh!important;
-  max-height:90dvh!important;
+  height:98dvh!important;
+  min-height:0!important;
+  max-height:none!important;
   margin:auto!important;
-  padding:12px 12px 10px!important;
+  padding:12px!important;
   box-sizing:border-box!important;
   overflow:hidden!important;
   display:flex!important;
@@ -13112,6 +13112,15 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
 
 /* =========================================================
+   SSHCP V20.35 — shell parity + HOME refresh-safe zone.
+   GAME MODE outer popup now uses the exact GEEK MODE shell footprint:
+   98vw (capped at 760px) x 98dvh, centered, 12px shell padding, Blue border,
+   18px radius, and the same .88 black surround. Content scrolling and the
+   locked BACK button remain unchanged. HOME Team Info hotspot begins at
+   exactly 20dvh so the top 20% remains available to start pull-to-refresh.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.27 — GAME MODE typography/order polish + numeric TEAM token guard.
    GAME rows are GAME / HOLE / WINNER. GAME and WINNER remain intact one-line
    strings and are JS-fit from row height; quotes are never character breaks.
@@ -13255,8 +13264,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
 <style id="teamInfoStyleV2032">
 /* =========================================================
-   SSHCP V20.34 — TEAM INFO popup / refresh-safe hotspot.
-   Top 25dvh is intentionally NOT tappable so pull-to-refresh can start there.
+   SSHCP V20.35 — TEAM INFO popup / refresh-safe hotspot.
+   Top 20dvh is intentionally NOT tappable so pull-to-refresh can start there.
    All V20.33 no-flash opening + standard HOME-return fade behavior is retained.
 
    SSHCP V20.32 — TEAM INFO popup.
@@ -13272,10 +13281,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   position:absolute!important;
   left:0!important;
   right:0!important;
-  /* V20.34 — reserve the top 25% of the viewport as a browser gesture zone.
+  /* V20.35 — reserve the top 20% of the viewport as a browser gesture zone.
      A pull-down that STARTS in this band reaches the browser/PWA refresh path
      instead of opening TEAM INFO. Only the lower logo region is tappable. */
-  top:25dvh!important;
+  top:20dvh!important;
   bottom:var(--v197-home-image-bottom,306px)!important;
   z-index:250!important;
   display:block!important;
@@ -13498,7 +13507,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.34</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.35</span></span>
         </button>
 
       </div>
