@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.24-H8Q5RM | BUILD KEY: 20.25-P6R3VX -->
+<!-- SSHCP | BASE KEY: 20.25-P6R3VX | BUILD KEY: 20.26-G4M8QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12819,6 +12819,296 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   max-width:var(--v197-home-score-w,350px)!important;
 }
 
+
+/* =========================================================
+   SSHCP V20.26 — GAME MODE
+   CF V3.1 deployment f9238865-3858-4cb2-b674-dff808069e1e.
+   Scorecard Game Mode is metadata-only: game holes are Gold/Black; when the
+   same hole owns the established NESR Blue cue, Blue remains authoritative and
+   only the hole number becomes Gold. No score geometry/timing is changed.
+   Scramble Summary now opens one 90dvh GAME MODE popup containing stacked
+   SKINS and GAMES tables. The content region may scroll; BACK is locked below
+   it inside the popup and always returns to SCRAMBLE SUMMARY.
+   ========================================================= */
+#scorecardView .hole-cell.game-mode-hole-v2026{
+  background:var(--feature-gold-v1825,#D4AF37)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  cursor:pointer!important;
+  touch-action:manipulation!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026 .hole-number{
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell{
+  background:var(--accent)!important;
+  color:var(--feature-gold-v1825,#D4AF37)!important;
+  -webkit-text-fill-color:var(--feature-gold-v1825,#D4AF37)!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
+  color:var(--feature-gold-v1825,#D4AF37)!important;
+  -webkit-text-fill-color:var(--feature-gold-v1825,#D4AF37)!important;
+}
+
+.modal-overlay.game-hole-info-v2026 .modal-box{
+  width:min(470px,calc(100% - 28px))!important;
+  max-height:min(76dvh,620px)!important;
+  background:#fff!important;
+  border:2px solid #000!important;
+  text-align:center!important;
+}
+.modal-overlay.game-hole-info-v2026 .modal-title{
+  margin-bottom:10px!important;
+  color:var(--accent)!important;
+  text-align:center!important;
+  font-size:clamp(28px,5dvh,40px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.game-hole-stack-v2026{
+  width:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:12px!important;
+  text-align:center!important;
+}
+.game-hole-entry-v2026{
+  width:100%!important;
+  padding-bottom:12px!important;
+  border-bottom:1px solid var(--line)!important;
+}
+.game-hole-entry-v2026:last-child{
+  padding-bottom:0!important;
+  border-bottom:0!important;
+}
+.game-hole-label-v2026{
+  margin-top:7px!important;
+  color:#666!important;
+  font-size:clamp(14px,2.6dvh,19px)!important;
+  font-weight:700!important;
+  line-height:1!important;
+  letter-spacing:.45px!important;
+}
+.game-hole-value-v2026{
+  margin-top:4px!important;
+  color:#000!important;
+  font-size:clamp(22px,4dvh,31px)!important;
+  font-weight:900!important;
+  line-height:1.05!important;
+  overflow-wrap:anywhere!important;
+}
+.game-hole-winner-v2026{
+  color:var(--accent)!important;
+}
+.modal-overlay.game-hole-info-v2026 .modal-actions{
+  margin-top:16px!important;
+}
+.modal-overlay.game-hole-info-v2026 .modal-actions .modal-btn{
+  width:min(220px,58%)!important;
+  height:var(--v187-post-button-h,50px)!important;
+  min-height:var(--v187-post-button-h,50px)!important;
+  max-height:var(--v187-post-button-h,50px)!important;
+  margin:0 auto!important;
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+}
+
+.modal-overlay.game-mode-results-v2026{
+  position:fixed!important;
+  inset:0!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 10px!important;
+  background:#000!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  overflow:hidden!important;
+}
+.modal-overlay.game-mode-results-v2026.open{
+  display:flex!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-box{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:min(98vw,760px)!important;
+  height:90dvh!important;
+  min-height:90dvh!important;
+  max-height:90dvh!important;
+  margin:auto!important;
+  padding:12px 12px 10px!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+  border:2px solid var(--accent)!important;
+  border-radius:18px!important;
+  background:#fff!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-close-x{
+  display:none!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-title{
+  flex:0 0 auto!important;
+  margin:0 0 9px!important;
+  padding:0!important;
+  color:var(--accent)!important;
+  text-align:center!important;
+  font-size:clamp(28px,4.8dvh,40px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-text{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0 1px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  font-size:initial!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.game-mode-section-v2026{
+  width:100%!important;
+  margin:0 0 16px!important;
+}
+.game-mode-section-v2026:last-child{
+  margin-bottom:2px!important;
+}
+.game-mode-section-title-v2026{
+  margin:0 0 7px!important;
+  color:var(--accent)!important;
+  text-align:center!important;
+  font-size:clamp(22px,3.6dvh,30px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.game-mode-table-v2026{
+  width:100%!important;
+  overflow:hidden!important;
+  border:1px solid var(--line-strong)!important;
+  border-radius:9px!important;
+  background:#fff!important;
+}
+.game-mode-row-v2026{
+  width:100%!important;
+  min-height:var(--v187-skins-row-h,38px)!important;
+  display:grid!important;
+  align-items:stretch!important;
+  border-bottom:1px solid var(--line)!important;
+  background:#fff!important;
+}
+.game-mode-row-v2026:last-child{
+  border-bottom:0!important;
+}
+.game-mode-row-v2026.header{
+  min-height:var(--v188-skins-header-h,var(--v187-table-header-h,46px))!important;
+  background:var(--sshcp-gray-5-v1842,#444)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-weight:900!important;
+}
+.game-mode-row-v2026.skins{
+  grid-template-columns:55fr 20fr 25fr!important;
+}
+.game-mode-row-v2026.games{
+  grid-template-columns:18fr 47fr 35fr!important;
+}
+.game-mode-cell-v2026{
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:5px 5px!important;
+  border-right:1px solid var(--line)!important;
+  color:#000!important;
+  font-size:var(--v187-skins-font-h,19px)!important;
+  font-weight:700!important;
+  line-height:1.05!important;
+  text-align:center!important;
+  overflow-wrap:anywhere!important;
+}
+.game-mode-row-v2026.header .game-mode-cell-v2026{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  border-right-color:rgba(255,255,255,.48)!important;
+  font-weight:900!important;
+}
+.game-mode-cell-v2026:last-child{
+  border-right:0!important;
+}
+.game-mode-empty-v2026{
+  grid-column:1 / -1!important;
+  min-height:var(--v187-skins-row-h,38px)!important;
+  border-right:0!important;
+  font-weight:800!important;
+}
+.game-mode-cell-v2026.game-name-v2026{
+  font-size:clamp(12px,3.8vw,var(--v187-skins-font-h,19px))!important;
+}
+.game-mode-cell-v2026.game-winner-v2026{
+  font-weight:900!important;
+}
+.game-mode-cell-v2026.game-winner-v2026.tbd-v2026{
+  color:#666!important;
+}
+.game-mode-skins-mark-v2026{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.modal-overlay.game-mode-results-v2026 .skins-score-mark-v1627{
+  width:var(--v187-skins-mark-h,26px)!important;
+  height:var(--v187-skins-mark-h,26px)!important;
+  max-width:calc(var(--v187-skins-row-h,38px) - 6px)!important;
+  max-height:calc(var(--v187-skins-row-h,38px) - 6px)!important;
+  font-size:var(--v187-skins-font-h,19px)!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-actions{
+  flex:0 0 auto!important;
+  width:100%!important;
+  min-height:var(--v187-post-button-h,50px)!important;
+  margin:9px 0 0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#fff!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-actions .modal-btn{
+  width:min(240px,60%)!important;
+  height:var(--v187-post-button-h,50px)!important;
+  min-height:var(--v187-post-button-h,50px)!important;
+  max-height:var(--v187-post-button-h,50px)!important;
+  margin:0!important;
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  font-weight:900!important;
+}
+.modal-overlay.tournament-summary .summary-game-mode-button-v2026,
+.modal-overlay.tournament-summary .summary-game-mode-button-v2026:active,
+.modal-overlay.tournament-summary .summary-game-mode-button-v2026.sshcp-button-pressed-v172{
+  border:2px solid var(--accent)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  transform:none!important;
+}
+.modal-overlay.open.game-mode-results-v2026,
+.modal-overlay.open.game-hole-info-v2026{
+  overscroll-behavior-y:none!important;
+}
+
 </style>
 </head>
 
@@ -12949,7 +13239,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.25</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.26</span></span>
         </button>
 
       </div>
@@ -13863,7 +14153,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
       'tournament-summary',
       'geek-mode-v180',
       'geek-detail-v180',
-      'skins-results-v1627'
+      'skins-results-v1627',
+      'game-mode-results-v2026',
+      'game-hole-info-v2026'
     ];
 
     let pullGuardStartXV1948 = null;
@@ -13955,6 +14247,98 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
     let savedScores =
       Array(18).fill(null);
+
+
+    /* =========================================================
+       SSHCP V20.26 — GAME MODE READ STATE
+       CF V3.1 is read-only. Failure here never blocks scorecard scoring.
+       ========================================================= */
+    let gameModeRowsV2026 = [];
+    let gameModeLoadPromiseV2026 = null;
+
+    function normalizeGameModeRowsV2026(rows) {
+      return (Array.isArray(rows) ? rows : [])
+        .map(row => ({
+          hole: String((row && row.hole) ?? '').trim(),
+          game: String((row && row.game) ?? '').trim(),
+          winner: String((row && row.winner) ?? '').trim() || 'TBD'
+        }))
+        .filter(row => row.hole || row.game || row.winner !== 'TBD');
+    }
+
+    function gameModeRowsForHoleV2026(holeValue) {
+      const key = String(holeValue ?? '').trim();
+      if (!key) return [];
+      return gameModeRowsV2026.filter(row => String(row.hole || '').trim() === key);
+    }
+
+    async function fetchGameModeRowsV2026(forceFresh = false) {
+      if (gameModeLoadPromiseV2026 && !forceFresh) return gameModeLoadPromiseV2026;
+
+      const run = (async () => {
+        const response = await fetch(
+          CLOUDFLARE_API_URL + '?action=gameMode&refresh=' + Date.now(),
+          { cache:'no-store' }
+        );
+        if (!response.ok) throw new Error('Game Mode request failed.');
+        const data = await response.json();
+        if (!data || data.ok !== true || data.action !== 'gameMode') {
+          throw new Error((data && data.error) || 'Game Mode data unavailable.');
+        }
+        const rows = normalizeGameModeRowsV2026(data.games);
+        gameModeRowsV2026 = rows;
+        return rows;
+      })();
+
+      gameModeLoadPromiseV2026 = run;
+      try {
+        return await run;
+      } finally {
+        if (gameModeLoadPromiseV2026 === run) gameModeLoadPromiseV2026 = null;
+      }
+    }
+
+    function refreshScorecardGameModeV2026() {
+      fetchGameModeRowsV2026(true)
+        .then(() => {
+          if (currentView === 'scorecard' && els.scoreRows && holes.length) {
+            renderScorecard();
+          }
+        })
+        .catch(error => {
+          console.warn('Game Mode metadata unavailable:', error);
+        });
+    }
+
+    function showGameHolePopupV2026(holeValue) {
+      const rows = gameModeRowsForHoleV2026(holeValue);
+      if (!rows.length) return;
+
+      closeModal();
+      els.modalOverlay.classList.add('game-hole-info-v2026');
+      els.modalTitle.textContent = 'GAME';
+      els.modalTitle.classList.remove('testing');
+      els.modalInput.style.display = 'none';
+
+      let html = '<div class="game-hole-stack-v2026">';
+      rows.forEach(row => {
+        html +=
+          '<div class="game-hole-entry-v2026">' +
+            '<div class="game-hole-value-v2026">' + escapeHtml(row.game || '') + '</div>' +
+            '<div class="game-hole-label-v2026">HOLE</div>' +
+            '<div class="game-hole-value-v2026">' + escapeHtml(row.hole || String(holeValue)) + '</div>' +
+            '<div class="game-hole-label-v2026">WINNER</div>' +
+            '<div class="game-hole-value-v2026 game-hole-winner-v2026">' + escapeHtml(row.winner || 'TBD') + '</div>' +
+          '</div>';
+      });
+      html += '</div>';
+      els.modalBody.innerHTML = html;
+
+      const back = makeModalButton('BACK', '', closeModal);
+      els.modalActions.className = 'modal-actions single';
+      els.modalActions.replaceChildren(back);
+      els.modalOverlay.classList.add('open');
+    }
 
 
     /*
@@ -18916,6 +19300,10 @@ let scoreTimingDetail =
         'scorecard'
       );
 
+      /* V20.26 — Game Mode metadata is an adjunct read. Start it in parallel
+         with the normal fresh Scorecard load; never await it or block scoring. */
+      refreshScorecardGameModeV2026();
+
       updateTopCenterHeadersV196();
 
 
@@ -20684,6 +21072,29 @@ let scoreTimingDetail =
           holeCell.appendChild(
             holeNumber
           );
+
+          /* V20.26 — only the HOLE cell carries Game Mode metadata. The final
+             CSS cascade gives normal game holes Gold/Black and lets the existing
+             .next-hole-cell NESR Blue cue win while recoloring its number Gold. */
+          const gameRowsForHoleV2026 = gameModeRowsForHoleV2026(hole.hole);
+          if (gameRowsForHoleV2026.length) {
+            holeCell.classList.add('game-mode-hole-v2026');
+            holeCell.setAttribute('role', 'button');
+            holeCell.setAttribute('tabindex', '0');
+            holeCell.setAttribute(
+              'aria-label',
+              'Game Mode hole ' + String(hole.hole) + ': ' +
+              gameRowsForHoleV2026.map(item => item.game || 'GAME').join(', ')
+            );
+            holeCell.addEventListener('pointerdown', () => triggerHapticV185(10), { passive:true });
+            holeCell.addEventListener('click', () => showGameHolePopupV2026(hole.hole));
+            holeCell.addEventListener('keydown', event => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                showGameHolePopupV2026(hole.hole);
+              }
+            });
+          }
 
 
           const parCell =
@@ -25856,6 +26267,132 @@ let scoreTimingDetail =
       }
     }
 
+    function buildGameModeSkinsTableV2026(results, unavailable = false) {
+      let html =
+        '<div class="game-mode-section-v2026">' +
+          '<div class="game-mode-section-title-v2026">SKINS</div>' +
+          '<div class="game-mode-table-v2026">' +
+            '<div class="game-mode-row-v2026 skins header">' +
+              '<div class="game-mode-cell-v2026">TEAM</div>' +
+              '<div class="game-mode-cell-v2026">HOLE</div>' +
+              '<div class="game-mode-cell-v2026">SCORE</div>' +
+            '</div>';
+
+      if (unavailable) {
+        html +=
+          '<div class="game-mode-row-v2026 skins">' +
+            '<div class="game-mode-cell-v2026 game-mode-empty-v2026">SKINS DATA UNAVAILABLE</div>' +
+          '</div>';
+      } else if (!results.length) {
+        html +=
+          '<div class="game-mode-row-v2026 skins">' +
+            '<div class="game-mode-cell-v2026 game-mode-empty-v2026">NO SKINS</div>' +
+          '</div>';
+      } else {
+        results.forEach(item => {
+          const mark = makeSkinsScoreMarkV1627(item.score, item.par);
+          const shell = document.createElement('div');
+          shell.appendChild(mark);
+          html +=
+            '<div class="game-mode-row-v2026 skins">' +
+              '<div class="game-mode-cell-v2026">' + escapeHtml(displayTeamName(item.team.name || '')) + '</div>' +
+              '<div class="game-mode-cell-v2026">' + escapeHtml(String(item.hole)) + '</div>' +
+              '<div class="game-mode-cell-v2026 game-mode-skins-mark-v2026">' + shell.innerHTML + '</div>' +
+            '</div>';
+        });
+      }
+
+      return html + '</div></div>';
+    }
+
+    function buildGameModeGamesTableV2026(rows, unavailable = false) {
+      let html =
+        '<div class="game-mode-section-v2026">' +
+          '<div class="game-mode-section-title-v2026">GAMES</div>' +
+          '<div class="game-mode-table-v2026">' +
+            '<div class="game-mode-row-v2026 games header">' +
+              '<div class="game-mode-cell-v2026">HOLE</div>' +
+              '<div class="game-mode-cell-v2026">GAME</div>' +
+              '<div class="game-mode-cell-v2026">WINNER</div>' +
+            '</div>';
+
+      if (unavailable) {
+        html +=
+          '<div class="game-mode-row-v2026 games">' +
+            '<div class="game-mode-cell-v2026 game-mode-empty-v2026">GAMES DATA UNAVAILABLE</div>' +
+          '</div>';
+      } else if (!rows.length) {
+        html +=
+          '<div class="game-mode-row-v2026 games">' +
+            '<div class="game-mode-cell-v2026 game-mode-empty-v2026">NO GAMES</div>' +
+          '</div>';
+      } else {
+        rows.forEach(item => {
+          const winner = String(item.winner || '').trim() || 'TBD';
+          html +=
+            '<div class="game-mode-row-v2026 games">' +
+              '<div class="game-mode-cell-v2026">' + escapeHtml(item.hole || '') + '</div>' +
+              '<div class="game-mode-cell-v2026 game-name-v2026">' + escapeHtml(item.game || '') + '</div>' +
+              '<div class="game-mode-cell-v2026 game-winner-v2026' + (winner === 'TBD' ? ' tbd-v2026' : '') + '">' +
+                escapeHtml(winner) +
+              '</div>' +
+            '</div>';
+        });
+      }
+
+      return html + '</div></div>';
+    }
+
+    function renderGameModePopupV2026(skinsResults, gamesRows, skinsUnavailable = false, gamesUnavailable = false) {
+      syncSharedGeometryV187();
+      closeModal();
+      els.modalOverlay.classList.add('game-mode-results-v2026');
+      els.modalTitle.textContent = 'GAME MODE';
+      els.modalTitle.classList.remove('testing');
+      els.modalInput.style.display = 'none';
+
+      els.modalBody.innerHTML =
+        buildGameModeSkinsTableV2026(skinsResults, skinsUnavailable) +
+        buildGameModeGamesTableV2026(gamesRows, gamesUnavailable);
+
+      const back = makeModalButton('BACK', '', showTournamentSummary);
+      els.modalActions.className = 'modal-actions single game-mode-back-v2026';
+      els.modalActions.replaceChildren(back);
+      els.modalOverlay.classList.add('open');
+      els.modalBody.scrollTop = 0;
+    }
+
+    async function showGameModePopupV2026() {
+      const revealShieldV2026 = beginDataRevealShieldV177('game-mode-v2026', [], '#000', true, 6100);
+      startLoadingLine();
+
+      const [skinsResult, gamesResult] = await Promise.allSettled([
+        fetchSkinsSourceV1627().then(source => buildSkinsResultsV1627(source.teams, source.holes)),
+        fetchGameModeRowsV2026(true)
+      ]);
+
+      completeLoadingLine();
+
+      const skinsResults = skinsResult.status === 'fulfilled' ? skinsResult.value : [];
+      const skinsUnavailable = skinsResult.status !== 'fulfilled';
+      const gamesRows = gamesResult.status === 'fulfilled'
+        ? gamesResult.value
+        : gameModeRowsV2026.slice();
+      const gamesUnavailable = gamesResult.status !== 'fulfilled' && !gamesRows.length;
+
+      if (skinsResult.status !== 'fulfilled') {
+        addTestLog('SKINS LOAD', 'FAILED', '—', String(skinsResult.reason && skinsResult.reason.message || 'Request failed'));
+      }
+      if (gamesResult.status === 'fulfilled') {
+        addTestLog('GAME MODE LOAD', 'OK', '—', gamesRows.length + ' GAME' + (gamesRows.length === 1 ? '' : 'S'));
+      } else {
+        addTestLog('GAME MODE LOAD', 'FAILED', '—', String(gamesResult.reason && gamesResult.reason.message || 'Request failed'));
+      }
+
+      renderGameModePopupV2026(skinsResults, gamesRows, skinsUnavailable, gamesUnavailable);
+      revealDataShieldAfterLayoutV177('game-mode-v2026', revealShieldV2026, 2, [els.modalBody]);
+    }
+
     function positionSummaryNavigationV182() {
       if (!els.modalOverlay.classList.contains('tournament-summary')) return;
       if (!els.modalBox || !els.modalTitle || !els.modalBody) return;
@@ -26051,9 +26588,9 @@ let scoreTimingDetail =
       if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
       const geekAction = makeModalButton('GEEK MODE', 'summary-geek-button-v180', openGeekModeV180);
       const home = makeModalButton('HOME', 'summary-back-v1845 summary-home-footer-v1848', showHome);
-      const skins = makeModalButton('SKINS', 'summary-skins-button-v1627', showSkinsPopupV1627);
+      const gameMode = makeModalButton('GAME MODE', 'summary-game-mode-button-v2026', showGameModePopupV2026);
       els.modalActions.className = 'modal-actions tournament-summary-actions-v1627';
-      els.modalActions.replaceChildren(geekAction, home, skins);
+      els.modalActions.replaceChildren(geekAction, home, gameMode);
       els.modalOverlay.classList.add('open');
       const summaryRevealShieldV177 = beginDataRevealShieldV177('summary', [els.modalBody], '#fff', false, 5100);
 
@@ -27890,6 +28427,8 @@ let scoreTimingDetail =
           'tournament-result',
           'tournament-summary',
           'skins-results-v1627',
+          'game-mode-results-v2026',
+          'game-hole-info-v2026',
           'geek-mode-v180',
           'geek-detail-v180',
           'score-save-warning',
@@ -28731,7 +29270,8 @@ let scoreTimingDetail =
                the modal or expose/navigate the underlying Leaderboard. */
             if (
               els.modalOverlay.classList.contains('geek-detail-v180') ||
-              els.modalOverlay.classList.contains('skins-results-v1627')
+              els.modalOverlay.classList.contains('skins-results-v1627') ||
+              els.modalOverlay.classList.contains('game-mode-results-v2026')
             ) {
               return;
             }
