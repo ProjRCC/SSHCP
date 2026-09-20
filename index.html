@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.35-T4N8QK | BUILD KEY: 20.36-V7M3QX -->
+<!-- SSHCP | BASE KEY: 20.36-V7M3QX | BUILD KEY: 20.37-K8R4MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12936,9 +12936,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   inset:auto!important;
   transform:none!important;
   width:min(98vw,760px)!important;
-  height:98dvh!important;
+  height:auto!important;
   min-height:0!important;
-  max-height:none!important;
+  max-height:98dvh!important;
   margin:auto!important;
   padding:12px!important;
   box-sizing:border-box!important;
@@ -12963,8 +12963,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   line-height:1!important;
 }
 .modal-overlay.game-mode-results-v2026 .modal-text{
-  flex:1 1 auto!important;
+  flex:0 1 auto!important;
   min-height:0!important;
+  max-height:calc(98dvh - var(--v187-post-button-h,50px) - 86px)!important;
   width:calc(100% - 10px)!important;
   margin:0 auto!important;
   padding:0!important;
@@ -13121,6 +13122,18 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 }
 
 
+
+/* =========================================================
+   SSHCP V20.37 — GAME MODE content-fit shell + Summary podium PLACE independence.
+   - GAME MODE popup height is content-driven and capped at 98dvh; small result
+     sets no longer leave a large empty band, while large sets still scroll.
+   - Width remains the established 98vw / 760px cap.
+   - 1st/2nd/3rd PLACE typography is now tied directly to row height
+     (54% / 49.5% / 45%), not to the rendered NET +/- font, so a double-digit
+     score such as -10 cannot resize the podium place numbers.
+   All V20.36 GAME MODE tables, Android scrollbar containment, Team Info,
+   scoring, leaderboard, and HOME behavior are retained.
+   ========================================================= */
 
 /* =========================================================
    SSHCP V20.36 — GAME MODE table-header + Android scroll polish.
@@ -13529,7 +13542,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.36</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.37</span></span>
         </button>
 
       </div>
@@ -23874,12 +23887,14 @@ let scoreTimingDetail =
         });
       }
 
-      /* V20.7 — Summary keeps the approved NET +/- 60/55/50/48% score hierarchy
-         and all existing TEAM fitting. PLACE no longer owns a separate row-height
-         ratio. Each PLACE number targets exactly 90% of the FINAL rendered NET +/-
-         score font in that same row, then independently shrinks only if its own
-         cell needs it. PLACE remains one line; every other Summary rule is unchanged. */
+      /* V20.37 — Summary keeps the approved NET +/- 60/55/50% podium score
+         hierarchy and all existing TEAM fitting. Podium PLACE is independent of
+         rendered score width: 1st/2nd/3rd target 54% / 49.5% / 45% of row height.
+         Those are the established 90%-of-score visual ratios before score fitting,
+         so a two-digit NET +/- such as -10 may shrink itself without shrinking
+         the PLACE number beside it. */
       const podiumNetRatiosV1998 = [0.60, 0.55, 0.50];
+      const podiumPlaceRatiosV2037 = [0.54, 0.495, 0.45];
 
       [1,2,3].forEach((place, index) => {
         const row = topGrid.querySelector('.tournament-summary-row.place-' + place);
@@ -23913,20 +23928,14 @@ let scoreTimingDetail =
           );
         }
 
-        /* V20.7 — PLACE follows the final corresponding NET +/- score at 90%. */
+        /* V20.37 — podium PLACE is row-height-driven, never score-width-driven. */
         if (placeCell) {
-          const renderedNetSizeV207 = net
-            ? parseFloat(getComputedStyle(net).fontSize)
-            : NaN;
-          const placeTargetV207 =
-            Number.isFinite(renderedNetSizeV207) && renderedNetSizeV207 > 0
-              ? renderedNetSizeV207 * 0.90
-              : row.clientHeight * podiumNetRatiosV1998[index] * 0.90;
-
+          const placeNumberV2037 =
+            placeCell.querySelector('.summary-place-number') || placeCell;
           fitTextToBoxV5(
             placeCell,
-            placeCell,
-            placeTargetV207,
+            placeNumberV2037,
+            row.clientHeight * podiumPlaceRatiosV2037[index],
             1,
             {
               horizontalPad: 4,
