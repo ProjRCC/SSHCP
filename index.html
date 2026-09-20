@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.27-N5Q2RV | BUILD KEY: 20.27-P8M4ZR -->
+<!-- SSHCP | BASE KEY: 20.30-H7R4NV | BUILD KEY: 20.31-R5Q8MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13136,7 +13136,204 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   word-break:normal!important;
   text-overflow:clip!important;
 }
+
+/* =========================================================
+   SSHCP V20.28 — quoted WINNER presentation.
+   If a winner contains a nickname in quotes, the plain/name portion stays on
+   line 1 and the complete quoted nickname stays intact on line 2. The two-line
+   GAMES winner may use up to ~80% of its row height (40% per line).
+   ========================================================= */
+.modal-overlay.game-mode-results-v2026 .game-winner-v2026.has-quoted-winner-v2028,
+.modal-overlay.game-hole-info-v2026 .game-hole-winner-v2026.has-quoted-winner-v2028{
+  white-space:normal!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-overflow:clip!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+}
+.game-winner-name-v2028,
+.game-winner-quote-v2028{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-overflow:clip!important;
+  text-align:center!important;
+}
+
+
+/* =========================================================
+   SSHCP V20.29 — Game Mode hole marker refinement.
+   Game holes no longer fill the whole HOLE cell Gold. Instead the normal
+   cell remains visually neutral and the hole number sits inside a Gold filled
+   circle. If that game hole is also the current NESR, the established Blue
+   active-cell cue remains authoritative while the Gold circle stays visible.
+   No score/NESR sequencing or geometry is changed.
+   ========================================================= */
+#scorecardView .hole-cell.game-mode-hole-v2026{
+  background:transparent!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026 .hole-number{
+  width:72cqh!important;
+  height:72cqh!important;
+  min-width:0!important;
+  min-height:0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto!important;
+  border-radius:50%!important;
+  background:var(--feature-gold-v1825,#D4AF37)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  font-size:52cqh!important;
+  line-height:1!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell{
+  background:var(--accent)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
+  background:var(--feature-gold-v1825,#D4AF37)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+
+
+/* =========================================================
+   SSHCP V20.30 — GAME MODE visual parity + Summary numeric-name repair.
+   - GAME MODE Summary action is explicitly Blue in the final cascade.
+   - GAME MODE SKINS/GAMES body rows share the exact SKINS row height.
+   - GAME and HOLE typography use the same 50%-of-row target as SKINS TEAM/HOLE.
+   - Hole-detail game title is larger, with more vertical separation before
+     HOLE and before WINNER.
+   - Summary names such as HERD 5 / TEAM 12 that have no legal two-line cut
+     remain intact on one line and shrink as needed instead of disappearing.
+   ========================================================= */
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026:active,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026.sshcp-button-pressed-v172{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+}
+
+.modal-overlay.game-mode-results-v2026 .game-mode-row-v2026:not(.header){
+  height:var(--v187-skins-row-h,38px)!important;
+  min-height:var(--v187-skins-row-h,38px)!important;
+  max-height:var(--v187-skins-row-h,38px)!important;
+  overflow:hidden!important;
+}
+.modal-overlay.game-mode-results-v2026 .game-mode-row-v2026:not(.header) .game-mode-cell-v2026{
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+.modal-overlay.game-hole-info-v2026 .modal-title{
+  margin-bottom:20px!important;
+  font-size:clamp(34px,6.6dvh,54px)!important;
+}
+.modal-overlay.game-hole-info-v2026 .game-hole-entry-v2026 > .game-hole-value-v2026 + .game-hole-label-v2026{
+  margin-top:17px!important;
+}
 </style>
+
+<style id="teamInfoStyleV2031">
+/* =========================================================
+   SSHCP V20.31 — TEAM INFO image popup.
+   Donor is exact V20.30. No GAME MODE / scoring / leaderboard /
+   Scramble Summary logic or geometry is changed.
+   ========================================================= */
+#homeView .splash-image-wrap{
+  cursor:pointer!important;
+  touch-action:manipulation;
+}
+.team-info-overlay-v2031{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  padding:0;
+  background:#fff;
+}
+.team-info-overlay-v2031.open{
+  display:flex;
+}
+.team-info-shell-v2031{
+  width:min(98vw,760px);
+  height:98dvh;
+  max-height:98dvh;
+  min-height:0;
+  display:grid;
+  grid-template-rows:minmax(0,1fr) auto;
+  gap:8px;
+  overflow:hidden;
+  padding:0 8px;
+  box-sizing:border-box;
+  background:#fff;
+}
+.team-info-image-wrap-v2031{
+  min-width:0;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:#fff;
+}
+.team-info-image-v2031{
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  object-position:center center;
+  margin:0;
+  padding:0;
+}
+.team-info-back-v2031{
+  width:100%;
+  height:var(--v16-footer-h,50px);
+  min-height:50px;
+  max-height:62px;
+  margin:0 0 max(1dvh,env(safe-area-inset-bottom));
+  padding:0 12px;
+  border:1px solid var(--accent);
+  border-radius:9px;
+  background:var(--accent);
+  color:var(--on-accent);
+  -webkit-text-fill-color:var(--on-accent);
+  font-family:"Oswald",Arial,sans-serif;
+  font-size:20px;
+  font-weight:800;
+  line-height:1;
+  letter-spacing:.3px;
+  box-sizing:border-box;
+}
+body.team-info-open-v2031{
+  overflow:hidden!important;
+}
+</style>
+
 </head>
 
 
@@ -13185,13 +13382,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
             <div class="splash-image-wrap">
 
         <img
-          id="homeEventLogoV2027"
           src="Splash_white.jpg"
           class="splash-image"
           alt="Running of the Bulls 2026"
-          role="button"
-          tabindex="0"
-          aria-label="Open team and event information"
         >
 
       </div>
@@ -13270,7 +13463,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.27</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.31</span></span>
         </button>
 
       </div>
@@ -14359,7 +14552,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
             '<div class="game-hole-label-v2026">HOLE</div>' +
             '<div class="game-hole-value-v2026">' + escapeHtml(row.hole || String(holeValue)) + '</div>' +
             '<div class="game-hole-label-v2026">WINNER</div>' +
-            '<div class="game-hole-value-v2026 game-hole-winner-v2026">' + escapeHtml(row.winner || 'TBD') + '</div>' +
+            '<div class="game-hole-value-v2026 game-hole-winner-v2026' +
+              (splitQuotedWinnerV2028(row.winner || 'TBD').twoLine ? ' has-quoted-winner-v2028' : '') + '">' +
+              gameWinnerHtmlV2028(row.winner || 'TBD') +
+            '</div>' +
           '</div>';
       });
       html += '</div>';
@@ -23468,10 +23664,18 @@ let scoreTimingDetail =
         return { size: oneLineTarget, truncated: false, lines: 1 };
       }
 
-      /* Preserve the V19.90 protection: a single-token team name can never be
-         broken at an arbitrary character. It stays on one line and only itself
-         shrinks until it fits the actual TEAM cell. */
-      if (!/\s/.test(original)) {
+      /* V20.30 — if the current wrap rules provide NO legal two-line cut,
+         the complete TEAM name stays intact on one line and only that row
+         shrinks. This includes the protected numeric-tail units introduced in
+         V20.27, e.g. HERD 5 / TEAM 12, as well as true single-token names. */
+      const legalSummarySplitV2030 = splitLeaderboardTeamTwoLinesV58(original);
+      if (
+        !/\s/.test(original) ||
+        !Array.isArray(legalSummarySplitV2030) ||
+        legalSummarySplitV2030.length !== 2 ||
+        !legalSummarySplitV2030[0] ||
+        !legalSummarySplitV2030[1]
+      ) {
         let low = 0;
         let high = oneLineTarget;
         let best = 0;
@@ -26302,11 +26506,11 @@ let scoreTimingDetail =
       }
     }
 
-    /* SSHCP V20.27 — Game Mode text fitting.
-       GAME and WINNER are preserved as intact single-line strings: quotes do
-       not create character-level break points. GAME targets 40% of its row
-       height. Combined-popup SKINS TEAM uses the same 50% target as the proven
-       standalone SKINS fitter. */
+    /* SSHCP V20.27/V20.30 — Game Mode text fitting.
+       GAME and WINNER preserve intact tokens: quotes do not create arbitrary
+       character-level break points. V20.30 raises GAME to the same 50%-of-row
+       target used by combined-popup SKINS TEAM and explicitly fits SKINS/GAMES
+       HOLE at that same 50% target. */
     function fitIntactSingleLineV2027(container, textEl, targetSize, horizontalPad = 10, lineHeight = 1) {
       if (!container || !textEl) return null;
       const original = String(textEl.dataset.v2027Text || textEl.textContent || '').trim();
@@ -26347,15 +26551,86 @@ let scoreTimingDetail =
       return finalSize;
     }
 
+    /* SSHCP V20.28 — a quoted nickname is a deliberate second line, never an
+       arbitrary wrap point. Example: JAKE / "SIDEWINDER". */
+    function splitQuotedWinnerV2028(value) {
+      const text = String(value || '').trim();
+      if (!text) return { name:'', quote:'', twoLine:false };
+
+      const openMatch = text.match(/["“]/);
+      if (!openMatch || openMatch.index == null || openMatch.index <= 0) {
+        return { name:text, quote:'', twoLine:false };
+      }
+
+      const name = text.slice(0, openMatch.index).trim();
+      const quote = text.slice(openMatch.index).trim();
+      if (!name || !quote) return { name:text, quote:'', twoLine:false };
+      return { name, quote, twoLine:true };
+    }
+
+    function gameWinnerHtmlV2028(value) {
+      const parts = splitQuotedWinnerV2028(value);
+      if (!parts.twoLine) return escapeHtml(parts.name);
+      return (
+        '<span class="game-winner-name-v2028">' + escapeHtml(parts.name) + '</span>' +
+        '<span class="game-winner-quote-v2028">' + escapeHtml(parts.quote) + '</span>'
+      );
+    }
+
+    function fitQuotedWinnerV2028(cell, targetPerLine, horizontalPad = 10, lineHeight = 0.96) {
+      if (!cell) return null;
+      const name = cell.querySelector('.game-winner-name-v2028');
+      const quote = cell.querySelector('.game-winner-quote-v2028');
+      if (!name || !quote) return fitIntactSingleLineV2027(cell, cell, targetPerLine, horizontalPad, 1);
+
+      const nameText = String(name.textContent || '').trim();
+      const quoteText = String(quote.textContent || '').trim();
+      const availableWidth = Math.max(0.001, cell.clientWidth - Math.max(0, Number(horizontalPad) || 0));
+      const availableHeight = Math.max(0.001, cell.clientHeight - 4);
+      const target = Math.max(0.001, Number(targetPerLine) || 0.001);
+      const fits = size => (
+        measureTeamLineWidthV58(name, nameText, size) <= availableWidth + 0.75 &&
+        measureTeamLineWidthV58(quote, quoteText, size) <= availableWidth + 0.75 &&
+        (size * lineHeight * 2) <= availableHeight + 0.75
+      );
+
+      let finalSize = target;
+      if (!fits(target)) {
+        let low = 0;
+        let high = target;
+        let best = 0;
+        for (let i = 0; i < 32; i++) {
+          const size = (low + high) / 2;
+          if (fits(size)) {
+            best = size;
+            low = size;
+          } else {
+            high = size;
+          }
+        }
+        finalSize = best > 0 ? best : Math.max(Number.EPSILON, target / Math.pow(2, 32));
+      }
+
+      [name, quote].forEach(line => {
+        line.style.setProperty('font-size', finalSize + 'px', 'important');
+        line.style.setProperty('line-height', String(lineHeight), 'important');
+      });
+      return finalSize;
+    }
+
     function fitGameHolePopupV2027() {
       if (!els.modalOverlay.classList.contains('game-hole-info-v2026')) return;
       if (els.modalTitle) {
-        fitIntactSingleLineV2027(els.modalBox, els.modalTitle, Math.min(40, els.modalBox.clientHeight * 0.065), 42, 1);
+        fitIntactSingleLineV2027(els.modalBox, els.modalTitle, Math.min(54, els.modalBox.clientHeight * 0.085), 42, 1);
       }
       els.modalBody.querySelectorAll('.game-hole-winner-v2026').forEach(winner => {
         const entry = winner.closest('.game-hole-entry-v2026') || winner;
         const entryH = entry.getBoundingClientRect().height || 120;
-        fitIntactSingleLineV2027(winner, winner, entryH * 0.22, 12, 1.05);
+        if (winner.classList.contains('has-quoted-winner-v2028')) {
+          fitQuotedWinnerV2028(winner, entryH * 0.22, 12, 0.98);
+        } else {
+          fitIntactSingleLineV2027(winner, winner, entryH * 0.22, 12, 1.05);
+        }
       });
     }
 
@@ -26375,7 +26650,10 @@ let scoreTimingDetail =
       els.modalBody.querySelectorAll('.game-mode-row-v2026.skins:not(.header)').forEach(row => {
         const rowH = row.getBoundingClientRect().height || sharedV187.skinsRow;
         const team = row.querySelector('.game-mode-skins-team-v2027');
+        const cells = row.querySelectorAll('.game-mode-cell-v2026');
+        const hole = cells.length > 1 ? cells[1] : null;
         if (team) fitIntactSingleLineV2027(team, team, rowH * 0.50, 10, 1);
+        if (hole) fitIntactSingleLineV2027(hole, hole, rowH * 0.50, 8, 1);
       });
 
       els.modalBody.querySelectorAll('.game-mode-row-v2026.games:not(.header)').forEach(row => {
@@ -26383,9 +26661,16 @@ let scoreTimingDetail =
         const game = row.querySelector('.game-name-v2026');
         const hole = row.querySelector('.game-hole-v2027');
         const winner = row.querySelector('.game-winner-v2026');
-        if (game) fitIntactSingleLineV2027(game, game, rowH * 0.40, 10, 1);
+        if (game) fitIntactSingleLineV2027(game, game, rowH * 0.50, 10, 1);
         if (hole) fitIntactSingleLineV2027(hole, hole, rowH * 0.50, 8, 1);
-        if (winner) fitIntactSingleLineV2027(winner, winner, rowH * 0.40, 10, 1);
+        if (winner) {
+          if (winner.classList.contains('has-quoted-winner-v2028')) {
+            /* Two 40%-of-row lines = up to ~80% total row-height use. */
+            fitQuotedWinnerV2028(winner, rowH * 0.40, 10, 0.96);
+          } else {
+            fitIntactSingleLineV2027(winner, winner, rowH * 0.40, 10, 1);
+          }
+        }
       });
 
       const back = els.modalActions.querySelector('.modal-btn');
@@ -26457,12 +26742,15 @@ let scoreTimingDetail =
       } else {
         rows.forEach(item => {
           const winner = String(item.winner || '').trim() || 'TBD';
+          const winnerPartsV2028 = splitQuotedWinnerV2028(winner);
           html +=
             '<div class="game-mode-row-v2026 games">' +
               '<div class="game-mode-cell-v2026 game-name-v2026">' + escapeHtml(item.game || '') + '</div>' +
               '<div class="game-mode-cell-v2026 game-hole-v2027">' + escapeHtml(item.hole || '') + '</div>' +
-              '<div class="game-mode-cell-v2026 game-winner-v2026' + (winner === 'TBD' ? ' tbd-v2026' : '') + '">' +
-                escapeHtml(winner) +
+              '<div class="game-mode-cell-v2026 game-winner-v2026' +
+                (winner === 'TBD' ? ' tbd-v2026' : '') +
+                (winnerPartsV2028.twoLine ? ' has-quoted-winner-v2028' : '') + '">' +
+                gameWinnerHtmlV2028(winner) +
               '</div>' +
             '</div>';
         });
@@ -30072,157 +30360,71 @@ let scoreTimingDetail =
 </script>
 
 
-  <!-- SSHCP V20.27 team-info image popup.
-       Built from exact V20.27-N5Q2RV. The HOME logo opens teaminfo.jpg.
-       The image never scrolls: it is contained inside the available viewport
-       above a fixed bottom BACK button. -->
-  <style>
-    #homeEventLogoV2027 {
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-
-    .teaminfo-overlay-v2027 {
-      position: fixed;
-      inset: 0;
-      z-index: 9800;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1dvh 1vw;
-      background: #000;
-      overscroll-behavior: none;
-    }
-
-    .teaminfo-overlay-v2027.open {
-      display: flex;
-    }
-
-    .teaminfo-shell-v2027 {
-      width: min(98vw, 760px);
-      height: 98dvh;
-      max-height: 98dvh;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      min-height: 0;
-      overflow: hidden;
-      background: #fff;
-      border: 2px solid var(--accent);
-      border-radius: 18px;
-      box-sizing: border-box;
-    }
-
-    .teaminfo-image-stage-v2027 {
-      flex: 1 1 auto;
-      min-height: 0;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: #fff;
-      padding: 4px;
-    }
-
-    .teaminfo-image-v2027 {
-      display: block;
-      width: 100%;
-      height: 100%;
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      object-position: center center;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-
-    .teaminfo-footer-v2027 {
-      flex: 0 0 auto;
-      padding: 8px 12px max(8px, env(safe-area-inset-bottom));
-      background: #fff;
-    }
-
-    .teaminfo-back-v2027 {
-      display: block;
-      width: min(72%, 360px);
-      height: 54px;
-      margin: 0 auto;
-      border: 0;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #fff;
-      font-family: "Oswald", Arial, sans-serif;
-      font-size: 21px;
-      font-weight: 800;
-      letter-spacing: .3px;
-      line-height: 1;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-
-    .teaminfo-back-v2027:active {
-      filter: brightness(.9);
-    }
-  </style>
-
-  <div
-    id="teamInfoOverlayV2027"
-    class="teaminfo-overlay-v2027"
-    aria-hidden="true"
-  >
-    <div class="teaminfo-shell-v2027" role="dialog" aria-modal="true" aria-label="Team information">
-      <div class="teaminfo-image-stage-v2027">
-        <img
-          src="teaminfo.jpg"
-          class="teaminfo-image-v2027"
-          alt="ROTB 2026 pairings and handicaps"
-          draggable="false"
-        >
-      </div>
-      <div class="teaminfo-footer-v2027">
-        <button id="teamInfoBackV2027" class="teaminfo-back-v2027" type="button">BACK</button>
-      </div>
+<div id="teamInfoOverlayV2031" class="team-info-overlay-v2031" aria-hidden="true">
+  <div class="team-info-shell-v2031" role="dialog" aria-modal="true" aria-label="2026 team information">
+    <div class="team-info-image-wrap-v2031">
+      <img id="teamInfoImageV2031" class="team-info-image-v2031" src="teaminfo.jpg" alt="2026 pairings and handicaps">
     </div>
+    <button id="teamInfoBackV2031" class="team-info-back-v2031" type="button">BACK</button>
   </div>
+</div>
 
-  <script>
-    (function () {
-      var logo = document.getElementById('homeEventLogoV2027');
-      var overlay = document.getElementById('teamInfoOverlayV2027');
-      var back = document.getElementById('teamInfoBackV2027');
-      if (!logo || !overlay || !back) return;
+<script id="teamInfoScriptV2031">
+(function(){
+  function readyV2031(){
+    var logo = document.querySelector('#homeView .splash-image-wrap');
+    var overlay = document.getElementById('teamInfoOverlayV2031');
+    var back = document.getElementById('teamInfoBackV2031');
+    if (!logo || !overlay || !back) return;
 
-      function openTeamInfoV2027() {
-        overlay.classList.add('open');
-        overlay.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        back.focus({ preventScroll: true });
+    logo.setAttribute('role','button');
+    logo.setAttribute('tabindex','0');
+    logo.setAttribute('aria-label','Open 2026 team information');
+
+    function openTeamInfoV2031(){
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden','false');
+      document.body.classList.add('team-info-open-v2031');
+      if (typeof window.triggerHapticV185 === 'function') {
+        try { window.triggerHapticV185(10); } catch (_) {}
       }
+      requestAnimationFrame(function(){
+        try { back.focus({preventScroll:true}); } catch (_) { try { back.focus(); } catch (_) {} }
+      });
+    }
 
-      function closeTeamInfoV2027() {
-        overlay.classList.remove('open');
-        overlay.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        logo.focus({ preventScroll: true });
+    function closeTeamInfoV2031(){
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden','true');
+      document.body.classList.remove('team-info-open-v2031');
+      requestAnimationFrame(function(){
+        try { logo.focus({preventScroll:true}); } catch (_) {}
+      });
+    }
+
+    logo.addEventListener('click', openTeamInfoV2031);
+    logo.addEventListener('keydown', function(event){
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openTeamInfoV2031();
       }
+    });
+    back.addEventListener('click', closeTeamInfoV2031);
+    window.addEventListener('keydown', function(event){
+      if (event.key === 'Escape' && overlay.classList.contains('open')) {
+        event.preventDefault();
+        closeTeamInfoV2031();
+      }
+    });
+  }
 
-      logo.addEventListener('click', openTeamInfoV2027);
-      logo.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          openTeamInfoV2027();
-        }
-      });
-      back.addEventListener('click', closeTeamInfoV2027);
-      overlay.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') closeTeamInfoV2027();
-      });
-    })();
-  </script>
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', readyV2031, {once:true});
+  } else {
+    readyV2031();
+  }
+})();
+</script>
 
 </body>
 </html>
