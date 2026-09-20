@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.36-V7M3QX | BUILD KEY: 20.37-K8R4MV -->
+<!-- SSHCP | BASE KEY: 20.37-K8R4MV | BUILD KEY: 20.38-P5N8QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13124,6 +13124,16 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
 
 /* =========================================================
+   SSHCP V20.38 — SCRAMBLE SUMMARY PLACE sizing.
+   PLACE numbers are fully row-height-driven and independent of NET +/- width:
+   1st = 50% of row height
+   2nd = 45%
+   3rd = 40%
+   4th through 36th = 35%
+   No TEAM, NET, tiebreak, GAME MODE, Team Info, or HOME behavior is changed.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.37 — GAME MODE content-fit shell + Summary podium PLACE independence.
    - GAME MODE popup height is content-driven and capped at 98dvh; small result
      sets no longer leave a large empty band, while large sets still scroll.
@@ -13542,7 +13552,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.37</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.38</span></span>
         </button>
 
       </div>
@@ -23887,14 +23897,12 @@ let scoreTimingDetail =
         });
       }
 
-      /* V20.37 — Summary keeps the approved NET +/- 60/55/50% podium score
-         hierarchy and all existing TEAM fitting. Podium PLACE is independent of
-         rendered score width: 1st/2nd/3rd target 54% / 49.5% / 45% of row height.
-         Those are the established 90%-of-score visual ratios before score fitting,
-         so a two-digit NET +/- such as -10 may shrink itself without shrinking
-         the PLACE number beside it. */
+      /* V20.38 — Summary keeps the approved NET +/- 60/55/50% podium score
+         hierarchy and all existing TEAM fitting. PLACE is independently sized
+         from its own row height: 1st 50%, 2nd 45%, 3rd 40%. Double-digit NET +/-
+         scores may shrink themselves without changing the PLACE number. */
       const podiumNetRatiosV1998 = [0.60, 0.55, 0.50];
-      const podiumPlaceRatiosV2037 = [0.54, 0.495, 0.45];
+      const podiumPlaceRatiosV2038 = [0.50, 0.45, 0.40];
 
       [1,2,3].forEach((place, index) => {
         const row = topGrid.querySelector('.tournament-summary-row.place-' + place);
@@ -23935,7 +23943,7 @@ let scoreTimingDetail =
           fitTextToBoxV5(
             placeCell,
             placeNumberV2037,
-            row.clientHeight * podiumPlaceRatiosV2037[index],
+            row.clientHeight * podiumPlaceRatiosV2038[index],
             1,
             {
               horizontalPad: 4,
@@ -23984,22 +23992,15 @@ let scoreTimingDetail =
 
       fitUniform(lowerNet, 0.48, 12, 6);
 
-      /* V20.7 — each lower PLACE targets 90% of its corresponding final NET +/-
-         score font. It stays one line and shrinks only if its own PLACE cell needs it. */
-      lowerPlace.forEach((placeCell, index) => {
-        const scoreCell = lowerNet[index] || null;
-        const renderedNetSizeV207 = scoreCell
-          ? parseFloat(getComputedStyle(scoreCell).fontSize)
-          : NaN;
-        const placeTargetV207 =
-          Number.isFinite(renderedNetSizeV207) && renderedNetSizeV207 > 0
-            ? renderedNetSizeV207 * 0.90
-            : placeCell.clientHeight * 0.48 * 0.90;
-
+      /* V20.38 — every lower PLACE (4th through 36th) targets 35% of its
+         own row height. It is independent of NET +/- font width/fit. */
+      lowerPlace.forEach(placeCell => {
+        const placeNumberV2038 =
+          placeCell.querySelector('.summary-place-number') || placeCell;
         fitTextToBoxV5(
           placeCell,
-          placeCell,
-          placeTargetV207,
+          placeNumberV2038,
+          placeCell.clientHeight * 0.35,
           1,
           {
             horizontalPad: 4,
