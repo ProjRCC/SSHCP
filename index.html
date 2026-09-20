@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.27-N5Q2RV | BUILD KEY: 20.27-T9M4QX -->
+<!-- SSHCP | BASE KEY: 20.27-N5Q2RV | BUILD KEY: 20.27-P8M4ZR -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13136,92 +13136,6 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   word-break:normal!important;
   text-overflow:clip!important;
 }
-
-
-/* SSHCP V20.27 team-info popup — exact app Blue, 98% visual-height shell, locked BACK footer. */
-#homeView .home-teaminfo-trigger-v2027{
-  cursor:pointer!important;
-  -webkit-tap-highlight-color:transparent!important;
-  touch-action:manipulation!important;
-}
-#homeView .home-teaminfo-trigger-v2027:focus-visible{
-  outline:3px solid var(--accent)!important;
-  outline-offset:-3px!important;
-}
-body.team-info-open-v2027{
-  overflow:hidden!important;
-}
-.team-info-overlay-v2027{
-  position:fixed!important;
-  inset:0!important;
-  z-index:6900!important;
-  display:none!important;
-  align-items:center!important;
-  justify-content:center!important;
-  padding:1dvh 4px!important;
-  background:#000!important;
-  box-sizing:border-box!important;
-}
-.team-info-overlay-v2027.open{
-  display:flex!important;
-}
-.team-info-panel-v2027{
-  width:min(760px,calc(100% - 4px))!important;
-  height:98dvh!important;
-  max-height:98dvh!important;
-  min-height:0!important;
-  display:flex!important;
-  flex-direction:column!important;
-  overflow:hidden!important;
-  border:2px solid var(--accent)!important;
-  border-radius:18px!important;
-  background:#fff!important;
-  box-sizing:border-box!important;
-}
-.team-info-scroll-v2027{
-  flex:1 1 auto!important;
-  min-height:0!important;
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  -webkit-overflow-scrolling:touch!important;
-  overscroll-behavior:contain!important;
-  background:#fff!important;
-}
-.team-info-image-v2027{
-  display:block!important;
-  width:100%!important;
-  height:auto!important;
-  margin:0!important;
-}
-.team-info-footer-v2027{
-  flex:0 0 auto!important;
-  position:relative!important;
-  z-index:2!important;
-  padding:8px 12px max(8px,env(safe-area-inset-bottom))!important;
-  background:#fff!important;
-  border-top:1px solid rgba(0,0,0,.18)!important;
-}
-.team-info-back-v2027{
-  display:block!important;
-  width:100%!important;
-  height:56px!important;
-  min-height:56px!important;
-  margin:0!important;
-  padding:0 12px!important;
-  border:0!important;
-  border-radius:10px!important;
-  background:var(--accent)!important;
-  color:var(--on-accent)!important;
-  font-family:"Oswald",Arial,sans-serif!important;
-  font-size:22px!important;
-  font-weight:800!important;
-  line-height:1!important;
-  letter-spacing:.3px!important;
-}
-.team-info-back-v2027:active{
-  filter:brightness(.90)!important;
-}
-
 </style>
 </head>
 
@@ -13268,12 +13182,16 @@ body.team-info-open-v2027{
 
     <div class="home-shell">
 
-            <div id="homeTeamInfoTrigger" class="splash-image-wrap home-teaminfo-trigger-v2027" role="button" tabindex="0" aria-label="Open 2026 pairings and handicaps">
+            <div class="splash-image-wrap">
 
         <img
+          id="homeEventLogoV2027"
           src="Splash_white.jpg"
           class="splash-image"
           alt="Running of the Bulls 2026"
+          role="button"
+          tabindex="0"
+          aria-label="Open team and event information"
         >
 
       </div>
@@ -13360,19 +13278,6 @@ body.team-info-open-v2027{
     </div>
 
   </section>
-
-
-  <!-- SSHCP V20.27 team-info popup — homepage logo opens teaminfo.jpg. -->
-  <div id="teamInfoOverlayV2027" class="team-info-overlay-v2027" aria-hidden="true">
-    <div class="team-info-panel-v2027" role="dialog" aria-modal="true" aria-label="2026 pairings and handicaps">
-      <div id="teamInfoScrollV2027" class="team-info-scroll-v2027">
-        <img src="teaminfo.jpg" class="team-info-image-v2027" alt="2026 pairings and handicaps">
-      </div>
-      <div class="team-info-footer-v2027">
-        <button id="teamInfoBackButtonV2027" class="team-info-back-v2027" type="button">BACK</button>
-      </div>
-    </div>
-  </div>
 
 
   <!-- =======================================================
@@ -29057,49 +28962,6 @@ let scoreTimingDetail =
     });
 
 
-    /* SSHCP V20.27 team-info popup — HOME logo trigger. */
-    const teamInfoTriggerV2027 = document.getElementById('homeTeamInfoTrigger');
-    const teamInfoOverlayV2027 = document.getElementById('teamInfoOverlayV2027');
-    const teamInfoScrollV2027 = document.getElementById('teamInfoScrollV2027');
-    const teamInfoBackButtonV2027 = document.getElementById('teamInfoBackButtonV2027');
-
-    function openTeamInfoV2027() {
-      if (!teamInfoOverlayV2027) return;
-      if (teamInfoScrollV2027) teamInfoScrollV2027.scrollTop = 0;
-      teamInfoOverlayV2027.classList.add('open');
-      teamInfoOverlayV2027.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('team-info-open-v2027');
-      requestAnimationFrame(() => {
-        if (teamInfoBackButtonV2027) teamInfoBackButtonV2027.focus({ preventScroll:true });
-      });
-    }
-
-    function closeTeamInfoV2027() {
-      if (!teamInfoOverlayV2027) return;
-      teamInfoOverlayV2027.classList.remove('open');
-      teamInfoOverlayV2027.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('team-info-open-v2027');
-      if (teamInfoTriggerV2027) teamInfoTriggerV2027.focus({ preventScroll:true });
-    }
-
-    if (teamInfoTriggerV2027) {
-      teamInfoTriggerV2027.addEventListener('click', openTeamInfoV2027);
-      teamInfoTriggerV2027.addEventListener('keydown', event => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          openTeamInfoV2027();
-        }
-      });
-    }
-    if (teamInfoBackButtonV2027) teamInfoBackButtonV2027.addEventListener('click', closeTeamInfoV2027);
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && teamInfoOverlayV2027 && teamInfoOverlayV2027.classList.contains('open')) {
-        event.preventDefault();
-        closeTeamInfoV2027();
-      }
-    });
-
-
     /* =========================================================
        EVENTS
        ========================================================= */
@@ -30208,6 +30070,159 @@ let scoreTimingDetail =
     });
 
 </script>
+
+
+  <!-- SSHCP V20.27 team-info image popup.
+       Built from exact V20.27-N5Q2RV. The HOME logo opens teaminfo.jpg.
+       The image never scrolls: it is contained inside the available viewport
+       above a fixed bottom BACK button. -->
+  <style>
+    #homeEventLogoV2027 {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .teaminfo-overlay-v2027 {
+      position: fixed;
+      inset: 0;
+      z-index: 9800;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1dvh 1vw;
+      background: #000;
+      overscroll-behavior: none;
+    }
+
+    .teaminfo-overlay-v2027.open {
+      display: flex;
+    }
+
+    .teaminfo-shell-v2027 {
+      width: min(98vw, 760px);
+      height: 98dvh;
+      max-height: 98dvh;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: #fff;
+      border: 2px solid var(--accent);
+      border-radius: 18px;
+      box-sizing: border-box;
+    }
+
+    .teaminfo-image-stage-v2027 {
+      flex: 1 1 auto;
+      min-height: 0;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #fff;
+      padding: 4px;
+    }
+
+    .teaminfo-image-v2027 {
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .teaminfo-footer-v2027 {
+      flex: 0 0 auto;
+      padding: 8px 12px max(8px, env(safe-area-inset-bottom));
+      background: #fff;
+    }
+
+    .teaminfo-back-v2027 {
+      display: block;
+      width: min(72%, 360px);
+      height: 54px;
+      margin: 0 auto;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-family: "Oswald", Arial, sans-serif;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: .3px;
+      line-height: 1;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .teaminfo-back-v2027:active {
+      filter: brightness(.9);
+    }
+  </style>
+
+  <div
+    id="teamInfoOverlayV2027"
+    class="teaminfo-overlay-v2027"
+    aria-hidden="true"
+  >
+    <div class="teaminfo-shell-v2027" role="dialog" aria-modal="true" aria-label="Team information">
+      <div class="teaminfo-image-stage-v2027">
+        <img
+          src="teaminfo.jpg"
+          class="teaminfo-image-v2027"
+          alt="ROTB 2026 pairings and handicaps"
+          draggable="false"
+        >
+      </div>
+      <div class="teaminfo-footer-v2027">
+        <button id="teamInfoBackV2027" class="teaminfo-back-v2027" type="button">BACK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var logo = document.getElementById('homeEventLogoV2027');
+      var overlay = document.getElementById('teamInfoOverlayV2027');
+      var back = document.getElementById('teamInfoBackV2027');
+      if (!logo || !overlay || !back) return;
+
+      function openTeamInfoV2027() {
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        back.focus({ preventScroll: true });
+      }
+
+      function closeTeamInfoV2027() {
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        logo.focus({ preventScroll: true });
+      }
+
+      logo.addEventListener('click', openTeamInfoV2027);
+      logo.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openTeamInfoV2027();
+        }
+      });
+      back.addEventListener('click', closeTeamInfoV2027);
+      overlay.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closeTeamInfoV2027();
+      });
+    })();
+  </script>
 
 </body>
 </html>
