@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.25-P6R3VX | BUILD KEY: 20.26-G4M8QX -->
+<!-- SSHCP | BASE KEY: 20.28-Q6M3TZ | BUILD KEY: 20.29-V4K8QM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13109,6 +13109,106 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   overscroll-behavior-y:none!important;
 }
 
+
+
+/* =========================================================
+   SSHCP V20.27 — GAME MODE typography/order polish + numeric TEAM token guard.
+   GAME rows are GAME / HOLE / WINNER. GAME and WINNER remain intact one-line
+   strings and are JS-fit from row height; quotes are never character breaks.
+   Hole-detail popup uses the game name itself as the Blue title.
+   ========================================================= */
+.modal-overlay.game-mode-results-v2026 .game-mode-row-v2026.games{
+  grid-template-columns:47fr 18fr 35fr!important;
+}
+.modal-overlay.game-mode-results-v2026 .game-name-v2026,
+.modal-overlay.game-mode-results-v2026 .game-winner-v2026,
+.modal-overlay.game-mode-results-v2026 .game-mode-skins-team-v2027{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-overflow:clip!important;
+}
+.modal-overlay.game-hole-info-v2026 .game-hole-winner-v2026{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-overflow:clip!important;
+}
+
+/* =========================================================
+   SSHCP V20.28 — quoted WINNER presentation.
+   If a winner contains a nickname in quotes, the plain/name portion stays on
+   line 1 and the complete quoted nickname stays intact on line 2. The two-line
+   GAMES winner may use up to ~80% of its row height (40% per line).
+   ========================================================= */
+.modal-overlay.game-mode-results-v2026 .game-winner-v2026.has-quoted-winner-v2028,
+.modal-overlay.game-hole-info-v2026 .game-hole-winner-v2026.has-quoted-winner-v2028{
+  white-space:normal!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-overflow:clip!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+}
+.game-winner-name-v2028,
+.game-winner-quote-v2028{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-overflow:clip!important;
+  text-align:center!important;
+}
+
+
+/* =========================================================
+   SSHCP V20.29 — Game Mode hole marker refinement.
+   Game holes no longer fill the whole HOLE cell Gold. Instead the normal
+   cell remains visually neutral and the hole number sits inside a Gold filled
+   circle. If that game hole is also the current NESR, the established Blue
+   active-cell cue remains authoritative while the Gold circle stays visible.
+   No score/NESR sequencing or geometry is changed.
+   ========================================================= */
+#scorecardView .hole-cell.game-mode-hole-v2026{
+  background:transparent!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026 .hole-number{
+  width:72cqh!important;
+  height:72cqh!important;
+  min-width:0!important;
+  min-height:0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto!important;
+  border-radius:50%!important;
+  background:var(--feature-gold-v1825,#D4AF37)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  font-size:52cqh!important;
+  line-height:1!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell{
+  background:var(--accent)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+#scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
+  background:var(--feature-gold-v1825,#D4AF37)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
 </style>
 </head>
 
@@ -13239,7 +13339,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.26</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.29</span></span>
         </button>
 
       </div>
@@ -14316,7 +14416,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
       closeModal();
       els.modalOverlay.classList.add('game-hole-info-v2026');
-      els.modalTitle.textContent = 'GAME';
+      const popupGameNameV2027 = String((rows[0] && rows[0].game) || 'GAME MODE').trim() || 'GAME MODE';
+      els.modalTitle.textContent = popupGameNameV2027;
       els.modalTitle.classList.remove('testing');
       els.modalInput.style.display = 'none';
 
@@ -14324,11 +14425,13 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
       rows.forEach(row => {
         html +=
           '<div class="game-hole-entry-v2026">' +
-            '<div class="game-hole-value-v2026">' + escapeHtml(row.game || '') + '</div>' +
             '<div class="game-hole-label-v2026">HOLE</div>' +
             '<div class="game-hole-value-v2026">' + escapeHtml(row.hole || String(holeValue)) + '</div>' +
             '<div class="game-hole-label-v2026">WINNER</div>' +
-            '<div class="game-hole-value-v2026 game-hole-winner-v2026">' + escapeHtml(row.winner || 'TBD') + '</div>' +
+            '<div class="game-hole-value-v2026 game-hole-winner-v2026' +
+              (splitQuotedWinnerV2028(row.winner || 'TBD').twoLine ? ' has-quoted-winner-v2028' : '') + '">' +
+              gameWinnerHtmlV2028(row.winner || 'TBD') +
+            '</div>' +
           '</div>';
       });
       html += '</div>';
@@ -14338,6 +14441,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
       els.modalActions.className = 'modal-actions single';
       els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
+      requestAnimationFrame(fitGameHolePopupV2027);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => requestAnimationFrame(fitGameHolePopupV2027)).catch(() => {});
+      }
     }
 
 
@@ -26267,6 +26374,177 @@ let scoreTimingDetail =
       }
     }
 
+    /* SSHCP V20.27 — Game Mode text fitting.
+       GAME and WINNER are preserved as intact single-line strings: quotes do
+       not create character-level break points. GAME targets 40% of its row
+       height. Combined-popup SKINS TEAM uses the same 50% target as the proven
+       standalone SKINS fitter. */
+    function fitIntactSingleLineV2027(container, textEl, targetSize, horizontalPad = 10, lineHeight = 1) {
+      if (!container || !textEl) return null;
+      const original = String(textEl.dataset.v2027Text || textEl.textContent || '').trim();
+      textEl.dataset.v2027Text = original;
+      textEl.textContent = original;
+      textEl.style.setProperty('white-space', 'nowrap', 'important');
+      textEl.style.setProperty('overflow-wrap', 'normal', 'important');
+      textEl.style.setProperty('word-break', 'normal', 'important');
+      textEl.style.setProperty('overflow', 'hidden', 'important');
+      textEl.style.setProperty('line-height', String(lineHeight), 'important');
+
+      const availableWidth = Math.max(0.001, container.clientWidth - Math.max(0, Number(horizontalPad) || 0));
+      const availableHeight = Math.max(0.001, container.clientHeight - 4);
+      const target = Math.max(0.001, Number(targetSize) || 0.001);
+      const fits = size => (
+        measureTeamLineWidthV58(textEl, original, size) <= availableWidth + 0.75 &&
+        (size * lineHeight) <= availableHeight + 0.75
+      );
+
+      let finalSize = target;
+      if (!fits(target)) {
+        let low = 0;
+        let high = target;
+        let best = 0;
+        for (let i = 0; i < 32; i++) {
+          const size = (low + high) / 2;
+          if (fits(size)) {
+            best = size;
+            low = size;
+          } else {
+            high = size;
+          }
+        }
+        finalSize = best > 0 ? best : Math.max(Number.EPSILON, target / Math.pow(2, 32));
+      }
+
+      textEl.style.setProperty('font-size', finalSize + 'px', 'important');
+      return finalSize;
+    }
+
+    /* SSHCP V20.28 — a quoted nickname is a deliberate second line, never an
+       arbitrary wrap point. Example: JAKE / "SIDEWINDER". */
+    function splitQuotedWinnerV2028(value) {
+      const text = String(value || '').trim();
+      if (!text) return { name:'', quote:'', twoLine:false };
+
+      const openMatch = text.match(/["“]/);
+      if (!openMatch || openMatch.index == null || openMatch.index <= 0) {
+        return { name:text, quote:'', twoLine:false };
+      }
+
+      const name = text.slice(0, openMatch.index).trim();
+      const quote = text.slice(openMatch.index).trim();
+      if (!name || !quote) return { name:text, quote:'', twoLine:false };
+      return { name, quote, twoLine:true };
+    }
+
+    function gameWinnerHtmlV2028(value) {
+      const parts = splitQuotedWinnerV2028(value);
+      if (!parts.twoLine) return escapeHtml(parts.name);
+      return (
+        '<span class="game-winner-name-v2028">' + escapeHtml(parts.name) + '</span>' +
+        '<span class="game-winner-quote-v2028">' + escapeHtml(parts.quote) + '</span>'
+      );
+    }
+
+    function fitQuotedWinnerV2028(cell, targetPerLine, horizontalPad = 10, lineHeight = 0.96) {
+      if (!cell) return null;
+      const name = cell.querySelector('.game-winner-name-v2028');
+      const quote = cell.querySelector('.game-winner-quote-v2028');
+      if (!name || !quote) return fitIntactSingleLineV2027(cell, cell, targetPerLine, horizontalPad, 1);
+
+      const nameText = String(name.textContent || '').trim();
+      const quoteText = String(quote.textContent || '').trim();
+      const availableWidth = Math.max(0.001, cell.clientWidth - Math.max(0, Number(horizontalPad) || 0));
+      const availableHeight = Math.max(0.001, cell.clientHeight - 4);
+      const target = Math.max(0.001, Number(targetPerLine) || 0.001);
+      const fits = size => (
+        measureTeamLineWidthV58(name, nameText, size) <= availableWidth + 0.75 &&
+        measureTeamLineWidthV58(quote, quoteText, size) <= availableWidth + 0.75 &&
+        (size * lineHeight * 2) <= availableHeight + 0.75
+      );
+
+      let finalSize = target;
+      if (!fits(target)) {
+        let low = 0;
+        let high = target;
+        let best = 0;
+        for (let i = 0; i < 32; i++) {
+          const size = (low + high) / 2;
+          if (fits(size)) {
+            best = size;
+            low = size;
+          } else {
+            high = size;
+          }
+        }
+        finalSize = best > 0 ? best : Math.max(Number.EPSILON, target / Math.pow(2, 32));
+      }
+
+      [name, quote].forEach(line => {
+        line.style.setProperty('font-size', finalSize + 'px', 'important');
+        line.style.setProperty('line-height', String(lineHeight), 'important');
+      });
+      return finalSize;
+    }
+
+    function fitGameHolePopupV2027() {
+      if (!els.modalOverlay.classList.contains('game-hole-info-v2026')) return;
+      if (els.modalTitle) {
+        fitIntactSingleLineV2027(els.modalBox, els.modalTitle, Math.min(40, els.modalBox.clientHeight * 0.065), 42, 1);
+      }
+      els.modalBody.querySelectorAll('.game-hole-winner-v2026').forEach(winner => {
+        const entry = winner.closest('.game-hole-entry-v2026') || winner;
+        const entryH = entry.getBoundingClientRect().height || 120;
+        if (winner.classList.contains('has-quoted-winner-v2028')) {
+          fitQuotedWinnerV2028(winner, entryH * 0.22, 12, 0.98);
+        } else {
+          fitIntactSingleLineV2027(winner, winner, entryH * 0.22, 12, 1.05);
+        }
+      });
+    }
+
+    function fitGameModeTablesV2027() {
+      if (!els.modalOverlay.classList.contains('game-mode-results-v2026')) return;
+      const sharedV187 = syncSharedGeometryV187();
+
+      els.modalBody.querySelectorAll('.game-mode-row-v2026.header').forEach(row => {
+        const rowH = row.getBoundingClientRect().height || sharedV187.skinsHeader;
+        row.querySelectorAll('.game-mode-cell-v2026').forEach(cell => {
+          fitTextToBoxV5(cell, cell, rowH * 0.38, 8, {
+            horizontalPad:8, verticalPad:4, wrap:false, lineHeight:1
+          });
+        });
+      });
+
+      els.modalBody.querySelectorAll('.game-mode-row-v2026.skins:not(.header)').forEach(row => {
+        const rowH = row.getBoundingClientRect().height || sharedV187.skinsRow;
+        const team = row.querySelector('.game-mode-skins-team-v2027');
+        if (team) fitIntactSingleLineV2027(team, team, rowH * 0.50, 10, 1);
+      });
+
+      els.modalBody.querySelectorAll('.game-mode-row-v2026.games:not(.header)').forEach(row => {
+        const rowH = row.getBoundingClientRect().height || sharedV187.skinsRow;
+        const game = row.querySelector('.game-name-v2026');
+        const hole = row.querySelector('.game-hole-v2027');
+        const winner = row.querySelector('.game-winner-v2026');
+        if (game) fitIntactSingleLineV2027(game, game, rowH * 0.40, 10, 1);
+        if (hole) fitIntactSingleLineV2027(hole, hole, rowH * 0.50, 8, 1);
+        if (winner) {
+          if (winner.classList.contains('has-quoted-winner-v2028')) {
+            /* Two 40%-of-row lines = up to ~80% total row-height use. */
+            fitQuotedWinnerV2028(winner, rowH * 0.40, 10, 0.96);
+          } else {
+            fitIntactSingleLineV2027(winner, winner, rowH * 0.40, 10, 1);
+          }
+        }
+      });
+
+      const back = els.modalActions.querySelector('.modal-btn');
+      if (back) {
+        const h = back.getBoundingClientRect().height || sharedV187.postButton;
+        fitTextToBoxV5(back, back, h * 0.40, 10, { horizontalPad:10, verticalPad:4, wrap:false, lineHeight:1 });
+      }
+    }
+
     function buildGameModeSkinsTableV2026(results, unavailable = false) {
       let html =
         '<div class="game-mode-section-v2026">' +
@@ -26295,7 +26573,7 @@ let scoreTimingDetail =
           shell.appendChild(mark);
           html +=
             '<div class="game-mode-row-v2026 skins">' +
-              '<div class="game-mode-cell-v2026">' + escapeHtml(displayTeamName(item.team.name || '')) + '</div>' +
+              '<div class="game-mode-cell-v2026 game-mode-skins-team-v2027">' + escapeHtml(displayTeamName(item.team.name || '')) + '</div>' +
               '<div class="game-mode-cell-v2026">' + escapeHtml(String(item.hole)) + '</div>' +
               '<div class="game-mode-cell-v2026 game-mode-skins-mark-v2026">' + shell.innerHTML + '</div>' +
             '</div>';
@@ -26311,8 +26589,8 @@ let scoreTimingDetail =
           '<div class="game-mode-section-title-v2026">GAMES</div>' +
           '<div class="game-mode-table-v2026">' +
             '<div class="game-mode-row-v2026 games header">' +
-              '<div class="game-mode-cell-v2026">HOLE</div>' +
               '<div class="game-mode-cell-v2026">GAME</div>' +
+              '<div class="game-mode-cell-v2026">HOLE</div>' +
               '<div class="game-mode-cell-v2026">WINNER</div>' +
             '</div>';
 
@@ -26329,12 +26607,15 @@ let scoreTimingDetail =
       } else {
         rows.forEach(item => {
           const winner = String(item.winner || '').trim() || 'TBD';
+          const winnerPartsV2028 = splitQuotedWinnerV2028(winner);
           html +=
             '<div class="game-mode-row-v2026 games">' +
-              '<div class="game-mode-cell-v2026">' + escapeHtml(item.hole || '') + '</div>' +
               '<div class="game-mode-cell-v2026 game-name-v2026">' + escapeHtml(item.game || '') + '</div>' +
-              '<div class="game-mode-cell-v2026 game-winner-v2026' + (winner === 'TBD' ? ' tbd-v2026' : '') + '">' +
-                escapeHtml(winner) +
+              '<div class="game-mode-cell-v2026 game-hole-v2027">' + escapeHtml(item.hole || '') + '</div>' +
+              '<div class="game-mode-cell-v2026 game-winner-v2026' +
+                (winner === 'TBD' ? ' tbd-v2026' : '') +
+                (winnerPartsV2028.twoLine ? ' has-quoted-winner-v2028' : '') + '">' +
+                gameWinnerHtmlV2028(winner) +
               '</div>' +
             '</div>';
         });
@@ -26360,6 +26641,10 @@ let scoreTimingDetail =
       els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
       els.modalBody.scrollTop = 0;
+      requestAnimationFrame(fitGameModeTablesV2027);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => requestAnimationFrame(fitGameModeTablesV2027)).catch(() => {});
+      }
     }
 
     async function showGameModePopupV2026() {
@@ -27082,7 +27367,17 @@ let scoreTimingDetail =
       const midpoint = value.length / 2;
       const spaces = [];
       for (let i = 1; i < value.length - 1; i++) {
-        if (value[i] === ' ') spaces.push(i);
+        if (value[i] !== ' ') continue;
+
+        /* V20.27 — a trailing numeric token stays attached to the word before
+           it. Examples: HERD 6 / TEAM 12 may shrink as an intact unit, but
+           Leaderboard/Summary may not manufacture a line break between the
+           label and its number. Other real spaces remain legal wrap points. */
+        let next = i + 1;
+        while (next < value.length && value[next] === ' ') next++;
+        if (next < value.length && /[0-9]/.test(value[next])) continue;
+
+        spaces.push(i);
       }
       if (!spaces.length) return null;
 
