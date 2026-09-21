@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.57-H2L6PV | BUILD KEY: 20.58-M7Q2RV -->
+<!-- SSHCP | BASE KEY: 20.58-M7Q2RV | BUILD KEY: 20.59-Q4N8LX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9409,7 +9409,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
    reveal. The Welcome splash path never receives this curtain. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
   background:#fff!important;
-  z-index:9200!important;
+  z-index:4790!important;
   transition:opacity .6s ease-out!important;
 }
 
@@ -12290,7 +12290,7 @@ button.sshcp-button-pressed-v172{
    ========================================================= */
 .modal-overlay.quick-guide .modal-text{
   position:relative!important;
-  overflow:hidden!important;
+  overflow:visible!important;
   padding-right:14px!important;
 }
 
@@ -12325,7 +12325,7 @@ button.sshcp-button-pressed-v172{
 .quick-guide-progress-v2050{
   position:absolute;
   top:2px;
-  right:2px;
+  right:-9px;
   bottom:2px;
   width:5px;
   border-radius:999px;
@@ -12426,6 +12426,12 @@ button.sshcp-button-pressed-v172{
 }
 .quick-guide-fake-button-v2050.blue-v2050{
   background:var(--accent);
+}
+.quick-guide-fake-button-v2050.nav-label-v2059{
+  min-width:112px;
+  width:112px;
+  flex-basis:112px;
+  font-size:.68em;
 }
 .quick-guide-fake-button-v2050.gold-v2050{
   background:#8A6414;
@@ -12577,6 +12583,7 @@ button.sshcp-button-pressed-v172{
 }
 #homeView .home-actions{
   position:absolute!important;
+  z-index:100!important;
   inset:0!important;
   width:100%!important;
   max-width:none!important;
@@ -12590,6 +12597,7 @@ button.sshcp-button-pressed-v172{
 }
 #homeView .splash-image-wrap{
   position:absolute!important;
+  z-index:0!important;
   left:0!important;
   right:0!important;
   top:0!important;
@@ -13816,6 +13824,28 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 }
 
 /* =========================================================
+   SSHCP V20.59 — HOME REVEAL LAYER ORDER + QUICK GUIDE POLISH.
+   Fresh continuation from exact V20.58.
+
+   HOME LAYER ORDER:
+     • Splash/logo is the visual base layer.
+     • HOME action controls sit above the logo.
+     • Hamburger/backdrop/drawer sit above HOME but below BOTH HOME curtains.
+     • Full HOME curtain = z 4790.
+     • Middle HOME curtain = z 4800 (top reveal layer).
+     • HOME hamburger is restored only after both reveal shields are mounted,
+       preventing a pre-curtain flash on refresh/navigation back HOME.
+
+   QUICK GUIDE:
+     • Custom progress rail moved farther right.
+     • Blue visual-cue button now reads PRIMARY NAV.
+     • Gray visual-cue button now reads SECONDARY NAV.
+     • Existing VISUAL CUES divider and all other guide wording retained.
+
+   No scoring, auth, leaderboard, summary, game-data, Geek, or Worker changes.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.58 — PRE-TEST NAV / CURTAIN / GAME-HOLE FIXES.
    Fresh continuation from exact V20.57.
 
@@ -13840,7 +13870,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   position:absolute!important;
   top:max(12px,env(safe-area-inset-top))!important;
   left:12px!important;
-  z-index:9102!important;
+  z-index:4702!important;
   width:48px!important;
   height:48px!important;
   display:flex!important;
@@ -13878,7 +13908,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 .home-menu-backdrop-v2054{
   position:fixed!important;
   inset:0!important;
-  z-index:9100!important;
+  z-index:4700!important;
   display:none!important;
   background:rgba(255,255,255,.14)!important;
   -webkit-backdrop-filter:blur(8px)!important;
@@ -13892,7 +13922,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   position:fixed!important;
   top:max(68px,calc(env(safe-area-inset-top) + 60px))!important;
   left:0!important;
-  z-index:9101!important;
+  z-index:4701!important;
   width:66.666vw!important;
   max-width:500px!important;
   min-width:0!important;
@@ -14168,7 +14198,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.58</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.59</span></span>
         </button>
 
       </div>
@@ -19924,7 +19954,6 @@ let scoreTimingDetail =
 
 
     async function showHome() {
-      setHomeHamburgerVisibleV2055(true);
 
       /* V19.88 — extend the proven V19.86/V19.87 HOME double-curtain entry
          to the remaining in-app HOME routes: CONTROL CENTER (testlog) and
@@ -19997,6 +20026,10 @@ let scoreTimingDetail =
          Reuse the established reveal-shield fade/timing rather than introducing
          a separate transition system. */
       const homeRevealShieldV1963 = beginHomeRevealV1963();
+
+      /* V20.59 — restore HOME hamburger only after both reveal shields exist.
+         It remains below both curtains and therefore reveals with HOME. */
+      setHomeHamburgerVisibleV2055(true);
 
       /* V19.76 — on a browser refresh HOME's mutable buttons were intentionally
          concealed before first paint. Do not expose them until the established
@@ -29568,12 +29601,10 @@ let scoreTimingDetail =
               '<div class="quick-guide-legend-heading-v2050">VISUAL CUES</div>' +
               '<div class="quick-guide-legend-divider-v2057"></div>' +
               '<div class="quick-guide-legend-row-v2050">' +
-                '<span class="quick-guide-fake-button-v2050 blue-v2050">BLUE</span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>PRIMARY / NAVIGATION</strong></span>' +
+                '<span class="quick-guide-fake-button-v2050 blue-v2050 nav-label-v2059">PRIMARY NAV</span>' +
               '</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
-                '<span class="quick-guide-fake-button-v2050 gray-v2050">GRAY</span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>SECONDARY</strong></span>' +
+                '<span class="quick-guide-fake-button-v2050 gray-v2050 nav-label-v2059">SECONDARY NAV</span>' +
               '</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-cue-icon-v2051"><span class="quick-guide-game-hole-sample-v2050">HOLE</span></span>' +
