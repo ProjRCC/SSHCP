@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.38-P5N8QK | BUILD KEY: 20.39-B4K7NV -->
+<!-- SSHCP | BASE KEY: 20.39-B4K7NV | BUILD KEY: 20.40-G2R5QV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -335,6 +335,7 @@
       --accent-name: Blue;
       --gold: var(--accent);
       --light-gray: #e6e6e6;
+      --sshcp-gray-2-5-v2040: #ededed;
       --test-blue: #6EC8FF;
       --text: #000000;
       --muted: #636363;
@@ -13124,6 +13125,15 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
 
 /* =========================================================
+   SSHCP V20.40 — GAME hole circles softened to gray 2.5.
+   Fresh continuation from exact V20.39.
+   On the scorecard, holes that are tagged as GAME holes no longer use the
+   Gold filled circle. They now use a softer gray-2.5 fill (#EDEDED) with the
+   same black numeral and the same Blue NESR/active-cell behavior.
+   No GAME MODE popup, Summary, Team Info, or scoring logic is changed.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.39 — GAME MODE backdrop only.
    Fresh branch from exact V20.38.
    The area behind the GAME MODE popup is now solid black (#000) instead of
@@ -13255,7 +13265,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   justify-content:center!important;
   flex:0 0 auto!important;
   border-radius:50%!important;
-  background:var(--feature-gold-v1825,#D4AF37)!important;
+  background:var(--sshcp-gray-2-5-v2040,#ededed)!important;
   color:#000!important;
   -webkit-text-fill-color:#000!important;
   font-size:52cqh!important;
@@ -13267,7 +13277,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   -webkit-text-fill-color:#000!important;
 }
 #scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
-  background:var(--feature-gold-v1825,#D4AF37)!important;
+  background:var(--sshcp-gray-2-5-v2040,#ededed)!important;
   color:#000!important;
   -webkit-text-fill-color:#000!important;
 }
@@ -13560,7 +13570,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.39</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.40</span></span>
         </button>
 
       </div>
