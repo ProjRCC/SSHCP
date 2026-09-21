@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.41-H6M2QT | BUILD KEY: 20.42-N4R7QV -->
+<!-- SSHCP | BASE KEY: 20.42-N4R7QV | BUILD KEY: 20.43-R8K3VM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13342,6 +13342,68 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 .modal-overlay.game-hole-info-v2026 .game-hole-entry-v2026 > .game-hole-value-v2026 + .game-hole-label-v2026{
   margin-top:17px!important;
 }
+
+/* =========================================================
+   SSHCP V20.43 — AFTER-PLAY PRIMARY ACTION COLOR
+   Fresh continuation from exact V20.42.
+
+   Dedicated post-play primary color: #8A6414.
+   Brown is used only by buttons that OPEN a special after-play experience.
+   HOME inside SCRAMBLE SUMMARY stays control gray.
+   TIE BREAK stays red.
+   GEEK MODE BACK and GAME MODE BACK stay app Blue.
+   ========================================================= */
+:root{
+  --sshcp-after-play-primary-v2043:#8A6414;
+}
+
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton:active,
+html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pressed-v172,
+
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary:active,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-action.tournament-summary.sshcp-button-pressed-v172,
+
+.modal-overlay.tournament-result .modal-btn.tournament-summary-button,
+.modal-overlay.tournament-result .modal-btn.tournament-summary-button:active,
+.modal-overlay.tournament-result .modal-btn.tournament-summary-button.sshcp-button-pressed-v172,
+
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-geek-button-v180,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-geek-button-v180:active,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-geek-button-v180.sshcp-button-pressed-v172,
+
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026:active,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026.sshcp-button-pressed-v172,
+
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-skins-button-v1627,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-skins-button-v1627:active,
+#modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-skins-button-v1627.sshcp-button-pressed-v172{
+  background:var(--sshcp-after-play-primary-v2043)!important;
+  border-color:var(--sshcp-after-play-primary-v2043)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+
+/* Back out of the special after-play modes using normal app Blue. */
+.modal-overlay.geek-mode-v180 .modal-actions.geek-actions-v186 > .modal-btn.geek-back-v180,
+.modal-overlay.geek-mode-v180 .modal-actions.geek-actions-v186 > .modal-btn.geek-back-v180:active,
+.modal-overlay.geek-mode-v180 .modal-actions.geek-actions-v186 > .modal-btn.geek-back-v180.sshcp-button-pressed-v172,
+
+.modal-overlay.game-mode-results-v2026 .modal-actions .modal-btn,
+.modal-overlay.game-mode-results-v2026 .modal-actions .modal-btn:active,
+.modal-overlay.game-mode-results-v2026 .modal-actions .modal-btn.sshcp-button-pressed-v172{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+
 </style>
 
 <style id="teamInfoStyleV2032">
@@ -13589,7 +13651,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.42</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.43</span></span>
         </button>
 
       </div>
