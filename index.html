@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.39-R6M4QX | BUILD KEY: 20.40-H7Q3NV -->
+<!-- SSHCP | BASE KEY: 20.37-K8R4MV | BUILD KEY: 20.38-P5N8QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9404,15 +9404,6 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   transition:opacity .6s ease-out!important;
 }
 
-/* V20.40 — GAME MODE reveal is bounded to the popup shell only.
-   Match the popup's 18px outer radius so no white square corners spill into
-   the dark surround while the .5s curtain fades away. */
-.sshcp-data-reveal-shield-v177.sshcp-game-mode-reveal-v2040{
-  background:#fff!important;
-  border-radius:18px!important;
-  transition:opacity .5s ease-out!important;
-}
-
 
 .qr-welcome-overlay-v170.sshcp-welcome-exit-v172{
   pointer-events:none!important;
@@ -13133,26 +13124,6 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
 
 /* =========================================================
-   SSHCP V20.40 — GAME MODE popup-only white reveal curtain.
-   The white reveal shield is no longer full-screen. It is geometry-bound to
-   the modal box itself, from the GAME MODE title through the BACK button.
-   The dark surround remains visible the entire time. The curtain is re-synced
-   to the final content-fit GAME MODE box before its established .5s fade.
-   All V20.39 Quick Guide wording and all prior GAME MODE behavior are retained.
-   ========================================================= */
-
-/* =========================================================
-   SSHCP V20.39 — GAME MODE white reveal curtain + Quick Guide wording.
-   - GAME MODE now opens behind an opaque WHITE full-screen reveal curtain
-     using the established .5s reveal-shield fade instead of the prior black
-     curtain.
-   - Quick Guide completion line now reads:
-     Explore SCRAMBLE SUMMARY, GAME or GEEK MODE at Scramble Completion
-   No GAME MODE data/layout, Summary sizing, Team Info, scoring, or HOME
-   behavior is changed.
-   ========================================================= */
-
-/* =========================================================
    SSHCP V20.38 — SCRAMBLE SUMMARY PLACE sizing.
    PLACE numbers are fully row-height-driven and independent of NET +/- width:
    1st = 50% of row height
@@ -13581,7 +13552,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.40</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.38</span></span>
         </button>
 
       </div>
@@ -26891,18 +26862,7 @@ let scoreTimingDetail =
     }
 
     async function showGameModePopupV2026() {
-      /* V20.40 — immediately white-cover only the current popup shell while
-         GAME MODE data loads. The surrounding dark overlay remains visible. */
-      const revealShieldV2026 = beginDataRevealShieldV177(
-        'game-mode-v2026',
-        [els.modalBox],
-        '#fff',
-        false,
-        6100
-      );
-      if (revealShieldV2026) {
-        revealShieldV2026.classList.add('sshcp-game-mode-reveal-v2040');
-      }
+      const revealShieldV2026 = beginDataRevealShieldV177('game-mode-v2026', [], '#000', true, 6100);
       startLoadingLine();
 
       const [skinsResult, gamesResult] = await Promise.allSettled([
@@ -26929,7 +26889,7 @@ let scoreTimingDetail =
       }
 
       renderGameModePopupV2026(skinsResults, gamesRows, skinsUnavailable, gamesUnavailable);
-      revealDataShieldAfterLayoutV177('game-mode-v2026', revealShieldV2026, 2, [els.modalBox]);
+      revealDataShieldAfterLayoutV177('game-mode-v2026', revealShieldV2026, 2, [els.modalBody]);
     }
 
     function positionSummaryNavigationV182() {
@@ -28826,7 +28786,7 @@ let scoreTimingDetail =
           '<div class="quick-guide-line-v172"><strong>LEADERBOARD</strong> for Current Standings</div>' +
           '<div class="quick-guide-line-v172"><strong>REFRESH</strong> for the Latest Standings</div>' +
           '<div class="quick-guide-line-v172"><strong>SCORECARD</strong> to go back to Team Scorecard</div>' +
-          '<div class="quick-guide-line-v172">Explore <strong>SCRAMBLE SUMMARY, GAME or GEEK MODE</strong> at Scramble Completion</div>' +
+          '<div class="quick-guide-line-v172">Explore <strong>SCRAMBLE SUMMARY, SKINS or GEEK MODE</strong> at Scramble Completion</div>' +
           '<div class="quick-guide-line-v172">Closing Browser/Site will <strong>NOT</strong> reset scores</div>' +
         '</div>';
 
