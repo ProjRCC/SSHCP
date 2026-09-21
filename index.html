@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.45-V5M8QK | BUILD KEY: 20.46-Q7N4RM -->
+<!-- SSHCP | BASE KEY: 20.46-Q7N4RM | BUILD KEY: 20.47-L6Q9RV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13425,6 +13425,21 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 /* =========================================================
+   SSHCP V20.47 — SELECTED BUTTON TYPOGRAPHY = 60%.
+   Fresh continuation from exact V20.46.
+
+   ONLY these established button groups change:
+     • SCRAMBLE SUMMARY footer: GEEK / HOME / GAME = 60%
+     • GEEK MODE footer: BACK / FILTERS = 60%
+     • SCORECARD footer: LEADERBOARD = 60%
+
+   Percentage is relative to each button's live rendered height.
+   Existing fit-to-width logic remains authoritative, so text may shrink
+   only if necessary to fit. No button geometry, wording, color, action,
+   destination, popup, table, scorecard, or other typography changes.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.46 — SCRAMBLE SUMMARY footer labels.
    Fresh continuation from exact V20.45.
    Footer text only:
@@ -13445,7 +13460,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 #modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-geek-button-v180,
 #modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-back-v1845,
 #modalActions.tournament-summary-actions-v1627 > .modal-btn.summary-game-mode-button-v2026{
-  font-size:calc(var(--v187-post-button-h,70px) * .50)!important;
+  font-size:calc(var(--v187-post-button-h,50px) * .60)!important;
   line-height:1!important;
 }
 
@@ -13696,7 +13711,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.46</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.47</span></span>
         </button>
 
       </div>
@@ -21368,7 +21383,7 @@ let scoreTimingDetail =
 
       const footerButton = els.scorecardView.querySelector('.score-bottom-actions .leaderboard-button');
       if (footerButton) {
-        fitTextToBoxV5(footerButton, footerButton, footerButton.clientHeight * 0.40, 13, {
+        fitTextToBoxV5(footerButton, footerButton, footerButton.clientHeight * 0.60, 13, {
           horizontalPad: 12,
           verticalPad: 6,
           wrap: false,
@@ -25696,7 +25711,7 @@ let scoreTimingDetail =
         const filters = els.modalActions.querySelector('.geek-filter-button-v186');
         [back, filters].filter(Boolean).forEach(button => {
           const h = button.getBoundingClientRect().height || 58;
-          fitTextToBoxV5(button, button, h * 0.40, 12, {
+          fitTextToBoxV5(button, button, h * 0.60, 12, {
             horizontalPad: 10,
             verticalPad: 6,
             wrap: false,
