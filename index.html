@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.55-T4Q8MK | BUILD KEY: 20.56-F7N3QK -->
+<!-- SSHCP | BASE KEY: 20.57-H2L6PV | BUILD KEY: 20.58-M7Q2RV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9058,6 +9058,13 @@ html.sshcp-tournament-complete #homeView .home-scorecard-team{
 
 
 
+/* V20.58 — Welcome owns the entire first-screen presentation. */
+html.sshcp-qr-welcome-v170 #homeMenuToggleV2054,
+html.sshcp-qr-welcome-v170 #homeMenuPanelV2054,
+html.sshcp-qr-welcome-v170 #homeMenuBackdropV2054{
+  display:none!important;
+}
+
 .qr-welcome-overlay-v170{
   position:fixed;
   inset:0;
@@ -9402,6 +9409,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
    reveal. The Welcome splash path never receives this curtain. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
   background:#fff!important;
+  z-index:9200!important;
   transition:opacity .6s ease-out!important;
 }
 
@@ -12362,6 +12370,12 @@ button.sshcp-button-pressed-v172{
   font-weight:800;
   letter-spacing:.02em;
 }
+.quick-guide-legend-divider-v2057{
+  width:100%;
+  height:1px;
+  background:#b9b9b9;
+  margin:2px 0 4px;
+}
 .quick-guide-legend-row-v2050{
   display:flex;
   align-items:center;
@@ -13802,6 +13816,18 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 }
 
 /* =========================================================
+   SSHCP V20.58 — PRE-TEST NAV / CURTAIN / GAME-HOLE FIXES.
+   Fresh continuation from exact V20.57.
+
+   • Hamburger is suppressed for the WELCOME splash and restored only after
+     Welcome is fully dismissed.
+   • HOME full-screen refresh curtain is layered above the hamburger/menu.
+   • Scorecard gray game-hole click binds to that hole's exact Game Mode row
+     and uses its GAME value (GAMEmode column C) for the popup title.
+   • V20.57 QUICK GUIDE menu entry / guide hamburger hide / visual divider retained.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.54 — HOME HAMBURGER NAVIGATION DRAWER.
    HOME-only hamburger sits over the upper-left logo area.
    Drawer occupies ~2/3 viewport width; everything behind is blurred.
@@ -14142,7 +14168,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.56</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.58</span></span>
         </button>
 
       </div>
@@ -14174,6 +14200,7 @@ body.team-info-open-v2032{
       <button id="homeMenuGeekV2054" class="home-menu-item-v2054 after-v2054" type="button">GEEK STATS</button>
       <button id="homeMenuGameV2054" class="home-menu-item-v2054 after-v2054" type="button">GAME STATS</button>
       <button id="homeMenuEventV2054" class="home-menu-item-v2054 secondary-v2054" type="button">EVENT INFORMATION</button>
+      <button id="homeMenuGuideV2057" class="home-menu-item-v2054 secondary-v2054" type="button">QUICK GUIDE</button>
     </nav>
 
   </section>
@@ -15240,8 +15267,10 @@ body.team-info-open-v2032{
         });
     }
 
-    function showGameHolePopupV2026(holeValue) {
-      const rows = gameModeRowsForHoleV2026(holeValue);
+    function showGameHolePopupV2026(holeValue, rowsOverrideV2058 = null) {
+      const rows = Array.isArray(rowsOverrideV2058) && rowsOverrideV2058.length
+        ? rowsOverrideV2058
+        : gameModeRowsForHoleV2026(holeValue);
       if (!rows.length) return;
 
       closeModal();
@@ -19862,16 +19891,21 @@ let scoreTimingDetail =
       const toggleV2055 = document.getElementById('homeMenuToggleV2054');
       const panelV2055 = document.getElementById('homeMenuPanelV2054');
       const backdropV2055 = document.getElementById('homeMenuBackdropV2054');
+      const welcomeActiveV2058 = !!(
+        window.__sshcpIncomingQrWelcomeV170 ||
+        document.documentElement.classList.contains('sshcp-qr-welcome-v170')
+      );
+      const actuallyVisibleV2058 = !!visibleV2055 && !welcomeActiveV2058;
 
       if (toggleV2055) {
         toggleV2055.style.setProperty(
           'display',
-          visibleV2055 ? 'flex' : 'none',
+          actuallyVisibleV2058 ? 'flex' : 'none',
           'important'
         );
       }
 
-      if (!visibleV2055) {
+      if (!actuallyVisibleV2058) {
         if (panelV2055) {
           panelV2055.classList.remove('open');
           panelV2055.setAttribute('aria-hidden','true');
@@ -22050,20 +22084,32 @@ let scoreTimingDetail =
              .next-hole-cell NESR Blue cue win while recoloring its number Gold. */
           const gameRowsForHoleV2026 = gameModeRowsForHoleV2026(hole.hole);
           if (gameRowsForHoleV2026.length) {
+            /* V20.58 — bind this rendered cell to an immutable snapshot of its
+               exact Game Mode row(s). This prevents a later refresh/global-row
+               change from making a different gray hole reuse another game's
+               title. GAME comes directly from the normalized CF gameMode row,
+               which is GAMEmode column C. */
+            const gameHoleValueV2058 = String(hole.hole);
+            const gameRowsSnapshotV2058 = gameRowsForHoleV2026.map(item => ({
+              hole: String(item.hole || ''),
+              game: String(item.game || ''),
+              winner: String(item.winner || 'TBD')
+            }));
+
             holeCell.classList.add('game-mode-hole-v2026');
             holeCell.setAttribute('role', 'button');
             holeCell.setAttribute('tabindex', '0');
             holeCell.setAttribute(
               'aria-label',
-              'Game Mode hole ' + String(hole.hole) + ': ' +
-              gameRowsForHoleV2026.map(item => item.game || 'GAME').join(', ')
+              'Game Mode hole ' + gameHoleValueV2058 + ': ' +
+              gameRowsSnapshotV2058.map(item => item.game || 'GAME').join(', ')
             );
             holeCell.addEventListener('pointerdown', () => triggerHapticV185(10), { passive:true });
-            holeCell.addEventListener('click', () => showGameHolePopupV2026(hole.hole));
+            holeCell.addEventListener('click', () => showGameHolePopupV2026(gameHoleValueV2058, gameRowsSnapshotV2058));
             holeCell.addEventListener('keydown', event => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                showGameHolePopupV2026(hole.hole);
+                showGameHolePopupV2026(gameHoleValueV2058, gameRowsSnapshotV2058);
               }
             });
           }
@@ -29489,6 +29535,10 @@ let scoreTimingDetail =
 
     function showQuickGuide() {
 
+      if (typeof setHomeHamburgerVisibleV2055 === 'function') {
+        setHomeHamburgerVisibleV2055(false);
+      }
+
       syncQuickGuideBodyFontV1816();
       closeModal();
 
@@ -29516,6 +29566,7 @@ let scoreTimingDetail =
           '<div class="quick-guide-lines-v172">' +
             '<div class="quick-guide-legend-v2050">' +
               '<div class="quick-guide-legend-heading-v2050">VISUAL CUES</div>' +
+              '<div class="quick-guide-legend-divider-v2057"></div>' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 blue-v2050">BLUE</span>' +
                 '<span class="quick-guide-legend-copy-v2050"><strong>PRIMARY / NAVIGATION</strong></span>' +
@@ -30686,6 +30737,9 @@ let scoreTimingDetail =
       document.documentElement.classList.remove('sshcp-qr-welcome-v170');
       window.__sshcpIncomingQrWelcomeV170 = false;
       window.__sshcpWelcomeModeV180b = '';
+      if (currentView === 'home' && typeof setHomeHamburgerVisibleV2055 === 'function') {
+        setHomeHamburgerVisibleV2055(true);
+      }
     }
 
     function dismissQrWelcomeAnimatedV172() {
@@ -31322,9 +31376,10 @@ let scoreTimingDetail =
     var geek = document.getElementById('homeMenuGeekV2054');
     var game = document.getElementById('homeMenuGameV2054');
     var eventInfo = document.getElementById('homeMenuEventV2054');
+    var quickGuide = document.getElementById('homeMenuGuideV2057');
 
     if (!toggle || !backdrop || !panel || !scorecard || !leaderboard ||
-        !summary || !geek || !game || !eventInfo) return;
+        !summary || !geek || !game || !eventInfo || !quickGuide) return;
 
     function tournamentCompleteV2054(){
       try {
@@ -31379,7 +31434,7 @@ let scoreTimingDetail =
 
       if (typeof fitTextToBoxV5 === 'function') {
         requestAnimationFrame(function(){
-          [scorecard, leaderboard, summary, geek, game, eventInfo].forEach(function(button){
+          [scorecard, leaderboard, summary, geek, game, eventInfo, quickGuide].forEach(function(button){
             if (!button || !button.isConnected) return;
             var h = button.getBoundingClientRect().height || 50;
             fitTextToBoxV5(button, button, h * 0.42, 12, {
@@ -31473,6 +31528,11 @@ let scoreTimingDetail =
       if (typeof window.openTeamInfoV2054 === 'function') {
         window.openTeamInfoV2054(event);
       }
+    });
+
+    quickGuide.addEventListener('click', function(){
+      closeMenuV2054();
+      if (typeof showQuickGuide === 'function') showQuickGuide();
     });
 
     window.addEventListener('keydown', function(event){
