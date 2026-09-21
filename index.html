@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.61-V8M4QK | BUILD KEY: 20.62-C9R5LX -->
+<!-- SSHCP | BASE KEY: 20.62-C9R5LX | BUILD KEY: 20.63-D4M8QX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13818,6 +13818,26 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 }
 
 /* =========================================================
+   SSHCP V20.63 — GAME-HOLE MARKER AND POPUP SHARE ONE EXACT ROW.
+   Fresh continuation from exact V20.62.
+
+   SCORECARD GAME-HOLE DETAIL ONLY:
+     • Builds a Map keyed by GAMEmode HOLE whenever the gameMode rows load.
+     • The same exact indexed row that makes a scorecard hole gray is the row
+       used for that hole's popup title and winner.
+     • Click reads the displayed HOLE text from event.currentTarget itself.
+     • No click-time refetch.
+     • No first-row/default-game fallback.
+     • No shared "current game" selection.
+
+   This makes the relationship deterministic:
+     gray Hole 7 -> indexed Hole 7 row -> that row's GAME (column C).
+
+   No Worker, GAME MODE popup, scoring, leaderboard, summary, Geek Mode,
+   Quick Guide, authorization, HOME/menu, or curtain behavior changes.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.62 — EXACT CLICKED GAME-HOLE ROW RESOLUTION.
    Fresh continuation from exact V20.61.
 
@@ -14240,7 +14260,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.62</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.63</span></span>
         </button>
 
       </div>
@@ -15283,6 +15303,7 @@ body.team-info-open-v2032{
        CF V3.1 is read-only. Failure here never blocks scorecard scoring.
        ========================================================= */
     let gameModeRowsV2026 = [];
+    let gameModeRowsByHoleV2063 = new Map();
     let gameModeLoadPromiseV2026 = null;
 
     function normalizeGameModeRowsV2026(rows) {
@@ -15295,10 +15316,33 @@ body.team-info-open-v2032{
         .filter(row => row.hole || row.game || row.winner !== 'TBD');
     }
 
+    function normalizeGameHoleKeyV2063(holeValue) {
+      const rawV2063 = String(holeValue ?? '').trim();
+      if (!rawV2063) return '';
+      const numericV2063 = Number(rawV2063);
+      return Number.isFinite(numericV2063)
+        ? String(Math.trunc(numericV2063))
+        : rawV2063;
+    }
+
+    function rebuildGameModeHoleIndexV2063(rowsV2063) {
+      const nextV2063 = new Map();
+
+      (Array.isArray(rowsV2063) ? rowsV2063 : []).forEach(rowV2063 => {
+        const keyV2063 = normalizeGameHoleKeyV2063(rowV2063 && rowV2063.hole);
+        if (!keyV2063) return;
+
+        if (!nextV2063.has(keyV2063)) nextV2063.set(keyV2063, []);
+        nextV2063.get(keyV2063).push(rowV2063);
+      });
+
+      gameModeRowsByHoleV2063 = nextV2063;
+    }
+
     function gameModeRowsForHoleV2026(holeValue) {
-      const key = String(holeValue ?? '').trim();
-      if (!key) return [];
-      return gameModeRowsV2026.filter(row => String(row.hole || '').trim() === key);
+      const keyV2063 = normalizeGameHoleKeyV2063(holeValue);
+      if (!keyV2063) return [];
+      return (gameModeRowsByHoleV2063.get(keyV2063) || []).slice();
     }
 
     async function fetchGameModeRowsV2026(forceFresh = false) {
@@ -15316,6 +15360,7 @@ body.team-info-open-v2032{
         }
         const rows = normalizeGameModeRowsV2026(data.games);
         gameModeRowsV2026 = rows;
+        rebuildGameModeHoleIndexV2063(rows);
         return rows;
       })();
 
@@ -15378,23 +15423,17 @@ body.team-info-open-v2032{
       }
     }
 
-    async function openFreshGameHolePopupV2062(holeValue) {
-      const keyV2062 = String(holeValue ?? '').trim();
-      if (!keyV2062) return;
+    function openIndexedGameHolePopupV2063(holeValue) {
+      const keyV2063 = normalizeGameHoleKeyV2063(holeValue);
+      if (!keyV2063) return;
 
-      let rowsV2062 = [];
-      try {
-        const freshRowsV2062 = await fetchGameModeRowsV2026(true);
-        rowsV2062 = (Array.isArray(freshRowsV2062) ? freshRowsV2062 : []).filter(row => (
-          String((row && row.hole) || '').trim() === keyV2062
-        ));
-      } catch (errorV2062) {
-        console.warn('Fresh Game Mode detail unavailable; using cached exact-hole row:', errorV2062);
-        rowsV2062 = gameModeRowsForHoleV2026(keyV2062);
-      }
+      /* V20.63: the exact same indexed row that caused this hole to receive
+         the gray GAME marker is the row used for its popup title. There is no
+         second fetch, no shared-current-row selection, and no first-row fallback. */
+      const rowsV2063 = gameModeRowsForHoleV2026(keyV2063);
+      if (!rowsV2063.length) return;
 
-      if (!rowsV2062.length) return;
-      showGameHolePopupV2026(keyV2062, rowsV2062);
+      showGameHolePopupV2026(keyV2063, rowsV2063);
     }
 
 
@@ -22178,31 +22217,37 @@ let scoreTimingDetail =
              .next-hole-cell NESR Blue cue win while recoloring its number Gold. */
           const gameRowsForHoleV2026 = gameModeRowsForHoleV2026(hole.hole);
           if (gameRowsForHoleV2026.length) {
-            /* V20.61 — the gray-hole detail no longer captures a Game Mode row
-               snapshot at render time. It retains only the clicked hole number;
-               activation performs a fresh gameMode read, then resolves that same
-               hole from the current B/C/D data. */
-            const gameHoleValueV2062 = String(hole.hole);
+            /* V20.63 — a gray GAME marker and its popup now use the exact same
+               pre-indexed Game Mode row, keyed by the hole number displayed in
+               this cell. No separate click-time fetch or cross-row state exists. */
+            const gameHoleValueV2063 = normalizeGameHoleKeyV2063(hole.hole);
 
             holeCell.classList.add('game-mode-hole-v2026');
-            holeCell.dataset.gameHoleV2062 = gameHoleValueV2062;
             holeCell.setAttribute('role', 'button');
             holeCell.setAttribute('tabindex', '0');
             holeCell.setAttribute(
               'aria-label',
-              'Game Mode hole ' + gameHoleValueV2062 + ': ' +
+              'Game Mode hole ' + gameHoleValueV2063 + ': ' +
               gameRowsForHoleV2026.map(item => item.game || 'GAME').join(', ')
             );
+
+            const openThisGameHoleV2063 = eventV2063 => {
+              const clickedCellV2063 = eventV2063.currentTarget;
+              const displayedHoleV2063 = String(
+                clickedCellV2063 &&
+                clickedCellV2063.querySelector('.hole-number') &&
+                clickedCellV2063.querySelector('.hole-number').textContent || ''
+              ).trim();
+
+              openIndexedGameHolePopupV2063(displayedHoleV2063);
+            };
+
             holeCell.addEventListener('pointerdown', () => triggerHapticV185(10), { passive:true });
-            holeCell.addEventListener('click', event => {
-              const clickedHoleV2062 = String(event.currentTarget?.dataset?.gameHoleV2062 || '').trim();
-              if (clickedHoleV2062) void openFreshGameHolePopupV2062(clickedHoleV2062);
-            });
+            holeCell.addEventListener('click', openThisGameHoleV2063);
             holeCell.addEventListener('keydown', event => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                const clickedHoleV2062 = String(event.currentTarget?.dataset?.gameHoleV2062 || '').trim();
-                if (clickedHoleV2062) void openFreshGameHolePopupV2062(clickedHoleV2062);
+                openThisGameHoleV2063(event);
               }
             });
           }
