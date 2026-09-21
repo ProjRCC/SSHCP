@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.53-C6V9RM | BUILD KEY: 20.54-J9R4NV -->
+<!-- SSHCP | BASE KEY: 20.55-T4Q8MK | BUILD KEY: 20.56-F7N3QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13589,6 +13589,43 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 /* =========================================================
+   SSHCP V20.56 — REMOVE REDUNDANT HOME MENU ITEM.
+   Fresh continuation from exact V20.55.
+
+   HOME MENU only:
+     • Removes HOME from the drawer because the drawer itself is HOME-only.
+     • Keeps SCORECARD - TEAM NAME as the first item.
+     • Keeps Blue hamburger with white lines / X.
+     • Keeps LIVE LEADERBOARD during play.
+     • Keeps LEADERBOARD - FINAL after completion.
+     • Keeps hamburger hidden on Summary / Geek / Game / Event Information.
+
+   No other navigation, scoring, post-play, menu, or popup behavior changes.
+   ========================================================= */
+
+/* =========================================================
+   SSHCP V20.55 — HOME MENU POLISH.
+   Fresh continuation from exact V20.54.
+
+   HOME MENU:
+     • Adds HOME above SCORECARD; HOME is Blue.
+     • Hamburger button is Blue with white lines / X.
+     • Leaderboard menu label:
+       LIVE LEADERBOARD during play.
+       LEADERBOARD - FINAL after completion.
+
+   MODAL VISIBILITY:
+     • Hamburger is hidden while SCRAMBLE SUMMARY is open.
+     • Hamburger is hidden while GEEK MODE is open.
+     • Hamburger is hidden while GAME MODE is open.
+     • Hamburger is hidden while EVENT INFORMATION is open.
+     • Returning HOME restores the hamburger.
+
+   Existing drawer width/blur, disabled post-play states, Event Info route,
+   and origin-aware Geek/Game BACK behavior are preserved.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.54 — HOME HAMBURGER NAVIGATION.
    Fresh continuation from exact V20.53.
 
@@ -13788,9 +13825,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   padding:0!important;
   border:0!important;
   border-radius:10px!important;
-  background:rgba(255,255,255,.86)!important;
-  color:#000!important;
-  box-shadow:0 0 0 1px rgba(0,0,0,.08)!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  box-shadow:none!important;
   -webkit-tap-highlight-color:transparent!important;
   touch-action:manipulation!important;
 }
@@ -13799,7 +13836,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   width:27px!important;
   height:3px!important;
   border-radius:999px!important;
-  background:#000!important;
+  background:var(--on-accent)!important;
   transition:transform .18s ease,opacity .18s ease!important;
 }
 #homeMenuToggleV2054[aria-expanded="true"] span:nth-child(1){
@@ -14105,7 +14142,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.54</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.56</span></span>
         </button>
 
       </div>
@@ -19821,7 +19858,39 @@ let scoreTimingDetail =
       await showScorecard();
     }
 
+    function setHomeHamburgerVisibleV2055(visibleV2055) {
+      const toggleV2055 = document.getElementById('homeMenuToggleV2054');
+      const panelV2055 = document.getElementById('homeMenuPanelV2054');
+      const backdropV2055 = document.getElementById('homeMenuBackdropV2054');
+
+      if (toggleV2055) {
+        toggleV2055.style.setProperty(
+          'display',
+          visibleV2055 ? 'flex' : 'none',
+          'important'
+        );
+      }
+
+      if (!visibleV2055) {
+        if (panelV2055) {
+          panelV2055.classList.remove('open');
+          panelV2055.setAttribute('aria-hidden','true');
+        }
+        if (backdropV2055) {
+          backdropV2055.classList.remove('open');
+          backdropV2055.setAttribute('aria-hidden','true');
+        }
+        if (toggleV2055) {
+          toggleV2055.setAttribute('aria-expanded','false');
+          toggleV2055.setAttribute('aria-label','Open navigation menu');
+        }
+        document.body.classList.remove('home-menu-open-v2054');
+      }
+    }
+
+
     async function showHome() {
+      setHomeHamburgerVisibleV2055(true);
 
       /* V19.88 — extend the proven V19.86/V19.87 HOME double-curtain entry
          to the remaining in-app HOME routes: CONTROL CENTER (testlog) and
@@ -26563,6 +26632,7 @@ let scoreTimingDetail =
     }
 
     async function openGeekModeV180() {
+      setHomeHamburgerVisibleV2055(false);
       syncSharedGeometryV187();
       /* V19.33: every visible GEEK entry starts a fresh validation set and
          retires only prior GEEK log rows; the rest of the Control Center run remains. */
@@ -27489,6 +27559,7 @@ let scoreTimingDetail =
     }
 
     async function showGameModePopupV2026() {
+      setHomeHamburgerVisibleV2055(false);
       const revealShieldV2026 = beginDataRevealShieldV177('game-mode-v2026', [], '#000', true, 6100);
       startLoadingLine();
 
@@ -27607,6 +27678,7 @@ let scoreTimingDetail =
     }
 
     function showTournamentSummary() {
+      setHomeHamburgerVisibleV2055(false);
       syncSharedGeometryV187();
       if (!tournamentIsComplete(lastLeaderboardRows)) {
         closeModal();
@@ -31171,6 +31243,9 @@ let scoreTimingDetail =
     } catch (_) {}
 
     window.openTeamInfoV2054 = function(event){
+      if (typeof setHomeHamburgerVisibleV2055 === 'function') {
+        setHomeHamburgerVisibleV2055(false);
+      }
       if (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -31297,6 +31372,7 @@ let scoreTimingDetail =
       scorecard.textContent = 'SCORECARD - ' + (team || 'SELECT TEAM');
 
       var complete = tournamentCompleteV2054();
+      leaderboard.textContent = complete ? 'LEADERBOARD - FINAL' : 'LIVE LEADERBOARD';
       setDisabledV2054(summary, !complete);
       setDisabledV2054(geek, !complete);
       setDisabledV2054(game, !complete);
@@ -31406,6 +31482,9 @@ let scoreTimingDetail =
     });
 
     window.refreshHomeMenuV2054 = refreshMenuV2054;
+    if (typeof setHomeHamburgerVisibleV2055 === 'function') {
+      setHomeHamburgerVisibleV2055(true);
+    }
     refreshMenuV2054();
   }
 
