@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.49-K8M3QV | BUILD KEY: 20.50-R6N2VK -->
+<!-- SSHCP | BASE KEY: 20.50-R6N2VK | BUILD KEY: 20.51-H7Q4MN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12364,10 +12364,18 @@ button.sshcp-button-pressed-v172{
   gap:9px;
   min-height:32px;
 }
+.quick-guide-cue-icon-v2051{
+  min-width:64px;
+  width:64px;
+  flex:0 0 64px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 .quick-guide-game-hole-sample-v2050{
-  width:32px;
-  height:32px;
-  flex:0 0 32px;
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -12376,12 +12384,15 @@ button.sshcp-button-pressed-v172{
   color:#000;
   -webkit-text-fill-color:#000;
   font-weight:800;
+  font-size:10px;
+  letter-spacing:.01em;
   line-height:1;
 }
 .quick-guide-fake-button-v2050{
   min-width:64px;
+  width:64px;
   height:30px;
-  flex:0 0 auto;
+  flex:0 0 64px;
   padding:0 8px;
   border-radius:7px;
   display:inline-flex;
@@ -13574,6 +13585,21 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 /* =========================================================
+   SSHCP V20.51 — QUICK GUIDE LEGEND CLEANUP.
+   Fresh continuation from exact V20.50.
+
+   QUICK GUIDE only:
+     • Removes Blue/Gray score-submission explanation lines.
+     • Moves VISUAL CUES to the top of the scrollable guide.
+     • GAME cue now uses a centered Gray HOLE circle aligned with the
+       BLUE / GOLD / GRAY sample buttons.
+     • GAME cue copy simplified to: Game - tap for detail.
+
+   Internal progress indicator and fixed title/footer remain unchanged.
+   No scoring, popup, Starting Hole, navigation, or result logic changes.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.50 — QUICK GUIDE VISUAL CUES + INTERNAL PROGRESS.
    Fresh continuation from exact V20.49.
 
@@ -13910,7 +13936,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.50</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.51</span></span>
         </button>
 
       </div>
@@ -29179,22 +29205,11 @@ let scoreTimingDetail =
       els.modalBody.innerHTML =
         '<div class="quick-guide-scroll-v2050">' +
           '<div class="quick-guide-lines-v172">' +
-            '<div class="quick-guide-line-v172">Tap <strong>ACCESS SCORECARD (YOUR TEAM)</strong></div>' +
-            '<div class="quick-guide-line-v172">Tap any <strong>Score Box</strong></div>' +
-            '<div class="quick-guide-line-v172">Use <strong>− / + / CLEAR</strong> to set score, then <strong>ENTER</strong></div>' +
-            '<div class="quick-guide-line-v172 indent-v172"><strong>' + escapeHtml(accentName) + '</strong> = Successfully Submitted</div>' +
-            '<div class="quick-guide-line-v172 indent-v172"><strong>Gray</strong> = Not Submitted - Refresh Page</div>' +
-            '<div class="quick-guide-line-v172">Tap any Submitted Score to <strong>Edit</strong></div>' +
-            '<div class="quick-guide-line-v172"><strong>LEADERBOARD</strong> for Current Standings</div>' +
-            '<div class="quick-guide-line-v172"><strong>REFRESH</strong> for the Latest Standings</div>' +
-            '<div class="quick-guide-line-v172"><strong>SCORECARD</strong> to go back to Team Scorecard</div>' +
-            '<div class="quick-guide-line-v172">Explore <strong>SCRAMBLE SUMMARY, GAME or GEEK MODE</strong> at Scramble Completion</div>' +
-            '<div class="quick-guide-line-v172">Closing Browser/Site will <strong>NOT</strong> reset scores</div>' +
             '<div class="quick-guide-legend-v2050">' +
               '<div class="quick-guide-legend-heading-v2050">VISUAL CUES</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
-                '<span class="quick-guide-game-hole-sample-v2050">13</span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>Gray Circle</strong> = GAME on that Hole — Tap for Details</span>' +
+                '<span class="quick-guide-cue-icon-v2051"><span class="quick-guide-game-hole-sample-v2050">HOLE</span></span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>Game</strong> - tap for detail</span>' +
               '</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 blue-v2050">BLUE</span>' +
@@ -29209,6 +29224,15 @@ let scoreTimingDetail =
                 '<span class="quick-guide-legend-copy-v2050"><strong>Secondary</strong></span>' +
               '</div>' +
             '</div>' +
+            '<div class="quick-guide-line-v172">Tap <strong>ACCESS SCORECARD (YOUR TEAM)</strong></div>' +
+            '<div class="quick-guide-line-v172">Tap any <strong>Score Box</strong></div>' +
+            '<div class="quick-guide-line-v172">Use <strong>− / + / CLEAR</strong> to set score, then <strong>ENTER</strong></div>' +
+            '<div class="quick-guide-line-v172">Tap any Submitted Score to <strong>Edit</strong></div>' +
+            '<div class="quick-guide-line-v172"><strong>LEADERBOARD</strong> for Current Standings</div>' +
+            '<div class="quick-guide-line-v172"><strong>REFRESH</strong> for the Latest Standings</div>' +
+            '<div class="quick-guide-line-v172"><strong>SCORECARD</strong> to go back to Team Scorecard</div>' +
+            '<div class="quick-guide-line-v172">Explore <strong>SCRAMBLE SUMMARY, GAME or GEEK MODE</strong> at Scramble Completion</div>' +
+            '<div class="quick-guide-line-v172">Closing Browser/Site will <strong>NOT</strong> reset scores</div>' +
           '</div>' +
         '</div>' +
         '<div class="quick-guide-progress-v2050" aria-hidden="true">' +
