@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.62-C9R5LX | BUILD KEY: 20.63-D4M8QX -->
+<!-- SSHCP | BASE KEY: 20.63-D4M8QX | BUILD KEY: 20.64-K7Q3MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13818,6 +13818,25 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 }
 
 /* =========================================================
+   SSHCP V20.64 — FIX STICKY GAME-HOLE POPUP TITLE CACHE.
+   Fresh continuation from exact V20.63.
+
+   ROOT CAUSE:
+     • fitIntactSingleLineV2027 caches text in data-v2027-text.
+     • modalTitle is reused between game-hole popups.
+     • The first tapped game's title stayed cached.
+     • Later popups briefly received the correct GAME title, then the fitter
+       restored the first cached title.
+
+   FIX:
+     • Whenever a game-hole popup opens, data-v2027-text is refreshed to the
+       current row's GAME title before fitGameHolePopupV2027 runs.
+
+   No Worker, sheet read, game-row lookup, scoring, leaderboard, Game Mode,
+   Quick Guide, menu, curtain, or other UI behavior changes.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.63 — GAME-HOLE MARKER AND POPUP SHARE ONE EXACT ROW.
    Fresh continuation from exact V20.62.
 
@@ -14260,7 +14279,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.63</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.64</span></span>
         </button>
 
       </div>
@@ -15393,7 +15412,14 @@ body.team-info-open-v2032{
       closeModal();
       els.modalOverlay.classList.add('game-hole-info-v2026');
       const popupGameNameV2027 = String((rows[0] && rows[0].game) || 'GAME MODE').trim() || 'GAME MODE';
+
+      /* V20.64 — modalTitle is a reused DOM node. fitIntactSingleLineV2027()
+         caches its source text in data-v2027-text, so the FIRST game title
+         previously became sticky and was restored over later correct titles.
+         Refresh the fitter cache to the title for THIS exact game row before
+         any sizing pass runs. */
       els.modalTitle.textContent = popupGameNameV2027;
+      els.modalTitle.dataset.v2027Text = popupGameNameV2027;
       els.modalTitle.classList.remove('testing');
       els.modalInput.style.display = 'none';
 
