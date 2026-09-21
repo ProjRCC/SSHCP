@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.44-T6Q2KN | BUILD KEY: 20.45-V5M8QK -->
+<!-- SSHCP | BASE KEY: 20.45-V5M8QK | BUILD KEY: 20.46-Q7N4RM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13425,6 +13425,17 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 /* =========================================================
+   SSHCP V20.46 — SCRAMBLE SUMMARY footer labels.
+   Fresh continuation from exact V20.45.
+   Footer text only:
+     GEEK MODE -> GEEK
+     HOME      -> HOME
+     GAME MODE -> GAME
+   All three retain the identical V20.45 50%-of-button-height font sizing.
+   No geometry, colors, actions, destinations, or popup titles change.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.45 — SCRAMBLE SUMMARY footer typography.
    Fresh continuation from exact V20.44.
    GEEK MODE / HOME / GAME MODE use the SAME font size:
@@ -13685,7 +13696,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.45</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.46</span></span>
         </button>
 
       </div>
@@ -27218,9 +27229,9 @@ let scoreTimingDetail =
          naturally recreates the same state. */
       const summaryLowerV1931 = els.modalBody.querySelector('.tournament-summary-remaining');
       if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
-      const geekAction = makeModalButton('GEEK MODE', 'summary-geek-button-v180', openGeekModeV180);
+      const geekAction = makeModalButton('GEEK', 'summary-geek-button-v180', openGeekModeV180);
       const home = makeModalButton('HOME', 'summary-back-v1845 summary-home-footer-v1848', showHome);
-      const gameMode = makeModalButton('GAME MODE', 'summary-game-mode-button-v2026', showGameModePopupV2026);
+      const gameMode = makeModalButton('GAME', 'summary-game-mode-button-v2026', showGameModePopupV2026);
       els.modalActions.className = 'modal-actions tournament-summary-actions-v1627';
       els.modalActions.replaceChildren(geekAction, home, gameMode);
       els.modalOverlay.classList.add('open');
