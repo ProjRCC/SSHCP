@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.63-D4M8QX | BUILD KEY: 20.64-K7Q3MV -->
+<!-- SSHCP | BASE KEY: 20.64-K7Q3MV | BUILD KEY: 20.65-P3R8QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13818,6 +13818,25 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 }
 
 /* =========================================================
+   SSHCP V20.65 — RESPONSIVE HOME HAMBURGER / DRAWER GEOMETRY.
+   Fresh continuation from exact V20.64.
+
+   HOME MENU GEOMETRY ONLY:
+     • Hamburger keeps its existing vertical top position.
+     • Hamburger left edge now exactly matches the centered HOME scorecard
+       control's left edge on phones and tablets.
+     • Hamburger shrinks from 48x48 to 36x36 (75%).
+     • Hamburger bars / X geometry scale with the smaller button.
+     • Drawer opens from that same responsive left edge.
+     • Drawer width is content-driven (longest menu label) instead of 66.666vw,
+       while remaining capped to the available viewport width.
+     • Menu text sizing and all menu/navigation behavior are unchanged.
+
+   No scoring, Game Mode, gray-hole popup, leaderboard, summary, Geek Mode,
+   Quick Guide, authorization, curtain, or Worker behavior changes.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.64 — FIX STICKY GAME-HOLE POPUP TITLE CACHE.
    Fresh continuation from exact V20.63.
 
@@ -13950,18 +13969,18 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 .home-menu-toggle-v2054{
   position:absolute!important;
   top:max(12px,env(safe-area-inset-top))!important;
-  left:12px!important;
+  left:var(--v2065-home-control-left,17px)!important;
   z-index:4702!important;
-  width:48px!important;
-  height:48px!important;
+  width:36px!important;
+  height:36px!important;
   display:flex!important;
   flex-direction:column!important;
   align-items:center!important;
   justify-content:center!important;
-  gap:5px!important;
+  gap:3.75px!important;
   padding:0!important;
   border:0!important;
-  border-radius:10px!important;
+  border-radius:8px!important;
   background:var(--accent)!important;
   color:var(--on-accent)!important;
   box-shadow:none!important;
@@ -13970,20 +13989,20 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 }
 .home-menu-toggle-v2054 span{
   display:block!important;
-  width:27px!important;
-  height:3px!important;
+  width:20.25px!important;
+  height:2.25px!important;
   border-radius:999px!important;
   background:var(--on-accent)!important;
   transition:transform .18s ease,opacity .18s ease!important;
 }
 #homeMenuToggleV2054[aria-expanded="true"] span:nth-child(1){
-  transform:translateY(8px) rotate(45deg)!important;
+  transform:translateY(6px) rotate(45deg)!important;
 }
 #homeMenuToggleV2054[aria-expanded="true"] span:nth-child(2){
   opacity:0!important;
 }
 #homeMenuToggleV2054[aria-expanded="true"] span:nth-child(3){
-  transform:translateY(-8px) rotate(-45deg)!important;
+  transform:translateY(-6px) rotate(-45deg)!important;
 }
 
 .home-menu-backdrop-v2054{
@@ -14002,16 +14021,15 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 .home-menu-panel-v2054{
   position:fixed!important;
   top:max(68px,calc(env(safe-area-inset-top) + 60px))!important;
-  left:0!important;
+  left:var(--v2065-home-control-left,17px)!important;
   z-index:4701!important;
-  width:66.666vw!important;
-  max-width:500px!important;
+  width:max-content!important;
+  max-width:calc(100vw - var(--v2065-home-control-left,17px) - 12px)!important;
   min-width:0!important;
   display:none!important;
   padding:8px!important;
   border:2px solid var(--accent)!important;
-  border-left:0!important;
-  border-radius:0 14px 14px 0!important;
+  border-radius:14px!important;
   background:#fff!important;
   box-sizing:border-box!important;
   box-shadow:0 8px 24px rgba(0,0,0,.18)!important;
@@ -14024,6 +14042,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 .home-menu-item-v2054{
   width:100%!important;
+  min-width:max-content!important;
   min-height:50px!important;
   padding:8px 10px!important;
   display:flex!important;
@@ -14279,7 +14298,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.64</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.65</span></span>
         </button>
 
       </div>
@@ -21735,6 +21754,15 @@ let scoreTimingDetail =
       root.setProperty('--v197-home-primary-h', homePrimaryH + 'px');
       root.setProperty('--v197-home-image-bottom', homeImageBottom + 'px');
       root.setProperty('--v197-home-score-w', homeScoreW + 'px');
+
+      /* V20.65 — hamburger + drawer share the exact left edge of the
+         centered HOME scorecard control on every viewport, including tablets. */
+      const homeControlLeftV2065 = Math.max(
+        4,
+        Math.round((metrics.visualWidth - homeScoreW) / 2)
+      );
+      root.setProperty('--v2065-home-control-left', homeControlLeftV2065 + 'px');
+
       root.setProperty('--v197-home-primary-w', homePrimaryW + 'px');
       root.setProperty('--v197-home-guide-w', homeGuideW + 'px');
       root.setProperty('--v197-home-arrow-w', homeArrowW + 'px');
