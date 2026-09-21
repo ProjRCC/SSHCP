@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.60-R6K3PV | BUILD KEY: 20.61-V8M4QK -->
+<!-- SSHCP | BASE KEY: 20.61-V8M4QK | BUILD KEY: 20.62-C9R5LX -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13818,6 +13818,21 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 }
 
 /* =========================================================
+   SSHCP V20.62 — EXACT CLICKED GAME-HOLE ROW RESOLUTION.
+   Fresh continuation from exact V20.61.
+
+   SCORECARD GAME-HOLE DETAIL ONLY:
+     • Reads the clicked hole from event.currentTarget.dataset on the actual cell.
+     • Filters the exact forced-fresh gameMode response locally by that hole.
+     • Passes only the exact matching row(s) into the detail popup.
+     • Shared global Game Mode state may still update for normal rendering, but it
+       no longer decides which clicked game's title is opened.
+
+   This removes the remaining cross-hole/stale-row path that could make every
+   gray game hole show one repeated game title.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.61 — SCORECARD GAME-HOLE DETAIL USES FRESH GAME MODE ROW.
    Fresh continuation from exact V20.60.
 
@@ -14225,7 +14240,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.61</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.62</span></span>
         </button>
 
       </div>
@@ -15363,21 +15378,23 @@ body.team-info-open-v2032{
       }
     }
 
-    async function openFreshGameHolePopupV2061(holeValue) {
-      const keyV2061 = String(holeValue ?? '').trim();
-      if (!keyV2061) return;
+    async function openFreshGameHolePopupV2062(holeValue) {
+      const keyV2062 = String(holeValue ?? '').trim();
+      if (!keyV2062) return;
 
-      let rowsV2061 = [];
+      let rowsV2062 = [];
       try {
-        await fetchGameModeRowsV2026(true);
-        rowsV2061 = gameModeRowsForHoleV2026(keyV2061);
-      } catch (errorV2061) {
-        console.warn('Fresh Game Mode detail unavailable; using cached hole row:', errorV2061);
-        rowsV2061 = gameModeRowsForHoleV2026(keyV2061);
+        const freshRowsV2062 = await fetchGameModeRowsV2026(true);
+        rowsV2062 = (Array.isArray(freshRowsV2062) ? freshRowsV2062 : []).filter(row => (
+          String((row && row.hole) || '').trim() === keyV2062
+        ));
+      } catch (errorV2062) {
+        console.warn('Fresh Game Mode detail unavailable; using cached exact-hole row:', errorV2062);
+        rowsV2062 = gameModeRowsForHoleV2026(keyV2062);
       }
 
-      if (!rowsV2061.length) return;
-      showGameHolePopupV2026(keyV2061, rowsV2061);
+      if (!rowsV2062.length) return;
+      showGameHolePopupV2026(keyV2062, rowsV2062);
     }
 
 
@@ -22165,24 +22182,27 @@ let scoreTimingDetail =
                snapshot at render time. It retains only the clicked hole number;
                activation performs a fresh gameMode read, then resolves that same
                hole from the current B/C/D data. */
-            const gameHoleValueV2061 = String(hole.hole);
+            const gameHoleValueV2062 = String(hole.hole);
 
             holeCell.classList.add('game-mode-hole-v2026');
+            holeCell.dataset.gameHoleV2062 = gameHoleValueV2062;
             holeCell.setAttribute('role', 'button');
             holeCell.setAttribute('tabindex', '0');
             holeCell.setAttribute(
               'aria-label',
-              'Game Mode hole ' + gameHoleValueV2061 + ': ' +
+              'Game Mode hole ' + gameHoleValueV2062 + ': ' +
               gameRowsForHoleV2026.map(item => item.game || 'GAME').join(', ')
             );
             holeCell.addEventListener('pointerdown', () => triggerHapticV185(10), { passive:true });
-            holeCell.addEventListener('click', () => {
-              void openFreshGameHolePopupV2061(gameHoleValueV2061);
+            holeCell.addEventListener('click', event => {
+              const clickedHoleV2062 = String(event.currentTarget?.dataset?.gameHoleV2062 || '').trim();
+              if (clickedHoleV2062) void openFreshGameHolePopupV2062(clickedHoleV2062);
             });
             holeCell.addEventListener('keydown', event => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                void openFreshGameHolePopupV2061(gameHoleValueV2061);
+                const clickedHoleV2062 = String(event.currentTarget?.dataset?.gameHoleV2062 || '').trim();
+                if (clickedHoleV2062) void openFreshGameHolePopupV2062(clickedHoleV2062);
               }
             });
           }
