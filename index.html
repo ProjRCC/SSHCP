@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.59-Q4N8LX | BUILD KEY: 20.60-R6K3PV -->
+<!-- SSHCP | BASE KEY: 20.60-R6K3PV | BUILD KEY: 20.61-V8M4QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13818,6 +13818,22 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 }
 
 /* =========================================================
+   SSHCP V20.61 — SCORECARD GAME-HOLE DETAIL USES FRESH GAME MODE ROW.
+   Fresh continuation from exact V20.60.
+
+   SCORECARD GAME HOLES only:
+     • Removes the render-time/frozen Game Mode row snapshot from gray-hole clicks.
+     • On click/keyboard activation, performs the same fresh gameMode read used by GAME MODE.
+     • After that read, resolves the exact clicked HOLE and uses its current GAME value
+       from GAMEmode column C for the popup title.
+     • If the fresh request fails, falls back to the currently cached row for that same hole.
+     • WINNER still comes from column D; blank remains TBD.
+
+   No Quick Guide, HOME curtain, menu, scoring, leaderboard, summary,
+   Geek Mode, authorization, or Worker behavior changes.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.60 — QUICK GUIDE VISUAL CUE LABEL CORRECTION.
    Fresh continuation from exact V20.59.
 
@@ -14209,7 +14225,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.60</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.61</span></span>
         </button>
 
       </div>
@@ -15345,6 +15361,23 @@ body.team-info-open-v2032{
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => requestAnimationFrame(fitGameHolePopupV2027)).catch(() => {});
       }
+    }
+
+    async function openFreshGameHolePopupV2061(holeValue) {
+      const keyV2061 = String(holeValue ?? '').trim();
+      if (!keyV2061) return;
+
+      let rowsV2061 = [];
+      try {
+        await fetchGameModeRowsV2026(true);
+        rowsV2061 = gameModeRowsForHoleV2026(keyV2061);
+      } catch (errorV2061) {
+        console.warn('Fresh Game Mode detail unavailable; using cached hole row:', errorV2061);
+        rowsV2061 = gameModeRowsForHoleV2026(keyV2061);
+      }
+
+      if (!rowsV2061.length) return;
+      showGameHolePopupV2026(keyV2061, rowsV2061);
     }
 
 
@@ -22128,32 +22161,28 @@ let scoreTimingDetail =
              .next-hole-cell NESR Blue cue win while recoloring its number Gold. */
           const gameRowsForHoleV2026 = gameModeRowsForHoleV2026(hole.hole);
           if (gameRowsForHoleV2026.length) {
-            /* V20.58 — bind this rendered cell to an immutable snapshot of its
-               exact Game Mode row(s). This prevents a later refresh/global-row
-               change from making a different gray hole reuse another game's
-               title. GAME comes directly from the normalized CF gameMode row,
-               which is GAMEmode column C. */
-            const gameHoleValueV2058 = String(hole.hole);
-            const gameRowsSnapshotV2058 = gameRowsForHoleV2026.map(item => ({
-              hole: String(item.hole || ''),
-              game: String(item.game || ''),
-              winner: String(item.winner || 'TBD')
-            }));
+            /* V20.61 — the gray-hole detail no longer captures a Game Mode row
+               snapshot at render time. It retains only the clicked hole number;
+               activation performs a fresh gameMode read, then resolves that same
+               hole from the current B/C/D data. */
+            const gameHoleValueV2061 = String(hole.hole);
 
             holeCell.classList.add('game-mode-hole-v2026');
             holeCell.setAttribute('role', 'button');
             holeCell.setAttribute('tabindex', '0');
             holeCell.setAttribute(
               'aria-label',
-              'Game Mode hole ' + gameHoleValueV2058 + ': ' +
-              gameRowsSnapshotV2058.map(item => item.game || 'GAME').join(', ')
+              'Game Mode hole ' + gameHoleValueV2061 + ': ' +
+              gameRowsForHoleV2026.map(item => item.game || 'GAME').join(', ')
             );
             holeCell.addEventListener('pointerdown', () => triggerHapticV185(10), { passive:true });
-            holeCell.addEventListener('click', () => showGameHolePopupV2026(gameHoleValueV2058, gameRowsSnapshotV2058));
+            holeCell.addEventListener('click', () => {
+              void openFreshGameHolePopupV2061(gameHoleValueV2061);
+            });
             holeCell.addEventListener('keydown', event => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                showGameHolePopupV2026(gameHoleValueV2058, gameRowsSnapshotV2058);
+                void openFreshGameHolePopupV2061(gameHoleValueV2061);
               }
             });
           }
