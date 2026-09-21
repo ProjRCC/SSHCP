@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.50-R6N2VK | BUILD KEY: 20.51-H7Q4MN -->
+<!-- SSHCP | BASE KEY: 20.53-C6V9RM | BUILD KEY: 20.54-J9R4NV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12349,12 +12349,16 @@ button.sshcp-button-pressed-v172{
 .quick-guide-legend-v2050{
   margin-top:2px;
   padding-top:12px;
+  padding-bottom:12px;
   border-top:1px solid #b9b9b9;
+  border-bottom:1px solid #b9b9b9;
   display:flex;
   flex-direction:column;
   gap:8px;
 }
 .quick-guide-legend-heading-v2050{
+  width:100%;
+  text-align:center;
   font-weight:800;
   letter-spacing:.02em;
 }
@@ -13585,6 +13589,59 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 
 
 /* =========================================================
+   SSHCP V20.54 — HOME HAMBURGER NAVIGATION.
+   Fresh continuation from exact V20.53.
+
+   HOME:
+     • Removes the full-logo Team Info tap target.
+     • Adds upper-left hamburger navigation over the logo.
+     • Drawer is ~2/3 viewport width with blurred background.
+     • SCORECARD - TEAM NAME
+     • LIVE LEADERBOARD
+     • SCRAMBLE SUMMARY (disabled until completion)
+     • GEEK STATS (disabled until completion)
+     • GAME STATS (disabled until completion)
+     • EVENT INFORMATION -> existing teaminfo.jpg
+
+   POST-PLAY RETURN:
+     • GEEK/GAME launched from HOME menu: BACK -> HOME.
+     • GEEK/GAME launched from SCRAMBLE SUMMARY: BACK -> SCRAMBLE SUMMARY.
+
+   No scoring, leaderboard, summary data, Geek/Game data, or Worker changes.
+   ========================================================= */
+
+/* =========================================================
+   SSHCP V20.53 — QUICK GUIDE VISUAL CUE CAPITALIZATION.
+   Fresh continuation from exact V20.52.
+
+   QUICK GUIDE only:
+     • All VISUAL CUES legend wording is uppercase:
+       PRIMARY / NAVIGATION
+       SECONDARY
+       GAME - TAP FOR DETAIL
+       AFTER-PLAY FEATURES
+     • Existing BLUE / GRAY / HOLE / GOLD samples remain unchanged.
+     • All other Quick Guide capitalization and content remain unchanged.
+   ========================================================= */
+
+/* =========================================================
+   SSHCP V20.52 — QUICK GUIDE CUE ORDER + DIVIDER.
+   Fresh continuation from exact V20.51.
+
+   QUICK GUIDE only:
+     • Centers VISUAL CUES.
+     • Cue order is now:
+       BLUE Primary / Navigation
+       GRAY Secondary
+       HOLE Game - tap for detail
+       GOLD After-Play Features
+     • Adds one thin horizontal divider under the cue block.
+     • Everything below the cue block remains unchanged.
+
+   No scoring, popup, Starting Hole, navigation, results, or other UI changes.
+   ========================================================= */
+
+/* =========================================================
    SSHCP V20.51 — QUICK GUIDE LEGEND CLEANUP.
    Fresh continuation from exact V20.50.
 
@@ -13706,30 +13763,142 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
 #homeView .home-shell{
   position:relative!important;
 }
-#teamInfoLogoHotspotV2032{
+
+/* =========================================================
+   SSHCP V20.54 — HOME HAMBURGER NAVIGATION DRAWER.
+   HOME-only hamburger sits over the upper-left logo area.
+   Drawer occupies ~2/3 viewport width; everything behind is blurred.
+   ========================================================= */
+#homeView{
+  position:relative!important;
+}
+
+.home-menu-toggle-v2054{
   position:absolute!important;
-  left:0!important;
-  right:0!important;
-  /* V20.35 — reserve the top 20% of the viewport as a browser gesture zone.
-     A pull-down that STARTS in this band reaches the browser/PWA refresh path
-     instead of opening TEAM INFO. Only the lower logo region is tappable. */
-  top:20dvh!important;
-  bottom:var(--v197-home-image-bottom,306px)!important;
-  z-index:250!important;
-  display:block!important;
-  width:100%!important;
-  height:auto!important;
-  margin:0!important;
+  top:max(12px,env(safe-area-inset-top))!important;
+  left:12px!important;
+  z-index:9102!important;
+  width:48px!important;
+  height:48px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
   padding:0!important;
   border:0!important;
-  outline:0!important;
-  background:transparent!important;
-  color:transparent!important;
-  -webkit-appearance:none!important;
-  appearance:none!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.86)!important;
+  color:#000!important;
+  box-shadow:0 0 0 1px rgba(0,0,0,.08)!important;
+  -webkit-tap-highlight-color:transparent!important;
   touch-action:manipulation!important;
+}
+.home-menu-toggle-v2054 span{
+  display:block!important;
+  width:27px!important;
+  height:3px!important;
+  border-radius:999px!important;
+  background:#000!important;
+  transition:transform .18s ease,opacity .18s ease!important;
+}
+#homeMenuToggleV2054[aria-expanded="true"] span:nth-child(1){
+  transform:translateY(8px) rotate(45deg)!important;
+}
+#homeMenuToggleV2054[aria-expanded="true"] span:nth-child(2){
+  opacity:0!important;
+}
+#homeMenuToggleV2054[aria-expanded="true"] span:nth-child(3){
+  transform:translateY(-8px) rotate(-45deg)!important;
+}
+
+.home-menu-backdrop-v2054{
+  position:fixed!important;
+  inset:0!important;
+  z-index:9100!important;
+  display:none!important;
+  background:rgba(255,255,255,.14)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  backdrop-filter:blur(8px)!important;
+}
+.home-menu-backdrop-v2054.open{
+  display:block!important;
+}
+
+.home-menu-panel-v2054{
+  position:fixed!important;
+  top:max(68px,calc(env(safe-area-inset-top) + 60px))!important;
+  left:0!important;
+  z-index:9101!important;
+  width:66.666vw!important;
+  max-width:500px!important;
+  min-width:0!important;
+  display:none!important;
+  padding:8px!important;
+  border:2px solid var(--accent)!important;
+  border-left:0!important;
+  border-radius:0 14px 14px 0!important;
+  background:#fff!important;
+  box-sizing:border-box!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.18)!important;
+}
+.home-menu-panel-v2054.open{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:7px!important;
+}
+
+.home-menu-item-v2054{
+  width:100%!important;
+  min-height:50px!important;
+  padding:8px 10px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  border:1px solid transparent!important;
+  border-radius:8px!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  font-size:18px!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+  letter-spacing:.15px!important;
+  text-align:left!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
   -webkit-tap-highlight-color:transparent!important;
 }
+.home-menu-item-v2054.primary-v2054{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+}
+.home-menu-item-v2054.after-v2054{
+  background:#8A6414!important;
+  border-color:#8A6414!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+.home-menu-item-v2054.secondary-v2054{
+  background:#666666!important;
+  border-color:#666666!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+.home-menu-item-v2054:disabled,
+.home-menu-item-v2054.disabled-v2054{
+  opacity:1!important;
+  background:#f2f2f2!important;
+  border-color:#e8e8e8!important;
+  color:#a6a6a6!important;
+  -webkit-text-fill-color:#a6a6a6!important;
+}
+
+body.home-menu-open-v2054{
+  overflow:hidden!important;
+}
+
 .team-info-overlay-v2032{
   position:fixed!important;
   inset:0!important;
@@ -13936,14 +14105,39 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.51</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.54</span></span>
         </button>
 
       </div>
 
     </div>
 
-    <button id="teamInfoLogoHotspotV2032" type="button" aria-label="Open 2026 team information"></button>
+    <button
+      id="homeMenuToggleV2054"
+      class="home-menu-toggle-v2054"
+      type="button"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="homeMenuPanelV2054"
+    >
+      <span></span><span></span><span></span>
+    </button>
+
+    <div id="homeMenuBackdropV2054" class="home-menu-backdrop-v2054" aria-hidden="true"></div>
+
+    <nav
+      id="homeMenuPanelV2054"
+      class="home-menu-panel-v2054"
+      aria-label="Home navigation"
+      aria-hidden="true"
+    >
+      <button id="homeMenuScorecardV2054" class="home-menu-item-v2054 primary-v2054" type="button">SCORECARD</button>
+      <button id="homeMenuLeaderboardV2054" class="home-menu-item-v2054 primary-v2054" type="button">LIVE LEADERBOARD</button>
+      <button id="homeMenuSummaryV2054" class="home-menu-item-v2054 after-v2054" type="button">SCRAMBLE SUMMARY</button>
+      <button id="homeMenuGeekV2054" class="home-menu-item-v2054 after-v2054" type="button">GEEK STATS</button>
+      <button id="homeMenuGameV2054" class="home-menu-item-v2054 after-v2054" type="button">GAME STATS</button>
+      <button id="homeMenuEventV2054" class="home-menu-item-v2054 secondary-v2054" type="button">EVENT INFORMATION</button>
+    </nav>
 
   </section>
 
@@ -19713,6 +19907,9 @@ let scoreTimingDetail =
       await refreshHomeTournamentStateV1831();
       updateHomeScorecardAccess();
       fitHomeActionTypographyV197();
+      if (typeof window.refreshHomeMenuV2054 === 'function') {
+        window.refreshHomeMenuV2054();
+      }
 
       /* Geometry failure is not expected, but never strand the HOME controls
          hidden: if no curtain could be created, expose only after the fresh HOME
@@ -26271,6 +26468,46 @@ let scoreTimingDetail =
       return panel;
     }
 
+    /* =========================================================
+       SSHCP V20.54 — post-play popup return context.
+       GEEK/GAME launched from Summary return to Summary.
+       GEEK/GAME launched from HOME hamburger return to HOME.
+       ========================================================= */
+    let postPlayReturnDestinationV2054 = 'summary';
+
+    function returnFromPostPlayV2054() {
+      const destinationV2054 = postPlayReturnDestinationV2054;
+      postPlayReturnDestinationV2054 = 'summary';
+
+      if (destinationV2054 === 'home') {
+        showHome();
+        return;
+      }
+
+      showTournamentSummary();
+    }
+
+    function openGeekFromSummaryV2054() {
+      postPlayReturnDestinationV2054 = 'summary';
+      return openGeekModeV180();
+    }
+
+    function openGameFromSummaryV2054() {
+      postPlayReturnDestinationV2054 = 'summary';
+      return showGameModePopupV2026();
+    }
+
+    function openGeekFromHomeMenuV2054() {
+      postPlayReturnDestinationV2054 = 'home';
+      return openGeekModeV180();
+    }
+
+    function openGameFromHomeMenuV2054() {
+      postPlayReturnDestinationV2054 = 'home';
+      return showGameModePopupV2026();
+    }
+
+
     function renderGeekMainShellV180() {
       els.modalOverlay.classList.add('geek-mode-v180');
       els.modalTitle.textContent = 'GEEK MODE';
@@ -26294,7 +26531,7 @@ let scoreTimingDetail =
           '</div>' +
         '</div>';
 
-      const back = makeModalButton('BACK', 'geek-back-v180', showTournamentSummary);
+      const back = makeModalButton('BACK', 'geek-back-v180', returnFromPostPlayV2054);
       const filterButton = makeModalButton('FILTERS', 'geek-filter-button-v186', toggleGeekFilterPanelV186);
       filterButton.setAttribute('aria-expanded', 'false');
 
@@ -27240,7 +27477,7 @@ let scoreTimingDetail =
         buildGameModeSkinsTableV2026(skinsResults, skinsUnavailable) +
         buildGameModeGamesTableV2026(gamesRows, gamesUnavailable);
 
-      const back = makeModalButton('BACK', '', showTournamentSummary);
+      const back = makeModalButton('BACK', '', returnFromPostPlayV2054);
       els.modalActions.className = 'modal-actions single game-mode-back-v2026';
       els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
@@ -27475,9 +27712,9 @@ let scoreTimingDetail =
          naturally recreates the same state. */
       const summaryLowerV1931 = els.modalBody.querySelector('.tournament-summary-remaining');
       if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
-      const geekAction = makeModalButton('GEEK', 'summary-geek-button-v180', openGeekModeV180);
+      const geekAction = makeModalButton('GEEK', 'summary-geek-button-v180', openGeekFromSummaryV2054);
       const home = makeModalButton('HOME', 'summary-back-v1845 summary-home-footer-v1848', showHome);
-      const gameMode = makeModalButton('GAME', 'summary-game-mode-button-v2026', showGameModePopupV2026);
+      const gameMode = makeModalButton('GAME', 'summary-game-mode-button-v2026', openGameFromSummaryV2054);
       els.modalActions.className = 'modal-actions tournament-summary-actions-v1627';
       els.modalActions.replaceChildren(geekAction, home, gameMode);
       els.modalOverlay.classList.add('open');
@@ -29208,20 +29445,20 @@ let scoreTimingDetail =
             '<div class="quick-guide-legend-v2050">' +
               '<div class="quick-guide-legend-heading-v2050">VISUAL CUES</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
-                '<span class="quick-guide-cue-icon-v2051"><span class="quick-guide-game-hole-sample-v2050">HOLE</span></span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>Game</strong> - tap for detail</span>' +
-              '</div>' +
-              '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 blue-v2050">BLUE</span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>Primary / Navigation</strong></span>' +
-              '</div>' +
-              '<div class="quick-guide-legend-row-v2050">' +
-                '<span class="quick-guide-fake-button-v2050 gold-v2050">GOLD</span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>After-Play Features</strong></span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>PRIMARY / NAVIGATION</strong></span>' +
               '</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 gray-v2050">GRAY</span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>Secondary</strong></span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>SECONDARY</strong></span>' +
+              '</div>' +
+              '<div class="quick-guide-legend-row-v2050">' +
+                '<span class="quick-guide-cue-icon-v2051"><span class="quick-guide-game-hole-sample-v2050">HOLE</span></span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>GAME</strong> - TAP FOR DETAIL</span>' +
+              '</div>' +
+              '<div class="quick-guide-legend-row-v2050">' +
+                '<span class="quick-guide-fake-button-v2050 gold-v2050">GOLD</span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>AFTER-PLAY FEATURES</strong></span>' +
               '</div>' +
             '</div>' +
             '<div class="quick-guide-line-v172">Tap <strong>ACCESS SCORECARD (YOUR TEAM)</strong></div>' +
@@ -30900,26 +31137,21 @@ let scoreTimingDetail =
   </div>
 </div>
 
-<script id="teamInfoScriptV2032">
-/* SSHCP V20.33 — Team Info transition polish.
-   OPEN: teaminfo.jpg is preloaded/decoded and the opaque Team Info layer opens
-   on pointer-down, before the normal click-up frame, so the HOME ROTB logo does
-   not flash during entry.
-   BACK: call the established showHome() path first. Its V19.86/V19.85 HOME
-   curtains mount synchronously before their first await; only then is Team Info
-   removed, so return uses the same .6s full-screen + 1.0s middle HOME fade as
-   every other in-app HOME path. */
+<script id="teamInfoScriptV2054">
+/* SSHCP V20.54 — EVENT INFORMATION route.
+   The HOME ROTB logo is no longer interactive.
+   teaminfo.jpg is available only from HOME hamburger -> EVENT INFORMATION.
+   BACK uses the established showHome() curtain path. */
 (function(){
-  function readyV2032(){
-    var hotspot = document.getElementById('teamInfoLogoHotspotV2032');
+  function readyV2054(){
     var overlay = document.getElementById('teamInfoOverlayV2032');
     var back = document.getElementById('teamInfoBackV2032');
     var image = document.getElementById('teamInfoImageV2032');
-    if (!hotspot || !overlay || !back || !image) return;
+    if (!overlay || !back || !image) return;
 
-    var closingV2033 = false;
+    var closingV2054 = false;
 
-    function markImageReadyV2033(){
+    function markImageReadyV2054(){
       if (image.complete && image.naturalWidth > 0) {
         image.classList.add('is-ready-v2033');
         return;
@@ -30929,7 +31161,7 @@ let scoreTimingDetail =
       }, {once:true});
     }
 
-    markImageReadyV2033();
+    markImageReadyV2054();
     try {
       if (typeof image.decode === 'function') {
         image.decode().then(function(){
@@ -30938,16 +31170,14 @@ let scoreTimingDetail =
       }
     } catch (_) {}
 
-    function openTeamInfoV2032(event){
+    window.openTeamInfoV2054 = function(event){
       if (event) {
         event.preventDefault();
         event.stopPropagation();
       }
       if (overlay.classList.contains('open')) return;
 
-      markImageReadyV2033();
-
-      /* Opaque overlay is applied immediately on POINTER DOWN. */
+      markImageReadyV2054();
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden','false');
       document.body.classList.add('team-info-open-v2032');
@@ -30955,20 +31185,16 @@ let scoreTimingDetail =
       if (typeof window.triggerHapticV185 === 'function') {
         try { window.triggerHapticV185(6); } catch (_) {}
       }
-    }
+    };
 
-    async function closeTeamInfoV2032(event){
+    async function closeTeamInfoV2054(event){
       if (event) {
         event.preventDefault();
         event.stopPropagation();
       }
-      if (closingV2033) return;
-      closingV2033 = true;
+      if (closingV2054) return;
+      closingV2054 = true;
 
-      /* showHome() mounts the established HOME curtains synchronously before
-         reaching its first await. Start that standard path while Team Info is
-         still covering the viewport, then remove Team Info only after the HOME
-         curtain is already underneath it. */
       var homePromise = null;
       try {
         if (typeof showHome === 'function') {
@@ -30988,35 +31214,205 @@ let scoreTimingDetail =
         }
       } catch (_) {}
 
-      closingV2033 = false;
+      closingV2054 = false;
     }
 
-    /* Opening on pointer-down removes the touch-up/click paint where HOME could
-       otherwise remain visible for one extra frame. Click remains as keyboard /
-       browser fallback but is ignored once the overlay is already open. */
-    hotspot.addEventListener('pointerdown', openTeamInfoV2032, {passive:false});
-    hotspot.addEventListener('click', function(event){
-      if (overlay.classList.contains('open')) {
-        event.preventDefault();
-        event.stopPropagation();
-        return;
-      }
-      openTeamInfoV2032(event);
-    });
-
-    back.addEventListener('click', closeTeamInfoV2032);
+    back.addEventListener('click', closeTeamInfoV2054);
 
     window.addEventListener('keydown', function(event){
       if (event.key === 'Escape' && overlay.classList.contains('open')) {
-        closeTeamInfoV2032(event);
+        closeTeamInfoV2054(event);
       }
     });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', readyV2032, {once:true});
+    document.addEventListener('DOMContentLoaded', readyV2054, {once:true});
   } else {
-    readyV2032();
+    readyV2054();
+  }
+})();
+</script>
+
+<script id="homeMenuScriptV2054">
+/* SSHCP V20.54 — HOME hamburger navigation drawer. */
+(function(){
+  function readyMenuV2054(){
+    var toggle = document.getElementById('homeMenuToggleV2054');
+    var backdrop = document.getElementById('homeMenuBackdropV2054');
+    var panel = document.getElementById('homeMenuPanelV2054');
+    var scorecard = document.getElementById('homeMenuScorecardV2054');
+    var leaderboard = document.getElementById('homeMenuLeaderboardV2054');
+    var summary = document.getElementById('homeMenuSummaryV2054');
+    var geek = document.getElementById('homeMenuGeekV2054');
+    var game = document.getElementById('homeMenuGameV2054');
+    var eventInfo = document.getElementById('homeMenuEventV2054');
+
+    if (!toggle || !backdrop || !panel || !scorecard || !leaderboard ||
+        !summary || !geek || !game || !eventInfo) return;
+
+    function tournamentCompleteV2054(){
+      try {
+        if (typeof tournamentIsComplete === 'function' &&
+            Array.isArray(lastLeaderboardRows) &&
+            tournamentIsComplete(lastLeaderboardRows)) {
+          return true;
+        }
+      } catch (_) {}
+
+      try {
+        if (sessionStorage.getItem('sshcpTournamentComplete') === '1') return true;
+      } catch (_) {}
+
+      return document.documentElement.classList.contains('sshcp-tournament-complete');
+    }
+
+    function menuTeamNameV2054(){
+      var name = '';
+      try {
+        if (typeof getAuthorizedTeam === 'function') name = getAuthorizedTeam() || '';
+      } catch (_) {}
+      try {
+        if (!name && typeof getRememberedSelectedTeam === 'function') {
+          name = getRememberedSelectedTeam() || '';
+        }
+      } catch (_) {}
+      try {
+        if (!name && selectedTeam && selectedTeam.name) name = selectedTeam.name;
+      } catch (_) {}
+      try {
+        if (name && typeof displayTeamName === 'function') name = displayTeamName(name);
+      } catch (_) {}
+      return String(name || '').trim().toUpperCase();
+    }
+
+    function setDisabledV2054(button, disabled){
+      button.disabled = !!disabled;
+      button.classList.toggle('disabled-v2054', !!disabled);
+      button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    }
+
+    function refreshMenuV2054(){
+      var team = menuTeamNameV2054();
+      scorecard.textContent = 'SCORECARD - ' + (team || 'SELECT TEAM');
+
+      var complete = tournamentCompleteV2054();
+      setDisabledV2054(summary, !complete);
+      setDisabledV2054(geek, !complete);
+      setDisabledV2054(game, !complete);
+
+      if (typeof fitTextToBoxV5 === 'function') {
+        requestAnimationFrame(function(){
+          [scorecard, leaderboard, summary, geek, game, eventInfo].forEach(function(button){
+            if (!button || !button.isConnected) return;
+            var h = button.getBoundingClientRect().height || 50;
+            fitTextToBoxV5(button, button, h * 0.42, 12, {
+              horizontalPad:10,
+              verticalPad:6,
+              wrap:false,
+              lineHeight:1
+            });
+          });
+        });
+      }
+    }
+
+    function closeMenuV2054(){
+      panel.classList.remove('open');
+      backdrop.classList.remove('open');
+      panel.setAttribute('aria-hidden','true');
+      backdrop.setAttribute('aria-hidden','true');
+      toggle.setAttribute('aria-expanded','false');
+      toggle.setAttribute('aria-label','Open navigation menu');
+      document.body.classList.remove('home-menu-open-v2054');
+    }
+
+    function openMenuV2054(){
+      refreshMenuV2054();
+      panel.classList.add('open');
+      backdrop.classList.add('open');
+      panel.setAttribute('aria-hidden','false');
+      backdrop.setAttribute('aria-hidden','false');
+      toggle.setAttribute('aria-expanded','true');
+      toggle.setAttribute('aria-label','Close navigation menu');
+      document.body.classList.add('home-menu-open-v2054');
+    }
+
+    function toggleMenuV2054(event){
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      if (panel.classList.contains('open')) closeMenuV2054();
+      else openMenuV2054();
+    }
+
+    async function openSummaryV2054(){
+      closeMenuV2054();
+
+      try {
+        if (typeof tournamentIsComplete === 'function' &&
+            !tournamentIsComplete(lastLeaderboardRows) &&
+            typeof loadLeaderboard === 'function' &&
+            !leaderboardLoadInProgress) {
+          await loadLeaderboard(false, false);
+        }
+      } catch (_) {}
+
+      if (typeof showTournamentSummary === 'function') showTournamentSummary();
+    }
+
+    toggle.addEventListener('click', toggleMenuV2054);
+    backdrop.addEventListener('click', closeMenuV2054);
+
+    scorecard.addEventListener('click', function(){
+      closeMenuV2054();
+      if (typeof homeScorecardAccess === 'function') homeScorecardAccess();
+    });
+
+    leaderboard.addEventListener('click', function(){
+      closeMenuV2054();
+      if (typeof showLeaderboard === 'function') showLeaderboard();
+    });
+
+    summary.addEventListener('click', function(){
+      if (summary.disabled) return;
+      openSummaryV2054();
+    });
+
+    geek.addEventListener('click', function(){
+      if (geek.disabled) return;
+      closeMenuV2054();
+      if (typeof openGeekFromHomeMenuV2054 === 'function') openGeekFromHomeMenuV2054();
+    });
+
+    game.addEventListener('click', function(){
+      if (game.disabled) return;
+      closeMenuV2054();
+      if (typeof openGameFromHomeMenuV2054 === 'function') openGameFromHomeMenuV2054();
+    });
+
+    eventInfo.addEventListener('click', function(event){
+      closeMenuV2054();
+      if (typeof window.openTeamInfoV2054 === 'function') {
+        window.openTeamInfoV2054(event);
+      }
+    });
+
+    window.addEventListener('keydown', function(event){
+      if (event.key === 'Escape' && panel.classList.contains('open')) {
+        closeMenuV2054();
+      }
+    });
+
+    window.refreshHomeMenuV2054 = refreshMenuV2054;
+    refreshMenuV2054();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', readyMenuV2054, {once:true});
+  } else {
+    readyMenuV2054();
   }
 })();
 </script>
