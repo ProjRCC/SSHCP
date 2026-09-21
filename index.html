@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.47-L6Q9RV | BUILD KEY: 20.48-M4V7QK -->
+<!-- SSHCP | BASE KEY: 20.49-K8M3QV | BUILD KEY: 20.50-R6N2VK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12264,6 +12264,151 @@ button.sshcp-button-pressed-v172{
 }
 
 
+
+/* =========================================================
+   SSHCP V20.50 — QUICK GUIDE VISUAL LEGEND + INTERNAL PROGRESS.
+   Fresh continuation from exact V20.49.
+
+   Quick Guide title/footer remain fixed.
+   Only the guide BODY scrolls.
+   Native/browser-style scrollbar is hidden and replaced by a narrow
+   in-guide progress rail at the right edge of the body.
+
+   A compact visual legend at the end explains:
+     • Gray GAME-hole circle
+     • Blue button
+     • Antique Gold after-play button
+     • Gray secondary button
+   ========================================================= */
+.modal-overlay.quick-guide .modal-text{
+  position:relative!important;
+  overflow:hidden!important;
+  padding-right:14px!important;
+}
+
+.quick-guide-scroll-v2050{
+  width:100%;
+  height:100%;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  padding-right:4px;
+  box-sizing:border-box;
+}
+.quick-guide-scroll-v2050::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+  display:none!important;
+}
+
+.quick-guide-scroll-v2050 .quick-guide-lines-v172{
+  height:auto!important;
+  min-height:100%!important;
+  justify-content:flex-start!important;
+  gap:14px!important;
+  padding-bottom:4px!important;
+  box-sizing:border-box!important;
+}
+
+.quick-guide-progress-v2050{
+  position:absolute;
+  top:2px;
+  right:2px;
+  bottom:2px;
+  width:5px;
+  border-radius:999px;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2);
+  overflow:hidden;
+  pointer-events:none;
+}
+.quick-guide-progress-thumb-v2050{
+  position:absolute;
+  top:var(--quick-guide-progress-top-v2050,0%);
+  left:0;
+  width:100%;
+  height:var(--quick-guide-progress-size-v2050,28%);
+  min-height:18px;
+  max-height:100%;
+  border-radius:999px;
+  background:var(--accent);
+  transition:top .06s linear,height .08s linear,opacity .15s ease;
+  opacity:.92;
+}
+.quick-guide-progress-v2050.no-scroll-v2050{
+  opacity:.28;
+}
+.quick-guide-progress-v2050.no-scroll-v2050 .quick-guide-progress-thumb-v2050{
+  top:0!important;
+  height:100%!important;
+}
+
+.quick-guide-legend-v2050{
+  margin-top:2px;
+  padding-top:12px;
+  border-top:1px solid #b9b9b9;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.quick-guide-legend-heading-v2050{
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.quick-guide-legend-row-v2050{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-height:32px;
+}
+.quick-guide-game-hole-sample-v2050{
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8);
+  color:#000;
+  -webkit-text-fill-color:#000;
+  font-weight:800;
+  line-height:1;
+}
+.quick-guide-fake-button-v2050{
+  min-width:64px;
+  height:30px;
+  flex:0 0 auto;
+  padding:0 8px;
+  border-radius:7px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  color:#fff;
+  -webkit-text-fill-color:#fff;
+  font-weight:800;
+  font-size:.72em;
+  line-height:1;
+  white-space:nowrap;
+}
+.quick-guide-fake-button-v2050.blue-v2050{
+  background:var(--accent);
+}
+.quick-guide-fake-button-v2050.gold-v2050{
+  background:#8A6414;
+}
+.quick-guide-fake-button-v2050.gray-v2050{
+  background:var(--sshcp-gray-5-v1850,#666666);
+}
+.quick-guide-legend-copy-v2050{
+  min-width:0;
+  line-height:1.08;
+}
+
 /* SSHCP V18.54 — CC Gray +1 and running-score contrast/alignment only. */
 #testLogView #testLogResetButton,
 #testLogView #testCopyLogButton,
@@ -13284,7 +13429,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   justify-content:center!important;
   flex:0 0 auto!important;
   border-radius:50%!important;
-  background:var(--sshcp-gray-2-5-v2040,#ededed)!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   color:#000!important;
   -webkit-text-fill-color:#000!important;
   font-size:52cqh!important;
@@ -13296,7 +13441,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   -webkit-text-fill-color:#000!important;
 }
 #scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
-  background:var(--sshcp-gray-2-5-v2040,#ededed)!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   color:#000!important;
   -webkit-text-fill-color:#000!important;
 }
@@ -13337,7 +13482,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
 
 .modal-overlay.game-hole-info-v2026 .modal-title{
   margin-bottom:20px!important;
-  font-size:clamp(34px,6.6dvh,54px)!important;
+  font-size:clamp(38px,7.6dvh,64px)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
 }
 .modal-overlay.game-hole-info-v2026 .game-hole-entry-v2026 > .game-hole-value-v2026 + .game-hole-label-v2026{
   margin-top:17px!important;
@@ -13423,6 +13572,38 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   filter:none!important;
 }
 
+
+/* =========================================================
+   SSHCP V20.50 — QUICK GUIDE VISUAL CUES + INTERNAL PROGRESS.
+   Fresh continuation from exact V20.49.
+
+   QUICK GUIDE only:
+     • Adds compact visual examples at the end:
+       Gray GAME-hole circle, Blue, Antique Gold, Gray buttons.
+     • Updates completion wording from SKINS to GAME.
+     • Keeps title and footer fixed.
+     • Guide body scrolls internally with native scrollbar hidden.
+     • Slim Blue progress indicator is shown at the right edge of the guide body.
+
+   No Scorecard popup, no new entry interruption, and no changes to scoring,
+   Starting Hole behavior, scorecard scrolling, Game Mode logic, or results.
+   ========================================================= */
+
+/* =========================================================
+   SSHCP V20.49 — GAME-HOLE CUE + GAME TITLE POLISH.
+   Fresh continuation from exact V20.48.
+
+   ONLY:
+     • Scorecard GAME-hole number circles move one established shade darker:
+       Gray 2.5 (#EDEDED) -> Gray 3 (#E8E8E8).
+     • Hole-detail GAME title gets a larger target:
+       up to 64px / 12% of popup height.
+       Existing intact-single-line fitter remains authoritative, so long game
+       names shrink only as needed and never wrap.
+
+   No circle geometry, hole-number size, active Blue cue, popup geometry,
+   game data, winner formatting, button sizing, scoring, or navigation changes.
+   ========================================================= */
 
 /* =========================================================
    SSHCP V20.48 — SELECTED BUTTON TYPOGRAPHY = 55% + SUMMARY RUNTIME FIX.
@@ -13729,7 +13910,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.48</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.50</span></span>
         </button>
 
       </div>
@@ -26882,7 +27063,7 @@ let scoreTimingDetail =
     function fitGameHolePopupV2027() {
       if (!els.modalOverlay.classList.contains('game-hole-info-v2026')) return;
       if (els.modalTitle) {
-        fitIntactSingleLineV2027(els.modalBox, els.modalTitle, Math.min(54, els.modalBox.clientHeight * 0.085), 42, 1);
+        fitIntactSingleLineV2027(els.modalBox, els.modalTitle, Math.min(64, els.modalBox.clientHeight * 0.12), 42, 1);
       }
       els.modalBody.querySelectorAll('.game-hole-winner-v2026').forEach(winner => {
         const entry = winner.closest('.game-hole-entry-v2026') || winner;
@@ -28934,6 +29115,43 @@ let scoreTimingDetail =
       requestAnimationFrame(apply);
     }
 
+
+    function wireQuickGuideProgressV2050() {
+      const scroller = els.modalBody.querySelector('.quick-guide-scroll-v2050');
+      const rail = els.modalBody.querySelector('.quick-guide-progress-v2050');
+      const thumb = els.modalBody.querySelector('.quick-guide-progress-thumb-v2050');
+      if (!scroller || !rail || !thumb) return;
+
+      const update = () => {
+        const client = scroller.clientHeight;
+        const scroll = scroller.scrollHeight;
+        const max = Math.max(0, scroll - client);
+
+        if (!(client > 0) || !(scroll > 0) || max <= 1) {
+          rail.classList.add('no-scroll-v2050');
+          rail.style.setProperty('--quick-guide-progress-size-v2050', '100%');
+          rail.style.setProperty('--quick-guide-progress-top-v2050', '0%');
+          return;
+        }
+
+        rail.classList.remove('no-scroll-v2050');
+
+        const sizePct = Math.max(12, Math.min(100, (client / scroll) * 100));
+        const travelPct = 100 - sizePct;
+        const ratio = Math.max(0, Math.min(1, scroller.scrollTop / max));
+        const topPct = travelPct * ratio;
+
+        rail.style.setProperty('--quick-guide-progress-size-v2050', sizePct.toFixed(2) + '%');
+        rail.style.setProperty('--quick-guide-progress-top-v2050', topPct.toFixed(2) + '%');
+      };
+
+      scroller.addEventListener('scroll', update, { passive:true });
+      requestAnimationFrame(() => {
+        update();
+        requestAnimationFrame(update);
+      });
+    }
+
     function showQuickGuide() {
 
       syncQuickGuideBodyFontV1816();
@@ -28959,18 +29177,42 @@ let scoreTimingDetail =
         ).trim() || 'Blue';
 
       els.modalBody.innerHTML =
-        '<div class="quick-guide-lines-v172">' +
-          '<div class="quick-guide-line-v172">Tap <strong>ACCESS SCORECARD (YOUR TEAM)</strong></div>' +
-          '<div class="quick-guide-line-v172">Tap any <strong>Score Box</strong></div>' +
-          '<div class="quick-guide-line-v172">Use <strong>− / + / CLEAR</strong> to set score, then <strong>ENTER</strong></div>' +
-          '<div class="quick-guide-line-v172 indent-v172"><strong>' + escapeHtml(accentName) + '</strong> = Successfully Submitted</div>' +
-          '<div class="quick-guide-line-v172 indent-v172"><strong>Gray</strong> = Not Submitted - Refresh Page</div>' +
-          '<div class="quick-guide-line-v172">Tap any Submitted Score to <strong>Edit</strong></div>' +
-          '<div class="quick-guide-line-v172"><strong>LEADERBOARD</strong> for Current Standings</div>' +
-          '<div class="quick-guide-line-v172"><strong>REFRESH</strong> for the Latest Standings</div>' +
-          '<div class="quick-guide-line-v172"><strong>SCORECARD</strong> to go back to Team Scorecard</div>' +
-          '<div class="quick-guide-line-v172">Explore <strong>SCRAMBLE SUMMARY, SKINS or GEEK MODE</strong> at Scramble Completion</div>' +
-          '<div class="quick-guide-line-v172">Closing Browser/Site will <strong>NOT</strong> reset scores</div>' +
+        '<div class="quick-guide-scroll-v2050">' +
+          '<div class="quick-guide-lines-v172">' +
+            '<div class="quick-guide-line-v172">Tap <strong>ACCESS SCORECARD (YOUR TEAM)</strong></div>' +
+            '<div class="quick-guide-line-v172">Tap any <strong>Score Box</strong></div>' +
+            '<div class="quick-guide-line-v172">Use <strong>− / + / CLEAR</strong> to set score, then <strong>ENTER</strong></div>' +
+            '<div class="quick-guide-line-v172 indent-v172"><strong>' + escapeHtml(accentName) + '</strong> = Successfully Submitted</div>' +
+            '<div class="quick-guide-line-v172 indent-v172"><strong>Gray</strong> = Not Submitted - Refresh Page</div>' +
+            '<div class="quick-guide-line-v172">Tap any Submitted Score to <strong>Edit</strong></div>' +
+            '<div class="quick-guide-line-v172"><strong>LEADERBOARD</strong> for Current Standings</div>' +
+            '<div class="quick-guide-line-v172"><strong>REFRESH</strong> for the Latest Standings</div>' +
+            '<div class="quick-guide-line-v172"><strong>SCORECARD</strong> to go back to Team Scorecard</div>' +
+            '<div class="quick-guide-line-v172">Explore <strong>SCRAMBLE SUMMARY, GAME or GEEK MODE</strong> at Scramble Completion</div>' +
+            '<div class="quick-guide-line-v172">Closing Browser/Site will <strong>NOT</strong> reset scores</div>' +
+            '<div class="quick-guide-legend-v2050">' +
+              '<div class="quick-guide-legend-heading-v2050">VISUAL CUES</div>' +
+              '<div class="quick-guide-legend-row-v2050">' +
+                '<span class="quick-guide-game-hole-sample-v2050">13</span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>Gray Circle</strong> = GAME on that Hole — Tap for Details</span>' +
+              '</div>' +
+              '<div class="quick-guide-legend-row-v2050">' +
+                '<span class="quick-guide-fake-button-v2050 blue-v2050">BLUE</span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>Primary / Navigation</strong></span>' +
+              '</div>' +
+              '<div class="quick-guide-legend-row-v2050">' +
+                '<span class="quick-guide-fake-button-v2050 gold-v2050">GOLD</span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>After-Play Features</strong></span>' +
+              '</div>' +
+              '<div class="quick-guide-legend-row-v2050">' +
+                '<span class="quick-guide-fake-button-v2050 gray-v2050">GRAY</span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>Secondary</strong></span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="quick-guide-progress-v2050" aria-hidden="true">' +
+          '<div class="quick-guide-progress-thumb-v2050"></div>' +
         '</div>';
 
       els.modalInput.style.display =
@@ -29009,6 +29251,8 @@ let scoreTimingDetail =
           .add(
             'open'
           );
+
+        wireQuickGuideProgressV2050();
 
         /* V19.77 — keep the established 60%-of-button-height GOT IT target,
            but let the button expand to its content before fitting. The former
@@ -29094,6 +29338,7 @@ let scoreTimingDetail =
           'open'
         );
 
+      wireQuickGuideProgressV2050();
       scheduleQuickGuideFooterFitV1971(leaderboard, back, scorecard);
 
     }
