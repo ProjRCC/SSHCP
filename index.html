@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.74-P7M4QX | BUILD KEY: 20.75-Q8V3ML -->
+<!-- SSHCP | BASE KEY: 20.74-P7M4QX | BUILD KEY: 20.76-V5Q8NR -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -387,9 +387,15 @@
 
       z-index: -2;
 
-      /* SSHCP V20.75 — global app underlay is intentionally plain white, so
-         Safari/iPad rubber-band overscroll cannot expose background artwork. */
-      background: #fff;
+      background:
+        linear-gradient(
+          rgba(255,255,255,.34),
+          rgba(255,255,255,.34)
+        ),
+        url("BG.jpg")
+        center top /
+        100% auto
+        repeat-y;
 
       pointer-events: none;
     }
@@ -14234,9 +14240,12 @@ body.team-info-open-v2032{
    Exact base: corrected V20.73 GOLDEN / 20.73-R8K4VN.
 
    S25 remains the 1.000 visual baseline. The existing V18.9 device
-   multiplier (visual viewport / 724, clamped 0.70..1.30) now owns
-   the full geometry of the HOME hamburger, its content-driven drawer,
-   and the Quick Guide shell/internals. Existing anchors, wording,
+   multiplier (visual viewport / 724, clamped 0.70..1.30) owns the
+   full geometry of the HOME hamburger, its content-driven drawer,
+   and the Quick Guide shell/internals. V20.76 changes Quick Guide
+   TYPOGRAPHY only: larger-than-S25 text uses
+   1 + ((deviceMultiplier - 1) * 1.5), while S25 stays exactly 1.000
+   and all V20.74 geometry/anchors remain untouched. Existing wording,
    navigation, 95dvh Quick Guide height, scoring, Leaderboard, HOME
    layout, post-play popups, and Worker behavior are untouched.
    ========================================================= */
@@ -14513,7 +14522,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.75</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.76</span></span>
         </button>
 
       </div>
@@ -21972,6 +21981,21 @@ let scoreTimingDetail =
       };
     }
 
+    /* SSHCP V20.76 — Quick Guide TEXT only.
+       Keep S25 at exactly 1.000. On displays larger than the S25 baseline,
+       amplify only the extra device-scale difference by 1.5:
+       1 + ((deviceMultiplier - 1) * 1.5).
+       Smaller displays retain the established V20.74 multiplier unchanged. */
+    function quickGuideTextScaleV2076(multiplierValue) {
+      const raw = Number(multiplierValue);
+      const deviceMultiplier = Number.isFinite(raw) && raw > 0
+        ? raw
+        : getVerticalMetricsV188().multiplier;
+      return deviceMultiplier > 1
+        ? 1 + ((deviceMultiplier - 1) * 1.5)
+        : deviceMultiplier;
+    }
+
     function syncSharedGeometryV187() {
       const metrics = getVerticalMetricsV188();
       const scaled = value => Math.max(1, Math.round(value * metrics.multiplier));
@@ -22008,18 +22032,9 @@ let scoreTimingDetail =
       const setV2074Px = (name, base) => {
         root.setProperty(name, (base * metrics.multiplier).toFixed(3) + 'px');
       };
-      /* SSHCP V20.75 — Quick Guide typography only receives one additional
-         1.25x factor on top of the existing device multiplier. Geometry stays
-         V20.74. Footer buttons retain their existing shrink-to-fit protection. */
-      const V2075_QG_TEXT_FACTOR = 1.25;
-      const setV2075QgTextPx = (name, base) => {
-        root.setProperty(
-          name,
-          (base * metrics.multiplier * V2075_QG_TEXT_FACTOR).toFixed(3) + 'px'
-        );
-      };
       root.setProperty('--v2074-utility-scale', metrics.multiplier.toFixed(5));
-      root.setProperty('--v2075-qg-text-factor', V2075_QG_TEXT_FACTOR.toFixed(2));
+      const qgTextScaleV2076 = quickGuideTextScaleV2076(metrics.multiplier);
+      root.setProperty('--v2076-qg-text-scale', qgTextScaleV2076.toFixed(5));
 
       /* Hamburger + drawer. */
       setV2074Px('--v2074-hamb-top', 12);
@@ -22057,7 +22072,7 @@ let scoreTimingDetail =
       setV2074Px('--v2074-qg-border', 2);
       setV2074Px('--v2074-qg-radius', 17);
       setV2074Px('--v2074-qg-title-gap', 18);
-      setV2075QgTextPx('--v2074-qg-title-font', 27);
+      root.setProperty('--v2074-qg-title-font', (27 * qgTextScaleV2076).toFixed(3) + 'px');
       setV2074Px('--v2074-qg-body-pr', 14);
       setV2074Px('--v2074-qg-scroll-pr', 4);
       setV2074Px('--v2074-qg-line-gap', 14);
@@ -22078,7 +22093,7 @@ let scoreTimingDetail =
       setV2074Px('--v2074-qg-legend-row-min', 32);
       setV2074Px('--v2074-qg-cue-w', 64);
       setV2074Px('--v2074-qg-hole-size', 38);
-      setV2075QgTextPx('--v2074-qg-hole-font', 10);
+      root.setProperty('--v2074-qg-hole-font', (10 * qgTextScaleV2076).toFixed(3) + 'px');
       setV2074Px('--v2074-qg-fake-w', 64);
       setV2074Px('--v2074-qg-fake-h', 30);
       setV2074Px('--v2074-qg-fake-pad-x', 8);
@@ -30083,8 +30098,7 @@ let scoreTimingDetail =
 
     function syncQuickGuideBodyFontV1816() {
       const metrics = getVerticalMetricsV188();
-      /* V20.75 — typography only: device multiplier × 1.25. */
-      const size = Math.max(1, 19 * metrics.multiplier * 1.25);
+      const size = Math.max(1, 19 * quickGuideTextScaleV2076(metrics.multiplier));
       document.documentElement.style.setProperty(
         '--v1816-quick-guide-body-font',
         size.toFixed(2) + 'px'
@@ -30126,17 +30140,21 @@ let scoreTimingDetail =
         return false;
       }
 
-      /* V19.71 — clean Quick Guide footer sizing from rendered geometry only.
-         LEADERBOARD and SCORECARD use the established 40% targets and BACK the
-         established 50% target; V20.75 applies the Quick Guide-only 1.25 text
-         multiplier to those targets before the same shrink-to-fit pass. */
+      /* V20.76 — keep V19.71's rendered-geometry fitter, but boost only
+         Quick Guide TEXT above the S25 baseline. Button geometry remains the
+         exact V20.74 device multiplier. */
+      const metricsV2076 = getVerticalMetricsV188();
+      const qgTextRatioV2076 =
+        quickGuideTextScaleV2076(metricsV2076.multiplier) /
+        Math.max(0.0001, metricsV2076.multiplier);
+
       const leaderboardFit = fitQuickGuideButtonTextV1971(
         leaderboard,
-        leaderboardRect.height * 0.40 * 1.25
+        leaderboardRect.height * 0.40 * qgTextRatioV2076
       );
       const scorecardFit = fitQuickGuideButtonTextV1971(
         scorecard,
-        scorecardRect.height * 0.40 * 1.25
+        scorecardRect.height * 0.40 * qgTextRatioV2076
       );
 
       if (!(leaderboardFit > 0) || !(scorecardFit > 0)) return false;
@@ -30147,7 +30165,7 @@ let scoreTimingDetail =
 
       const backFit = fitQuickGuideButtonTextV1971(
         back,
-        backRect.height * 0.50 * 1.25
+        backRect.height * 0.50 * qgTextRatioV2076
       );
       return backFit > 0;
     }
@@ -30306,16 +30324,22 @@ let scoreTimingDetail =
 
         wireQuickGuideProgressV2050();
 
-        /* V19.77 / V20.75 — keep the established GOT IT fitting path; V20.75
-           applies the Quick Guide-only 1.25 text multiplier to its 60% target,
-           then lets the button expand to its content before fitting. The former
+        /* V19.77 — keep the established 60%-of-button-height GOT IT target,
+           but let the button expand to its content before fitting. The former
            V17.3 fitter reference no longer exists in the current source, so it
            could not enforce the no-clipping fallback. Set the target first, let
            content-driven width settle for a frame, then use the current V19.71
            rendered-geometry fitter. If the viewport constrains the wider button,
            shrink GOT IT only until it fits; never wrap or clip it. */
         requestAnimationFrame(() => {
-          const target = Math.max(12, Math.floor(gotIt.clientHeight * 0.60 * 1.25));
+          const metricsV2076 = getVerticalMetricsV188();
+          const qgTextRatioV2076 =
+            quickGuideTextScaleV2076(metricsV2076.multiplier) /
+            Math.max(0.0001, metricsV2076.multiplier);
+          const target = Math.max(
+            12,
+            Math.floor(gotIt.clientHeight * 0.60 * qgTextRatioV2076)
+          );
           gotIt.style.fontSize = target + 'px';
           requestAnimationFrame(() => {
             fitQuickGuideButtonTextV1971(gotIt, target);
