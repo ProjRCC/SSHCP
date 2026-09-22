@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.64-K7Q3MV | BUILD KEY: 20.65-P3R8QK -->
+<!-- SSHCP | BASE KEY: 20.65-P3R8QK | BUILD KEY: 20.66-H4V7QS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12566,6 +12566,23 @@ button.sshcp-button-pressed-v172{
     min-height:100svh!important;
     max-height:100svh!important;
   }
+
+  /* SSHCP V20.66 — extend the proven V20.20 standalone viewport authority to
+     Scorecard and Leaderboard. Android installed-PWA reloads can transiently
+     report a larger 100dvh/visual viewport that includes system UI. Keep the
+     browser/QR path untouched; standalone alone uses the stable small viewport. */
+  #scorecardView,
+  #leaderboardView{
+    height:100svh!important;
+    min-height:100svh!important;
+    max-height:100svh!important;
+  }
+  #scorecardView .scorecard-screen,
+  #leaderboardView .leaderboard-screen{
+    height:100svh!important;
+    min-height:0!important;
+    max-height:100svh!important;
+  }
 }
 #homeView .home-shell{
   position:relative!important;
@@ -14298,7 +14315,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.65</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.66</span></span>
         </button>
 
       </div>
@@ -21628,6 +21645,41 @@ let scoreTimingDetail =
     const V188_S25_SCREEN_CSS_FALLBACK_H = 832;
     const V189_S25_VISUAL_VIEWPORT_H = 724;
 
+    /* SSHCP V20.66 — JS companion to the standalone 100svh CSS above.
+       Scorecard/Leaderboard shell geometry must not follow Android's transient
+       visualViewport/100dvh value during installed-PWA reload settling. A tiny
+       hidden probe reads the same stable 100svh authority used by CSS. */
+    let sshcpStandaloneSvhProbeV2066 = null;
+
+    function getStandaloneSmallViewportHeightV2066() {
+      const standalone = Boolean(
+        window.matchMedia &&
+        window.matchMedia('(display-mode: standalone)').matches
+      );
+      if (!standalone) return 0;
+
+      if (!sshcpStandaloneSvhProbeV2066 || !sshcpStandaloneSvhProbeV2066.isConnected) {
+        const probe = document.createElement('div');
+        probe.setAttribute('aria-hidden', 'true');
+        probe.style.cssText =
+          'position:fixed!important;' +
+          'left:-10000px!important;' +
+          'top:0!important;' +
+          'width:1px!important;' +
+          'height:100svh!important;' +
+          'min-height:100svh!important;' +
+          'max-height:100svh!important;' +
+          'visibility:hidden!important;' +
+          'pointer-events:none!important;' +
+          'overflow:hidden!important;';
+        (document.body || document.documentElement).appendChild(probe);
+        sshcpStandaloneSvhProbeV2066 = probe;
+      }
+
+      const measured = sshcpStandaloneSvhProbeV2066.getBoundingClientRect().height;
+      return Number.isFinite(measured) && measured > 0 ? measured : 0;
+    }
+
     function getVerticalMetricsV188() {
       const innerWidth = Math.max(1, window.innerWidth || document.documentElement.clientWidth || 1);
       const innerHeight = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 1);
@@ -21813,20 +21865,42 @@ let scoreTimingDetail =
       if (!shell) return null;
 
       const width = Math.max(1, Math.min(760, shell.clientWidth || window.innerWidth || 1));
-      const height = Math.max(1, shell.clientHeight || window.innerHeight || 1);
+      const stableStandaloneHeightV2066 = getStandaloneSmallViewportHeightV2066();
+      const height = Math.max(
+        1,
+        shell.clientHeight || stableStandaloneHeightV2066 || window.innerHeight || 1
+      );
 
       /* V18.8: horizontal scaling remains the proven width system.
          Vertical scaling is now one clean S25-relative multiplier. The old
          .68 conversion has been baked into the approved HEADER/FOOTER S25
-         baselines below and is no longer applied at runtime. */
+         baselines below and is no longer applied at runtime.
+
+         V20.66: regular web remains exactly on the established visualViewport
+         multiplier. Installed standalone Scorecard/Leaderboard instead use the
+         stable 100svh measurement so a late Android viewport settle cannot
+         resize the shell after the visible NESR+4 scroll has completed. */
       const sx = Math.max(0.38, Math.min(1.00, width / 756));
       const metricsV188 = getVerticalMetricsV188();
-      const sy = metricsV188.multiplier;
+      const sy = stableStandaloneHeightV2066 > 0
+        ? Math.max(
+            0.70,
+            Math.min(1.30, stableStandaloneHeightV2066 / V189_S25_VISUAL_VIEWPORT_H)
+          )
+        : metricsV188.multiplier;
 
       const px = value => Math.max(1, value * sx);
       const py = value => Math.max(1, Math.round(value * sy));
 
-      const sharedV187 = syncSharedGeometryV187();
+      const sharedRawV187 = syncSharedGeometryV187();
+      const sharedV187 = stableStandaloneHeightV2066 > 0
+        ? {
+            ...sharedRawV187,
+            sy,
+            multiplier: sy,
+            tableHeader: Math.max(1, Math.round(46 * sy))
+          }
+        : sharedRawV187;
 
       const vars = {
         '--v16-rail': px(24),
@@ -21906,7 +21980,7 @@ let scoreTimingDetail =
         });
       }
 
-      return { width, height, sx, sy, vars };
+      return { width, height, sx, sy, vars, sharedV187 };
     }
 
 
@@ -21942,7 +22016,9 @@ let scoreTimingDetail =
          never an unallocated gap at the bottom of the viewport. */
       const fixedShellWithoutHeader = Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
       const tableBudget = Math.max(1, Math.round(screenHeight - fixedShellWithoutHeader));
-      const headerHeight = syncSharedGeometryV187().tableHeader;
+      const headerHeight = geometry.sharedV187
+        ? geometry.sharedV187.tableHeader
+        : syncSharedGeometryV187().tableHeader;
       /* V18.15: no 9/10 divider consumes vertical space. Exactly nine score
          rows own the full table viewport below the TABLE HEADER ROW. */
       const scoreTableBudget = Math.max(9, tableBudget - headerHeight);
@@ -29179,7 +29255,9 @@ let scoreTimingDetail =
          baseline. The Leaderboard viewport then distributes every remaining
          integer pixel across the visible rows (max 8). The repeating pattern
          means each full visible block consumes the viewport exactly. */
-      const headerHeight = syncSharedGeometryV187().tableHeader;
+      const headerHeight = geometry.sharedV187
+        ? geometry.sharedV187.tableHeader
+        : syncSharedGeometryV187().tableHeader;
       const rowHeightInitial = Math.max(1, Math.floor((Math.max(rowCount, Math.round(tableBudget - headerHeight))) / rowCount));
 
       els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
