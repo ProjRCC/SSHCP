@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.74-P7M4QX | BUILD KEY: 20.76-V5Q8NR -->
+<!-- SSHCP | BASE KEY: 20.77-M6R9QK | BUILD KEY: 20.78-R7K3MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9414,11 +9414,10 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   transition:opacity .5s ease-out!important;
   will-change:opacity;
 }
-/* V19.85 — HOME only: slow the mutable-zone curtain fade so freshly resolved
-   HOME actions emerge through the curtain instead of visually popping in.
-   Scorecard/Leaderboard/other reveal shields retain the established .5s fade. */
+/* SSHCP V20.78 — HOME mutable-zone reveal is .8s.
+   Scorecard/Leaderboard keep their separate established .8s full-screen reveal. */
 .sshcp-data-reveal-shield-v177.sshcp-home-reveal-v1985{
-  transition:opacity 1s ease-out!important;
+  transition:opacity .8s ease-out!important;
 }
 
 .sshcp-data-reveal-shield-v177.is-revealing-v177{
@@ -9432,14 +9431,12 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   z-index:6100!important;
   background:#000!important;
 }
-/* V19.86 — HOME refresh/return polish adds a second, full-screen white curtain
-   above the rebuilt HOME page but below the existing mutable-zone curtain.
-   It fades in parallel for .6s, while the V19.85 middle curtain keeps its 1s
-   reveal. The Welcome splash path never receives this curtain. */
+/* SSHCP V20.78 — HOME full-screen layer fades in parallel for .5s, while
+   the mutable-zone HOME curtain completes at .8s. Welcome remains unchanged. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
   background:#fff!important;
   z-index:4790!important;
-  transition:opacity .6s ease-out!important;
+  transition:opacity .5s ease-out!important;
 }
 /* SSHCP V20.73 — Scorecard / Leaderboard keep V20.69's one full-screen
    white curtain, but reveal over .8s. HOME and popup/after-event transitions
@@ -14522,7 +14519,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.76</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.78</span></span>
         </button>
 
       </div>
@@ -20363,10 +20360,9 @@ let scoreTimingDetail =
       }
 
 
-      /* Arm the .6s full-screen layer before switching views so the old page
-         cannot flash while HOME becomes active. The existing HOME middle
-         curtain is mounted immediately after the view switch and remains the
-         slower 1.0s layer. */
+      /* V20.78 — arm the .5s full-screen layer before switching views so the
+         old page cannot flash while HOME becomes active. The HOME middle
+         curtain remains above it and completes at .8s. */
       const homeFullRevealShieldV1986 = useHomeFullRevealV1986
         ? beginHomeFullRevealV1986()
         : null;
@@ -20409,7 +20405,14 @@ let scoreTimingDetail =
         document.documentElement.classList.remove('sshcp-pre-home-v1976');
       }
 
-      await refreshHomeTournamentStateV1831();
+      /* V20.78 — on a direct HOME browser refresh, initialize() starts the
+         lightweight leaderboard-status read in parallel with stored QR/auth
+         validation. Reuse that exact in-flight promise here instead of starting
+         a second serial request. In-app HOME navigation still performs the
+         established fresh status read normally. */
+      const prefetchedHomeStateV2078 = homeRefreshPrefetchV2078;
+      homeRefreshPrefetchV2078 = null;
+      await (prefetchedHomeStateV2078 || refreshHomeTournamentStateV1831());
       updateHomeScorecardAccess();
       fitHomeActionTypographyV197();
       if (typeof window.refreshHomeMenuV2054 === 'function') {
@@ -20430,10 +20433,9 @@ let scoreTimingDetail =
         document.documentElement.classList.remove('sshcp-pre-home-full-v1987');
       }
 
-      /* V19.86 — reveal both HOME curtains from the same settled layout frame.
-         The full-screen layer completes at .6s; the established mutable-zone
-         layer continues independently to 1.0s. Welcome -> HOME has no full
-         layer, so its existing presentation remains unchanged. */
+      /* V20.78 — reveal both HOME curtains from the same settled layout frame.
+         The full-screen layer completes at .5s and the mutable-zone layer at
+         .8s. Welcome -> HOME has no full layer and remains unchanged. */
       await Promise.all([
         revealDataShieldAfterLayoutV177(
           'home',
@@ -20593,16 +20595,15 @@ let scoreTimingDetail =
 
         shield.addEventListener('transitionend', onTransitionEnd);
         shield.classList.add('is-revealing-v177');
-        /* V20.73 — HOME retains its existing 1.0s / .6s behavior. Scorecard
-           and Leaderboard fade their V20.69 full-screen white curtains for .8s.
-           Keep each safety fallback just past its transition; every other reveal
-           shield remains at the established 560ms. */
-        const revealFallbackMsV2073 =
-          key === 'home' ? 1060 :
-          key === 'home-full-v1986' ? 660 :
+        /* SSHCP V20.78 — HOME now uses .8s middle / .5s full-screen reveals.
+           Scorecard and Leaderboard remain .8s. Keep each fallback just beyond
+           its opacity transition; every other reveal keeps the 560ms fallback. */
+        const revealFallbackMsV2078 =
+          key === 'home' ? 860 :
+          key === 'home-full-v1986' ? 560 :
           (key === 'scorecard' || key === 'leaderboard') ? 860 :
           560;
-        window.setTimeout(finish, revealFallbackMsV2073);
+        window.setTimeout(finish, revealFallbackMsV2078);
       });
     }
 
@@ -21981,19 +21982,22 @@ let scoreTimingDetail =
       };
     }
 
-    /* SSHCP V20.76 — Quick Guide TEXT only.
-       Keep S25 at exactly 1.000. On displays larger than the S25 baseline,
-       amplify only the extra device-scale difference by 1.5:
-       1 + ((deviceMultiplier - 1) * 1.5).
-       Smaller displays retain the established V20.74 multiplier unchanged. */
-    function quickGuideTextScaleV2076(multiplierValue) {
+    /* SSHCP V20.77 — Quick Guide TEXT only.
+       Preserve the V20.74 device multiplier at the low end, but progressively
+       add more typography scale as the display grows so a modest 1.08 device
+       multiplier remains near 1.09 while the established 1.30 tablet cap still
+       reaches the accepted 1.45 Quick Guide text target. Geometry is untouched.
+       Formula above 1.00:
+       deviceMultiplier + 0.5 * (((deviceMultiplier - 1) ** 2) / 0.30).
+       Multipliers at or below 1.00 retain V20.74 behavior unchanged. */
+    function quickGuideTextScaleV2077(multiplierValue) {
       const raw = Number(multiplierValue);
       const deviceMultiplier = Number.isFinite(raw) && raw > 0
         ? raw
         : getVerticalMetricsV188().multiplier;
-      return deviceMultiplier > 1
-        ? 1 + ((deviceMultiplier - 1) * 1.5)
-        : deviceMultiplier;
+      if (deviceMultiplier <= 1) return deviceMultiplier;
+      const extra = deviceMultiplier - 1;
+      return deviceMultiplier + (0.5 * ((extra * extra) / 0.30));
     }
 
     function syncSharedGeometryV187() {
@@ -22033,8 +22037,8 @@ let scoreTimingDetail =
         root.setProperty(name, (base * metrics.multiplier).toFixed(3) + 'px');
       };
       root.setProperty('--v2074-utility-scale', metrics.multiplier.toFixed(5));
-      const qgTextScaleV2076 = quickGuideTextScaleV2076(metrics.multiplier);
-      root.setProperty('--v2076-qg-text-scale', qgTextScaleV2076.toFixed(5));
+      const qgTextScaleV2077 = quickGuideTextScaleV2077(metrics.multiplier);
+      root.setProperty('--v2076-qg-text-scale', qgTextScaleV2077.toFixed(5));
 
       /* Hamburger + drawer. */
       setV2074Px('--v2074-hamb-top', 12);
@@ -22072,7 +22076,7 @@ let scoreTimingDetail =
       setV2074Px('--v2074-qg-border', 2);
       setV2074Px('--v2074-qg-radius', 17);
       setV2074Px('--v2074-qg-title-gap', 18);
-      root.setProperty('--v2074-qg-title-font', (27 * qgTextScaleV2076).toFixed(3) + 'px');
+      root.setProperty('--v2074-qg-title-font', (27 * qgTextScaleV2077).toFixed(3) + 'px');
       setV2074Px('--v2074-qg-body-pr', 14);
       setV2074Px('--v2074-qg-scroll-pr', 4);
       setV2074Px('--v2074-qg-line-gap', 14);
@@ -22093,7 +22097,7 @@ let scoreTimingDetail =
       setV2074Px('--v2074-qg-legend-row-min', 32);
       setV2074Px('--v2074-qg-cue-w', 64);
       setV2074Px('--v2074-qg-hole-size', 38);
-      root.setProperty('--v2074-qg-hole-font', (10 * qgTextScaleV2076).toFixed(3) + 'px');
+      root.setProperty('--v2074-qg-hole-font', (10 * qgTextScaleV2077).toFixed(3) + 'px');
       setV2074Px('--v2074-qg-fake-w', 64);
       setV2074Px('--v2074-qg-fake-h', 30);
       setV2074Px('--v2074-qg-fake-pad-x', 8);
@@ -24476,6 +24480,11 @@ let scoreTimingDetail =
       }
       requestAnimationFrame(fitHomeActionTypographyV197);
     }
+
+    /* SSHCP V20.78 — direct HOME refresh can prestart the same read in parallel
+       with QR/auth validation. showHome() consumes this once; normal in-app HOME
+       navigation leaves it null and retains the established fresh-read behavior. */
+    let homeRefreshPrefetchV2078 = null;
 
     /* V18.31 — HOME refresh truth comes from the backend, not this device's
        previous session. This is intentionally a lightweight leaderboard-status
@@ -30098,7 +30107,7 @@ let scoreTimingDetail =
 
     function syncQuickGuideBodyFontV1816() {
       const metrics = getVerticalMetricsV188();
-      const size = Math.max(1, 19 * quickGuideTextScaleV2076(metrics.multiplier));
+      const size = Math.max(1, 19 * quickGuideTextScaleV2077(metrics.multiplier));
       document.documentElement.style.setProperty(
         '--v1816-quick-guide-body-font',
         size.toFixed(2) + 'px'
@@ -30143,18 +30152,18 @@ let scoreTimingDetail =
       /* V20.76 — keep V19.71's rendered-geometry fitter, but boost only
          Quick Guide TEXT above the S25 baseline. Button geometry remains the
          exact V20.74 device multiplier. */
-      const metricsV2076 = getVerticalMetricsV188();
-      const qgTextRatioV2076 =
-        quickGuideTextScaleV2076(metricsV2076.multiplier) /
-        Math.max(0.0001, metricsV2076.multiplier);
+      const metricsV2077 = getVerticalMetricsV188();
+      const qgTextRatioV2077 =
+        quickGuideTextScaleV2077(metricsV2077.multiplier) /
+        Math.max(0.0001, metricsV2077.multiplier);
 
       const leaderboardFit = fitQuickGuideButtonTextV1971(
         leaderboard,
-        leaderboardRect.height * 0.40 * qgTextRatioV2076
+        leaderboardRect.height * 0.40 * qgTextRatioV2077
       );
       const scorecardFit = fitQuickGuideButtonTextV1971(
         scorecard,
-        scorecardRect.height * 0.40 * qgTextRatioV2076
+        scorecardRect.height * 0.40 * qgTextRatioV2077
       );
 
       if (!(leaderboardFit > 0) || !(scorecardFit > 0)) return false;
@@ -30165,7 +30174,7 @@ let scoreTimingDetail =
 
       const backFit = fitQuickGuideButtonTextV1971(
         back,
-        backRect.height * 0.50 * qgTextRatioV2076
+        backRect.height * 0.50 * qgTextRatioV2077
       );
       return backFit > 0;
     }
@@ -30332,13 +30341,13 @@ let scoreTimingDetail =
            rendered-geometry fitter. If the viewport constrains the wider button,
            shrink GOT IT only until it fits; never wrap or clip it. */
         requestAnimationFrame(() => {
-          const metricsV2076 = getVerticalMetricsV188();
-          const qgTextRatioV2076 =
-            quickGuideTextScaleV2076(metricsV2076.multiplier) /
-            Math.max(0.0001, metricsV2076.multiplier);
+          const metricsV2077 = getVerticalMetricsV188();
+          const qgTextRatioV2077 =
+            quickGuideTextScaleV2077(metricsV2077.multiplier) /
+            Math.max(0.0001, metricsV2077.multiplier);
           const target = Math.max(
             12,
-            Math.floor(gotIt.clientHeight * 0.60 * qgTextRatioV2076)
+            Math.floor(gotIt.clientHeight * 0.60 * qgTextRatioV2077)
           );
           gotIt.style.fontSize = target + 'px';
           requestAnimationFrame(() => {
@@ -31698,6 +31707,19 @@ let scoreTimingDetail =
       }
 
       setupQrWelcomeV170();
+
+      /* SSHCP V20.78 — HOME refresh previously serialized two independent
+         read-only network waits: stored QR/auth validation first, then HOME's
+         lightweight leaderboard-status read inside showHome(). Start the HOME
+         status read now so both requests overlap. Incoming/competitor Welcome
+         paths are deliberately excluded and retain their proven sequencing. */
+      if (
+        rememberedView === 'home' &&
+        !window.__sshcpIncomingQrWelcomeV170
+      ) {
+        homeRefreshPrefetchV2078 = refreshHomeTournamentStateV1831();
+      }
+
       const qrInitializationV1984 = await initializeQrAuthorization();
       if (geekEnabledV180()) startGeekDiagnosticV180b();
 
