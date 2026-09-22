@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 20.93-T5N8QK | BUILD KEY: 20.94-M7Q3RV -->
-<!-- SSHCP V20.94 — TEST build from exact V20.93.
-     Scorecard row-geometry refinement only. The nine-row visible Scorecard viewport now
-     uses one identical whole-pixel row height: floor(available row area / 9). Any leftover
-     pixels are transferred to the existing Scorecard table-to-LEADERBOARD-button buffer
-     instead of being distributed across individual rows. The fixed bottom button position
-     remains unchanged. V20.93 Leaderboard geometry, NESR/auto-scroll, fade timings, CLEAR
-     .10s, scoring, audit/data, navigation, after-play/Quick Guide presentation, and Worker
-     behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 20.94-M7Q3RV | BUILD KEY: 20.95-K4V8QN -->
+<!-- SSHCP V20.95 — TEST build from exact V20.94.
+     Scorecard bottom-boundary preservation only, plus the approved presentation timings.
+     When V20.94 whole-pixel row sizing temporarily releases/reapplies the Scorecard viewport,
+     an already-bottomed card now remains pinned to the exact recalculated bottom immediately;
+     returning from Leaderboard after Hole 18 therefore requires no corrective NESR scroll.
+     Scorecard row geometry, NESR rules/beauty-scroll, V20.93 Leaderboard geometry, CLEAR .10s,
+     scoring, audit/data, navigation, after-play/Quick Guide presentation, and Worker behavior
+     otherwise remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +14,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V20.94 — TIMING TEST PANEL
+       SSHCP V20.95 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -43,10 +43,10 @@
         const safeSeconds = Number.isFinite(seconds) && seconds >= 0 ? seconds : fallback;
         rootStyle.setProperty(cssName, safeSeconds + 's');
       };
-      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.10);
-      setSeconds('--sshcp-fade-1b-home-middle', timing.FADE_1B_HOME_MIDDLE, 0.50);
+      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.30);
+      setSeconds('--sshcp-fade-1b-home-middle', timing.FADE_1B_HOME_MIDDLE, 0.70);
       setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.60);
-      setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 1.20);
+      setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 0.80);
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
     })();
   </script>
@@ -14645,7 +14645,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.94</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.95</span></span>
         </button>
 
       </div>
@@ -21249,13 +21249,13 @@ let scoreTimingDetail =
         const afterPlayKeyV2092 = String(key || '').startsWith('after-play-');
         const revealDurationMsV2092 =
           key === 'home'
-            ? timingMsV2092(timingV2092.FADE_1B_HOME_MIDDLE, 0.50)
+            ? timingMsV2092(timingV2092.FADE_1B_HOME_MIDDLE, 0.70)
             : key === 'home-full-v1986'
-              ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.10)
+              ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.30)
               : (key === 'scorecard' || key === 'leaderboard')
                 ? timingMsV2092(timingV2092.FADE_2_SCORECARD_LEADERBOARD, 0.60)
                 : afterPlayKeyV2092
-                  ? timingMsV2092(timingV2092.FADE_3_AFTER_PLAY, 1.20)
+                  ? timingMsV2092(timingV2092.FADE_3_AFTER_PLAY, 0.80)
                   : key === 'quick-guide-v2089'
                     ? timingMsV2092(timingV2092.FADE_4_QUICK_GUIDE, 0.80)
                     : 500;
@@ -23047,6 +23047,20 @@ let scoreTimingDetail =
 
       if (!screen || !top || !header || !bottom || !els.scoreScroll) return;
 
+      /* SSHCP V20.95 — V20.94 must temporarily release the fixed row viewport
+         before measuring. If the card is already at its exact bottom boundary,
+         remember that boundary intent BEFORE the temporary expansion can clamp
+         scrollTop upward. Reapply the new exact bottom synchronously after the
+         whole-pixel viewport is rebuilt, so no later NESR correction is needed. */
+      const scoreMaxBeforeSizingV2095 = Math.max(
+        0,
+        els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight
+      );
+      const preserveExactBottomV2095 = !!(
+        scoreMaxBeforeSizingV2095 > 0 &&
+        Math.abs(scoreMaxBeforeSizingV2095 - els.scoreScroll.scrollTop) <= 3
+      );
+
       /* SSHCP V20.94 — restore the normal flexible Scorecard shell before
          measuring. A prior sizing pass may have converted the scroll viewport
          to an exact whole-pixel height and moved its remainder into the footer
@@ -23096,6 +23110,14 @@ let scoreTimingDetail =
         (baseFooterGapV2094 + remainderV2094) + 'px',
         'important'
       );
+
+      if (preserveExactBottomV2095) {
+        const scoreMaxAfterSizingV2095 = Math.max(
+          0,
+          els.scoreScroll.scrollHeight - els.scoreScroll.clientHeight
+        );
+        els.scoreScroll.scrollTop = scoreMaxAfterSizingV2095;
+      }
 
       els.scorecardView.style.setProperty('--v5-score-row-h', rowHeight + 'px');
       els.scorecardView.style.setProperty('--v5-score-head-h', headerHeight + 'px');
