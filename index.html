@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.78-R7K3MV | BUILD KEY: 20.79-H4Q7VN -->
+<!-- SSHCP | BASE KEY: 20.79-H4Q7VN | BUILD KEY: 20.80-N5R8QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14526,7 +14526,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.79</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.80</span></span>
         </button>
 
       </div>
@@ -32214,20 +32214,71 @@ let scoreTimingDetail =
       setDisabledV2054(game, !complete);
       geek.classList.toggle('early-ready-v2068', !!geekEarlyReadyV2068);
 
-      if (typeof fitTextToBoxV5 === 'function') {
-        requestAnimationFrame(function(){
-          [scorecard, leaderboard, summary, geek, game, eventInfo, quickGuide].forEach(function(button){
-            if (!button || !button.isConnected) return;
-            var h = button.getBoundingClientRect().height || 50;
-            fitTextToBoxV5(button, button, h * 0.42, 12, {
-              horizontalPad:10,
-              verticalPad:6,
-              wrap:false,
-              lineHeight:1
-            });
-          });
-        });
+      if (panel.classList.contains('open')) {
+        requestAnimationFrame(fitScorecardMenuNameV2080);
       }
+    }
+
+    /* SSHCP V20.80 — HOME drawer long-team-name containment.
+       Preserve the drawer's existing content-driven width for normal labels.
+       When SCORECARD - TEAM NAME reaches the drawer's viewport cap, lock the
+       already-resolved drawer width, constrain only that row to the panel, and
+       locally shrink only that row's text until it fits on one line. */
+    function resetScorecardMenuFitV2080(){
+      panel.style.removeProperty('width');
+      panel.style.removeProperty('visibility');
+      scorecard.style.removeProperty('min-width');
+      scorecard.style.removeProperty('max-width');
+      scorecard.style.removeProperty('width');
+      scorecard.style.removeProperty('font-size');
+      scorecard.style.removeProperty('text-overflow');
+    }
+
+    function fitScorecardMenuNameV2080(){
+      if (!panel.classList.contains('open')) return;
+
+      /* Measure the V20.79 drawer first, while its intrinsic content sizing is
+         still intact. This keeps short-name drawer width pixel-for-pixel. */
+      scorecard.style.removeProperty('min-width');
+      scorecard.style.removeProperty('max-width');
+      scorecard.style.removeProperty('width');
+      scorecard.style.removeProperty('font-size');
+      scorecard.style.removeProperty('text-overflow');
+      panel.style.removeProperty('width');
+
+      var resolvedPanelWidth = panel.getBoundingClientRect().width;
+      if (!(resolvedPanelWidth > 0)) return;
+
+      panel.style.setProperty('width', resolvedPanelWidth + 'px', 'important');
+      scorecard.style.setProperty('min-width', '0', 'important');
+      scorecard.style.setProperty('max-width', '100%', 'important');
+      scorecard.style.setProperty('width', '100%', 'important');
+
+      var computed = getComputedStyle(scorecard);
+      var targetPx = parseFloat(computed.fontSize) || 18;
+      var minPx = Math.max(10, targetPx * 0.55);
+      var low = minPx;
+      var high = targetPx;
+      var best = minPx;
+
+      scorecard.style.setProperty('font-size', targetPx + 'px', 'important');
+      if (scorecard.scrollWidth <= scorecard.clientWidth + 0.5) {
+        best = targetPx;
+      } else {
+        for (var i = 0; i < 12; i++) {
+          var mid = (low + high) / 2;
+          scorecard.style.setProperty('font-size', mid + 'px', 'important');
+          if (scorecard.scrollWidth <= scorecard.clientWidth + 0.5) {
+            best = mid;
+            low = mid;
+          } else {
+            high = mid;
+          }
+        }
+      }
+
+      scorecard.style.setProperty('font-size', best.toFixed(3) + 'px', 'important');
+      scorecard.style.setProperty('text-overflow', 'ellipsis', 'important');
     }
 
     function closeMenuV2054(){
@@ -32238,10 +32289,13 @@ let scoreTimingDetail =
       toggle.setAttribute('aria-expanded','false');
       toggle.setAttribute('aria-label','Open navigation menu');
       document.body.classList.remove('home-menu-open-v2054');
+      resetScorecardMenuFitV2080();
     }
 
     function openMenuV2054(){
+      resetScorecardMenuFitV2080();
       refreshMenuV2054();
+      panel.style.setProperty('visibility','hidden','important');
       panel.classList.add('open');
       backdrop.classList.add('open');
       panel.setAttribute('aria-hidden','false');
@@ -32249,6 +32303,14 @@ let scoreTimingDetail =
       toggle.setAttribute('aria-expanded','true');
       toggle.setAttribute('aria-label','Close navigation menu');
       document.body.classList.add('home-menu-open-v2054');
+
+      requestAnimationFrame(function(){
+        try {
+          fitScorecardMenuNameV2080();
+        } finally {
+          panel.style.removeProperty('visibility');
+        }
+      });
     }
 
     function toggleMenuV2054(event){
