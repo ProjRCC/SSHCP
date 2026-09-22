@@ -1,16 +1,49 @@
-<!-- SSHCP | BASE KEY: 20.85-Q5V8NK | BUILD KEY: 20.86-R4K9VM -->
-<!-- SSHCP V20.86 — TEST build from exact V20.85.
-     Universal after-play transition only: SCRAMBLE SUMMARY, TIE BREAK RESULT,
-     GEEK MODE main/detail, GAME MODE, and SKINS now enter behind one full-screen
-     solid-black curtain. Each destination finishes its required fetch/render/layout
-     work underneath, then the same black curtain fades away over 0.5s.
-     GAME no longer measures or hands off to a popup-sized white curtain; GEEK fresh
-     entry remains black until its fresh data is ready. Existing popup geometry,
-     data/scoring/audit/navigation logic, and table content remain unchanged. -->
+<!-- SSHCP | BASE KEY: 20.87-L8Q4MR | BUILD KEY: 20.88-F4N7QK -->
+<!-- SSHCP V20.88 — TEST build from exact V20.87.
+     Timing-control stress-test variant only. The four user-editable timing values near
+     the top of index.html remain centralized, but 1A / 1B / 2 / 3 are all preset to
+     4.00 seconds for validation. Transition safety fallbacks derive from those same
+     values automatically. No scorecard/leaderboard formatting, NESR/auto-scroll,
+     scoring, data, audit, navigation semantics, popup geometry, or Worker behavior
+     changes are included. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+  <script>
+    /* =========================================================
+       SSHCP V20.88 — FADE TIMING TEST PANEL
+       Change ONLY these four numbers to test reveal timing.
+       Values are in SECONDS. Everything else follows automatically.
+
+       1A = HOME full-screen white curtain
+       1B = HOME middle/action-area white curtain
+       2  = SCORECARD + LEADERBOARD full-screen white curtain
+       3  = ALL AFTER-PLAY full-screen black curtains
+            (Summary / Tie Break / GEEK / GEEK Detail / Game / Skins)
+       ========================================================= */
+    window.SSHCP_FADE_TIMING_V2088 = {
+      FADE_1A_HOME_FULL: 4.00,
+      FADE_1B_HOME_MIDDLE: 4.00,
+      FADE_2_SCORECARD_LEADERBOARD: 4.00,
+      FADE_3_AFTER_PLAY: 4.00
+    };
+
+    (function applySshcpFadeTimingV2088() {
+      const timing = window.SSHCP_FADE_TIMING_V2088 || {};
+      const rootStyle = document.documentElement.style;
+      const setSeconds = (cssName, value, fallback) => {
+        const seconds = Number(value);
+        const safeSeconds = Number.isFinite(seconds) && seconds >= 0 ? seconds : fallback;
+        rootStyle.setProperty(cssName, safeSeconds + 's');
+      };
+      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 4.00);
+      setSeconds('--sshcp-fade-1b-home-middle', timing.FADE_1B_HOME_MIDDLE, 4.00);
+      setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 4.00);
+      setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 4.00);
+    })();
+  </script>
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
@@ -9422,10 +9455,9 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   transition:opacity .5s ease-out!important;
   will-change:opacity;
 }
-/* SSHCP V20.78 — HOME mutable-zone reveal is .8s.
-   Scorecard/Leaderboard keep their separate established .8s full-screen reveal. */
+/* SSHCP V20.88 — 1B HOME middle/action reveal timing comes from the top panel. */
 .sshcp-data-reveal-shield-v177.sshcp-home-reveal-v1985{
-  transition:opacity .8s ease-out!important;
+  transition:opacity var(--sshcp-fade-1b-home-middle,.8s) ease-out!important;
 }
 
 .sshcp-data-reveal-shield-v177.is-revealing-v177{
@@ -9439,21 +9471,19 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   z-index:6100!important;
   background:#000!important;
 }
-/* SSHCP V20.79 — HOME full-screen layer fades in parallel for .2s, while
-   the mutable-zone HOME curtain remains .8s. Welcome remains unchanged. */
+/* SSHCP V20.88 — 1A HOME full-screen reveal timing comes from the top panel. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
   background:#fff!important;
   z-index:4790!important;
-  transition:opacity .2s ease-out!important;
+  transition:opacity var(--sshcp-fade-1a-home-full,.2s) ease-out!important;
 }
-/* SSHCP V20.73 — Scorecard / Leaderboard keep V20.69's one full-screen
-   white curtain, but reveal over .8s. HOME and popup/after-event transitions
-   are unchanged. Existing reveal promises remain the gate, so NESR scrolling
-   and Leaderboard refresh timing cannot begin until this fade ends. */
+/* SSHCP V20.88 — group 2 Scorecard / Leaderboard timing comes from the top
+   panel. Existing reveal promises remain the gate, so NESR scrolling and
+   Leaderboard refresh timing still cannot begin until this fade ends. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-main-full-reveal-v2069{
   background:#fff!important;
   z-index:9000!important;
-  transition:opacity .8s ease-out!important;
+  transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.8s) ease-out!important;
 }
 
 
@@ -14443,11 +14473,11 @@ body.team-info-open-v2032{
   max-height:98dvh!important;
 }
 
-/* Universal after-play reveal: full viewport, solid black, 0.5 seconds. */
+/* SSHCP V20.88 — group 3 after-play timing comes from the top panel. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086{
   background:#000!important;
   border-radius:0!important;
-  transition:opacity .5s ease-out!important;
+  transition:opacity var(--sshcp-fade-3-after-play,.5s) ease-out!important;
 }
 </style>
 
@@ -14581,7 +14611,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.86</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.88</span></span>
         </button>
 
       </div>
@@ -21157,16 +21187,25 @@ let scoreTimingDetail =
 
         shield.addEventListener('transitionend', onTransitionEnd);
         shield.classList.add('is-revealing-v177');
-        /* SSHCP V20.79 — HOME uses .8s middle / .2s full-screen reveals.
-           Scorecard and Leaderboard remain .8s. Keep each fallback just beyond
-           its opacity transition; every other reveal keeps the 560ms fallback. */
-        const revealFallbackMsV2078 =
-          key === 'home' ? 860 :
-          key === 'home-full-v1986' ? 260 :
-          (key === 'scorecard' || key === 'leaderboard') ? 860 :
-          (key === 'summary-popup-v2084' || key === 'game-popup-v2084' || key === 'geek-main-v2084') ? 560 :
-          560;
-        window.setTimeout(finish, revealFallbackMsV2078);
+        /* SSHCP V20.88 — safety fallbacks derive from the same four values in
+           the top-of-file timing panel. Add only 60ms beyond the selected fade. */
+        const timingV2088 = window.SSHCP_FADE_TIMING_V2088 || {};
+        const timingMsV2088 = (value, fallbackSeconds) => {
+          const seconds = Number(value);
+          return 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : fallbackSeconds);
+        };
+        const afterPlayKeyV2088 = String(key || '').startsWith('after-play-');
+        const revealDurationMsV2088 =
+          key === 'home'
+            ? timingMsV2088(timingV2088.FADE_1B_HOME_MIDDLE, 4.00)
+            : key === 'home-full-v1986'
+              ? timingMsV2088(timingV2088.FADE_1A_HOME_FULL, 4.00)
+              : (key === 'scorecard' || key === 'leaderboard')
+                ? timingMsV2088(timingV2088.FADE_2_SCORECARD_LEADERBOARD, 4.00)
+                : afterPlayKeyV2088
+                  ? timingMsV2088(timingV2088.FADE_3_AFTER_PLAY, 4.00)
+                  : 500;
+        window.setTimeout(finish, Math.ceil(revealDurationMsV2088 + 60));
       });
     }
 
