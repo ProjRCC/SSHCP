@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.66-H4V7QS | BUILD KEY: 20.68-N5Q8VR -->
+<!-- SSHCP | BASE KEY: 20.68-N5Q8VR | BUILD KEY: 20.69-T6M3QK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,22 +56,16 @@
           document.documentElement.classList.add('sshcp-pre-' + rememberedView);
         }
 
-        /* SSHCP V20.68 — installed-PWA first-paint handoff for remembered
-           Scorecard / Leaderboard refresh. V20.66 stabilizes standalone height
-           with 100svh; this separate boot flag prevents Android standalone from
-           painting the remembered mutable page for a frame before the existing
-           runtime white reveal shield is mounted. Regular web is untouched. */
-        var standaloneMainRefreshV2068 = !!(
-          window.matchMedia &&
-          window.matchMedia('(display-mode: standalone)').matches
-        );
-        if (standaloneMainRefreshV2068 && !window.__sshcpIncomingQrWelcomeV170) {
-          if (rememberedView === 'scorecard') {
-            document.documentElement.classList.add('sshcp-pre-scorecard-pwa-v2068');
-          }
-          else if (rememberedView === 'leaderboard') {
-            document.documentElement.classList.add('sshcp-pre-leaderboard-pwa-v2068');
-          }
+        /* SSHCP V20.69 — simple main-page first-paint contract.
+           Any refresh that restores Scorecard or Leaderboard starts behind one
+           solid full-screen white boot curtain on BOTH browser and installed PWA.
+           Runtime mounts the normal .5s full-screen reveal shield before this
+           boot class is removed, so no header/table/footer frame can leak out. */
+        if (
+          (rememberedView === 'scorecard' || rememberedView === 'leaderboard') &&
+          !window.__sshcpIncomingQrWelcomeV170
+        ) {
+          document.documentElement.classList.add('sshcp-pre-main-full-v2069');
         }
 
         /* V19.76 — HOME's V19.63 curtain is deliberately created later, after
@@ -5157,33 +5151,21 @@ html.sshcp-pre-leaderboard #leaderboardView{
   display:block!important;
 }
 
-/* SSHCP V20.68 — PWA first-paint curtain bridge.
-   Only installed standalone refresh uses this boot layer. Its top edge matches
-   the established Scorecard / Leaderboard runtime reveal-shield boundary:
-   bottom of HOME / event / INFO nav. The runtime shield is mounted above this
-   layer, then takes ownership synchronously before this class is removed. */
-@media (display-mode: standalone) {
-  html.sshcp-pre-scorecard-pwa-v2068 body::after,
-  html.sshcp-pre-leaderboard-pwa-v2068 body::after{
-    content:""!important;
-    position:fixed!important;
-    left:0!important;
-    right:0!important;
-    top:calc(var(--v16-top-inset,10px) + env(safe-area-inset-top) + var(--v16-nav-h,35px))!important;
-    bottom:0!important;
-    margin:0!important;
-    padding:0!important;
-    border:0!important;
-    background:#fff!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-  }
-  html.sshcp-pre-scorecard-pwa-v2068 body::after{
-    z-index:4890!important;
-  }
-  html.sshcp-pre-leaderboard-pwa-v2068 body::after{
-    z-index:8790!important;
-  }
+/* SSHCP V20.69 — Scorecard / Leaderboard first-paint curtain.
+   Refresh is intentionally simple now: cover the ENTIRE app immediately on
+   both browser and installed PWA, build everything underneath, then hand off
+   to the runtime full-screen .5s white reveal. */
+html.sshcp-pre-main-full-v2069 body::after{
+  content:""!important;
+  position:fixed!important;
+  inset:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:#fff!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  z-index:8990!important;
 }
 
 /* V19.76 — first-paint HOME handoff.
@@ -9458,6 +9440,13 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   background:#fff!important;
   z-index:4790!important;
   transition:opacity .6s ease-out!important;
+}
+/* SSHCP V20.69 — Scorecard / Leaderboard use one full-screen white curtain.
+   Unlike HOME's .6s layer, these pages retain the established .5s reveal. */
+.sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-main-full-reveal-v2069{
+  background:#fff!important;
+  z-index:9000!important;
+  transition:opacity .5s ease-out!important;
 }
 
 
@@ -14373,7 +14362,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.68</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.69</span></span>
         </button>
 
       </div>
@@ -20476,27 +20465,41 @@ let scoreTimingDetail =
       });
     }
 
+    function beginMainFullRevealV2069(key) {
+      const activeV2069 = sshcpRevealShieldsV177.get(key);
+      if (
+        activeV2069 &&
+        activeV2069.isConnected &&
+        !activeV2069.classList.contains('is-revealing-v177')
+      ) {
+        document.documentElement.classList.remove('sshcp-pre-main-full-v2069');
+        return activeV2069;
+      }
+
+      const shieldV2069 = beginDataRevealShieldV177(
+        key,
+        [],
+        '#fff',
+        true,
+        9000
+      );
+      if (shieldV2069) {
+        shieldV2069.classList.add('sshcp-main-full-reveal-v2069');
+        /* Refresh boot curtain -> runtime curtain handoff. Both are full-screen
+           opaque white, and removal happens synchronously after runtime mount. */
+        document.documentElement.classList.remove('sshcp-pre-main-full-v2069');
+      }
+      return shieldV2069;
+    }
+
     function beginScorecardRevealV177() {
       if (currentView !== 'scorecard') return null;
-      const header = els.scorecardView && els.scorecardView.querySelector('.score-table-head');
-      const shieldV2068 = beginDataRevealShieldV177('scorecard', [header, els.scoreScroll], '#fff', false, 4900, 'scorecard');
-      /* V20.68 — PWA refresh boot cover -> established runtime curtain handoff.
-         Both are opaque white and this runs in one task, so no stale table can
-         paint between them. Normal web never carries this boot class. */
-      if (shieldV2068) {
-        document.documentElement.classList.remove('sshcp-pre-scorecard-pwa-v2068');
-      }
-      return shieldV2068;
+      return beginMainFullRevealV2069('scorecard');
     }
 
     function beginLeaderboardRevealV177() {
       if (currentView !== 'leaderboard') return null;
-      const header = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
-      const shieldV2068 = beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false, 8800, 'leaderboard');
-      if (shieldV2068) {
-        document.documentElement.classList.remove('sshcp-pre-leaderboard-pwa-v2068');
-      }
-      return shieldV2068;
+      return beginMainFullRevealV2069('leaderboard');
     }
 
     /* V19.74 — one Leaderboard curtain owns the complete visible refresh
@@ -20515,7 +20518,11 @@ let scoreTimingDetail =
       ) {
         const header = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
         syncDataRevealShieldGeometryV177(active, [header, els.leaderContent]);
-        active.style.setProperty('z-index', '8800', 'important');
+        active.style.setProperty(
+          'z-index',
+          active.classList.contains('sshcp-main-full-reveal-v2069') ? '9000' : '8800',
+          'important'
+        );
         return active;
       }
 
@@ -20545,6 +20552,11 @@ let scoreTimingDetail =
     }
 
     async function showScorecard() {
+
+      /* V20.69 — navigation owns the curtain before the destination view changes.
+         This makes HOME/Leaderboard -> Scorecard visually identical to refresh:
+         solid white first, build underneath, .5s fade, THEN NESR positioning. */
+      beginMainFullRevealV2069('scorecard');
 
       const scorecardEntryOriginV1981 = currentView;
       beginScorecardEntryCueHoldV1981(scorecardEntryOriginV1981);
@@ -20612,6 +20624,11 @@ let scoreTimingDetail =
     }
 
     async function showLeaderboard() {
+
+      /* V20.69 — arm the same full-screen white curtain before switching views.
+         The fresh Leaderboard build and all layout changes stay hidden until the
+         established .5s fade completes; only then may its refresh cycle restart. */
+      beginMainFullRevealV2069('leaderboard');
 
       cancelScorecardEntryCueHoldV1981();
       closeModal();
@@ -20797,8 +20814,7 @@ let scoreTimingDetail =
         const scorecardRevealDoneV179 = revealDataShieldAfterLayoutV177(
           'scorecard',
           scorecardRevealShieldV177,
-          2,
-          [els.scorecardView && els.scorecardView.querySelector('.score-table-head'), els.scoreScroll]
+          2
         );
 
         const renderedAt =
@@ -23854,8 +23870,7 @@ let scoreTimingDetail =
         const leaderboardRevealDoneV179 = revealDataShieldAfterLayoutV177(
           'leaderboard',
           leaderboardRevealShieldV177,
-          2,
-          [els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head'), els.leaderContent]
+          2
         );
         saveLeaderboardSnapshotV53();
 
@@ -26707,11 +26722,10 @@ let scoreTimingDetail =
           const sourceCategory = category;
           const encodedCategory = encodeURIComponent(sourceCategory);
           const encodedStat = encodeURIComponent(String(stat.stat || ''));
-          const rowInteractionV2068 = earlyV2068
-            ? ''
-            : ' role="button" tabindex="0"' +
-              ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
-              ' data-geek-stat="' + escapeHtml(encodedStat) + '"';
+          const rowInteractionV2068 =
+            ' role="button" tabindex="0"' +
+            ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
+            ' data-geek-stat="' + escapeHtml(encodedStat) + '"';
 
           html +=
             '<div class="geek-row-v180 stat' + (ownsBestV1814 ? ' geek-ours-v1814' : '') + '"' +
@@ -26752,17 +26766,15 @@ let scoreTimingDetail =
         }
       };
 
-      if (!geekEarlyAccessV2068) {
-        scroll.querySelectorAll('.geek-row-v180.stat').forEach(row => {
-          row.addEventListener('click', () => openDetailFromRow(row));
-          row.addEventListener('keydown', event => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              openDetailFromRow(row);
-            }
-          });
+      scroll.querySelectorAll('.geek-row-v180.stat').forEach(row => {
+        row.addEventListener('click', () => openDetailFromRow(row));
+        row.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openDetailFromRow(row);
+          }
         });
-      }
+      });
 
       requestAnimationFrame(fitGeekRowsV180);
     }
@@ -27375,6 +27387,14 @@ let scoreTimingDetail =
           applyTeamSizeV1925(teamSize);
           guard += 1;
         }
+      } else if (result) {
+        /* V20.69 early detail has no teams by design. Preserve the established
+           RESULT visual scale using the normal TEAM-base target × 120%. */
+        const earlyResultSizeV2069 = (vh * 0.0375) * 1.20;
+        result.style.setProperty('font-size', earlyResultSizeV2069 + 'px', 'important');
+        result.style.setProperty('line-height', '1', 'important');
+        result.style.setProperty('white-space', 'nowrap', 'important');
+        result.style.setProperty('text-align', 'center', 'important');
       }
 
       if (back) {
@@ -27436,7 +27456,13 @@ let scoreTimingDetail =
         }).join('');
       }
 
-      const teamsHtml = '<ul class="geek-detail-teams-v180">' + (teamItems || '<li>—</li>') + '</ul>';
+      /* V20.69 — early GEEK detail is explanatory only. Keep the established
+         result card in place but show a dash, and do not render any team/owner
+         section until the full field is complete. Description + holes/scope stay. */
+      const earlyDetailV2069 = geekEarlyAccessV2068;
+      const teamsHtml = earlyDetailV2069
+        ? ''
+        : '<ul class="geek-detail-teams-v180">' + (teamItems || '<li>—</li>') + '</ul>';
 
       const proof = geekDetailSecondaryContextV1927(stat);
       els.modalBody.innerHTML =
@@ -27445,10 +27471,9 @@ let scoreTimingDetail =
         '</div>' +
         '<div class="geek-detail-proof-v1920">' + escapeHtml(proof) + '</div>' +
         '<div class="geek-detail-result-card-v1928">' +
-          /* V20.11+ — the statistic card shows the result value directly.
-             RESULT label removed; V20.15 keeps the same card shape with gray-5 fill and white text. */
+          /* V20.69 — full field gets the existing result; early detail stays —. */
           '<div class="geek-detail-result-v180">' +
-            geekDetailResultHtmlV1918(stat) +
+            (earlyDetailV2069 ? '<span class="geek-detail-result-main-v1918">—</span>' : geekDetailResultHtmlV1918(stat)) +
           '</div>' +
         '</div>' +
         teamsHtml;
@@ -31617,15 +31642,16 @@ let scoreTimingDetail =
       .catch(error => {
         /* V19.74 safety: never strand an early-held Leaderboard curtain if
            initialization fails before loadLeaderboard() can reveal it. */
+        removeDataRevealShieldV177('scorecard');
         removeDataRevealShieldV177('leaderboard');
+        document.documentElement.classList.remove('sshcp-pre-main-full-v2069');
         console.error('SSHCP initialization failed:', error);
       })
       .finally(() => {
         document.documentElement.classList.remove(
           'sshcp-pre-scorecard',
           'sshcp-pre-leaderboard',
-          'sshcp-pre-scorecard-pwa-v2068',
-          'sshcp-pre-leaderboard-pwa-v2068',
+          'sshcp-pre-main-full-v2069',
           'sshcp-pre-home-v1976',
           'sshcp-pre-complete'
         );
