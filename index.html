@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.71-L7Q4VN | BUILD KEY: 20.72-K5M8QT -->
+<!-- SSHCP | BASE KEY: 20.72-K5M8QT | BUILD KEY: 20.73-H6Q2MV -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9441,14 +9441,14 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   z-index:4790!important;
   transition:opacity .6s ease-out!important;
 }
-/* SSHCP V20.70 — Scorecard / Leaderboard keep V20.69's one full-screen
-   white curtain, but deliberately reveal over 1.0s. HOME and popup/after-event
-   transitions are unchanged. Existing reveal promises remain the gate, so
-   NESR scrolling and Leaderboard refresh timing cannot begin until this fade ends. */
+/* SSHCP V20.73 — Scorecard / Leaderboard keep V20.69's one full-screen
+   white curtain, but reveal over .8s. HOME and popup/after-event transitions
+   are unchanged. Existing reveal promises remain the gate, so NESR scrolling
+   and Leaderboard refresh timing cannot begin until this fade ends. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-main-full-reveal-v2069{
   background:#fff!important;
   z-index:9000!important;
-  transition:opacity 1s ease-out!important;
+  transition:opacity .8s ease-out!important;
 }
 
 
@@ -20435,16 +20435,16 @@ let scoreTimingDetail =
 
         shield.addEventListener('transitionend', onTransitionEnd);
         shield.classList.add('is-revealing-v177');
-        /* V20.70 — HOME retains its existing 1.0s / .6s behavior. Scorecard
-           and Leaderboard now deliberately fade their V20.69 full-screen white
-           curtains for 1.0s. Keep each safety fallback just past its transition;
-           every other reveal shield remains at the established 560ms. */
-        const revealFallbackMsV2070 =
+        /* V20.73 — HOME retains its existing 1.0s / .6s behavior. Scorecard
+           and Leaderboard fade their V20.69 full-screen white curtains for .8s.
+           Keep each safety fallback just past its transition; every other reveal
+           shield remains at the established 560ms. */
+        const revealFallbackMsV2073 =
           key === 'home' ? 1060 :
           key === 'home-full-v1986' ? 660 :
-          (key === 'scorecard' || key === 'leaderboard') ? 1060 :
+          (key === 'scorecard' || key === 'leaderboard') ? 860 :
           560;
-        window.setTimeout(finish, revealFallbackMsV2070);
+        window.setTimeout(finish, revealFallbackMsV2073);
       });
     }
 
@@ -20863,7 +20863,7 @@ let scoreTimingDetail =
         }
 
         /* V17.9 sequencing retained in V17.11: showScorecard() performs its active-hole positioning only
-           after loadScorecard() returns. V20.70 holds that return until the 1.0s white
+           after loadScorecard() returns. V20.73 holds that return until the .8s white
            reveal is completely finished, so reveal and scroll never overlap. */
         await scorecardRevealDoneV179;
 
