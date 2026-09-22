@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 20.92-Q6R4MN | BUILD KEY: 20.93-T5N8QK -->
-<!-- SSHCP V20.93 — TEST build from exact V20.92.
-     Leaderboard row-geometry refinement only. For 1–8 teams, every rendered team row
-     now uses one identical whole-pixel height: floor(available row area / team count).
-     Any leftover pixels are transferred to the existing Leaderboard table-to-footer
-     buffer instead of being distributed across individual rows. For 9+ teams, the
-     established scrollable 8-row viewport behavior remains unchanged. Scorecard/NESR,
-     fade timings, CLEAR .10s, scoring, audit/data, navigation, after-play/Quick Guide
-     presentation, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 20.93-T5N8QK | BUILD KEY: 20.94-M7Q3RV -->
+<!-- SSHCP V20.94 — TEST build from exact V20.93.
+     Scorecard row-geometry refinement only. The nine-row visible Scorecard viewport now
+     uses one identical whole-pixel row height: floor(available row area / 9). Any leftover
+     pixels are transferred to the existing Scorecard table-to-LEADERBOARD-button buffer
+     instead of being distributed across individual rows. The fixed bottom button position
+     remains unchanged. V20.93 Leaderboard geometry, NESR/auto-scroll, fade timings, CLEAR
+     .10s, scoring, audit/data, navigation, after-play/Quick Guide presentation, and Worker
+     behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +14,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V20.93 — TIMING TEST PANEL
+       SSHCP V20.94 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -14645,7 +14645,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.93</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.94</span></span>
         </button>
 
       </div>
@@ -23047,43 +23047,67 @@ let scoreTimingDetail =
 
       if (!screen || !top || !header || !bottom || !els.scoreScroll) return;
 
+      /* SSHCP V20.94 — restore the normal flexible Scorecard shell before
+         measuring. A prior sizing pass may have converted the scroll viewport
+         to an exact whole-pixel height and moved its remainder into the footer
+         buffer. Clearing both first makes resize/re-entry deterministic. */
+      ['flex', 'height', 'min-height', 'max-height'].forEach(name => {
+        els.scoreScroll.style.removeProperty(name);
+      });
+      bottom.style.removeProperty('padding-top');
+
       const geometry = applyV16ShellGeometry(els.scorecardView);
       if (!geometry) return;
 
       const screenHeight = screen.clientHeight;
-      const topHeight = top.getBoundingClientRect().height;
-      const oldHeaderHeight = header.getBoundingClientRect().height;
-      const bottomHeight = bottom.getBoundingClientRect().height;
       if (!Number.isFinite(screenHeight) || screenHeight <= 0) return;
 
-      /* V18.8: HEADER + FOOTER are fixed first; TABLE gets the exact remainder.
-         The table-header row is 46px on the S25 × device multiplier. The
-         remaining integer pixel budget is divided across exactly nine visible
-         score rows, with any remainder deliberately distributed so there is
-         never an unallocated gap at the bottom of the viewport. */
-      const fixedShellWithoutHeader = Math.max(0, topHeight - oldHeaderHeight) + bottomHeight;
-      const tableBudget = Math.max(1, Math.round(screenHeight - fixedShellWithoutHeader));
       const headerHeight = geometry.sharedV187
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
-      /* V18.15: no 9/10 divider consumes vertical space. Exactly nine score
-         rows own the full table viewport below the TABLE HEADER ROW. */
-      const scoreTableBudget = Math.max(9, tableBudget - headerHeight);
-      const scoreRowPixels = distributeIntegerPixelsV188(scoreTableBudget, 9);
-      const rowHeight = scoreRowPixels.reduce((sum, value) => sum + value, 0) / 9;
 
-      els.scorecardView.style.setProperty('--v5-score-row-h', Math.floor(rowHeight) + 'px');
+      /* V20.94: the live Scorecard scroll viewport is the authoritative row
+         budget. Exactly nine visible rows share one whole-pixel height. Any
+         0–8px remainder moves into the existing table-to-footer buffer; the
+         fixed LEADERBOARD button remains in exactly the same position. */
+      const scoreViewportHeightV2094 = Math.max(
+        9,
+        Math.round(els.scoreScroll.clientHeight || 0)
+      );
+      const rowHeight = Math.max(1, Math.floor(scoreViewportHeightV2094 / 9));
+      const rowsHeightV2094 = rowHeight * 9;
+      const remainderV2094 = Math.max(0, scoreViewportHeightV2094 - rowsHeightV2094);
+      const scoreScrollChromeV2094 = Math.max(
+        0,
+        Math.round(els.scoreScroll.getBoundingClientRect().height - els.scoreScroll.clientHeight)
+      );
+      const scoreScrollOuterHeightV2094 = rowsHeightV2094 + scoreScrollChromeV2094;
+      const baseFooterGapV2094 = Math.max(
+        0,
+        Number(geometry.vars && geometry.vars['--v16-score-table-footer-gap']) || 0
+      );
+
+      els.scoreScroll.style.setProperty('flex', '0 0 ' + scoreScrollOuterHeightV2094 + 'px', 'important');
+      els.scoreScroll.style.setProperty('height', scoreScrollOuterHeightV2094 + 'px', 'important');
+      els.scoreScroll.style.setProperty('min-height', scoreScrollOuterHeightV2094 + 'px', 'important');
+      els.scoreScroll.style.setProperty('max-height', scoreScrollOuterHeightV2094 + 'px', 'important');
+      bottom.style.setProperty(
+        'padding-top',
+        (baseFooterGapV2094 + remainderV2094) + 'px',
+        'important'
+      );
+
+      els.scorecardView.style.setProperty('--v5-score-row-h', rowHeight + 'px');
       els.scorecardView.style.setProperty('--v5-score-head-h', headerHeight + 'px');
       els.scorecardView.style.setProperty('--v5-nine-break-h', '0px');
 
       const scoreRowsForGeometryV188 = els.scoreRows
         ? Array.from(els.scoreRows.querySelectorAll('.score-row'))
         : [];
-      scoreRowsForGeometryV188.forEach((row, index) => {
-        const exactHeight = scoreRowPixels[index % 9];
-        row.style.setProperty('height', exactHeight + 'px', 'important');
-        row.style.setProperty('min-height', exactHeight + 'px', 'important');
-        row.style.setProperty('max-height', exactHeight + 'px', 'important');
+      scoreRowsForGeometryV188.forEach(row => {
+        row.style.setProperty('height', rowHeight + 'px', 'important');
+        row.style.setProperty('min-height', rowHeight + 'px', 'important');
+        row.style.setProperty('max-height', rowHeight + 'px', 'important');
       });
 
       const sampleScoreCell = els.scoreRows
