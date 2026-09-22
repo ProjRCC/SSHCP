@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 20.89-N6Q2RV | BUILD KEY: 20.90-H4R8NX -->
-<!-- SSHCP V20.90 — TEST build from exact V20.89.
-     Timing-tuning + QUICK GUIDE shell only. Top controls are now 1A .40s, 1B 1.00s,
-     2 .60s, 3 1.20s, 4 .80s; SCORECARD CLEAR remains .10s. QUICK GUIDE keeps its
-     full-screen white curtain and solid SSHCP-accent-blue surround, while its white
-     popup is now 95vw × 95dvh, capped at 500px wide, with no popup border.
-     No scorecard/leaderboard formatting, NESR/auto-scroll rules, scoring verification,
-     audit/data, after-play layout, navigation semantics, or Worker behavior changes. -->
+<!-- SSHCP | BASE KEY: 20.90-H4R8NX | BUILD KEY: 20.91-V7M3QK -->
+<!-- SSHCP V20.91 — TEST build from exact V20.90.
+     HOME timing test + NESR near-end positioning only. Top controls now use 1A .10s,
+     1B .50s, 2 .60s, 3 1.20s, 4 .80s; SCORECARD CLEAR remains .10s. ENTER NESR +4
+     now clamps to the exact bottom/end view when fewer than four later course rows
+     remain, including correction of tiny near-bottom scroll offsets. Scorecard row
+     geometry, beauty-scroll easing, scoring verification, audit/data, after-play/Quick
+     Guide presentation, navigation semantics, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +13,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V20.90 — TIMING TEST PANEL
+       SSHCP V20.91 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -25,25 +25,25 @@
        4  = QUICK GUIDE full-screen white curtain
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
-    window.SSHCP_FADE_TIMING_V2090 = {
-      FADE_1A_HOME_FULL: 0.40,
-      FADE_1B_HOME_MIDDLE: 1.00,
+    window.SSHCP_FADE_TIMING_V2091 = {
+      FADE_1A_HOME_FULL: 0.10,
+      FADE_1B_HOME_MIDDLE: 0.50,
       FADE_2_SCORECARD_LEADERBOARD: 0.60,
       FADE_3_AFTER_PLAY: 1.20,
       FADE_4_QUICK_GUIDE: 0.80,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
-    (function applySshcpFadeTimingV2090() {
-      const timing = window.SSHCP_FADE_TIMING_V2090 || {};
+    (function applySshcpFadeTimingV2091() {
+      const timing = window.SSHCP_FADE_TIMING_V2091 || {};
       const rootStyle = document.documentElement.style;
       const setSeconds = (cssName, value, fallback) => {
         const seconds = Number(value);
         const safeSeconds = Number.isFinite(seconds) && seconds >= 0 ? seconds : fallback;
         rootStyle.setProperty(cssName, safeSeconds + 's');
       };
-      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.40);
-      setSeconds('--sshcp-fade-1b-home-middle', timing.FADE_1B_HOME_MIDDLE, 1.00);
+      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.10);
+      setSeconds('--sshcp-fade-1b-home-middle', timing.FADE_1B_HOME_MIDDLE, 0.50);
       setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.60);
       setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 1.20);
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
@@ -14644,7 +14644,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.90</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.91</span></span>
         </button>
 
       </div>
@@ -15848,7 +15848,7 @@ body.team-info-open-v2032{
        but holds the already-painted scorecard for the top-panel CLEAR cue time.
        Local blank + save still begin immediately; only Scorecard rerender waits. */
     const clearCueSecondsV2089 = Number(
-      (window.SSHCP_FADE_TIMING_V2090 || {}).SCORECARD_CLEAR_CUE
+      (window.SSHCP_FADE_TIMING_V2091 || {}).SCORECARD_CLEAR_CUE
     );
     const CLEAR_FOCUS_VISUAL_DELAY_V1836 = Math.max(
       0,
@@ -17585,7 +17585,8 @@ let scoreTimingDetail =
           leave the viewport alone;
         - if four later course rows exist but are not all visible, scroll only
           enough to place NESR with exactly four rows beneath it;
-        - if fewer than four later course rows exist, do not scroll.
+        - if fewer than four later course rows exist, clamp to the exact
+          bottom/end view so every remaining course row is fully visible.
 
       REFRESH / fresh Scorecard entry:
         normalize NESR to exactly four rows beneath whenever course boundaries
@@ -17688,16 +17689,15 @@ let scoreTimingDetail =
           const reducedMotionV1835 = window.matchMedia &&
             window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-          /* ENTER only moves when four later rows really exist AND NESR + those
-             four rows are not already fully visible. Near the course end, stay
-             put rather than chasing spacing that cannot exist. */
-          if (useLocalProgress) {
-            if (actualRowsAfterV1835 < 4) {
-              rememberScorePosition();
-              settleV1835(false);
-              return;
-            }
+          /* SSHCP V20.91 — ENTER keeps the normal NESR +4 visibility rule when
+             four later rows exist. Near the course end, do not preserve the old
+             stationary exception: continue into the normal target calculation,
+             which clamps to the exact bottom/end position. */
+          const nearEndClampV2091 = !!(
+            useLocalProgress && actualRowsAfterV1835 < 4
+          );
 
+          if (useLocalProgress && !nearEndClampV2091) {
             const fourthAfterV1835 = rowsV1835[nesrIndexV1835 + 4];
             const scrollRectV1835 = els.scoreScroll.getBoundingClientRect();
             const nesrRectV1835 = nesrRowV1835.getBoundingClientRect();
@@ -17740,13 +17740,21 @@ let scoreTimingDetail =
           const targetRectV1835 = targetRowV1835.getBoundingClientRect();
           const targetScrollV1835 = els.scoreScroll.scrollTop +
             (targetRectV1835.top - scrollRectV1835.top);
-          const clampedTargetV1835 = Math.min(
-            Math.max(0, targetScrollV1835),
-            maxScrollV1835
-          );
+          const clampedTargetV1835 = nearEndClampV2091
+            ? maxScrollV1835
+            : Math.min(
+                Math.max(0, targetScrollV1835),
+                maxScrollV1835
+              );
           const deltaV1835 = Math.abs(clampedTargetV1835 - els.scoreScroll.scrollTop);
 
           if (deltaV1835 <= 3) {
+            /* V20.91: at the course end, also clean up tiny accidental offsets
+               instead of remembering a 1–3px not-quite-bottom position. */
+            if (nearEndClampV2091) {
+              cancelScoreEnterBeautyScrollV1618();
+              els.scoreScroll.scrollTop = clampedTargetV1835;
+            }
             rememberScorePosition();
             settleV1835(false);
             return;
@@ -21225,27 +21233,27 @@ let scoreTimingDetail =
 
         shield.addEventListener('transitionend', onTransitionEnd);
         shield.classList.add('is-revealing-v177');
-        /* SSHCP V20.90 — safety fallbacks derive from the same top-of-file
+        /* SSHCP V20.91 — safety fallbacks derive from the same top-of-file
            timing panel. Add only 60ms beyond the selected fade. */
-        const timingV2090 = window.SSHCP_FADE_TIMING_V2090 || {};
-        const timingMsV2090 = (value, fallbackSeconds) => {
+        const timingV2091 = window.SSHCP_FADE_TIMING_V2091 || {};
+        const timingMsV2091 = (value, fallbackSeconds) => {
           const seconds = Number(value);
           return 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : fallbackSeconds);
         };
-        const afterPlayKeyV2090 = String(key || '').startsWith('after-play-');
-        const revealDurationMsV2090 =
+        const afterPlayKeyV2091 = String(key || '').startsWith('after-play-');
+        const revealDurationMsV2091 =
           key === 'home'
-            ? timingMsV2090(timingV2090.FADE_1B_HOME_MIDDLE, 1.00)
+            ? timingMsV2091(timingV2091.FADE_1B_HOME_MIDDLE, 0.50)
             : key === 'home-full-v1986'
-              ? timingMsV2090(timingV2090.FADE_1A_HOME_FULL, 0.40)
+              ? timingMsV2091(timingV2091.FADE_1A_HOME_FULL, 0.10)
               : (key === 'scorecard' || key === 'leaderboard')
-                ? timingMsV2090(timingV2090.FADE_2_SCORECARD_LEADERBOARD, 0.60)
-                : afterPlayKeyV2090
-                  ? timingMsV2090(timingV2090.FADE_3_AFTER_PLAY, 1.20)
+                ? timingMsV2091(timingV2091.FADE_2_SCORECARD_LEADERBOARD, 0.60)
+                : afterPlayKeyV2091
+                  ? timingMsV2091(timingV2091.FADE_3_AFTER_PLAY, 1.20)
                   : key === 'quick-guide-v2089'
-                    ? timingMsV2090(timingV2090.FADE_4_QUICK_GUIDE, 0.80)
+                    ? timingMsV2091(timingV2091.FADE_4_QUICK_GUIDE, 0.80)
                     : 500;
-        window.setTimeout(finish, Math.ceil(revealDurationMsV2090 + 60));
+        window.setTimeout(finish, Math.ceil(revealDurationMsV2091 + 60));
       });
     }
 
