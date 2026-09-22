@@ -1,4 +1,10 @@
-<!-- SSHCP | BASE KEY: 20.79-H4Q7VN | BUILD KEY: 20.80-N5R8QK -->
+<!-- SSHCP | BASE KEY: 20.81-P6M3VX | BUILD KEY: 20.82-Q4V7MN -->
+<!-- SSHCP V20.82 — TEST build from exact V20.81.
+     Control Center only: remove manual GEEK DETAIL AUDIT button; automatically
+     run the established Geek audit after a successful visible GEEK MODE load
+     and attach it to the matching RESULT test; COPY LOG - X RESULTS now copies
+     the full Control Center log followed by the accumulated RESULT LOG; place
+     that combined-result button above the unchanged viewport metrics box. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14396,6 +14402,17 @@ body.team-info-open-v2032{
 }
 </style>
 
+<style id="sshcp-v2082-control-center-audit">
+/* SSHCP V20.82 — the remaining combined result-copy control owns the existing
+   audit row. The viewport/geometry box remains unchanged immediately below. */
+#testLogView .control-center-checks-v188{
+  grid-template-columns:1fr!important;
+}
+#testLogView #controlCenterResultsCheckButtonV188{
+  grid-column:1/-1!important;
+}
+</style>
+
   <link rel="preload" as="image" href="teaminfo.jpg">
 </head>
 
@@ -14526,7 +14543,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.80</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.82</span></span>
         </button>
 
       </div>
@@ -14942,13 +14959,12 @@ body.team-info-open-v2032{
           <button id="testCopyLogButton" class="test-copy-log" type="button">COPY LOG</button>
         </div>
 
-        <div id="controlCenterViewportMetricsV188" class="control-center-viewport-v188">
-          VIEWPORT METRICS
+        <div class="control-center-checks-v188" aria-label="Control Center checks">
+          <button id="controlCenterResultsCheckButtonV188" class="control-center-check-v188" type="button">COPY LOG - 0 RESULTS</button>
         </div>
 
-        <div class="control-center-checks-v188" aria-label="Control Center checks">
-          <button id="controlCenterGeekCheckButtonV188" class="control-center-check-v188" type="button">GEEK DETAIL AUDIT</button>
-          <button id="controlCenterResultsCheckButtonV188" class="control-center-check-v188" type="button">COPY RESULT LOG</button>
+        <div id="controlCenterViewportMetricsV188" class="control-center-viewport-v188">
+          VIEWPORT METRICS
         </div>
 
         <div class="test-score-controls">
@@ -18264,6 +18280,131 @@ let scoreTimingDetail =
       requestAnimationFrame(fitTestPageButtonText);
     }
 
+    /* =========================================================
+       SSHCP V20.82 — automatic GEEK audit -> matching RESULT test.
+       The established GEEK audit math is unchanged. Once a fresh visible
+       GEEK MODE load has both its app response and raw evidence snapshot,
+       run the existing audit automatically and attach its result only to
+       the RESULT test whose raw team/score dataset exactly matches.
+       ========================================================= */
+    function geekModelMatchesResultEntryV2082(entry, model) {
+      const rawTeams = Array.isArray(entry && entry.rawTeams) ? entry.rawTeams : [];
+      const geekTeams = Array.isArray(model && model.teams) ? model.teams : [];
+      if (!rawTeams.length || rawTeams.length !== geekTeams.length) return false;
+
+      const bySlot = new Map(geekTeams.map(team => [Number(team.slot), team]));
+      return rawTeams.every(raw => {
+        const geek = bySlot.get(Number(raw && raw.slot));
+        if (!geek) return false;
+        if (canonicalAuditTeamV1810(raw && raw.team) !== canonicalAuditTeamV1810(geek && geek.name)) return false;
+        const rawScores = Array.isArray(raw && raw.scores) ? raw.scores.map(Number) : [];
+        const geekScores = Array.isArray(geek && geek.scores) ? geek.scores.map(Number) : [];
+        return rawScores.length === 18 &&
+          geekScores.length === 18 &&
+          rawScores.every((score, index) => Number(score) === Number(geekScores[index]));
+      });
+    }
+
+    function attachGeekAuditToMatchingResultV2082(audit) {
+      const model = geekAuditModelV1932();
+      if (!model) return 0;
+
+      const log = getResultAuditLogV189();
+      let matchIndex = -1;
+      for (let index = log.length - 1; index >= 0; index--) {
+        if (geekModelMatchesResultEntryV2082(log[index], model)) {
+          matchIndex = index;
+          break;
+        }
+      }
+      if (matchIndex < 0) return 0;
+
+      const errors = Array.isArray(audit && audit.errors)
+        ? audit.errors.map(value => String(value || '')).filter(Boolean)
+        : [];
+      const checks = audit && audit.checks ? audit.checks : {};
+      const entry = Object.assign({}, log[matchIndex]);
+      const baseMismatches = (Array.isArray(entry.mismatches) ? entry.mismatches : [])
+        .filter(value => !String(value || '').startsWith('GEEK '));
+      const geekMismatches = errors.map(value => 'GEEK ' + value);
+
+      entry.geekAudit = {
+        timestamp: new Date().toISOString(),
+        ok: errors.length === 0,
+        stats: Number(audit && audit.stats) || 0,
+        teams: Number(audit && audit.teams) || 0,
+        checks: {
+          values:Number(checks.values) || 0,
+          owners:Number(checks.owners) || 0,
+          results:Number(checks.results) || 0,
+          context:Number(checks.context) || 0,
+          detail:Number(checks.detail) || 0,
+          evidence:Number(checks.evidence) || 0,
+          largeTies:Number(checks.largeTies) || 0
+        },
+        errors,
+        runId:geekDetailAuditRunIdV1932
+      };
+      entry.geekMismatches = geekMismatches;
+      entry.mismatches = [...baseMismatches, ...geekMismatches];
+      entry.ok = entry.mismatches.length === 0;
+
+      log[matchIndex] = entry;
+      localStorage.setItem(RESULT_AUDIT_LOG_KEY_V189, JSON.stringify(log));
+      updateResultCopyButtonLabelV2082();
+      return matchIndex + 1;
+    }
+
+    function geekAuditDetailTextV2082(audit, linkedTest) {
+      const c = audit && audit.checks ? audit.checks : {};
+      const parts = [
+        (Number(audit && audit.teams) || 0) + ' TEAMS',
+        'VALUES ' + (Number(c.values) || 0) + '/32',
+        'OWNERS ' + (Number(c.owners) || 0) + '/32',
+        'TEAM RESULTS ' + (Number(c.results) || 0),
+        'CONTEXT ' + (Number(c.context) || 0) + '/32',
+        'DETAIL ' + (Number(c.detail) || 0) + '/32',
+        'EVIDENCE ' + (Number(c.evidence) || 0),
+        'LARGE TIES ' + (Number(c.largeTies) || 0),
+        'RUN ' + geekDetailAuditRunIdV1932
+      ];
+      if (linkedTest) parts.push('RESULT TEST ' + linkedTest);
+      return parts.join(' • ');
+    }
+
+    function runAutoGeekDetailAuditV2082() {
+      try {
+        const audit = runGeekDetailAuditCoreV1932();
+        const linkedTest = attachGeekAuditToMatchingResultV2082(audit);
+        if (audit.errors.length) {
+          addTestLog(
+            'GEEK DETAIL AUDIT',
+            'FAILED',
+            audit.stats + ' STATS',
+            audit.errors.slice(0, 8).join(' • ') +
+              (audit.errors.length > 8 ? ' • +' + (audit.errors.length - 8) + ' MORE' : '') +
+              (linkedTest ? ' • RESULT TEST ' + linkedTest : '')
+          );
+        } else {
+          addTestLog(
+            'GEEK DETAIL AUDIT',
+            'OK',
+            audit.stats + ' STATS',
+            geekAuditDetailTextV2082(audit, linkedTest)
+          );
+        }
+        return audit;
+      } catch (error) {
+        addTestLog(
+          'GEEK DETAIL AUDIT',
+          'FAILED',
+          '—',
+          String(error && error.message || 'Audit failed')
+        );
+        return null;
+      }
+    }
+
     function numericTeamHandicapV188(team, leaderRow) {
       const candidates = [
         team && team.handicap,
@@ -18459,9 +18600,19 @@ let scoreTimingDetail =
       }
     }
 
+    function resultCopyButtonLabelV2082() {
+      return 'COPY LOG - ' + getResultAuditLogV189().length + ' RESULTS';
+    }
+
+    function updateResultCopyButtonLabelV2082() {
+      if (!els.controlCenterResultsCheckButtonV188) return;
+      els.controlCenterResultsCheckButtonV188.textContent = resultCopyButtonLabelV2082();
+    }
+
     function resetResultAuditLogV189() {
       resultAuditEpochV189 += 1;
       localStorage.removeItem(RESULT_AUDIT_LOG_KEY_V189);
+      updateResultCopyButtonLabelV2082();
     }
 
     function normalizeAuditTextV189(value) {
@@ -18708,6 +18859,256 @@ let scoreTimingDetail =
       return { parTotal, teams, tiebreakOrder, expectedRows, notes, traces };
     }
 
+    /* SSHCP V20.81 — cross-view order integrity.
+       Snapshot the already-rendered final Leaderboard underneath Scramble Summary
+       and compare its visible place/team sequence to the independently derived
+       Result Log order. */
+    function snapshotRenderedLeaderboardV2081() {
+      if (!els.leaderRows) return [];
+      return [...els.leaderRows.querySelectorAll('.leader-row')].map(row => {
+        const placeNode = row.querySelector('.leader-place-number');
+        const teamNode = row.querySelector('.leader-team-name');
+        return {
+          place: normalizeAuditTextV189(placeNode && placeNode.textContent),
+          team: normalizeAuditTextV189(
+            teamNode && (teamNode.dataset.v58Name || teamNode.dataset.fullTeamName || teamNode.textContent)
+          )
+        };
+      }).filter(row => row.team);
+    }
+
+    function compareExpectedToRenderedLeaderboardV2081(expected, actualRows) {
+      const mismatches = [];
+      const actual = Array.isArray(actualRows) ? actualRows : [];
+      if (!actual.length) return ['LEADERBOARD SNAPSHOT MISSING'];
+      if (actual.length !== expected.expectedRows.length) {
+        mismatches.push('LEADERBOARD ROW COUNT ' + actual.length + '!=' + expected.expectedRows.length);
+      }
+      const count = Math.min(actual.length, expected.expectedRows.length);
+      for (let index = 0; index < count; index++) {
+        const e = expected.expectedRows[index];
+        const a = actual[index];
+        const prefix = 'LEADERBOARD ROW ' + (index + 1) + ' / T' + e.slot;
+        if (normalizeAuditTextV189(a.place).toUpperCase() !== normalizeAuditTextV189(e.place).toUpperCase()) {
+          mismatches.push(prefix + ' PLACE ' + a.place + '!=' + e.place);
+        }
+        if (canonicalAuditTeamV1810(a.team) !== canonicalAuditTeamV1810(e.team)) {
+          mismatches.push(prefix + ' TEAM ' + a.team + '!=' + e.team);
+        }
+      }
+      return mismatches;
+    }
+
+    /* SSHCP V20.81 — RESULT LOG Skins audit.
+       Keep this independent expected calculation separate from the proven
+       buildSkinsResultsV1627() app engine. The audit uses raw OFFICIAL scores
+       plus raw TEAMS Skins participation: only explicit N is excluded; blank/Y
+       remain eligible. Gross score only, unique low wins, ties award no skin,
+       no carryover and no handicap adjustment. */
+    function independentExpectedSkinsV2081(scoreData, teamsData) {
+      const sourceHoles = Array.isArray(scoreData && scoreData.course && scoreData.course.holes)
+        ? scoreData.course.holes.slice(0, 18)
+        : [];
+      const allTeams = Array.isArray(scoreData && scoreData.teams)
+        ? scoreData.teams.filter(team => team && String(team.name || '').trim() !== '')
+        : [];
+      const teamConfig = Array.isArray(teamsData && teamsData.teams) ? teamsData.teams : [];
+
+      if (sourceHoles.length !== 18) throw new Error('SKINS RAW COURSE != 18 HOLES');
+
+      const skinsBySlot = new Map(
+        teamConfig.map(team => [
+          Number(team && team.slot),
+          String((team && team.skins) || '').trim().toUpperCase()
+        ])
+      );
+
+      const eligibleTeams = allTeams.filter(team =>
+        skinsBySlot.get(Number(team && team.slot)) !== 'N'
+      );
+      const excludedTeams = allTeams.filter(team =>
+        skinsBySlot.get(Number(team && team.slot)) === 'N'
+      );
+
+      const holeAudit = [];
+      const winners = [];
+
+      for (let index = 0; index < 18; index++) {
+        const hole = sourceHoles[index] || {};
+        const actualHole = Number(hole.hole) || (index + 1);
+        const par = Number(hole.par);
+        const scores = eligibleTeams.map(team => ({
+          slot: Number(team && team.slot),
+          team: String((team && team.name) || '').trim(),
+          score: Number(Array.isArray(team && team.scores) ? team.scores[index] : NaN)
+        }));
+
+        const complete = scores.length === eligibleTeams.length &&
+          scores.every(item => Number.isFinite(item.score) && item.score > 0);
+
+        if (!complete || !eligibleTeams.length) {
+          holeAudit.push({
+            hole: actualHole,
+            par,
+            scores,
+            low: null,
+            lowSlots: [],
+            winner: null,
+            incomplete: !complete
+          });
+          continue;
+        }
+
+        const low = Math.min(...scores.map(item => item.score));
+        const lowTeams = scores.filter(item => item.score === low);
+        const winner = lowTeams.length === 1 ? lowTeams[0] : null;
+
+        const row = {
+          hole: actualHole,
+          par,
+          scores,
+          low,
+          lowSlots: lowTeams.map(item => item.slot),
+          winner: winner ? {
+            slot: winner.slot,
+            team: winner.team,
+            score: winner.score,
+            par
+          } : null,
+          incomplete: false
+        };
+        holeAudit.push(row);
+        if (row.winner) winners.push({ ...row.winner, hole: actualHole });
+      }
+
+      const totals = {};
+      eligibleTeams.forEach(team => { totals[Number(team.slot)] = 0; });
+      winners.forEach(item => {
+        totals[item.slot] = (totals[item.slot] || 0) + 1;
+      });
+
+      return {
+        eligibleTeams: eligibleTeams.map(team => ({
+          slot: Number(team && team.slot),
+          team: String((team && team.name) || '').trim()
+        })),
+        excludedTeams: excludedTeams.map(team => ({
+          slot: Number(team && team.slot),
+          team: String((team && team.name) || '').trim()
+        })),
+        holeAudit,
+        winners,
+        totals
+      };
+    }
+
+    function appSkinsSnapshotV2081(scoreData, teamsData) {
+      const allTeams = Array.isArray(scoreData && scoreData.teams)
+        ? scoreData.teams.filter(team => team && String(team.name || '').trim() !== '')
+        : [];
+      const sourceHoles = Array.isArray(scoreData && scoreData.course && scoreData.course.holes)
+        ? scoreData.course.holes.slice(0, 18)
+        : [];
+      const teamConfig = Array.isArray(teamsData && teamsData.teams) ? teamsData.teams : [];
+      const skinsBySlot = new Map(
+        teamConfig.map(team => [
+          Number(team && team.slot),
+          String((team && team.skins) || '').trim().toUpperCase()
+        ])
+      );
+      const eligibleTeams = allTeams.filter(team =>
+        skinsBySlot.get(Number(team && team.slot)) !== 'N'
+      );
+
+      const results = buildSkinsResultsV1627(eligibleTeams, sourceHoles).map(item => ({
+        slot: Number(item && item.team && item.team.slot),
+        team: String((item && item.team && item.team.name) || '').trim(),
+        hole: Number(item && item.hole),
+        par: Number(item && item.par),
+        score: Number(item && item.score)
+      }));
+
+      const totals = {};
+      eligibleTeams.forEach(team => { totals[Number(team.slot)] = 0; });
+      results.forEach(item => {
+        totals[item.slot] = (totals[item.slot] || 0) + 1;
+      });
+
+      return { winners: results, totals };
+    }
+
+    function compareExpectedToAppSkinsV2081(expected, actual) {
+      const mismatches = [];
+      const expectedByHole = new Map(
+        (expected && expected.winners || []).map(item => [Number(item.hole), item])
+      );
+      const actualByHole = new Map(
+        (actual && actual.winners || []).map(item => [Number(item.hole), item])
+      );
+
+      for (let hole = 1; hole <= 18; hole++) {
+        const e = expectedByHole.get(hole) || null;
+        const a = actualByHole.get(hole) || null;
+        if (!e && !a) continue;
+        if (!e || !a) {
+          mismatches.push(
+            'SKINS H' + hole + ' ' +
+            (a ? 'APP T' + a.slot + ' BUT EXPECT NONE' : 'EXPECT T' + e.slot + ' BUT APP NONE')
+          );
+          continue;
+        }
+        if (
+          Number(e.slot) !== Number(a.slot) ||
+          Number(e.score) !== Number(a.score) ||
+          canonicalAuditTeamV1810(e.team) !== canonicalAuditTeamV1810(a.team)
+        ) {
+          mismatches.push(
+            'SKINS H' + hole +
+            ' APP T' + a.slot + ':' + a.score +
+            ' != EXPECT T' + e.slot + ':' + e.score
+          );
+        }
+      }
+
+      return mismatches;
+    }
+
+    function formatSkinsTeamListV2081(items) {
+      const list = Array.isArray(items) ? items : [];
+      if (!list.length) return 'NONE';
+      return list.map(item => 'T' + item.slot + ' ' + item.team).join(' | ');
+    }
+
+    function formatSkinsTotalsV2081(totals, eligibleTeams) {
+      const teams = Array.isArray(eligibleTeams) ? eligibleTeams : [];
+      if (!teams.length) return 'NONE';
+      return teams.map(item =>
+        'T' + item.slot + ':' + Number((totals && totals[item.slot]) || 0)
+      ).join(' ');
+    }
+
+    function formatSkinsHoleResultV2081(holeRow, actualWinner) {
+      const scores = (holeRow && Array.isArray(holeRow.scores) ? holeRow.scores : [])
+        .map(item => 'T' + item.slot + ':' + (Number.isFinite(item.score) ? item.score : '—'))
+        .join(' ');
+
+      let expectedText = 'NONE';
+      if (holeRow && holeRow.incomplete) {
+        expectedText = 'INCOMPLETE';
+      } else if (holeRow && holeRow.winner) {
+        expectedText = 'T' + holeRow.winner.slot + ':' + holeRow.winner.score;
+      } else if (holeRow && Array.isArray(holeRow.lowSlots) && holeRow.lowSlots.length > 1) {
+        expectedText = 'NONE (LOW ' + holeRow.low + ' T' + holeRow.lowSlots.join('/T') + ')';
+      }
+
+      const appText = actualWinner
+        ? 'T' + actualWinner.slot + ':' + actualWinner.score
+        : 'NONE';
+
+      return 'H' + holeRow.hole + ' | SCORES ' + (scores || 'NONE') +
+        ' | EXPECT ' + expectedText + ' | APP ' + appText;
+    }
+
     function compareExpectedToRenderedSummaryV189(expected, actual) {
       const mismatches = [];
       if (!actual) return ['SCRAMBLE SUMMARY SNAPSHOT MISSING'];
@@ -18745,12 +19146,16 @@ let scoreTimingDetail =
       return mismatches;
     }
 
-    function resultAuditFingerprintV189(expected) {
+    function resultAuditFingerprintV189(expected, skinsExpected) {
+      const skinsConfig = [
+        ...(skinsExpected && skinsExpected.eligibleTeams || []).map(item => 'Y' + item.slot),
+        ...(skinsExpected && skinsExpected.excludedTeams || []).map(item => 'N' + item.slot)
+      ].sort().join(',');
       return expected.teams
         .slice()
         .sort((a,b) => a.slot - b.slot)
         .map(team => [team.slot, team.handicap, ...team.scores].join(','))
-        .join('|') + '::TB=' + expected.tiebreakOrder.join(',');
+        .join('|') + '::TB=' + expected.tiebreakOrder.join(',') + '::SKINS=' + skinsConfig;
     }
 
     function appendResultAuditV189(entry) {
@@ -18758,6 +19163,7 @@ let scoreTimingDetail =
       if (entry.fingerprint && log.some(item => item && item.fingerprint === entry.fingerprint)) return false;
       log.push(entry);
       localStorage.setItem(RESULT_AUDIT_LOG_KEY_V189, JSON.stringify(log));
+      updateResultCopyButtonLabelV2082();
       return true;
     }
 
@@ -18790,27 +19196,120 @@ let scoreTimingDetail =
         lines.push(row.place + ' | ' + row.team + ' | ' + row.strokes + ' | ' + row.net);
       });
       lines.push('APP TIEBREAK ' + ((entry.actualNotes || []).join(' || ') || 'NONE'));
-      lines.push('CHECK ' + (entry.ok ? 'OK — RAW DATA MATCHES SCRAMBLE SUMMARY / TIEBREAK' : 'FAILED — ' + (entry.mismatches || []).join(' • ')));
+
+      if (entry.leaderboardRows) {
+        lines.push(
+          'APP LEADERBOARD ORDER ' +
+          entry.leaderboardRows.map(row => row.place + ':' + row.team).join(' | ')
+        );
+        lines.push(
+          'CROSS-VIEW CHECK ' +
+          ((entry.leaderboardMismatches || []).length
+            ? 'FAILED — ' + entry.leaderboardMismatches.join(' • ')
+            : 'OK — LEADERBOARD / SCRAMBLE SUMMARY / RESULT LOG ORDER MATCH')
+        );
+      }
+
+      if (entry.skinsExpected) {
+        lines.push('SKINS RULE GROSS • UNIQUE LOW • TIE=NO SKIN • NO CARRY • HCP OFF • EXPLICIT N EXCLUDED');
+        lines.push(
+          'SKINS ELIGIBILITY ' +
+          (entry.skinsExpected.eligibleTeams || []).length + ' ELIGIBLE • ' +
+          (entry.skinsExpected.excludedTeams || []).length + ' EXCLUDED'
+        );
+        lines.push('SKINS ELIGIBLE ' + formatSkinsTeamListV2081(entry.skinsExpected.eligibleTeams));
+        lines.push('SKINS EXCLUDED ' + formatSkinsTeamListV2081(entry.skinsExpected.excludedTeams));
+        lines.push('SKINS HOLE AUDIT');
+        const appByHole = new Map(
+          (entry.skinsActual && entry.skinsActual.winners || []).map(item => [Number(item.hole), item])
+        );
+        (entry.skinsExpected.holeAudit || []).forEach(holeRow => {
+          lines.push(formatSkinsHoleResultV2081(holeRow, appByHole.get(Number(holeRow.hole)) || null));
+        });
+        lines.push(
+          'EXPECTED SKINS TOTALS ' +
+          formatSkinsTotalsV2081(entry.skinsExpected.totals, entry.skinsExpected.eligibleTeams)
+        );
+        lines.push(
+          'APP SKINS TOTALS ' +
+          formatSkinsTotalsV2081(
+            entry.skinsActual && entry.skinsActual.totals,
+            entry.skinsExpected.eligibleTeams
+          )
+        );
+        lines.push(
+          'SKINS CHECK ' +
+          ((entry.skinsMismatches || []).length
+            ? 'FAILED — ' + entry.skinsMismatches.join(' • ')
+            : 'OK — RAW DATA MATCHES APP SKINS')
+        );
+      }
+
+      if (entry.geekAudit) {
+        const geek = entry.geekAudit;
+        const c = geek.checks || {};
+        lines.push(
+          'GEEK AUDIT ' +
+          (geek.ok
+            ? 'OK — ' + geek.stats + ' STATS • ' + geek.teams + ' TEAMS'
+            : 'FAILED — ' + ((geek.errors || []).join(' • ') || 'UNKNOWN GEEK AUDIT FAILURE'))
+        );
+        lines.push(
+          'GEEK CHECKS VALUES ' + (Number(c.values) || 0) + '/32' +
+          ' • OWNERS ' + (Number(c.owners) || 0) + '/32' +
+          ' • TEAM RESULTS ' + (Number(c.results) || 0) +
+          ' • CONTEXT ' + (Number(c.context) || 0) + '/32' +
+          ' • DETAIL ' + (Number(c.detail) || 0) + '/32' +
+          ' • EVIDENCE ' + (Number(c.evidence) || 0) +
+          ' • LARGE TIES ' + (Number(c.largeTies) || 0) +
+          ' • RUN ' + (geek.runId || '—')
+        );
+      }
+
+      const checkScope =
+        (entry.skinsExpected
+          ? 'SCRAMBLE SUMMARY / TIEBREAK / LEADERBOARD ORDER / SKINS'
+          : 'SCRAMBLE SUMMARY / TIEBREAK') +
+        (entry.geekAudit ? ' / GEEK' : '');
+      lines.push(
+        'CHECK ' +
+        (entry.ok
+          ? 'OK — RAW DATA MATCHES ' + checkScope
+          : 'FAILED — ' + (entry.mismatches || []).join(' • '))
+      );
       return lines.join('\n');
     }
 
-    async function runSummaryResultAuditV189(renderedSnapshot, epochAtStart) {
+    async function runSummaryResultAuditV189(renderedSnapshot, leaderboardSnapshotV2081, epochAtStart) {
       try {
         const stamp = Date.now();
-        const [scoreResponse, leaderResponse] = await Promise.all([
+        const [scoreResponse, leaderResponse, teamsResponse] = await Promise.all([
           fetch(CLOUDFLARE_API_URL + '?refresh=' + stamp + '-summary-audit', { cache:'no-store' }),
-          fetch(CLOUDFLARE_API_URL + '?action=leaderboard&refresh=' + stamp + '-summary-audit', { cache:'no-store' })
+          fetch(CLOUDFLARE_API_URL + '?action=leaderboard&refresh=' + stamp + '-summary-audit', { cache:'no-store' }),
+          fetch(CLOUDFLARE_API_URL + '?action=teams&refresh=' + stamp + '-summary-audit', { cache:'no-store' })
         ]);
-        const [scoreData, leaderData] = await Promise.all([scoreResponse.json(), leaderResponse.json()]);
+        const [scoreData, leaderData, teamsData] = await Promise.all([
+          scoreResponse.json(),
+          leaderResponse.json(),
+          teamsResponse.json()
+        ]);
         if (epochAtStart !== resultAuditEpochV189) return;
         if (!scoreResponse.ok || !scoreData || scoreData.ok !== true) throw new Error('RAW OFFICIAL READ FAILED');
         if (!leaderResponse.ok || !leaderData || leaderData.ok !== true) throw new Error('RAW LEADERBOARD READ FAILED');
+        if (!teamsResponse.ok || !teamsData || teamsData.ok !== true) throw new Error('RAW TEAMS / SKINS READ FAILED');
 
         const rawLeaderRows = Array.isArray(leaderData.leaderboard) ? leaderData.leaderboard : [];
         const expected = independentExpectedSummaryV189(scoreData, rawLeaderRows);
-        const fingerprint = resultAuditFingerprintV189(expected);
+        const skinsExpected = independentExpectedSkinsV2081(scoreData, teamsData);
+        const skinsActual = appSkinsSnapshotV2081(scoreData, teamsData);
+        const fingerprint = resultAuditFingerprintV189(expected, skinsExpected);
         if (getResultAuditLogV189().some(item => item && item.fingerprint === fingerprint)) return;
-        const mismatches = compareExpectedToRenderedSummaryV189(expected, renderedSnapshot);
+
+        const summaryMismatches = compareExpectedToRenderedSummaryV189(expected, renderedSnapshot);
+        const leaderboardMismatches = compareExpectedToRenderedLeaderboardV2081(expected, leaderboardSnapshotV2081);
+        const skinsMismatches = compareExpectedToAppSkinsV2081(skinsExpected, skinsActual);
+        const mismatches = [...summaryMismatches, ...leaderboardMismatches, ...skinsMismatches];
+
         const entry = {
           timestamp: new Date().toISOString(),
           fingerprint,
@@ -18823,6 +19322,11 @@ let scoreTimingDetail =
           traces: expected.traces,
           actualRows: renderedSnapshot ? renderedSnapshot.rows : [],
           actualNotes: renderedSnapshot ? renderedSnapshot.notes : [],
+          leaderboardRows: Array.isArray(leaderboardSnapshotV2081) ? leaderboardSnapshotV2081 : [],
+          leaderboardMismatches,
+          skinsExpected,
+          skinsActual,
+          skinsMismatches,
           mismatches
         };
         if (epochAtStart !== resultAuditEpochV189) return;
@@ -18833,7 +19337,7 @@ let scoreTimingDetail =
             entry.ok ? 'OK' : 'FAILED',
             'TEST ' + testNumber,
             entry.ok
-              ? 'RAW DATA MATCHES SCRAMBLE SUMMARY / TIEBREAK'
+              ? 'RAW DATA MATCHES SCRAMBLE SUMMARY / TIEBREAK / LEADERBOARD ORDER / SKINS'
               : mismatches.slice(0, 3).join(' • ')
           );
         }
@@ -18851,6 +19355,11 @@ let scoreTimingDetail =
           traces: [],
           actualRows: renderedSnapshot ? renderedSnapshot.rows : [],
           actualNotes: renderedSnapshot ? renderedSnapshot.notes : [],
+          leaderboardRows: Array.isArray(leaderboardSnapshotV2081) ? leaderboardSnapshotV2081 : [],
+          leaderboardMismatches: [],
+          skinsExpected: null,
+          skinsActual: null,
+          skinsMismatches: [],
           mismatches: [String(error && error.message || 'RESULT AUDIT FAILED')]
         };
         appendResultAuditV189(entry);
@@ -18861,8 +19370,13 @@ let scoreTimingDetail =
     function captureTournamentSummaryAuditV189() {
       const renderedSnapshot = snapshotRenderedSummaryV189();
       if (!renderedSnapshot) return;
+      const leaderboardSnapshotV2081 = snapshotRenderedLeaderboardV2081();
       const epochAtStart = resultAuditEpochV189;
-      const promise = runSummaryResultAuditV189(renderedSnapshot, epochAtStart);
+      const promise = runSummaryResultAuditV189(
+        renderedSnapshot,
+        leaderboardSnapshotV2081,
+        epochAtStart
+      );
       pendingResultAuditsV189.add(promise);
       promise.finally(() => pendingResultAuditsV189.delete(promise));
     }
@@ -18887,7 +19401,10 @@ let scoreTimingDetail =
       if (pendingResultAuditsV189.size) {
         await Promise.allSettled([...pendingResultAuditsV189]);
       }
-      const report = buildResultAuditReportV189();
+      const report =
+        buildTestLogReport() +
+        '\n\n================ RESULT AUDIT ================\n\n' +
+        buildResultAuditReportV189();
       let copied = false;
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -18907,16 +19424,15 @@ let scoreTimingDetail =
         textarea.remove();
       }
       if (els.controlCenterResultsCheckButtonV188) {
-        const original = 'COPY RESULT LOG';
         els.controlCenterResultsCheckButtonV188.textContent = copied ? 'COPIED' : 'COPY FAILED';
         setTimeout(() => {
           if (els.controlCenterResultsCheckButtonV188) {
-            els.controlCenterResultsCheckButtonV188.textContent = original;
+            updateResultCopyButtonLabelV2082();
             requestAnimationFrame(fitTestPageButtonText);
           }
         }, 1200);
       }
-      if (!copied) addTestLog('COPY RESULT LOG', 'FAILED', '—', 'CLIPBOARD UNAVAILABLE');
+      if (!copied) addTestLog('COPY LOG + RESULTS', 'FAILED', '—', 'CLIPBOARD UNAVAILABLE');
     }
 
     function buildTestLogReport() {
@@ -19011,6 +19527,7 @@ let scoreTimingDetail =
 
     function renderTestLog() {
       const log = getTestLog();
+      updateResultCopyButtonLabelV2082();
       if (!log.length) {
         els.testLogRows.innerHTML = '<div class="test-log-empty">NO TEST ACTIONS RECORDED</div>';
         return;
@@ -27430,6 +27947,11 @@ let scoreTimingDetail =
             ? (Number(data.timing.totalMs) / 1000).toFixed(3) + 's CF'
             : ''
         );
+
+        /* V20.82 — successful visible GEEK MODE load now performs the existing
+           local detail audit automatically and links it to the matching
+           accumulated RESULT test. */
+        runAutoGeekDetailAuditV2082();
       }
       catch (error) {
         geekDetailAuditReadyV1932 = false;
@@ -30938,7 +31460,7 @@ let scoreTimingDetail =
     if (els.testLogScorecardButton) els.testLogScorecardButton.addEventListener('click', showScorecard);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
-    if (els.controlCenterGeekCheckButtonV188) els.controlCenterGeekCheckButtonV188.addEventListener('click', runControlCenterGeekCheckV188);
+    updateResultCopyButtonLabelV2082();
     if (els.controlCenterResultsCheckButtonV188) els.controlCenterResultsCheckButtonV188.addEventListener('click', copyResultAuditLogV189);
     if (els.controlCenterTeamsButton) els.controlCenterTeamsButton.addEventListener('click', openTeamsPopup);
     if (els.controlCenterSkinsCheck) {
