@@ -1,12 +1,11 @@
-<!-- SSHCP | BASE KEY: 20.88-F4N7QK | BUILD KEY: 20.89-N6Q2RV -->
-<!-- SSHCP V20.89 — TEST build from exact V20.88.
-     Timing-control extension only. 1A / 1B / 2 / 3 remain at the V20.88 4.00-second
-     stress-test values. Group 4 adds QUICK GUIDE as an independent full-screen white
-     curtain over a solid SSHCP-accent-blue surround, also preset to 4.00 seconds.
-     SCORECARD CLEAR now has an independent 0.10-second visual hold while its blank
-     save starts immediately and CLEAR remains stationary with no beauty-scroll.
-     No scorecard/leaderboard geometry, NESR rules, scoring verification, audit/data,
-     after-play layout, navigation semantics, or Worker behavior changes. -->
+<!-- SSHCP | BASE KEY: 20.89-N6Q2RV | BUILD KEY: 20.90-H4R8NX -->
+<!-- SSHCP V20.90 — TEST build from exact V20.89.
+     Timing-tuning + QUICK GUIDE shell only. Top controls are now 1A .40s, 1B 1.00s,
+     2 .60s, 3 1.20s, 4 .80s; SCORECARD CLEAR remains .10s. QUICK GUIDE keeps its
+     full-screen white curtain and solid SSHCP-accent-blue surround, while its white
+     popup is now 95vw × 95dvh, capped at 500px wide, with no popup border.
+     No scorecard/leaderboard formatting, NESR/auto-scroll rules, scoring verification,
+     audit/data, after-play layout, navigation semantics, or Worker behavior changes. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +13,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V20.89 — TIMING TEST PANEL
+       SSHCP V20.90 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -26,28 +25,28 @@
        4  = QUICK GUIDE full-screen white curtain
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
-    window.SSHCP_FADE_TIMING_V2089 = {
-      FADE_1A_HOME_FULL: 4.00,
-      FADE_1B_HOME_MIDDLE: 4.00,
-      FADE_2_SCORECARD_LEADERBOARD: 4.00,
-      FADE_3_AFTER_PLAY: 4.00,
-      FADE_4_QUICK_GUIDE: 4.00,
+    window.SSHCP_FADE_TIMING_V2090 = {
+      FADE_1A_HOME_FULL: 0.40,
+      FADE_1B_HOME_MIDDLE: 1.00,
+      FADE_2_SCORECARD_LEADERBOARD: 0.60,
+      FADE_3_AFTER_PLAY: 1.20,
+      FADE_4_QUICK_GUIDE: 0.80,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
-    (function applySshcpFadeTimingV2089() {
-      const timing = window.SSHCP_FADE_TIMING_V2089 || {};
+    (function applySshcpFadeTimingV2090() {
+      const timing = window.SSHCP_FADE_TIMING_V2090 || {};
       const rootStyle = document.documentElement.style;
       const setSeconds = (cssName, value, fallback) => {
         const seconds = Number(value);
         const safeSeconds = Number.isFinite(seconds) && seconds >= 0 ? seconds : fallback;
         rootStyle.setProperty(cssName, safeSeconds + 's');
       };
-      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 4.00);
-      setSeconds('--sshcp-fade-1b-home-middle', timing.FADE_1B_HOME_MIDDLE, 4.00);
-      setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 4.00);
-      setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 4.00);
-      setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 4.00);
+      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.40);
+      setSeconds('--sshcp-fade-1b-home-middle', timing.FADE_1B_HOME_MIDDLE, 1.00);
+      setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.60);
+      setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 1.20);
+      setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
     })();
   </script>
   <meta
@@ -9463,7 +9462,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 }
 /* SSHCP V20.89 — 1B HOME middle/action reveal timing comes from the top panel. */
 .sshcp-data-reveal-shield-v177.sshcp-home-reveal-v1985{
-  transition:opacity var(--sshcp-fade-1b-home-middle,.8s) ease-out!important;
+  transition:opacity var(--sshcp-fade-1b-home-middle,1s) ease-out!important;
 }
 
 .sshcp-data-reveal-shield-v177.is-revealing-v177{
@@ -9481,7 +9480,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
   background:#fff!important;
   z-index:4790!important;
-  transition:opacity var(--sshcp-fade-1a-home-full,.2s) ease-out!important;
+  transition:opacity var(--sshcp-fade-1a-home-full,.4s) ease-out!important;
 }
 /* SSHCP V20.89 — group 2 Scorecard / Leaderboard timing comes from the top
    panel. Existing reveal promises remain the gate, so NESR scrolling and
@@ -9489,7 +9488,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-main-full-reveal-v2069{
   background:#fff!important;
   z-index:9000!important;
-  transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.8s) ease-out!important;
+  transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.6s) ease-out!important;
 }
 
 
@@ -14483,7 +14482,7 @@ body.team-info-open-v2032{
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086{
   background:#000!important;
   border-radius:0!important;
-  transition:opacity var(--sshcp-fade-3-after-play,.5s) ease-out!important;
+  transition:opacity var(--sshcp-fade-3-after-play,1.2s) ease-out!important;
 }
 
 /* SSHCP V20.89 — Group 4 QUICK GUIDE presentation.
@@ -14496,7 +14495,22 @@ body.team-info-open-v2032{
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-quick-guide-curtain-v2089{
   background:#fff!important;
   border-radius:0!important;
-  transition:opacity var(--sshcp-fade-4-quick-guide,4s) ease-out!important;
+  transition:opacity var(--sshcp-fade-4-quick-guide,.8s) ease-out!important;
+}
+
+/* SSHCP V20.90 — QUICK GUIDE shell geometry only.
+   Card uses 95% of the viewport in both axes, never exceeds 500px wide,
+   and has no black outline. Internal content/scroll/footer rules are unchanged. */
+.modal-overlay.quick-guide{
+  padding:0!important;
+}
+.modal-overlay.quick-guide .modal-box{
+  width:min(95vw,500px)!important;
+  max-width:500px!important;
+  height:95dvh!important;
+  min-height:95dvh!important;
+  max-height:95dvh!important;
+  border:0!important;
 }
 </style>
 
@@ -14630,7 +14644,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.89</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.90</span></span>
         </button>
 
       </div>
@@ -15834,7 +15848,7 @@ body.team-info-open-v2032{
        but holds the already-painted scorecard for the top-panel CLEAR cue time.
        Local blank + save still begin immediately; only Scorecard rerender waits. */
     const clearCueSecondsV2089 = Number(
-      (window.SSHCP_FADE_TIMING_V2089 || {}).SCORECARD_CLEAR_CUE
+      (window.SSHCP_FADE_TIMING_V2090 || {}).SCORECARD_CLEAR_CUE
     );
     const CLEAR_FOCUS_VISUAL_DELAY_V1836 = Math.max(
       0,
@@ -21211,27 +21225,27 @@ let scoreTimingDetail =
 
         shield.addEventListener('transitionend', onTransitionEnd);
         shield.classList.add('is-revealing-v177');
-        /* SSHCP V20.89 — safety fallbacks derive from the same top-of-file
+        /* SSHCP V20.90 — safety fallbacks derive from the same top-of-file
            timing panel. Add only 60ms beyond the selected fade. */
-        const timingV2089 = window.SSHCP_FADE_TIMING_V2089 || {};
-        const timingMsV2089 = (value, fallbackSeconds) => {
+        const timingV2090 = window.SSHCP_FADE_TIMING_V2090 || {};
+        const timingMsV2090 = (value, fallbackSeconds) => {
           const seconds = Number(value);
           return 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : fallbackSeconds);
         };
-        const afterPlayKeyV2089 = String(key || '').startsWith('after-play-');
-        const revealDurationMsV2089 =
+        const afterPlayKeyV2090 = String(key || '').startsWith('after-play-');
+        const revealDurationMsV2090 =
           key === 'home'
-            ? timingMsV2089(timingV2089.FADE_1B_HOME_MIDDLE, 4.00)
+            ? timingMsV2090(timingV2090.FADE_1B_HOME_MIDDLE, 1.00)
             : key === 'home-full-v1986'
-              ? timingMsV2089(timingV2089.FADE_1A_HOME_FULL, 4.00)
+              ? timingMsV2090(timingV2090.FADE_1A_HOME_FULL, 0.40)
               : (key === 'scorecard' || key === 'leaderboard')
-                ? timingMsV2089(timingV2089.FADE_2_SCORECARD_LEADERBOARD, 4.00)
-                : afterPlayKeyV2089
-                  ? timingMsV2089(timingV2089.FADE_3_AFTER_PLAY, 4.00)
+                ? timingMsV2090(timingV2090.FADE_2_SCORECARD_LEADERBOARD, 0.60)
+                : afterPlayKeyV2090
+                  ? timingMsV2090(timingV2090.FADE_3_AFTER_PLAY, 1.20)
                   : key === 'quick-guide-v2089'
-                    ? timingMsV2089(timingV2089.FADE_4_QUICK_GUIDE, 4.00)
+                    ? timingMsV2090(timingV2090.FADE_4_QUICK_GUIDE, 0.80)
                     : 500;
-        window.setTimeout(finish, Math.ceil(revealDurationMsV2089 + 60));
+        window.setTimeout(finish, Math.ceil(revealDurationMsV2090 + 60));
       });
     }
 
