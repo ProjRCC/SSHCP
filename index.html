@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 20.91-V7M3QK | BUILD KEY: 20.92-Q6R4MN -->
-<!-- SSHCP V20.92 — TEST build from exact V20.91.
-     NESR top-boundary normalization only. V20.91 bottom/end clamp remains unchanged.
-     When the normal NESR+4 target mathematically clamps to the course top, ENTER now
-     uses that exact top target instead of the old already-visible shortcut. A <=3px
-     top offset is corrected silently with no beauty-scroll; larger required moves use
-     the existing beauty-scroll. All fade timings, CLEAR .10s, Scorecard geometry,
-     scoring verification, audit/data, after-play/Quick Guide presentation, navigation
-     semantics, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 20.92-Q6R4MN | BUILD KEY: 20.93-T5N8QK -->
+<!-- SSHCP V20.93 — TEST build from exact V20.92.
+     Leaderboard row-geometry refinement only. For 1–8 teams, every rendered team row
+     now uses one identical whole-pixel height: floor(available row area / team count).
+     Any leftover pixels are transferred to the existing Leaderboard table-to-footer
+     buffer instead of being distributed across individual rows. For 9+ teams, the
+     established scrollable 8-row viewport behavior remains unchanged. Scorecard/NESR,
+     fade timings, CLEAR .10s, scoring, audit/data, navigation, after-play/Quick Guide
+     presentation, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +14,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V20.92 — TIMING TEST PANEL
+       SSHCP V20.93 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -14645,7 +14645,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.92</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.93</span></span>
         </button>
 
       </div>
@@ -30406,8 +30406,20 @@ let scoreTimingDetail =
       const header = els.leaderboardView
         ? els.leaderboardView.querySelector('.leader-table-head')
         : null;
+      const footer = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leader-bottom')
+        : null;
 
-      if (!screen || !header || !els.leaderContent) return;
+      if (!screen || !header || !footer || !els.leaderContent) return;
+
+      /* SSHCP V20.93 — always restore the normal flexible Leaderboard shell
+         before measuring. A prior <=8-team pass may have converted the content
+         area to an exact whole-pixel height and added its remainder to the
+         table-to-footer buffer. This reset makes resize/re-entry deterministic. */
+      ['flex', 'height', 'min-height', 'max-height'].forEach(name => {
+        els.leaderContent.style.removeProperty(name);
+      });
+      footer.style.removeProperty('padding-top');
 
       const geometry = applyV16ShellGeometry(els.leaderboardView);
       if (!geometry) return;
@@ -30428,15 +30440,18 @@ let scoreTimingDetail =
       const tableBudget = contentRect.bottom - headerRect.top;
       if (!Number.isFinite(tableBudget) || tableBudget <= 0) return;
 
-      const rowCount = Math.max(
+      const actualTeamCountV2093 = Math.max(
         1,
-        Math.min(8, els.leaderRows ? els.leaderRows.querySelectorAll('.leader-row').length : 1)
+        els.leaderRows ? els.leaderRows.querySelectorAll('.leader-row').length : 1
       );
+      const rowCount = Math.max(1, Math.min(8, actualTeamCountV2093));
+      const shortLeaderboardV2093 = actualTeamCountV2093 <= 8;
 
       /* V18.9: Scorecard and Leaderboard share the same fixed 46px TABLE HEADER
-         baseline. The Leaderboard viewport then distributes every remaining
-         integer pixel across the visible rows (max 8). The repeating pattern
-         means each full visible block consumes the viewport exactly. */
+         baseline. V20.93 changes ONLY <=8-team remainder ownership: rows use one
+         identical whole-pixel height, and any leftover pixels move into the
+         existing table-to-footer buffer. 9+ keeps the established distributed
+         8-row viewport so the scrollable Leaderboard behavior does not change. */
       const headerHeight = geometry.sharedV187
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
@@ -30448,8 +30463,42 @@ let scoreTimingDetail =
 
       requestAnimationFrame(() => {
         const actualViewportHeight = Math.max(rowCount, Math.round(els.leaderContent.clientHeight || 0));
-        const leaderRowPixelsV188 = distributeIntegerPixelsV188(actualViewportHeight, rowCount);
-        const rowHeight = leaderRowPixelsV188.reduce((sum, value) => sum + value, 0) / rowCount;
+        let leaderRowPixelsV188;
+        let rowHeight;
+
+        if (shortLeaderboardV2093) {
+          rowHeight = Math.max(1, Math.floor(actualViewportHeight / rowCount));
+          const rowsHeightV2093 = rowHeight * rowCount;
+          const remainderV2093 = Math.max(0, actualViewportHeight - rowsHeightV2093);
+          const contentChromeV2093 = Math.max(
+            0,
+            Math.round(els.leaderContent.getBoundingClientRect().height - els.leaderContent.clientHeight)
+          );
+          const contentOuterHeightV2093 = rowsHeightV2093 + contentChromeV2093;
+          const baseFooterGapV2093 = Math.max(
+            0,
+            Number(geometry.vars && geometry.vars['--v16-leader-table-footer-gap']) || 0
+          );
+
+          leaderRowPixelsV188 = Array(rowCount).fill(rowHeight);
+
+          /* Shrink the <=8-team table by only the integer remainder and give
+             those exact pixels to the existing footer buffer. Example:
+             481px / 8 = eight 60px rows + 1px added to the buffer. */
+          els.leaderContent.style.setProperty('flex', '0 0 ' + contentOuterHeightV2093 + 'px', 'important');
+          els.leaderContent.style.setProperty('height', contentOuterHeightV2093 + 'px', 'important');
+          els.leaderContent.style.setProperty('min-height', contentOuterHeightV2093 + 'px', 'important');
+          els.leaderContent.style.setProperty('max-height', contentOuterHeightV2093 + 'px', 'important');
+          footer.style.setProperty(
+            'padding-top',
+            (baseFooterGapV2093 + remainderV2093) + 'px',
+            'important'
+          );
+        }
+        else {
+          leaderRowPixelsV188 = distributeIntegerPixelsV188(actualViewportHeight, rowCount);
+          rowHeight = leaderRowPixelsV188.reduce((sum, value) => sum + value, 0) / rowCount;
+        }
 
         els.leaderRows.querySelectorAll('.leader-row').forEach((row, index) => {
           const exactHeight = leaderRowPixelsV188[index % rowCount];
