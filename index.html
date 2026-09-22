@@ -1,14 +1,12 @@
-<!-- SSHCP | BASE KEY: 20.83-K7N4QX | BUILD KEY: 20.84-M6R2QH -->
-<!-- SSHCP V20.84 — TEST build from exact V20.83.
-     Post-play popup presentation only: SCRAMBLE SUMMARY keeps its solid-black
-     surround and fixed 98vw/98dvh shell, but every entry path now reveals the
-     entire popup through a white 0.8s curtain. GEEK MODE main uses a solid-black
-     surround plus a 0.3s full-popup white curtain so its existing loading state
-     can become visible underneath. GAME MODE keeps data-driven popup height; its
-     black loading surround hands off to a white curtain fitted to the resolved
-     popup bounds and faded over 0.8s. GEEK detail changes only to solid black
-     outside the existing card. No data, scoring, audit, navigation, or table
-     content logic changes are included. -->
+<!-- SSHCP | BASE KEY: 20.85-Q5V8NK | BUILD KEY: 20.86-R4K9VM -->
+<!-- SSHCP V20.86 — TEST build from exact V20.85.
+     Universal after-play transition only: SCRAMBLE SUMMARY, TIE BREAK RESULT,
+     GEEK MODE main/detail, GAME MODE, and SKINS now enter behind one full-screen
+     solid-black curtain. Each destination finishes its required fetch/render/layout
+     work underneath, then the same black curtain fades away over 0.5s.
+     GAME no longer measures or hands off to a popup-sized white curtain; GEEK fresh
+     entry remains black until its fresh data is ready. Existing popup geometry,
+     data/scoring/audit/navigation logic, and table content remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14417,12 +14415,15 @@ body.team-info-open-v2032{
 }
 </style>
 
-<style id="sshcp-v2084-postplay-curtains">
-/* SSHCP V20.84 — post-play popup presentation consistency only. */
+<style id="sshcp-v2086-postplay-curtain">
+/* SSHCP V20.86 — one after-play visual world: black surround plus one
+   viewport-sized black curtain. Popup dimensions never participate in the reveal. */
 .modal-overlay.tournament-summary,
+.modal-overlay.tournament-result,
 .modal-overlay.geek-mode-v180,
 .modal-overlay.geek-detail-v180,
-.modal-overlay.game-mode-results-v2026{
+.modal-overlay.game-mode-results-v2026,
+.modal-overlay.skins-results-v1627{
   background:#000!important;
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important;
@@ -14442,19 +14443,11 @@ body.team-info-open-v2032{
   max-height:98dvh!important;
 }
 
-/* These fixed-position white curtains use the exact rendered popup rectangle. */
-.sshcp-data-reveal-shield-v177.sshcp-summary-popup-reveal-v2084,
-.sshcp-data-reveal-shield-v177.sshcp-geek-main-reveal-v2084,
-.sshcp-data-reveal-shield-v177.sshcp-game-popup-reveal-v2084{
-  background:#fff!important;
-  border-radius:18px!important;
-}
-.sshcp-data-reveal-shield-v177.sshcp-summary-popup-reveal-v2084,
-.sshcp-data-reveal-shield-v177.sshcp-game-popup-reveal-v2084{
-  transition:opacity .8s ease-out!important;
-}
-.sshcp-data-reveal-shield-v177.sshcp-geek-main-reveal-v2084{
-  transition:opacity .3s ease-out!important;
+/* Universal after-play reveal: full viewport, solid black, 0.5 seconds. */
+.sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086{
+  background:#000!important;
+  border-radius:0!important;
+  transition:opacity .5s ease-out!important;
 }
 </style>
 
@@ -14588,7 +14581,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.84</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.86</span></span>
         </button>
 
       </div>
@@ -21171,8 +21164,7 @@ let scoreTimingDetail =
           key === 'home' ? 860 :
           key === 'home-full-v1986' ? 260 :
           (key === 'scorecard' || key === 'leaderboard') ? 860 :
-          (key === 'summary-popup-v2084' || key === 'game-popup-v2084') ? 860 :
-          key === 'geek-main-v2084' ? 360 :
+          (key === 'summary-popup-v2084' || key === 'game-popup-v2084' || key === 'geek-main-v2084') ? 560 :
           560;
         window.setTimeout(finish, revealFallbackMsV2078);
       });
@@ -21199,27 +21191,25 @@ let scoreTimingDetail =
       });
     }
 
-    /* SSHCP V20.84 — popup-bounds reveal curtains. The shield geometry is
-       measured from the fully rendered modal box, so GAME can remain content-height
-       while Summary/GEEK retain their fixed 98 × 98 shells. */
-    function beginPopupRevealCurtainV2084(key, className) {
+    /* SSHCP V20.86 — universal after-play reveal. The curtain owns the viewport,
+       never the popup rectangle, so data-driven popup height is irrelevant. */
+    function beginAfterPlayCurtainV2086(key) {
       const shield = beginDataRevealShieldV177(
         key,
-        [els.modalBox],
-        '#fff',
-        false,
-        6200
+        [],
+        '#000',
+        true,
+        6300
       );
-      if (shield && className) shield.classList.add(className);
+      if (shield) shield.classList.add('sshcp-after-play-curtain-v2086');
       return shield;
     }
 
-    function revealPopupCurtainV2084(key, shield, frames = 2) {
+    function revealAfterPlayCurtainV2086(key, shield, frames = 2) {
       return revealDataShieldAfterLayoutV177(
         key,
         shield,
-        frames,
-        [els.modalBox]
+        frames
       );
     }
 
@@ -25225,6 +25215,8 @@ let scoreTimingDetail =
         return;
       }
 
+      const tieBreakCurtainV2086 = beginAfterPlayCurtainV2086('after-play-tiebreak-v2086');
+
       markTournamentTieBreakViewed();
       setLeaderboardFinalAction('tournament-summary');
 
@@ -25302,6 +25294,11 @@ let scoreTimingDetail =
         });
         requestAnimationFrame(fitTieBreakExplanationV1515);
       });
+      revealAfterPlayCurtainV2086(
+        'after-play-tiebreak-v2086',
+        tieBreakCurtainV2086,
+        3
+      );
     }
 
     function fitTieBreakExplanationV1515() {
@@ -27971,18 +27968,12 @@ let scoreTimingDetail =
       geekDataV180 = null;
       geekEvidenceSnapshotV1921 = null;
 
+      /* V20.86 — cover the current screen before replacing it. Fresh GEEK stays
+         fully black through the required read and renders the finished table underneath. */
+      const geekAfterPlayCurtainV2086 = beginAfterPlayCurtainV2086('after-play-geek-v2086');
+
       closeModal();
       renderGeekMainShellV180();
-
-      /* V20.84 — fresh GEEK entry gets a short full-card white curtain. It
-         begins revealing immediately, before the CF read completes, so the
-         established LOADING GEEK MODE shield can be seen underneath after .3s.
-         Detail -> main return keeps its existing separate return-cover behavior. */
-      const geekMainRevealShieldV2084 = beginPopupRevealCurtainV2084(
-        'geek-main-v2084',
-        'sshcp-geek-main-reveal-v2084'
-      );
-      revealPopupCurtainV2084('geek-main-v2084', geekMainRevealShieldV2084, 2);
 
       const started = timerStart();
       const evidencePromiseV1921 = fetchGeekEvidenceSnapshotV1921();
@@ -28016,17 +28007,21 @@ let scoreTimingDetail =
         const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
         if (scroll) scroll.scrollTop = 0;
 
+        /* The legacy in-card loading shield is never exposed in V20.86:
+           remove it under the full-screen black curtain, then reveal finished GEEK. */
         const shield = els.modalBody.querySelector('.geek-load-shield-v180');
-        if (shield) {
+        if (shield && shield.parentNode) shield.parentNode.removeChild(shield);
+
+        requestAnimationFrame(() => {
+          fitGeekRowsV180();
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              shield.classList.add('reveal');
-              window.setTimeout(() => {
-                if (shield && shield.parentNode) shield.parentNode.removeChild(shield);
-              }, 540);
-            });
+            revealAfterPlayCurtainV2086(
+              'after-play-geek-v2086',
+              geekAfterPlayCurtainV2086,
+              2
+            );
           });
-        }
+        });
 
         addTestLog(
           'GEEK MODE LOAD',
@@ -28060,12 +28055,13 @@ let scoreTimingDetail =
         }
 
         const shield = els.modalBody.querySelector('.geek-load-shield-v180');
-        if (shield) {
-          shield.classList.add('reveal');
-          window.setTimeout(() => {
-            if (shield && shield.parentNode) shield.parentNode.removeChild(shield);
-          }, 540);
-        }
+        if (shield && shield.parentNode) shield.parentNode.removeChild(shield);
+
+        revealAfterPlayCurtainV2086(
+          'after-play-geek-v2086',
+          geekAfterPlayCurtainV2086,
+          2
+        );
       }
     }
 
@@ -28109,6 +28105,8 @@ let scoreTimingDetail =
     }
 
     function returnToGeekModeV180() {
+      const geekReturnCurtainV2086 = beginAfterPlayCurtainV2086('after-play-geek-return-v2086');
+
       closeModal();
       renderGeekMainShellV180();
       renderGeekTableV180();
@@ -28118,17 +28116,18 @@ let scoreTimingDetail =
         loadShield.parentNode.removeChild(loadShield);
       }
 
-      installGeekDetailReturnCoverV1816();
-
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       requestAnimationFrame(() => {
         fitGeekRowsV180();
         if (scroll) scroll.scrollTop = geekScrollTopV180;
 
-        /* fitGeekRowsV180 schedules its text fitting on the next frame.
-           Wait through that pass before beginning the 0.5s white reveal. */
+        /* Wait through the normal GEEK text-fit pass, then reveal the finished main view. */
         requestAnimationFrame(() => {
-          requestAnimationFrame(revealGeekDetailReturnCoverV1816);
+          revealAfterPlayCurtainV2086(
+            'after-play-geek-return-v2086',
+            geekReturnCurtainV2086,
+            2
+          );
         });
       });
     }
@@ -28297,6 +28296,8 @@ let scoreTimingDetail =
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) geekScrollTopV180 = scroll.scrollTop || 0;
 
+      const geekDetailCurtainV2086 = beginAfterPlayCurtainV2086('after-play-geek-detail-v2086');
+
       closeModal();
       els.modalOverlay.classList.add('geek-detail-v180');
       if (els.modalBox) els.modalBox.classList.remove('geek-detail-expanded-v1920');
@@ -28367,7 +28368,16 @@ let scoreTimingDetail =
       els.modalActions.className = 'modal-actions single';
       els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
-      requestAnimationFrame(fitGeekDetailV182);
+      requestAnimationFrame(() => {
+        fitGeekDetailV182();
+        requestAnimationFrame(() => {
+          revealAfterPlayCurtainV2086(
+            'after-play-geek-detail-v2086',
+            geekDetailCurtainV2086,
+            2
+          );
+        });
+      });
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => requestAnimationFrame(fitGeekDetailV182)).catch(() => {});
       }
@@ -28611,18 +28621,19 @@ let scoreTimingDetail =
 
     async function showSkinsPopupV1627() {
       if (!skinsEnabledV1627()) return;
-      const skinsRevealShieldV177 = beginDataRevealShieldV177('skins', [], '#000', true, 6100);
+      const skinsCurtainV2086 = beginAfterPlayCurtainV2086('after-play-skins-v2086');
       startLoadingLine();
       try {
         const source = await fetchSkinsSourceV1627();
         const results = buildSkinsResultsV1627(source.teams, source.holes);
         completeLoadingLine();
         renderSkinsPopupV1627(results);
-        revealDataShieldAfterLayoutV177('skins', skinsRevealShieldV177, 2);
+        revealAfterPlayCurtainV2086('after-play-skins-v2086', skinsCurtainV2086, 2);
       } catch (error) {
         completeLoadingLine();
         addTestLog('SKINS LOAD', 'FAILED', '—', String(error && error.message || 'Request failed'));
         closeModal();
+        els.modalOverlay.classList.add('skins-results-v1627');
         els.modalTitle.textContent = 'SKINS';
         els.modalBody.textContent = 'SKINS DATA UNAVAILABLE';
         els.modalInput.style.display = 'none';
@@ -28630,7 +28641,7 @@ let scoreTimingDetail =
         els.modalActions.className = 'modal-actions single';
         els.modalActions.replaceChildren(back);
         els.modalOverlay.classList.add('open');
-        revealDataShieldAfterLayoutV177('skins', skinsRevealShieldV177, 2);
+        revealAfterPlayCurtainV2086('after-play-skins-v2086', skinsCurtainV2086, 2);
       }
     }
 
@@ -28913,16 +28924,10 @@ let scoreTimingDetail =
 
     async function showGameModePopupV2026() {
       setHomeHamburgerVisibleV2055(false);
-      /* V20.84 — GAME popup height is intentionally data-driven. Keep a solid
-         black full-screen loading cover until the resolved popup exists; then
-         hand off seamlessly to a white curtain measured to that exact box. */
-      const gameLoadingShieldV2084 = beginDataRevealShieldV177(
-        'game-mode-loading-v2084',
-        [],
-        '#000',
-        true,
-        6100
-      );
+      /* V20.86 — GAME's data-driven popup can resolve to any height. The reveal
+         no longer measures it: one full-screen black curtain stays up through
+         both reads and the final render, then fades away over 0.5s. */
+      const gameCurtainV2086 = beginAfterPlayCurtainV2086('after-play-game-v2086');
       startLoadingLine();
 
       const [skinsResult, gamesResult] = await Promise.allSettled([
@@ -28950,14 +28955,11 @@ let scoreTimingDetail =
 
       renderGameModePopupV2026(skinsResults, gamesRows, skinsUnavailable, gamesUnavailable);
 
-      const gamePopupRevealShieldV2084 = beginPopupRevealCurtainV2084(
-        'game-popup-v2084',
-        'sshcp-game-popup-reveal-v2084'
+      revealAfterPlayCurtainV2086(
+        'after-play-game-v2086',
+        gameCurtainV2086,
+        2
       );
-      /* The popup curtain now owns the card area, while the modal overlay itself
-         owns the same solid-black surround as Summary/GEEK. */
-      removeDataRevealShieldV177('game-mode-loading-v2084', gameLoadingShieldV2084);
-      revealPopupCurtainV2084('game-popup-v2084', gamePopupRevealShieldV2084, 2);
     }
 
     function positionSummaryNavigationV182() {
@@ -29054,6 +29056,8 @@ let scoreTimingDetail =
         closeModal();
         return;
       }
+
+      const summaryCurtainV2086 = beginAfterPlayCurtainV2086('after-play-summary-v2086');
 
       const podium = buildTournamentPodium(lastLeaderboardRows);
       /* V19.31 — render the complete resolved standings. The Summary shell still
@@ -29160,13 +29164,6 @@ let scoreTimingDetail =
       els.modalActions.className = 'modal-actions tournament-summary-actions-v1627';
       els.modalActions.replaceChildren(geekAction, home, gameMode);
       els.modalOverlay.classList.add('open');
-      /* V20.84 — one centralized Summary reveal for every route: HOME, tie-break,
-         GEEK/GAME/SKINS back paths, and any direct Summary navigation all land
-         here. The white curtain covers the entire 98 × 98 modal box. */
-      const summaryRevealShieldV2084 = beginPopupRevealCurtainV2084(
-        'summary-popup-v2084',
-        'sshcp-summary-popup-reveal-v2084'
-      );
 
       if (tournamentSummaryResizeObserver) {
         tournamentSummaryResizeObserver.disconnect();
@@ -29186,7 +29183,11 @@ let scoreTimingDetail =
         if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
       });
       requestAnimationFrame(() => captureTournamentSummaryAuditV189());
-      revealPopupCurtainV2084('summary-popup-v2084', summaryRevealShieldV2084, 2);
+      revealAfterPlayCurtainV2086(
+        'after-play-summary-v2086',
+        summaryCurtainV2086,
+        2
+      );
     }
 
     function handleLeaderboardFinalAction() {
