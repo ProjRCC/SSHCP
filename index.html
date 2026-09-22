@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.65-P3R8QK | BUILD KEY: 20.66-H4V7QS -->
+<!-- SSHCP | BASE KEY: 20.66-H4V7QS | BUILD KEY: 20.68-N5Q8VR -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,6 +54,24 @@
         window.__sshcpBootView = rememberedView;
         if (rememberedView === 'scorecard' || rememberedView === 'leaderboard') {
           document.documentElement.classList.add('sshcp-pre-' + rememberedView);
+        }
+
+        /* SSHCP V20.68 — installed-PWA first-paint handoff for remembered
+           Scorecard / Leaderboard refresh. V20.66 stabilizes standalone height
+           with 100svh; this separate boot flag prevents Android standalone from
+           painting the remembered mutable page for a frame before the existing
+           runtime white reveal shield is mounted. Regular web is untouched. */
+        var standaloneMainRefreshV2068 = !!(
+          window.matchMedia &&
+          window.matchMedia('(display-mode: standalone)').matches
+        );
+        if (standaloneMainRefreshV2068 && !window.__sshcpIncomingQrWelcomeV170) {
+          if (rememberedView === 'scorecard') {
+            document.documentElement.classList.add('sshcp-pre-scorecard-pwa-v2068');
+          }
+          else if (rememberedView === 'leaderboard') {
+            document.documentElement.classList.add('sshcp-pre-leaderboard-pwa-v2068');
+          }
         }
 
         /* V19.76 — HOME's V19.63 curtain is deliberately created later, after
@@ -5137,6 +5155,35 @@ html.sshcp-pre-leaderboard #scorecardView{
 }
 html.sshcp-pre-leaderboard #leaderboardView{
   display:block!important;
+}
+
+/* SSHCP V20.68 — PWA first-paint curtain bridge.
+   Only installed standalone refresh uses this boot layer. Its top edge matches
+   the established Scorecard / Leaderboard runtime reveal-shield boundary:
+   bottom of HOME / event / INFO nav. The runtime shield is mounted above this
+   layer, then takes ownership synchronously before this class is removed. */
+@media (display-mode: standalone) {
+  html.sshcp-pre-scorecard-pwa-v2068 body::after,
+  html.sshcp-pre-leaderboard-pwa-v2068 body::after{
+    content:""!important;
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    top:calc(var(--v16-top-inset,10px) + env(safe-area-inset-top) + var(--v16-nav-h,35px))!important;
+    bottom:0!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    background:#fff!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+  html.sshcp-pre-scorecard-pwa-v2068 body::after{
+    z-index:4890!important;
+  }
+  html.sshcp-pre-leaderboard-pwa-v2068 body::after{
+    z-index:8790!important;
+  }
 }
 
 /* V19.76 — first-paint HOME handoff.
@@ -14105,6 +14152,17 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.sshcp-button-pre
   -webkit-text-fill-color:#a6a6a6!important;
 }
 
+/* SSHCP V20.68 — authorized-team-finished / field-still-live GEEK cue.
+   Outline-only antique gold means personal stats are available; the existing
+   solid antique-gold after-play state remains reserved for full tournament data. */
+#homeMenuGeekV2054.early-ready-v2068{
+  opacity:1!important;
+  background:#fff!important;
+  border:3px solid #8A6414!important;
+  color:#8A6414!important;
+  -webkit-text-fill-color:#8A6414!important;
+}
+
 body.home-menu-open-v2054{
   overflow:hidden!important;
 }
@@ -14315,7 +14373,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.66</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.68</span></span>
         </button>
 
       </div>
@@ -20421,13 +20479,24 @@ let scoreTimingDetail =
     function beginScorecardRevealV177() {
       if (currentView !== 'scorecard') return null;
       const header = els.scorecardView && els.scorecardView.querySelector('.score-table-head');
-      return beginDataRevealShieldV177('scorecard', [header, els.scoreScroll], '#fff', false, 4900, 'scorecard');
+      const shieldV2068 = beginDataRevealShieldV177('scorecard', [header, els.scoreScroll], '#fff', false, 4900, 'scorecard');
+      /* V20.68 — PWA refresh boot cover -> established runtime curtain handoff.
+         Both are opaque white and this runs in one task, so no stale table can
+         paint between them. Normal web never carries this boot class. */
+      if (shieldV2068) {
+        document.documentElement.classList.remove('sshcp-pre-scorecard-pwa-v2068');
+      }
+      return shieldV2068;
     }
 
     function beginLeaderboardRevealV177() {
       if (currentView !== 'leaderboard') return null;
       const header = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
-      return beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false, 8800, 'leaderboard');
+      const shieldV2068 = beginDataRevealShieldV177('leaderboard', [header, els.leaderContent], '#fff', false, 8800, 'leaderboard');
+      if (shieldV2068) {
+        document.documentElement.classList.remove('sshcp-pre-leaderboard-pwa-v2068');
+      }
+      return shieldV2068;
     }
 
     /* V19.74 — one Leaderboard curtain owns the complete visible refresh
@@ -25088,6 +25157,53 @@ let scoreTimingDetail =
     let geekDataV180 = null;
     let geekEvidenceSnapshotV1921 = null;
 
+    /* SSHCP V20.68 — early authorized-team GEEK access.
+       This is presentation-only: CF V3.1's existing lazy geekMode endpoint
+       already returns per-team result rows from OFFICIAL before the field is
+       complete. Early mode exposes ONLY the authorized team's completed-round
+       values. ALL and TEAM are masked, and field-dependent US values are TBD. */
+    let geekEarlyAccessV2068 = false;
+
+    function geekFieldDependentStatV2068(statName) {
+      const keyV2068 = geekStatKeyV186(statName);
+      return keyV2068 === 'hole wins' || keyV2068.includes('vs field');
+    }
+
+    function validCompleteScoresV2068(scores) {
+      return Array.isArray(scores) && scores.length >= 18 &&
+        scores.slice(0, 18).every(value => {
+          const number = Number(value);
+          return Number.isFinite(number) && number > 0;
+        });
+    }
+
+    function geekAuthorizedTeamCompleteV2068() {
+      const authorizedV2068 = normalizeName(getAuthorizedTeam() || '');
+      if (!authorizedV2068) return false;
+
+      const leaderRowV2068 = Array.isArray(lastLeaderboardRows)
+        ? lastLeaderboardRows.find(row => normalizeName(row && row.team) === authorizedV2068)
+        : null;
+      if (leaderRowV2068 && Number(leaderRowV2068.thru) === 18) return true;
+
+      if (selectedTeam && normalizeName(selectedTeam.name) === authorizedV2068 &&
+          validCompleteScoresV2068(localScores)) {
+        return true;
+      }
+
+      const teamV2068 = Array.isArray(teams)
+        ? teams.find(item => normalizeName(item && item.name) === authorizedV2068)
+        : null;
+      return !!(teamV2068 && validCompleteScoresV2068(teamV2068.scores));
+    }
+
+    function geekEarlyAccessAvailableV2068() {
+      return !!(
+        !tournamentIsComplete(lastLeaderboardRows) &&
+        geekAuthorizedTeamCompleteV2068()
+      );
+    }
+
     async function fetchGeekEvidenceSnapshotV1921() {
       try {
         const response = await fetch(
@@ -25513,7 +25629,7 @@ let scoreTimingDetail =
 
     function installGeekCopyButtonV180b() {
       const box = els.modalBox;
-      if (!box || !geekDiagnosticActiveV180b) return;
+      if (!box || !geekDiagnosticActiveV180b || geekEarlyAccessV2068) return;
       const existing = box.querySelector('.geek-copy-v180b');
       if (existing) existing.remove();
 
@@ -26577,23 +26693,29 @@ let scoreTimingDetail =
           '</div>';
 
         stats.forEach(stat => {
-          const label = geekTeamLabelV180(stat);
-          const isTie = Array.isArray(stat && stat.teams) && stat.teams.length > 1;
-          const singleOwnerV1929 = Array.isArray(stat && stat.teams) && stat.teams.length === 1;
+          const earlyV2068 = geekEarlyAccessV2068;
+          const label = earlyV2068 ? '—' : geekTeamLabelV180(stat);
+          const isTie = !earlyV2068 && Array.isArray(stat && stat.teams) && stat.teams.length > 1;
+          const singleOwnerV1929 = !earlyV2068 && Array.isArray(stat && stat.teams) && stat.teams.length === 1;
           const tone = geekStatToneV186(stat && stat.stat);
           const usResultV1813 = geekAuthorizedResultV1813(stat);
-          const usValueV1813 = geekMainValueV1813(stat, usResultV1813);
-          const allValueV1813 = geekMainValueV1813(stat, stat);
-          const ownsBestV1814 = geekOwnsStatV180(stat);
+          const usValueV1813 = earlyV2068 && geekFieldDependentStatV2068(stat && stat.stat)
+            ? 'TBD'
+            : geekMainValueV1813(stat, usResultV1813);
+          const allValueV1813 = earlyV2068 ? '—' : geekMainValueV1813(stat, stat);
+          const ownsBestV1814 = !earlyV2068 && geekOwnsStatV180(stat);
           const sourceCategory = category;
           const encodedCategory = encodeURIComponent(sourceCategory);
           const encodedStat = encodeURIComponent(String(stat.stat || ''));
+          const rowInteractionV2068 = earlyV2068
+            ? ''
+            : ' role="button" tabindex="0"' +
+              ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
+              ' data-geek-stat="' + escapeHtml(encodedStat) + '"';
 
           html +=
             '<div class="geek-row-v180 stat' + (ownsBestV1814 ? ' geek-ours-v1814' : '') + '"' +
-              ' role="button" tabindex="0"' +
-              ' data-geek-category="' + escapeHtml(encodedCategory) + '"' +
-              ' data-geek-stat="' + escapeHtml(encodedStat) + '">' +
+              rowInteractionV2068 + '>' +
               '<div class="geek-cell-v180 geek-stat-cell-v180">' +
                 '<span class="geek-class-dot-v186 ' + escapeHtml(tone) + '" aria-hidden="true"></span>' +
                 '<span class="geek-stat-label-v186">' + escapeHtml(String(stat.stat || '').toUpperCase()) + '</span>' +
@@ -26630,15 +26752,17 @@ let scoreTimingDetail =
         }
       };
 
-      scroll.querySelectorAll('.geek-row-v180.stat').forEach(row => {
-        row.addEventListener('click', () => openDetailFromRow(row));
-        row.addEventListener('keydown', event => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            openDetailFromRow(row);
-          }
+      if (!geekEarlyAccessV2068) {
+        scroll.querySelectorAll('.geek-row-v180.stat').forEach(row => {
+          row.addEventListener('click', () => openDetailFromRow(row));
+          row.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              openDetailFromRow(row);
+            }
+          });
         });
-      });
+      }
 
       requestAnimationFrame(fitGeekRowsV180);
     }
@@ -26871,6 +26995,7 @@ let scoreTimingDetail =
     }
 
     function openGeekFromSummaryV2054() {
+      geekEarlyAccessV2068 = false;
       postPlayReturnDestinationV2054 = 'summary';
       return openGeekModeV180();
     }
@@ -26881,6 +27006,7 @@ let scoreTimingDetail =
     }
 
     function openGeekFromHomeMenuV2054() {
+      geekEarlyAccessV2068 = geekEarlyAccessAvailableV2068();
       postPlayReturnDestinationV2054 = 'home';
       return openGeekModeV180();
     }
@@ -26893,12 +27019,15 @@ let scoreTimingDetail =
 
     function renderGeekMainShellV180() {
       els.modalOverlay.classList.add('geek-mode-v180');
+      els.modalOverlay.classList.toggle('geek-early-v2068', geekEarlyAccessV2068);
       els.modalTitle.textContent = 'GEEK MODE';
       els.modalTitle.classList.remove('testing');
       els.modalInput.style.display = 'none';
 
       els.modalBody.innerHTML =
-        '<div class="geek-helper-v1919">TAP TO SEE DETAILS</div>' +
+        '<div class="geek-helper-v1919">' +
+          (geekEarlyAccessV2068 ? 'YOUR STATS • FIELD TBD' : 'TAP TO SEE DETAILS') +
+        '</div>' +
         '<div class="geek-main-v180">' +
           '<div class="geek-table-shell-v180">' +
             '<div class="geek-row-v180 header">' +
@@ -30021,6 +30150,7 @@ let scoreTimingDetail =
           'game-mode-results-v2026',
           'game-hole-info-v2026',
           'geek-mode-v180',
+          'geek-early-v2068',
           'geek-detail-v180',
           'score-save-warning',
           'welcome-competitor-v1985'
@@ -31494,6 +31624,8 @@ let scoreTimingDetail =
         document.documentElement.classList.remove(
           'sshcp-pre-scorecard',
           'sshcp-pre-leaderboard',
+          'sshcp-pre-scorecard-pwa-v2068',
+          'sshcp-pre-leaderboard-pwa-v2068',
           'sshcp-pre-home-v1976',
           'sshcp-pre-complete'
         );
@@ -31697,10 +31829,19 @@ let scoreTimingDetail =
       scorecard.textContent = 'SCORECARD - ' + (team || 'SELECT TEAM');
 
       var complete = tournamentCompleteV2054();
+      var geekEarlyReadyV2068 = false;
+      if (!complete) {
+        try {
+          geekEarlyReadyV2068 = typeof geekAuthorizedTeamCompleteV2068 === 'function' &&
+            geekAuthorizedTeamCompleteV2068();
+        } catch (_) {}
+      }
+
       leaderboard.textContent = complete ? 'LEADERBOARD - FINAL' : 'LIVE LEADERBOARD';
       setDisabledV2054(summary, !complete);
-      setDisabledV2054(geek, !complete);
+      setDisabledV2054(geek, !(complete || geekEarlyReadyV2068));
       setDisabledV2054(game, !complete);
+      geek.classList.toggle('early-ready-v2068', !!geekEarlyReadyV2068);
 
       if (typeof fitTextToBoxV5 === 'function') {
         requestAnimationFrame(function(){
