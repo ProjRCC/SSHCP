@@ -1,12 +1,11 @@
-<!-- SSHCP | BASE KEY: 20.94-M7Q3RV | BUILD KEY: 20.95-K4V8QN -->
-<!-- SSHCP V20.95 — TEST build from exact V20.94.
-     Scorecard bottom-boundary preservation only, plus the approved presentation timings.
-     When V20.94 whole-pixel row sizing temporarily releases/reapplies the Scorecard viewport,
-     an already-bottomed card now remains pinned to the exact recalculated bottom immediately;
-     returning from Leaderboard after Hole 18 therefore requires no corrective NESR scroll.
-     Scorecard row geometry, NESR rules/beauty-scroll, V20.93 Leaderboard geometry, CLEAR .10s,
-     scoring, audit/data, navigation, after-play/Quick Guide presentation, and Worker behavior
-     otherwise remain unchanged. -->
+<!-- SSHCP | BASE KEY: 20.95-K4V8QN | BUILD KEY: 20.96-R6M2QX -->
+<!-- SSHCP V20.96 — TEST build from exact V20.95.
+     After-play curtain color only. Summary / Tie Break / GEEK / GEEK Detail / Game / Skins
+     keep their established black viewport surrounds, but the universal full-screen Group 3
+     reveal curtain is now solid white instead of black so shorter fades do not read as a
+     harsh black flash. Approved timings remain .30 / .70 / .60 / .80 / .80 / .10.
+     Scorecard/Leaderboard geometry, NESR/beauty-scroll, CLEAR, scoring, audit/data, navigation,
+     popup geometry/content, Quick Guide presentation, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,24 +13,24 @@
 
   <script>
     /* =========================================================
-       SSHCP V20.95 — TIMING TEST PANEL
+       SSHCP V20.96 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
        1A = HOME full-screen white curtain
        1B = HOME middle/action-area white curtain
        2  = SCORECARD + LEADERBOARD full-screen white curtain
-       3  = ALL AFTER-PLAY full-screen black curtains
+       3  = ALL AFTER-PLAY full-screen white curtains
             (Summary / Tie Break / GEEK / GEEK Detail / Game / Skins)
        4  = QUICK GUIDE full-screen white curtain
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
-      FADE_1A_HOME_FULL: 0.25,
+      FADE_1A_HOME_FULL: 0.30,
       FADE_1B_HOME_MIDDLE: 0.70,
       FADE_2_SCORECARD_LEADERBOARD: 0.60,
-      FADE_3_AFTER_PLAY: 0.30,
-      FADE_4_QUICK_GUIDE: 0.30,
+      FADE_3_AFTER_PLAY: 0.80,
+      FADE_4_QUICK_GUIDE: 0.80,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -9463,7 +9462,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 }
 /* SSHCP V20.89 — 1B HOME middle/action reveal timing comes from the top panel. */
 .sshcp-data-reveal-shield-v177.sshcp-home-reveal-v1985{
-  transition:opacity var(--sshcp-fade-1b-home-middle,1s) ease-out!important;
+  transition:opacity var(--sshcp-fade-1b-home-middle,.7s) ease-out!important;
 }
 
 .sshcp-data-reveal-shield-v177.is-revealing-v177{
@@ -9481,7 +9480,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
   background:#fff!important;
   z-index:4790!important;
-  transition:opacity var(--sshcp-fade-1a-home-full,.4s) ease-out!important;
+  transition:opacity var(--sshcp-fade-1a-home-full,.3s) ease-out!important;
 }
 /* SSHCP V20.89 — group 2 Scorecard / Leaderboard timing comes from the top
    panel. Existing reveal promises remain the gate, so NESR scrolling and
@@ -14452,8 +14451,9 @@ body.team-info-open-v2032{
 </style>
 
 <style id="sshcp-v2086-postplay-curtain">
-/* SSHCP V20.86 — one after-play visual world: black surround plus one
-   viewport-sized black curtain. Popup dimensions never participate in the reveal. */
+/* SSHCP V20.96 — preserve the established black after-play surround, but use one
+   viewport-sized WHITE curtain so shorter Group 3 fades do not read as a black flash.
+   Popup dimensions never participate in the reveal. */
 .modal-overlay.tournament-summary,
 .modal-overlay.tournament-result,
 .modal-overlay.geek-mode-v180,
@@ -14479,11 +14479,11 @@ body.team-info-open-v2032{
   max-height:98dvh!important;
 }
 
-/* SSHCP V20.89 — group 3 after-play timing comes from the top panel. */
+/* SSHCP V20.96 — group 3 timing still comes from the top panel; curtain is white. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086{
-  background:#000!important;
+  background:#fff!important;
   border-radius:0!important;
-  transition:opacity var(--sshcp-fade-3-after-play,1.2s) ease-out!important;
+  transition:opacity var(--sshcp-fade-3-after-play,.8s) ease-out!important;
 }
 
 /* SSHCP V20.89 — Group 4 QUICK GUIDE presentation.
@@ -14645,7 +14645,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.95</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.96</span></span>
         </button>
 
       </div>
@@ -21284,13 +21284,13 @@ let scoreTimingDetail =
       });
     }
 
-    /* SSHCP V20.86 — universal after-play reveal. The curtain owns the viewport,
-       never the popup rectangle, so data-driven popup height is irrelevant. */
+    /* SSHCP V20.96 — universal after-play reveal remains viewport-owned, but
+       the reveal curtain is WHITE while the established destination surrounds stay black. */
     function beginAfterPlayCurtainV2086(key) {
       const shield = beginDataRevealShieldV177(
         key,
         [],
-        '#000',
+        '#fff',
         true,
         6300
       );
