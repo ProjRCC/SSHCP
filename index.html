@@ -1,10 +1,9 @@
-<!-- SSHCP | BASE KEY: 20.81-P6M3VX | BUILD KEY: 20.82-Q4V7MN -->
-<!-- SSHCP V20.82 — TEST build from exact V20.81.
-     Control Center only: remove manual GEEK DETAIL AUDIT button; automatically
-     run the established Geek audit after a successful visible GEEK MODE load
-     and attach it to the matching RESULT test; COPY LOG - X RESULTS now copies
-     the full Control Center log followed by the accumulated RESULT LOG; place
-     that combined-result button above the unchanged viewport metrics box. -->
+<!-- SSHCP | BASE KEY: 20.82-Q4V7MN | BUILD KEY: 20.83-K7N4QX -->
+<!-- SSHCP V20.83 — TEST build from exact V20.82 GOLDEN.
+     Scorecard CLEAR only: remove the historical 0.6s CLEAR visual-focus hold.
+     The newly recalculated NESR formats immediately from the local blank while
+     CLEAR remains stationary and the existing Worker save/readback verification
+     path remains authoritative. ENTER timing/scroll behavior is unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14543,7 +14542,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.82</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.83</span></span>
         </button>
 
       </div>
@@ -15743,10 +15742,10 @@ body.team-info-open-v2032{
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
 
-    /* V18.38 — CLEAR focus cadence. Multiple rapid CLEAR actions restart this
-       single 0.6s timer, so the visible NESR cue / Blue score-box outline do
-       not jump around while scores are being cleared quickly. Saves still start
-       immediately; only the visual focus waits. */
+    /* V18.38 historical CLEAR focus cadence. V20.83 no longer invokes this
+       0.6s hold from CLEAR; the helpers remain only as compatibility/reset state
+       for older layered code paths. Current CLEAR formats the recalculated NESR
+       immediately and never auto-scrolls. */
     const CLEAR_FOCUS_VISUAL_DELAY_V1836 = 600;
     let clearVisualHoldActiveV1836 = false;
     let clearVisualHoldHoleIndexV1836 = null;
@@ -23098,21 +23097,24 @@ let scoreTimingDetail =
         localScores[stateIndex] === state.value
       ));
 
-      /* V18.35 — while a fresh ENTER is traveling / waiting its NESR handoff,
-         keep the prior current-hole cue in place. V18.38 preserves the same concept
-         for CLEAR: rapid clears hold the currently displayed focus for 0.6s,
-         then catch up once to the true NESR. */
-      const heldClearHoleIndexV1836 = (
-        clearVisualHoldActiveV1836 &&
-        Number.isInteger(clearVisualHoldHoleIndexV1836)
-      ) ? clearVisualHoldHoleIndexV1836 : null;
+      /* V20.83 — ENTER keeps the established V18.35 pending/verified NESR
+         handoff. CLEAR is now the opposite of the old V18.38 hold: the local
+         blank becomes NESR immediately, with its normal HOLE cue and Blue
+         score-box outline, while the viewport stays stationary. A pending clear
+         is identified only when the current local NESR is blank but that same
+         slot is still nonblank in savedScores. */
+      const immediateClearNesrV2083 = (
+        Number.isInteger(localNextHoleIndexV1834) &&
+        localScores[localNextHoleIndexV1834] === null &&
+        savedScores[localNextHoleIndexV1834] !== null &&
+        savedScores[localNextHoleIndexV1834] !== undefined &&
+        savedScores[localNextHoleIndexV1834] !== ''
+      );
 
-      const nextHoleIndex = heldClearHoleIndexV1836 !== null
-        ? heldClearHoleIndexV1836
-        : (holdNextHoleVisualV1834
-          ? visualNextHoleIndexV1834
-          : localNextHoleIndexV1834);
-      const showVerifiedNextHoleBorder = heldClearHoleIndexV1836 !== null
+      const nextHoleIndex = holdNextHoleVisualV1834
+        ? visualNextHoleIndexV1834
+        : localNextHoleIndexV1834;
+      const showVerifiedNextHoleBorder = immediateClearNesrV2083
         ? true
         : (
           !holdNextHoleVisualV1834 &&
@@ -23814,7 +23816,10 @@ let scoreTimingDetail =
         raw === ''
       ) {
 
-        beginClearVisualHoldV1836();
+        /* V20.83 — CLEAR immediately hands visual ownership to the newly
+           recalculated NESR. The historical 0.6s focus hold is explicitly
+           released before the local blank is rendered. */
+        resetClearVisualHoldV1836();
 
         localScores[
           index
@@ -23869,7 +23874,10 @@ let scoreTimingDetail =
         value === 0
       ) {
 
-        beginClearVisualHoldV1836();
+        /* V20.83 — CLEAR immediately hands visual ownership to the newly
+           recalculated NESR. The historical 0.6s focus hold is explicitly
+           released before the local blank is rendered. */
+        resetClearVisualHoldV1836();
 
         localScores[
           index
@@ -23994,11 +24002,11 @@ let scoreTimingDetail =
       ) {
 
         /*
-          SSHCP V18.38 — ENTER keeps the V18.35 NESR motion / timing: a real
+          SSHCP V20.83 — ENTER keeps the V18.35 NESR motion / timing: a real
           NESR scroll releases formatting 0.1s after it settles; a no-scroll
-          ENTER also waits 0.1s. CLEAR never scrolls and uses the restartable 0.6s
-          visual-focus hold started at commit time. Backend verification remains
-          authoritative and can roll optimistic Blue back on failure.
+          ENTER also waits 0.1s. CLEAR never scrolls, but its newly recalculated
+          NESR formats immediately from the local blank. Backend verification
+          remains authoritative.
         */
         if (!commitResult.cleared) {
           const visualStateV1834 = scoreVisualStateV1619[commitResult.index];
@@ -24017,9 +24025,8 @@ let scoreTimingDetail =
             );
           });
         } else {
-          /* CLEAR stays stationary. Its 0.6s visual-focus hold was started by
-             commitScoreEntryValue() before the local blank render, so multiple
-             rapid clears simply restart one shared timer. */
+          /* V20.83 — CLEAR stays stationary. The local blank already rendered
+             the true NESR immediately; cancel any ENTER beauty scroll only. */
           clearScoreVisualStateV1619(commitResult.index);
           cancelScoreEnterBeautyScrollV1618();
         }
