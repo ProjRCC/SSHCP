@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 20.77-M6R9QK | BUILD KEY: 20.78-R7K3MV -->
+<!-- SSHCP | BASE KEY: 20.78-R7K3MV | BUILD KEY: 20.79-H4Q7VN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9431,12 +9431,12 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   z-index:6100!important;
   background:#000!important;
 }
-/* SSHCP V20.78 — HOME full-screen layer fades in parallel for .5s, while
-   the mutable-zone HOME curtain completes at .8s. Welcome remains unchanged. */
+/* SSHCP V20.79 — HOME full-screen layer fades in parallel for .2s, while
+   the mutable-zone HOME curtain remains .8s. Welcome remains unchanged. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
   background:#fff!important;
   z-index:4790!important;
-  transition:opacity .5s ease-out!important;
+  transition:opacity .2s ease-out!important;
 }
 /* SSHCP V20.73 — Scorecard / Leaderboard keep V20.69's one full-screen
    white curtain, but reveal over .8s. HOME and popup/after-event transitions
@@ -12468,9 +12468,16 @@ button.sshcp-button-pressed-v172{
 .quick-guide-fake-button-v2050.gray-v2050{
   background:var(--sshcp-gray-5-v1850,#666666);
 }
+/* SSHCP V20.79 — VISUAL CUES descriptions keep the current Quick Guide
+   curved target size, but never wrap. JS below shrinks each description only
+   when its own available width requires it. Geometry and all other guide text
+   remain unchanged. */
 .quick-guide-legend-copy-v2050{
   min-width:0;
   line-height:1.08;
+  white-space:nowrap;
+  overflow:hidden;
+  text-align:left;
 }
 
 /* SSHCP V18.54 — CC Gray +1 and running-score contrast/alignment only. */
@@ -14519,7 +14526,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.78</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.79</span></span>
         </button>
 
       </div>
@@ -20360,7 +20367,7 @@ let scoreTimingDetail =
       }
 
 
-      /* V20.78 — arm the .5s full-screen layer before switching views so the
+      /* V20.79 — arm the .2s full-screen layer before switching views so the
          old page cannot flash while HOME becomes active. The HOME middle
          curtain remains above it and completes at .8s. */
       const homeFullRevealShieldV1986 = useHomeFullRevealV1986
@@ -20433,8 +20440,8 @@ let scoreTimingDetail =
         document.documentElement.classList.remove('sshcp-pre-home-full-v1987');
       }
 
-      /* V20.78 — reveal both HOME curtains from the same settled layout frame.
-         The full-screen layer completes at .5s and the mutable-zone layer at
+      /* V20.79 — reveal both HOME curtains from the same settled layout frame.
+         The full-screen layer completes at .2s and the mutable-zone layer at
          .8s. Welcome -> HOME has no full layer and remains unchanged. */
       await Promise.all([
         revealDataShieldAfterLayoutV177(
@@ -20595,12 +20602,12 @@ let scoreTimingDetail =
 
         shield.addEventListener('transitionend', onTransitionEnd);
         shield.classList.add('is-revealing-v177');
-        /* SSHCP V20.78 — HOME now uses .8s middle / .5s full-screen reveals.
+        /* SSHCP V20.79 — HOME uses .8s middle / .2s full-screen reveals.
            Scorecard and Leaderboard remain .8s. Keep each fallback just beyond
            its opacity transition; every other reveal keeps the 560ms fallback. */
         const revealFallbackMsV2078 =
           key === 'home' ? 860 :
-          key === 'home-full-v1986' ? 560 :
+          key === 'home-full-v1986' ? 260 :
           (key === 'scorecard' || key === 'leaderboard') ? 860 :
           560;
         window.setTimeout(finish, revealFallbackMsV2078);
@@ -30115,6 +30122,51 @@ let scoreTimingDetail =
       return size;
     }
 
+    /* SSHCP V20.79 — VISUAL CUES descriptions only. Start each row at the
+       inherited V20.77/V20.78 curved Quick Guide text target, then shrink that
+       individual description only when necessary to keep it on one line. */
+    function fitQuickGuideVisualCueCopyV2079() {
+      const copies = Array.from(
+        els.modalBody.querySelectorAll('.quick-guide-legend-copy-v2050')
+      );
+      if (!copies.length) return false;
+
+      let fittedAny = false;
+      copies.forEach(copy => {
+        copy.style.removeProperty('font-size');
+        copy.style.setProperty('white-space', 'nowrap', 'important');
+        copy.style.setProperty('overflow', 'hidden', 'important');
+        copy.style.setProperty('text-align', 'left', 'important');
+
+        const targetPx = parseFloat(getComputedStyle(copy).fontSize) || 1;
+        copy.style.setProperty('font-size', targetPx + 'px', 'important');
+
+        const available = copy.clientWidth;
+        if (!(available > 0)) return;
+
+        let size = targetPx;
+        const minimum = Math.max(8, targetPx * 0.70);
+        while (size > minimum && copy.scrollWidth > available + 0.5) {
+          size = Math.max(minimum, size - 0.25);
+          copy.style.setProperty('font-size', size + 'px', 'important');
+        }
+        fittedAny = true;
+      });
+      return fittedAny;
+    }
+
+    function scheduleQuickGuideVisualCueFitV2079() {
+      let attempts = 0;
+      const apply = () => {
+        attempts += 1;
+        const ok = fitQuickGuideVisualCueCopyV2079();
+        if ((!ok || attempts < 2) && attempts < 8 && els.modalOverlay.classList.contains('open')) {
+          requestAnimationFrame(apply);
+        }
+      };
+      requestAnimationFrame(apply);
+    }
+
     function fitQuickGuideButtonTextV1971(button, targetPx) {
       if (!button || !(targetPx > 0)) return null;
 
@@ -30332,6 +30384,7 @@ let scoreTimingDetail =
           );
 
         wireQuickGuideProgressV2050();
+        scheduleQuickGuideVisualCueFitV2079();
 
         /* V19.77 — keep the established 60%-of-button-height GOT IT target,
            but let the button expand to its content before fitting. The former
@@ -30382,7 +30435,7 @@ let scoreTimingDetail =
           async () => {
             /* V19.89 — HOME Quick Guide is a real HOME return presentation.
                Re-enter HOME through showHome() so it receives the same
-               full-screen .6s + middle 1.0s double-curtain reveal as every
+               full-screen .2s + middle .8s double-curtain reveal as every
                other non-Welcome HOME return. Quick Guide opened from any
                other page still closes normally and does not alter that page. */
             if (currentView === 'home') {
@@ -30425,6 +30478,7 @@ let scoreTimingDetail =
         );
 
       wireQuickGuideProgressV2050();
+      scheduleQuickGuideVisualCueFitV2079();
       scheduleQuickGuideFooterFitV1971(leaderboard, back, scorecard);
 
     }
