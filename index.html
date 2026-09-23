@@ -1,10 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.00-H5R8NV | BUILD KEY: 21.01-N4Q7RV -->
-<!-- SSHCP V21.01 — TEST build from exact V21.00.
-     Presentation-only refinement. Summary / Tie Break / GEEK / GEEK Detail / Game / Skins
-     return to the centralized app accent blue #133362. QUICK GUIDE remains black and all
-     full-screen reveal curtains remain white. The Scramble Summary outer black card border
-     is removed; internal table borders and Summary geometry remain unchanged. Approved
-     timings (.30 / .70 / .60 / .80 / .80 / .10), scoring, audit/data, and Worker remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.01-N4Q7RV | BUILD KEY: 21.02-M8Q4TK -->
+<!-- SSHCP V21.02 — TEST build from exact V21.01.
+     Presentation-only surround color test. Summary / Tie Break / GEEK / GEEK Detail /
+     Game / Skins and QUICK GUIDE now use Gray 8 #2C2C2C as their permanent surrounds.
+     All full-screen reveal curtains remain white. The Scramble Summary outer border stays
+     removed; internal table borders and geometry remain unchanged. Approved timings
+     (.30 / .70 / .60 / .80 / .80 / .10), scoring, audit/data, and Worker remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +12,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V21.01 — TIMING TEST PANEL
+       SSHCP V21.02 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -11968,6 +11968,7 @@ body.team-qr-locked #scorecardView .score-table-head{
   --sshcp-gray-4-v1852:#a6a6a6;
   --sshcp-gray-5-v1850:#666666;
   --sshcp-gray-7-v1851:#444444;
+  --sshcp-gray-8-v2102:#2C2C2C;
   --sshcp-gray-9-v1850:#141414;
 
   
@@ -14450,7 +14451,7 @@ body.team-info-open-v2032{
 </style>
 
 <style id="sshcp-v2086-postplay-curtain">
-/* SSHCP V21.01 — after-play popup surrounds return to centralized app Blue (#133362),
+/* SSHCP V21.02 — after-play popup surrounds use Gray 8 (#2C2C2C),
    while the viewport-sized reveal curtain remains WHITE so shorter Group 3 fades stay soft.
    Popup dimensions never participate in the reveal. */
 .modal-overlay.tournament-summary,
@@ -14459,13 +14460,13 @@ body.team-info-open-v2032{
 .modal-overlay.geek-detail-v180,
 .modal-overlay.game-mode-results-v2026,
 .modal-overlay.skins-results-v1627{
-  background:var(--accent)!important;
+  background:var(--sshcp-gray-8-v2102,#2C2C2C)!important;
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important;
 }
 
-/* Summary remains the established 98 × 98 shell on every viewport; V21.01 removes
-   only the outer black card border so the white card meets the Blue surround cleanly. */
+/* Summary remains the established 98 × 98 shell on every viewport; V21.01 removed
+   only the outer black card border so the white card meets the surround cleanly. */
 .modal-overlay.tournament-summary .modal-box{
   width:min(98vw,760px)!important;
   height:98dvh!important;
@@ -14487,9 +14488,9 @@ body.team-info-open-v2032{
   transition:opacity var(--sshcp-fade-3-after-play,.8s) ease-out!important;
 }
 
-/* SSHCP V21.01 — Group 4 QUICK GUIDE keeps its white reveal curtain and black permanent surround. */
+/* SSHCP V21.02 — Group 4 QUICK GUIDE keeps its white reveal curtain and uses the same Gray 8 permanent surround. */
 .modal-overlay.quick-guide{
-  background:#000!important;
+  background:var(--sshcp-gray-8-v2102,#2C2C2C)!important;
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important;
 }
@@ -14645,7 +14646,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.01</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.02</span></span>
         </button>
 
       </div>
