@@ -1,10 +1,10 @@
-<!-- SSHCP | BASE KEY: 20.98-C7N4QW | BUILD KEY: 20.99-B6Q2RM -->
-<!-- SSHCP V20.99 — TEST build from exact V20.98.
-     Presentation-only surround color update. All established after-play popup surrounds
-     (Summary / Tie Break / GEEK / GEEK Detail / Game / Skins) now use the centralized
-     accent blue #133362 instead of black, while QUICK GUIDE uses a black surround.
-     Full-screen reveal curtains remain white. Geometry, content, navigation, timings
-     (.30 / .70 / .60 / .80 / .80 / .10), scoring, audit/data, and Worker remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.00-H5R8NV | BUILD KEY: 21.01-N4Q7RV -->
+<!-- SSHCP V21.01 — TEST build from exact V21.00.
+     Presentation-only refinement. Summary / Tie Break / GEEK / GEEK Detail / Game / Skins
+     return to the centralized app accent blue #133362. QUICK GUIDE remains black and all
+     full-screen reveal curtains remain white. The Scramble Summary outer black card border
+     is removed; internal table borders and Summary geometry remain unchanged. Approved
+     timings (.30 / .70 / .60 / .80 / .80 / .10), scoring, audit/data, and Worker remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +12,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V20.99 — TIMING TEST PANEL
+       SSHCP V21.01 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -14450,8 +14450,8 @@ body.team-info-open-v2032{
 </style>
 
 <style id="sshcp-v2086-postplay-curtain">
-/* SSHCP V20.99 — after-play popup surrounds use the centralized accent blue, while the
-   viewport-sized reveal curtain remains WHITE so shorter Group 3 fades stay soft.
+/* SSHCP V21.01 — after-play popup surrounds return to centralized app Blue (#133362),
+   while the viewport-sized reveal curtain remains WHITE so shorter Group 3 fades stay soft.
    Popup dimensions never participate in the reveal. */
 .modal-overlay.tournament-summary,
 .modal-overlay.tournament-result,
@@ -14464,11 +14464,13 @@ body.team-info-open-v2032{
   -webkit-backdrop-filter:none!important;
 }
 
-/* Summary remains the established 98 × 98 shell on every viewport. */
+/* Summary remains the established 98 × 98 shell on every viewport; V21.01 removes
+   only the outer black card border so the white card meets the Blue surround cleanly. */
 .modal-overlay.tournament-summary .modal-box{
   width:min(98vw,760px)!important;
   height:98dvh!important;
   max-height:98dvh!important;
+  border:0!important;
 }
 
 /* GEEK main remains the established 98 × 98 shell. */
@@ -14485,8 +14487,7 @@ body.team-info-open-v2032{
   transition:opacity var(--sshcp-fade-3-after-play,.8s) ease-out!important;
 }
 
-/* SSHCP V20.99 — Group 4 QUICK GUIDE keeps its white reveal curtain but now uses a
-   black permanent surround so after-play blue remains visually distinct. */
+/* SSHCP V21.01 — Group 4 QUICK GUIDE keeps its white reveal curtain and black permanent surround. */
 .modal-overlay.quick-guide{
   background:#000!important;
   backdrop-filter:none!important;
@@ -14644,7 +14645,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.97</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.01</span></span>
         </button>
 
       </div>
