@@ -1,9 +1,9 @@
-<!-- SSHCP | BASE KEY: 20.99-B6Q2RM | BUILD KEY: 21.00-H5R8NV -->
-<!-- SSHCP V21.00 — TEST build from exact V20.99.
-     Presentation-only after-play surround color test. Summary / Tie Break / GEEK /
-     GEEK Detail / Game / Skins now use the established Antique Gold token #8A6414.
-     QUICK GUIDE keeps its black surround and all full-screen reveal curtains remain white.
-     The app accent remains #133362. Geometry, content, navigation, approved timings
+<!-- SSHCP | BASE KEY: 20.98-C7N4QW | BUILD KEY: 20.99-B6Q2RM -->
+<!-- SSHCP V20.99 — TEST build from exact V20.98.
+     Presentation-only surround color update. All established after-play popup surrounds
+     (Summary / Tie Break / GEEK / GEEK Detail / Game / Skins) now use the centralized
+     accent blue #133362 instead of black, while QUICK GUIDE uses a black surround.
+     Full-screen reveal curtains remain white. Geometry, content, navigation, timings
      (.30 / .70 / .60 / .80 / .80 / .10), scoring, audit/data, and Worker remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
@@ -12,7 +12,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V21.00 — TIMING TEST PANEL
+       SSHCP V20.99 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -14450,16 +14450,16 @@ body.team-info-open-v2032{
 </style>
 
 <style id="sshcp-v2086-postplay-curtain">
-/* SSHCP V21.00 — after-play popup surrounds use the established Antique Gold token
-   (#8A6414), while the viewport-sized reveal curtain remains WHITE so shorter Group 3
-   fades stay soft. Popup dimensions never participate in the reveal. */
+/* SSHCP V20.99 — after-play popup surrounds use the centralized accent blue, while the
+   viewport-sized reveal curtain remains WHITE so shorter Group 3 fades stay soft.
+   Popup dimensions never participate in the reveal. */
 .modal-overlay.tournament-summary,
 .modal-overlay.tournament-result,
 .modal-overlay.geek-mode-v180,
 .modal-overlay.geek-detail-v180,
 .modal-overlay.game-mode-results-v2026,
 .modal-overlay.skins-results-v1627{
-  background:var(--sshcp-after-play-primary-v2043,#8A6414)!important;
+  background:var(--accent)!important;
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important;
 }
@@ -14485,8 +14485,8 @@ body.team-info-open-v2032{
   transition:opacity var(--sshcp-fade-3-after-play,.8s) ease-out!important;
 }
 
-/* SSHCP V21.00 — Group 4 QUICK GUIDE keeps its white reveal curtain and black
-   permanent surround so the Antique Gold after-play family remains visually distinct. */
+/* SSHCP V20.99 — Group 4 QUICK GUIDE keeps its white reveal curtain but now uses a
+   black permanent surround so after-play blue remains visually distinct. */
 .modal-overlay.quick-guide{
   background:#000!important;
   backdrop-filter:none!important;
@@ -14644,7 +14644,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.00</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V20.97</span></span>
         </button>
 
       </div>
