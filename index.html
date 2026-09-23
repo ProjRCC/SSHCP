@@ -1,10 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.01-N4Q7RV | BUILD KEY: 21.02-M8Q4TK -->
-<!-- SSHCP V21.02 — TEST build from exact V21.01.
-     Presentation-only surround color test. Summary / Tie Break / GEEK / GEEK Detail /
-     Game / Skins and QUICK GUIDE now use Gray 8 #2C2C2C as their permanent surrounds.
-     All full-screen reveal curtains remain white. The Scramble Summary outer border stays
-     removed; internal table borders and geometry remain unchanged. Approved timings
-     (.30 / .70 / .60 / .80 / .80 / .10), scoring, audit/data, and Worker remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.02-M8Q4TK | BUILD KEY: 21.03-Q7N4VK -->
+<!-- SSHCP V21.03 — TEST build from exact V21.02.
+     Scorecard/Leaderboard footer-gap matching only. For <=8 teams, Leaderboard rows now
+     round to the nearest whole-pixel height (up or down); the resulting table-to-button
+     gap becomes the authoritative target. Scorecard then chooses one whole-pixel height
+     for all 9 visible rows that lands as close as mathematically possible to that target.
+     Buttons/headers remain fixed; 9+ Leaderboard scrolling, NESR, Gray 8 surrounds,
+     timings (.30 / .70 / .60 / .80 / .80 / .10), scoring, audit/data, and Worker remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +13,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V21.02 — TIMING TEST PANEL
+       SSHCP V21.03 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -26,10 +27,10 @@
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
       FADE_1A_HOME_FULL: 0.30,
-      FADE_1B_HOME_MIDDLE: 0.60,
+      FADE_1B_HOME_MIDDLE: 0.70,
       FADE_2_SCORECARD_LEADERBOARD: 0.60,
-      FADE_3_AFTER_PLAY: 0.40,
-      FADE_4_QUICK_GUIDE: 0.40,
+      FADE_3_AFTER_PLAY: 0.80,
+      FADE_4_QUICK_GUIDE: 0.80,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -14646,7 +14647,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.02</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.03</span></span>
         </button>
 
       </div>
@@ -23081,26 +23082,41 @@ let scoreTimingDetail =
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
 
-      /* V20.94: the live Scorecard scroll viewport is the authoritative row
-         budget. Exactly nine visible rows share one whole-pixel height. Any
-         0–8px remainder moves into the existing table-to-footer buffer; the
-         fixed LEADERBOARD button remains in exactly the same position. */
+      /* SSHCP V21.03 — Scorecard keeps exactly nine equal whole-pixel rows,
+         but no longer always floors them. The <=8-team Leaderboard owns the
+         visual table-to-button gap target. Scorecard picks the whole-pixel row
+         height that lands closest to that target; before Leaderboard has been
+         measured, its normal shell gap is the target. Buttons stay fixed. */
       const scoreViewportHeightV2094 = Math.max(
         9,
         Math.round(els.scoreScroll.clientHeight || 0)
       );
-      const rowHeight = Math.max(1, Math.floor(scoreViewportHeightV2094 / 9));
+      const baseFooterGapV2094 = Math.max(
+        0,
+        Number(geometry.vars && geometry.vars['--v16-score-table-footer-gap']) || 0
+      );
+      const nominalLeaderGapV2103 = Math.max(
+        0,
+        Number(geometry.vars && geometry.vars['--v16-leader-table-footer-gap']) || baseFooterGapV2094
+      );
+      const measuredLeaderGapV2103 = Number(window.SSHCP_LEADER_FOOTER_TARGET_GAP_V2103);
+      const targetFooterGapV2103 = Number.isFinite(measuredLeaderGapV2103)
+        ? Math.max(0, measuredLeaderGapV2103)
+        : nominalLeaderGapV2103;
+      const idealScoreRowHeightV2103 = (
+        scoreViewportHeightV2094 + baseFooterGapV2094 - targetFooterGapV2103
+      ) / 9;
+      const rowHeight = Math.max(1, Math.round(idealScoreRowHeightV2103));
       const rowsHeightV2094 = rowHeight * 9;
-      const remainderV2094 = Math.max(0, scoreViewportHeightV2094 - rowsHeightV2094);
+      const scoreFooterGapV2103 = Math.max(
+        0,
+        baseFooterGapV2094 + scoreViewportHeightV2094 - rowsHeightV2094
+      );
       const scoreScrollChromeV2094 = Math.max(
         0,
         Math.round(els.scoreScroll.getBoundingClientRect().height - els.scoreScroll.clientHeight)
       );
       const scoreScrollOuterHeightV2094 = rowsHeightV2094 + scoreScrollChromeV2094;
-      const baseFooterGapV2094 = Math.max(
-        0,
-        Number(geometry.vars && geometry.vars['--v16-score-table-footer-gap']) || 0
-      );
 
       els.scoreScroll.style.setProperty('flex', '0 0 ' + scoreScrollOuterHeightV2094 + 'px', 'important');
       els.scoreScroll.style.setProperty('height', scoreScrollOuterHeightV2094 + 'px', 'important');
@@ -23108,7 +23124,7 @@ let scoreTimingDetail =
       els.scoreScroll.style.setProperty('max-height', scoreScrollOuterHeightV2094 + 'px', 'important');
       bottom.style.setProperty(
         'padding-top',
-        (baseFooterGapV2094 + remainderV2094) + 'px',
+        scoreFooterGapV2103 + 'px',
         'important'
       );
 
@@ -30517,14 +30533,15 @@ let scoreTimingDetail =
       const shortLeaderboardV2093 = actualTeamCountV2093 <= 8;
 
       /* V18.9: Scorecard and Leaderboard share the same fixed 46px TABLE HEADER
-         baseline. V20.93 changes ONLY <=8-team remainder ownership: rows use one
-         identical whole-pixel height, and any leftover pixels move into the
-         existing table-to-footer buffer. 9+ keeps the established distributed
-         8-row viewport so the scrollable Leaderboard behavior does not change. */
+         baseline. SSHCP V21.03 keeps <=8-team rows identical whole pixels, but
+         rounds the row height to the nearest integer instead of always flooring.
+         The resulting footer gap (larger or smaller by only the rounding delta)
+         becomes the Scorecard target. 9+ keeps the established distributed
+         8-row viewport so scrollable Leaderboard behavior does not change. */
       const headerHeight = geometry.sharedV187
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
-      const rowHeightInitial = Math.max(1, Math.floor((Math.max(rowCount, Math.round(tableBudget - headerHeight))) / rowCount));
+      const rowHeightInitial = Math.max(1, Math.round((Math.max(rowCount, Math.round(tableBudget - headerHeight))) / rowCount));
 
       els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
       els.leaderContent.style.setProperty('--leader-row-height', rowHeightInitial + 'px');
@@ -30535,36 +30552,46 @@ let scoreTimingDetail =
         let leaderRowPixelsV188;
         let rowHeight;
 
+        const baseFooterGapV2093 = Math.max(
+          0,
+          Number(geometry.vars && geometry.vars['--v16-leader-table-footer-gap']) || 0
+        );
+
         if (shortLeaderboardV2093) {
-          rowHeight = Math.max(1, Math.floor(actualViewportHeight / rowCount));
+          rowHeight = Math.max(1, Math.round(actualViewportHeight / rowCount));
           const rowsHeightV2093 = rowHeight * rowCount;
-          const remainderV2093 = Math.max(0, actualViewportHeight - rowsHeightV2093);
+          const leaderFooterGapV2103 = Math.max(
+            0,
+            baseFooterGapV2093 + actualViewportHeight - rowsHeightV2093
+          );
           const contentChromeV2093 = Math.max(
             0,
             Math.round(els.leaderContent.getBoundingClientRect().height - els.leaderContent.clientHeight)
           );
           const contentOuterHeightV2093 = rowsHeightV2093 + contentChromeV2093;
-          const baseFooterGapV2093 = Math.max(
-            0,
-            Number(geometry.vars && geometry.vars['--v16-leader-table-footer-gap']) || 0
-          );
 
           leaderRowPixelsV188 = Array(rowCount).fill(rowHeight);
+          window.SSHCP_LEADER_FOOTER_TARGET_GAP_V2103 = leaderFooterGapV2103;
 
-          /* Shrink the <=8-team table by only the integer remainder and give
-             those exact pixels to the existing footer buffer. Example:
-             481px / 8 = eight 60px rows + 1px added to the buffer. */
+          /* V21.03: nearest-integer rows may make the table a few pixels shorter
+             OR taller than the flexible viewport. The footer gap absorbs the
+             opposite delta so the fixed buttons never move. The resulting
+             Leaderboard gap is the target used by the nine-row Scorecard. */
           els.leaderContent.style.setProperty('flex', '0 0 ' + contentOuterHeightV2093 + 'px', 'important');
           els.leaderContent.style.setProperty('height', contentOuterHeightV2093 + 'px', 'important');
           els.leaderContent.style.setProperty('min-height', contentOuterHeightV2093 + 'px', 'important');
           els.leaderContent.style.setProperty('max-height', contentOuterHeightV2093 + 'px', 'important');
           footer.style.setProperty(
             'padding-top',
-            (baseFooterGapV2093 + remainderV2093) + 'px',
+            leaderFooterGapV2103 + 'px',
             'important'
           );
         }
         else {
+          /* 9+ behavior remains untouched; its established shell gap is the
+             Scorecard comparison target because the scrolling row distribution
+             is intentionally unchanged. */
+          window.SSHCP_LEADER_FOOTER_TARGET_GAP_V2103 = baseFooterGapV2093;
           leaderRowPixelsV188 = distributeIntegerPixelsV188(actualViewportHeight, rowCount);
           rowHeight = leaderRowPixelsV188.reduce((sum, value) => sum + value, 0) / rowCount;
         }
