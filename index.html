@@ -1,13 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.23-N6R4QX | BUILD KEY: 21.24-L8Q5RV -->
-<!-- SSHCP V21.24 — TEST build from exact V21.23.
-     Horizontal refinement only. The shared Scorecard / Leaderboard / Scramble Summary / GEEK MODE / GAME MODE gutter
-     changes from 18px to 16px; every custom rail remains 4px wide and centered in its actual gutter, which yields 6px
-     clear to the table at a normal 16px gutter while preserving the existing 5px minimum-clearance rule. FINAL RESULTS
-     now explicitly applies the shared gutter to its scrolling rows and footer/final-action outer edges so the entire
-     after-play Leaderboard stays aligned with its table header. GAME MODE's decorative 2px popup border is removed and
-     its popup padding now uses the same visible 16px gutter as Summary. All vertical geometry, rounded-corner rail
-     starts/stops, thumb math, scrolling, scoring/audits/log semantics, tournament logic, timings, Skins, GEEK, QR/auth,
-     Scramble Mode, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.24-L8Q5RV | BUILD KEY: 21.25-M7Q4VX -->
+<!-- SSHCP V21.25 — TEST build from exact V21.24.
+     Two surgical fixes only: (1) GEEK MODE progress rail receives a 2px outward/left visual nudge so the 4px rail
+     is visually centered in the established 16px left gutter; no table/button/gutter/vertical geometry changes.
+     (2) NESR empty next-score press protection now also recognizes the temporary V19.81 entry-cue state, keeping
+     the score box transparent with a black border while physically pressed instead of allowing the global light-button
+     handler to flash white. Existing NESR timing, reveal, verification, scrolling, scoring logic, and all other V21.24
+     geometry/behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13085,7 +13083,9 @@ body.team-qr-locked #homeScorecardAccess .home-scorecard-main{
    Keep the box transparent; Blue border becomes black only while physically pressed.
    V19.44 also protects this rule inside the global literal-button JS press handler. */
 #scorecardView .score-button.empty.active-hole-score:active,
-#scorecardView .score-button.empty.active-hole-score.sshcp-button-pressed-v172{
+#scorecardView .score-button.empty.active-hole-score.sshcp-button-pressed-v172,
+#scorecardView .score-button.empty[data-entry-score-cue-v1981="1"]:active,
+#scorecardView .score-button.empty[data-entry-score-cue-v1981="1"].sshcp-button-pressed-v172{
   background:transparent!important;
   border-color:#000!important;
   box-shadow:none!important;
@@ -15033,7 +15033,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.24</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.25</span></span>
         </button>
 
       </div>
@@ -31853,7 +31853,9 @@ let scoreTimingDetail =
       );
       const maxCenterFromTablePx = Math.max(railWidthPx / 2, gutterPx - (railWidthPx / 2));
       const centerFromTablePx = Math.min(targetCenterFromTablePx, maxCenterFromTablePx);
-      const leftPx = shellRect.left - boxRect.left - centerFromTablePx;
+      /* V21.25 — GEEK-only 2px outward visual nudge. The established 16px
+         gutter, 4px rail width, and all vertical rail geometry remain unchanged. */
+      const leftPx = shellRect.left - boxRect.left - centerFromTablePx - 2;
 
       const shellStyle = window.getComputedStyle(shell);
       const bottomRadiusPx = Math.max(0,
@@ -32604,7 +32606,10 @@ let scoreTimingDetail =
          border black while the finger is physically down. */
       const nesrEmptyScorePressV1944 = !!(
         button.matches &&
-        button.matches('#scorecardView .score-button.empty.active-hole-score')
+        button.matches(
+          '#scorecardView .score-button.empty.active-hole-score,' +
+          '#scorecardView .score-button.empty[data-entry-score-cue-v1981="1"]'
+        )
       );
       const pressBg = nesrEmptyScorePressV1944 ? 'transparent' : (darkPress ? gray9 : '#fff');
       const pressFg = nesrEmptyScorePressV1944 ? computed.color : (darkPress ? '#fff' : '#000');
