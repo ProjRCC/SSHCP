@@ -1,8 +1,8 @@
-<!-- SSHCP | BASE KEY: 21.11-F8M2QZ | BUILD KEY: 21.12-N4T8QX -->
-<!-- SSHCP V21.12 — TEST build from exact V21.11.
-     Scorecard custom progress-rail test only. The native/browser Scorecard scrollbar is hidden and a
-     5px custom rail matching the Quick Guide visual is centered directly on the Scorecard table body's
-     right border. Its Blue thumb represents the visible nine-hole window (50% of an 18-hole card) and
+<!-- SSHCP | BASE KEY: 21.12-N4T8QX | BUILD KEY: 21.13-R6L4KP -->
+<!-- SSHCP V21.13 — TEST build from exact V21.12.
+     Scorecard custom progress-rail refinement only. The native/browser Scorecard scrollbar remains hidden and the
+     5px custom rail is now fully contained inside the Scorecard table body, with its RIGHT EDGE aligned to the
+     table's exact right border. Its Blue thumb represents the visible nine-hole window (50% of an 18-hole card) and
      moves with the actual Scorecard scroll position. V21.11 Quick Guide positioning and V21.10 guide
      content centering remain unchanged. V21.08 GOLDEN scoring/audits/log semantics/tournament logic,
      timings, Skins, GEEK, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
@@ -14392,7 +14392,7 @@ body.team-info-open-v2032{
 .quick-guide-progress-v2050.anchor-scorecard-v2110{
   left:var(--quick-guide-progress-left-v2110,auto)!important;
   right:auto!important;
-  transform:translateX(-50%)!important;
+  transform:none!important;
 }
 .modal-overlay.quick-guide.quick-guide-normal-v2110 .modal-text{
   padding-right:0!important;
@@ -14401,10 +14401,11 @@ body.team-info-open-v2032{
   padding-right:0!important;
 }
 
-/* V21.12 — Scorecard-only custom scroll progress. The native indicator is
-   suppressed; this 5px rail is measured onto the exact outer right border of
-   the Scorecard body. The thumb is the visible 9-hole window and travels with
-   the real scoreScroll position. */
+/* V21.13 — Scorecard-only custom scroll progress refinement. The native
+   indicator remains suppressed; this 5px rail is fully contained INSIDE the
+   Scorecard body so its right edge sits on the table's exact right border.
+   The thumb is the visible 9-hole window and travels with the real
+   scoreScroll position. */
 #scorecardView .score-scroll{
   scrollbar-width:none!important;
   -ms-overflow-style:none!important;
@@ -14735,7 +14736,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.12</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.13</span></span>
         </button>
 
       </div>
@@ -31341,9 +31342,11 @@ let scoreTimingDetail =
       const scrollRect = scroller.getBoundingClientRect();
       if (!(scrollRect.width > 0) || !(scrollRect.height > 0)) return;
 
-      /* Match the Quick Guide's 2px top/bottom inset while centering the rail
-         itself on the Scorecard body's exact outer right border. */
-      const leftPx = scrollRect.right - screenRect.left;
+      /* Match the Quick Guide's 2px top/bottom inset, but keep the entire
+         5px rail INSIDE the Scorecard body so its right edge lands exactly on
+         the Scorecard table's right border. */
+      const railWidthPx = 5;
+      const leftPx = scrollRect.right - screenRect.left - railWidthPx;
       const topPx = scrollRect.top - screenRect.top + 2;
       const railHeightPx = Math.max(0, scrollRect.height - 4);
 
