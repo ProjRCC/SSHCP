@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.24-L8Q5RV | BUILD KEY: 21.25-M7Q4VX -->
-<!-- SSHCP V21.25 — TEST build from exact V21.24.
-     Two surgical fixes only: (1) GEEK MODE progress rail receives a 2px outward/left visual nudge so the 4px rail
-     is visually centered in the established 16px left gutter; no table/button/gutter/vertical geometry changes.
-     (2) NESR empty next-score press protection now also recognizes the temporary V19.81 entry-cue state, keeping
-     the score box transparent with a black border while physically pressed instead of allowing the global light-button
-     handler to flash white. Existing NESR timing, reveal, verification, scrolling, scoring logic, and all other V21.24
-     geometry/behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.25-M7Q4VX | BUILD KEY: 21.26-P6R3QK -->
+<!-- SSHCP V21.26 — TEST build from exact V21.25.
+     After-play popup shell cleanup only. Outer popup borders and shell shadows are removed from Scramble Summary,
+     tie/result, GEEK MODE, GEEK Detail, GAME MODE, and Skins result popups. GEEK MODE returns to true midpoint rail
+     math (the V21.25 2px visual nudge is removed) and its horizontal content padding returns to the full shared 16px
+     gutter now that the decorative 2px border is gone. NESR transparent/black-border press protection from V21.25,
+     all vertical rail start/stop rules, thumb math, table/button geometry, scoring logic, timings, and Worker behavior
+     remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14904,6 +14904,26 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 </style>
 
+
+<style id="sshcp-v2126-afterplay-shells">
+/* SSHCP V21.26 — no decorative outer border/shadow on after-play popup shells.
+   Internal table/cell borders are intentionally untouched. */
+.modal-overlay.tournament-summary .modal-box,
+.modal-overlay.tournament-result .modal-box,
+.modal-overlay.geek-mode-v180 .modal-box,
+.modal-overlay.geek-detail-v180 .modal-box,
+.modal-overlay.game-mode-results-v2026 .modal-box,
+.modal-overlay.skins-results-v1627 .modal-box{
+  border:0!important;
+  box-shadow:none!important;
+}
+/* GEEK no longer needs the V21.24 14px border-compensation padding. Preserve
+   the shared visible 16px after-play gutter directly from the borderless shell. */
+.modal-overlay.geek-mode-v180 .modal-box{
+  padding-left:var(--sshcp-shared-gutter-v2123)!important;
+  padding-right:var(--sshcp-shared-gutter-v2123)!important;
+}
+</style>
 </head>
 
 
@@ -15033,7 +15053,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.25</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.26</span></span>
         </button>
 
       </div>
@@ -31853,9 +31873,9 @@ let scoreTimingDetail =
       );
       const maxCenterFromTablePx = Math.max(railWidthPx / 2, gutterPx - (railWidthPx / 2));
       const centerFromTablePx = Math.min(targetCenterFromTablePx, maxCenterFromTablePx);
-      /* V21.25 — GEEK-only 2px outward visual nudge. The established 16px
-         gutter, 4px rail width, and all vertical rail geometry remain unchanged. */
-      const leftPx = shellRect.left - boxRect.left - centerFromTablePx - 2;
+      /* V21.26 — with the decorative GEEK popup border removed, use the true
+         shared-lane midpoint with no visual nudge. */
+      const leftPx = shellRect.left - boxRect.left - centerFromTablePx;
 
       const shellStyle = window.getComputedStyle(shell);
       const bottomRadiusPx = Math.max(0,
