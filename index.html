@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 21.13-R6L4KP | BUILD KEY: 21.14-P5M8QK -->
-<!-- SSHCP V21.14 — TEST build from exact V21.13.
-     Scorecard progress-rail position refinement only. The native/browser Scorecard scrollbar remains hidden. The
-     existing 5px custom rail now sits OUTSIDE the LEFT edge of the Scorecard table beside the HOLE column. Its
-     center is placed midway through the available left gutter, but never more than 5px from the table edge on wider
-     screens. The rail still follows the real Scorecard scroll position, and its bottom now stops exactly where the
-     table's lower corner radius begins. V21.13/V21.12 scorecard progress behavior, V21.11 Quick Guide positioning,
-     V21.10 guide content centering, and V21.08 GOLDEN scoring/audits/log semantics/tournament logic, timings, Skins,
-     GEEK, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.14-P5M8QK | BUILD KEY: 21.15-T7Q3MV -->
+<!-- SSHCP V21.15 — TEST build from exact V21.14.
+     Progress-rail refinement only. Scorecard keeps the 5px rail outside the LEFT table edge beside HOLE, now with
+     a preferred 3px table gap but never farther outward than the midpoint of the available left gutter. Scorecard
+     thumb size/travel and lower-radius stop remain unchanged. Leaderboard now uses the same 5px custom rail/thumb,
+     with its native scrollbar hidden and Blue thumb length equal to 8 visible teams / total rendered teams
+     (10 teams = 80%, 16 = 50%, 36 = 22.22%). The Leaderboard thumb follows actual scroll position. Quick Guide,
+     scoring/audits/log semantics/tournament logic, timings, Skins, GEEK, QR/auth, Scramble Mode, and Worker behavior
+     remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12434,6 +12434,54 @@ button.sshcp-button-pressed-v172{
   height:100%!important;
 }
 
+/* V21.15 — Leaderboard custom scroll progress. Use the same 5px visual as
+   Scorecard. Native/browser scrollbar is hidden. The rail sits outside the LEFT
+   table edge with the same table-gap/midpoint rule; the Blue thumb represents
+   eight visible teams divided by total rendered teams and follows real scroll. */
+#leaderboardView .leaderboard-screen{
+  position:relative!important;
+}
+#leaderboardView .leader-content{
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+}
+#leaderboardView .leader-content::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+  display:none!important;
+  background:transparent!important;
+}
+#leaderboardView .leader-content::-webkit-scrollbar-thumb{
+  background:transparent!important;
+}
+#leaderboardView .leader-progress-v2115{
+  position:absolute!important;
+  left:var(--leader-progress-left-v2115,auto)!important;
+  top:var(--leader-progress-top-v2115,0px)!important;
+  width:5px!important;
+  height:var(--leader-progress-height-v2115,0px)!important;
+  transform:translateX(-50%)!important;
+  border-radius:999px!important;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+  z-index:85!important;
+  opacity:1!important;
+}
+#leaderboardView .leader-progress-thumb-v2115{
+  position:absolute!important;
+  left:0!important;
+  top:var(--leader-progress-thumb-top-v2115,0%)!important;
+  width:100%!important;
+  height:var(--leader-progress-thumb-size-v2115,100%)!important;
+  min-height:18px!important;
+  max-height:100%!important;
+  border-radius:999px!important;
+  background:var(--accent)!important;
+  transition:top .06s linear,height .08s linear,opacity .15s ease!important;
+  opacity:.92!important;
+}
+
 .quick-guide-legend-v2050{
   margin-top:2px;
   padding-top:12px;
@@ -14737,7 +14785,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.14</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.15</span></span>
         </button>
 
       </div>
@@ -15071,6 +15119,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         </div>
 
+      </div>
+
+
+      <div id="leaderProgressV2115" class="leader-progress-v2115" aria-hidden="true">
+        <div class="leader-progress-thumb-v2115"></div>
       </div>
 
 
@@ -29998,6 +30051,10 @@ let scoreTimingDetail =
 
       sizeLeaderboardRows();
       requestAnimationFrame(() => {
+        updateLeaderboardProgressV2115();
+        requestAnimationFrame(updateLeaderboardProgressV2115);
+      });
+      requestAnimationFrame(() => {
         if (!els.leaderContent) return;
         const maxScroll = Math.max(0, els.leaderContent.scrollHeight - els.leaderContent.clientHeight);
         const rowHeight = parseFloat(
@@ -30819,6 +30876,7 @@ let scoreTimingDetail =
         if (screen.classList.contains('tournament-complete')) {
           positionCompletedFinalAction();
         }
+        updateLeaderboardProgressV2115();
       });
     }
 
@@ -31343,14 +31401,17 @@ let scoreTimingDetail =
       const scrollRect = scroller.getBoundingClientRect();
       if (!(scrollRect.width > 0) || !(scrollRect.height > 0)) return;
 
-      /* V21.14: place the rail OUTSIDE the LEFT table edge beside the HOLE
-         column. Use the midpoint of the available left gutter, but cap the
-         table-edge offset at 5px on wider layouts. Keep the established 2px
-         top inset. At the bottom, stop exactly where the table's lower corner
-         radius begins instead of running through the rounded corner. */
+      /* V21.15: keep the rail OUTSIDE the LEFT table edge beside HOLE.
+         Prefer a small 3px clear gap from the table, but never let the rail's
+         CENTER travel farther outward than the midpoint of the available gutter.
+         This keeps the rail visually attached to the table on wide layouts while
+         protecting narrow layouts from pushing it too close to the screen edge. */
+      const railWidthPx = 5;
+      const desiredTableGapPx = 3;
       const gutterPx = Math.max(0, scrollRect.left - screenRect.left);
-      const tableEdgeOffsetPx = Math.min(gutterPx / 2, 5);
-      const leftPx = scrollRect.left - screenRect.left - tableEdgeOffsetPx;
+      const maxGapAtMidpointPx = Math.max(0, (gutterPx / 2) - (railWidthPx / 2));
+      const tableGapPx = Math.min(desiredTableGapPx, maxGapAtMidpointPx);
+      const leftPx = scrollRect.left - screenRect.left - tableGapPx - (railWidthPx / 2);
       const topInsetPx = 2;
       const computedScrollStyle = window.getComputedStyle(scroller);
       const bottomRadiusPx = Math.max(0,
@@ -31406,6 +31467,81 @@ let scoreTimingDetail =
         const observer = new ResizeObserver(update);
         observer.observe(els.scoreScroll);
         if (els.scoreRows) observer.observe(els.scoreRows);
+      }
+
+      requestAnimationFrame(() => {
+        update();
+        requestAnimationFrame(update);
+      });
+    }
+
+    function updateLeaderboardProgressV2115() {
+      const screen = els.leaderboardView
+        ? els.leaderboardView.querySelector('.leaderboard-screen')
+        : null;
+      const scroller = els.leaderContent;
+      const rail = document.getElementById('leaderProgressV2115');
+      const thumb = rail
+        ? rail.querySelector('.leader-progress-thumb-v2115')
+        : null;
+
+      if (!screen || !scroller || !rail || !thumb) return;
+      if (currentView !== 'leaderboard') return;
+
+      const screenRect = screen.getBoundingClientRect();
+      const scrollRect = scroller.getBoundingClientRect();
+      if (!(scrollRect.width > 0) || !(scrollRect.height > 0)) return;
+
+      const railWidthPx = 5;
+      const desiredTableGapPx = 3;
+      const gutterPx = Math.max(0, scrollRect.left - screenRect.left);
+      const maxGapAtMidpointPx = Math.max(0, (gutterPx / 2) - (railWidthPx / 2));
+      const tableGapPx = Math.min(desiredTableGapPx, maxGapAtMidpointPx);
+      const leftPx = scrollRect.left - screenRect.left - tableGapPx - (railWidthPx / 2);
+      const topInsetPx = 2;
+      const computedScrollStyle = window.getComputedStyle(scroller);
+      const bottomRadiusPx = Math.max(0,
+        parseFloat(computedScrollStyle.borderBottomLeftRadius) ||
+        parseFloat(computedScrollStyle.borderBottomRightRadius) || 0
+      );
+      const topPx = scrollRect.top - screenRect.top + topInsetPx;
+      const railHeightPx = Math.max(0, scrollRect.height - topInsetPx - bottomRadiusPx);
+
+      rail.style.setProperty('--leader-progress-left-v2115', leftPx.toFixed(2) + 'px');
+      rail.style.setProperty('--leader-progress-top-v2115', topPx.toFixed(2) + 'px');
+      rail.style.setProperty('--leader-progress-height-v2115', railHeightPx.toFixed(2) + 'px');
+
+      const totalRows = Math.max(1, els.leaderRows ? els.leaderRows.children.length : 1);
+      const visibleRows = Math.min(8, totalRows);
+      const sizePct = Math.max(0, Math.min(100, (visibleRows / totalRows) * 100));
+
+      const client = scroller.clientHeight;
+      const scroll = scroller.scrollHeight;
+      const max = Math.max(0, scroll - client);
+      const travelPct = 100 - sizePct;
+      const ratio = max > 1
+        ? Math.max(0, Math.min(1, scroller.scrollTop / max))
+        : 0;
+      const topPct = travelPct * ratio;
+
+      rail.style.setProperty('--leader-progress-thumb-size-v2115', sizePct.toFixed(2) + '%');
+      rail.style.setProperty('--leader-progress-thumb-top-v2115', topPct.toFixed(2) + '%');
+    }
+
+    function wireLeaderboardProgressV2115() {
+      if (!els.leaderContent || !document.getElementById('leaderProgressV2115')) return;
+
+      const update = () => updateLeaderboardProgressV2115();
+      els.leaderContent.addEventListener('scroll', update, { passive:true });
+      window.addEventListener('resize', update, { passive:true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', update, { passive:true });
+      }
+
+      if (window.ResizeObserver) {
+        const observer = new ResizeObserver(update);
+        observer.observe(els.leaderContent);
+        if (els.leaderRows) observer.observe(els.leaderRows);
       }
 
       requestAnimationFrame(() => {
@@ -32460,6 +32596,7 @@ let scoreTimingDetail =
       );
 
     wireScorecardProgressV2112();
+    wireLeaderboardProgressV2115();
 
 
     els.leaderContent
