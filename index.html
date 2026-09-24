@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.02-M8Q4TK | BUILD KEY: 21.03-Q7N4VK -->
-<!-- SSHCP V21.03 — TEST build from exact V21.02.
-     Scorecard/Leaderboard footer-gap matching only. For <=8 teams, Leaderboard rows now
-     round to the nearest whole-pixel height (up or down); the resulting table-to-button
-     gap becomes the authoritative target. Scorecard then chooses one whole-pixel height
-     for all 9 visible rows that lands as close as mathematically possible to that target.
-     Buttons/headers remain fixed; 9+ Leaderboard scrolling, NESR, Gray 8 surrounds,
-     timings (.30 / .70 / .60 / .80 / .80 / .10), scoring, audit/data, and Worker remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.03-Q7N4VK | BUILD KEY: 21.04-H6R9QM -->
+<!-- SSHCP V21.04 — TEST build from exact V21.03.
+     HOME tie-break entry only. When completed-round data has the same first-place tie
+     that makes FINAL RESULTS show its red TIE BREAK action, HOME now shows a matching
+     red TIE BREAK button directly above SCRAMBLE SUMMARY. The HOME button calls the exact
+     existing showTieBreakResult() path and disappears as soon as that per-device result
+     is viewed. V21.03 row/gap geometry, timings, scoring, ranking/tiebreak math, audit/data,
+     after-play presentation, QR/auth, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +13,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V21.03 — TIMING TEST PANEL
+       SSHCP V21.04 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -27,10 +27,10 @@
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
       FADE_1A_HOME_FULL: 0.30,
-      FADE_1B_HOME_MIDDLE: 0.60,
+      FADE_1B_HOME_MIDDLE: 0.70,
       FADE_2_SCORECARD_LEADERBOARD: 0.60,
-      FADE_3_AFTER_PLAY: 0.40,
-      FADE_4_QUICK_GUIDE: 0.40,
+      FADE_3_AFTER_PLAY: 0.80,
+      FADE_4_QUICK_GUIDE: 0.80,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -14518,6 +14518,63 @@ body.team-info-open-v2032{
 </style>
 
   <link rel="preload" as="image" href="teaminfo.jpg">
+
+<style id="sshcp-v2104-home-tiebreak">
+/* =========================================================
+   SSHCP V21.04 — HOME TIE BREAK ENTRY ONLY.
+   Mirrors the same existing per-device tie-break-view state as FINAL RESULTS.
+   No tie-break calculation, ranking, Summary, Scorecard, or Worker logic changes.
+   ========================================================= */
+#homeView #homeTieBreakButtonV2104{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:calc(
+    var(--v197-home-primary-bottom,221px) +
+    var(--v197-home-primary-h,60px) +
+    10px
+  )!important;
+  width:var(--v197-home-score-w,350px)!important;
+  min-width:var(--v197-home-score-w,350px)!important;
+  max-width:var(--v197-home-score-w,350px)!important;
+  height:var(--v197-home-primary-h,60px)!important;
+  min-height:var(--v197-home-primary-h,60px)!important;
+  max-height:var(--v197-home-primary-h,60px)!important;
+  margin:0 auto!important;
+  padding:0 10px!important;
+  box-sizing:border-box!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:0!important;
+  background:var(--red)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  outline:0!important;
+  box-shadow:none!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+html.sshcp-home-tiebreak-active-v2104 #homeView #homeTieBreakButtonV2104{
+  display:flex!important;
+}
+#homeView #homeTieBreakButtonV2104:active,
+#homeView #homeTieBreakButtonV2104.sshcp-button-pressed-v172{
+  background:var(--red)!important;
+  border:0!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+</style>
+
 </head>
 
 
@@ -14575,6 +14632,16 @@ body.team-info-open-v2032{
 
 
       <div class="home-actions">
+
+        <button
+          id="homeTieBreakButtonV2104"
+          class="home-main-button home-tiebreak-v2104"
+          type="button"
+          hidden
+          aria-hidden="true"
+        >
+          TIE BREAK
+        </button>
 
         <button
           id="homeLeaderboardButton"
@@ -14647,7 +14714,7 @@ body.team-info-open-v2032{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.03</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.04</span></span>
         </button>
 
       </div>
@@ -15442,6 +15509,9 @@ body.team-info-open-v2032{
 
       homeLeaderboardButton:
         document.getElementById('homeLeaderboardButton'),
+
+      homeTieBreakButtonV2104:
+        document.getElementById('homeTieBreakButtonV2104'),
 
       homeTeamArrowButton:
         document.getElementById('homeTeamArrowButton'),
@@ -20759,6 +20829,25 @@ let scoreTimingDetail =
         });
       }
 
+      if (
+        els.homeTieBreakButtonV2104 &&
+        !els.homeTieBreakButtonV2104.hidden
+      ) {
+        const h = els.homeTieBreakButtonV2104.getBoundingClientRect().height || 60;
+        fitTextToBoxV5(
+          els.homeTieBreakButtonV2104,
+          els.homeTieBreakButtonV2104,
+          h * 0.50,
+          10,
+          {
+            horizontalPad: 20,
+            verticalPad: 0,
+            wrap: false,
+            lineHeight: 1
+          }
+        );
+      }
+
       const guide = document.querySelector('#homeView .sshcp-home-guide-row .quick-guide-button');
       if (guide) {
         const h = guide.getBoundingClientRect().height || 44;
@@ -21150,7 +21239,14 @@ let scoreTimingDetail =
         if (!logoZone || !guide) return false;
         const logoRect = logoZone.getBoundingClientRect();
         const guideRect = guide.getBoundingClientRect();
-        top = Math.floor(logoRect.bottom);
+        const homeTieBreakV2104 = els.homeTieBreakButtonV2104 && !els.homeTieBreakButtonV2104.hidden
+          ? els.homeTieBreakButtonV2104.getBoundingClientRect()
+          : null;
+        top = Math.floor(
+          homeTieBreakV2104 && homeTieBreakV2104.height > 0
+            ? Math.min(logoRect.bottom, homeTieBreakV2104.top)
+            : logoRect.bottom
+        );
         const bottom = Math.ceil(guideRect.top);
         if (!(bottom > top)) return false;
         shield.style.left = '0px';
@@ -25256,6 +25352,36 @@ let scoreTimingDetail =
       requestAnimationFrame(fitHomeActionTypographyV197);
     }
 
+    /* SSHCP V21.04 — HOME mirrors only the established FINAL RESULTS red
+       TIE BREAK entry state. This is presentation/navigation only: the tie
+       calculation, viewed flag, and showTieBreakResult() remain authoritative. */
+    function homeTieBreakPendingV2104() {
+      return Boolean(
+        tournamentIsComplete(lastLeaderboardRows) &&
+        firstPlaceTiedRows(lastLeaderboardRows).length >= 2 &&
+        !hasViewedTournamentTieBreak()
+      );
+    }
+
+    function syncHomeTieBreakActionV2104() {
+      const pendingV2104 = homeTieBreakPendingV2104();
+
+      document.documentElement.classList.toggle(
+        'sshcp-home-tiebreak-active-v2104',
+        pendingV2104
+      );
+
+      if (els.homeTieBreakButtonV2104) {
+        els.homeTieBreakButtonV2104.hidden = !pendingV2104;
+        els.homeTieBreakButtonV2104.setAttribute(
+          'aria-hidden',
+          pendingV2104 ? 'false' : 'true'
+        );
+      }
+
+      requestAnimationFrame(fitHomeActionTypographyV197);
+    }
+
     /* SSHCP V20.78 — direct HOME refresh can prestart the same read in parallel
        with QR/auth validation. showHome() consumes this once; normal in-app HOME
        navigation leaves it null and retains the established fresh-read behavior. */
@@ -25299,6 +25425,7 @@ let scoreTimingDetail =
 
       const complete = tournamentIsComplete(lastLeaderboardRows);
       syncHomeTournamentCompleteV1630(complete);
+      syncHomeTieBreakActionV2104();
 
       sessionStorage.setItem(
         'sshcpTournamentComplete',
@@ -25401,6 +25528,7 @@ let scoreTimingDetail =
 
       markTournamentTieBreakViewed();
       setLeaderboardFinalAction('tournament-summary');
+      syncHomeTieBreakActionV2104();
 
       /* Re-render immediately so the revealed tiebreak result is reflected
          in FINAL RESULTS behind the result popup. */
@@ -31926,6 +32054,19 @@ let scoreTimingDetail =
         'click',
         openHomePrimaryV181
       );
+
+    if (els.homeTieBreakButtonV2104) {
+      els.homeTieBreakButtonV2104.addEventListener(
+        'click',
+        () => {
+          if (!homeTieBreakPendingV2104()) {
+            syncHomeTieBreakActionV2104();
+            return;
+          }
+          showTieBreakResult();
+        }
+      );
+    }
 
 
     async function waitForScoreSaveChainV182() {
