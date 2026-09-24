@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.26-P6R3QK | BUILD KEY: 21.27-B8N4QX -->
-<!-- SSHCP V21.27 — TEST build from exact V21.26 GOLDEN.
-     Custom progress-rail visibility only: Leaderboard hides its rail for 1-8 teams and shows it for 9+; Scramble
-     Summary hides its rail when the lower standings contain seven or fewer rows (10 teams or less) and shows it
-     only when additional lower rows require scrolling; GAME MODE shows its rail only when the combined SKINS +
-     GAMES content actually overflows its scrolling body. Scorecard and GEEK rail behavior are unchanged. Hidden
-     rails do not alter the shared 16px gutter, table geometry, vertical rail rules, thumb math, scoring logic, timings,
-     NESR behavior, or Worker behavior. -->
+<!-- SSHCP | BASE KEY: 21.27-B8N4QX | BUILD KEY: 21.28-N5R8QK -->
+<!-- SSHCP V21.28 — TEST build from exact V21.27.
+     Control Center viewport diagnostics only: replace the mixed boot/runtime two-line readout with a four-line
+     settled-device snapshot. The diagnostic now reports current view/mode, effective viewport/shell scale,
+     effective vertical geometry, spacing/rows, and actual capped widths for HOME / Scorecard / Leaderboard /
+     after-play popups. HOME completion and viewport resize events re-snapshot after a short settle debounce.
+     No Scorecard, Leaderboard, popup, scoring, NESR, GEEK, GAME, QR/auth, Worker/API, or Sheet behavior changes.
+     V21.27 progress-rail behavior is preserved unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11017,7 +11017,7 @@ body option{
   --cc-stack-top-v1824:7px;
   --cc-stack-gap-v1824:7px;
   --cc-utility-h-v1824:46px;
-  --cc-metrics-h-v1824:46px;
+  --cc-metrics-h-v1824:58px;
   --cc-check-h-v1824:46px;
   --cc-mode-h-v1824:46px;
   --cc-score-h-v1824:46px;
@@ -15053,7 +15053,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.27</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.28</span></span>
         </button>
 
       </div>
@@ -18308,31 +18308,61 @@ let scoreTimingDetail =
     }
 
 
-    function controlCenterViewportLineV188() {
-      const metrics = getVerticalMetricsV188();
-      const mult = Number(metrics.multiplier).toFixed(3);
-      const inner = Math.round(metrics.innerWidth) + '×' + Math.round(metrics.innerHeight);
-      const visual = Math.round(metrics.visualWidth) + '×' + Math.round(metrics.visualHeight);
-      const screenCss = Math.round(metrics.screenWidth) + '×' + Math.round(metrics.screenHeight);
-      const physical = Math.round(metrics.physicalShort) + '×' + Math.round(metrics.physicalLong);
-      return (
-        'INNER ' + inner +
-        ' • VISUAL ' + visual +
-        ' • SCREEN ' + screenCss +
-        ' • DPR ' + Number(metrics.dpr).toFixed(2) +
-        ' • PHYS≈' + physical +
-        ' • MULT\u00A0' + mult +
-        (metrics.isS25 ? ' • S25 BASE' : '')
+    /* =========================================================
+       SSHCP V21.28 — CONTROL CENTER SETTLED VIEWPORT DIAGNOSTIC
+       Diagnostic/presentation only. Do not mutate runtime geometry from here.
+       ========================================================= */
+    let controlCenterViewportSnapshotV2128 = null;
+    let controlCenterViewportSettleTimerV2128 = 0;
+
+    function controlCenterStandaloneV2128() {
+      return !!(
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        window.navigator.standalone === true
       );
     }
 
+    function controlCenterWidthTextV2128(value, maxValue) {
+      const numeric = Number(value);
+      const maximum = Number(maxValue);
+      if (!(numeric > 0) || !(maximum > 0)) return '—';
+      if (Math.abs(numeric - maximum) <= 0.55) {
+        const maxText = Number.isInteger(maximum)
+          ? String(Math.round(maximum))
+          : maximum.toFixed(1).replace(/\.0$/, '');
+        return maxText + ' MAX';
+      }
+      return String(Math.round(numeric));
+    }
 
-    function controlCenterGeometryLineV188() {
-      const root = getComputedStyle(document.documentElement);
-      const readPx = name => {
-        const value = parseFloat(root.getPropertyValue(name));
-        return Number.isFinite(value) ? Math.round(value) : null;
-      };
+    function controlCenterViewportSignatureV2128() {
+      const metrics = getVerticalMetricsV188();
+      const standalone = controlCenterStandaloneV2128();
+      const stableSvh = standalone ? getStandaloneSmallViewportHeightV2066() : 0;
+      return [
+        Math.round(metrics.innerWidth),
+        Math.round(metrics.innerHeight),
+        Math.round(metrics.visualWidth),
+        Math.round(metrics.visualHeight),
+        Math.round(stableSvh || 0),
+        standalone ? 1 : 0
+      ].join('|');
+    }
+
+    function buildControlCenterViewportSnapshotV2128(settled) {
+      const metrics = getVerticalMetricsV188();
+      const standalone = controlCenterStandaloneV2128();
+      const stableSvh = standalone ? getStandaloneSmallViewportHeightV2066() : 0;
+
+      const viewScale = Math.max(
+        0.70,
+        Math.min(1.30, Number(metrics.multiplier) || 1)
+      );
+      const shellScale = stableSvh > 0
+        ? Math.max(0.70, Math.min(1.30, stableSvh / V189_S25_VISUAL_VIEWPORT_H))
+        : viewScale;
+      const sy = value => Math.max(1, Math.round(Number(value) * shellScale));
+
       let remembered = {};
       try {
         remembered = JSON.parse(
@@ -18340,21 +18370,84 @@ let scoreTimingDetail =
         ) || {};
       } catch (_) {}
 
-      const parts = [
-        'NAV ' + (readPx('--v16-nav-h') ?? '—'),
-        'CTX ' + (readPx('--v16-context-h') ?? '—'),
-        'THEAD ' + (readPx('--v187-table-header-h') ?? '—'),
-        'FOOT ' + (readPx('--v16-footer-h') ?? '—'),
-        'GAP ' + (readPx('--v16-score-table-footer-gap') ?? '—') +
-          '/' + (readPx('--v16-bottom-gap') ?? '—')
-      ];
-      if (Number.isFinite(Number(remembered.scoreRow))) {
-        parts.push('SROW ' + Math.round(Number(remembered.scoreRow)));
-      }
-      if (Number.isFinite(Number(remembered.leaderRow))) {
-        parts.push('LROW ' + Math.round(Number(remembered.leaderRow)));
-      }
-      return parts.join(' • ');
+      const layoutWidth = Math.max(
+        1,
+        Number(document.documentElement && document.documentElement.clientWidth) ||
+        Number(metrics.innerWidth) ||
+        1
+      );
+      const fullPageWidth = Math.min(760, layoutWidth);
+      const afterPlayWidth = Math.min(744.8, layoutWidth * 0.98);
+
+      return {
+        settled: !!settled,
+        mode: standalone ? 'PWA' : 'WEB',
+        innerWidth: Math.round(metrics.innerWidth),
+        innerHeight: Math.round(metrics.innerHeight),
+        dpr: Number(metrics.dpr) || 1,
+        viewScale,
+        shellScale,
+        nav: sy(35),
+        context: sy(40),
+        header: sy(46),
+        footer: sy(50),
+        tableFooterGap: sy(12.24),
+        bottomGap: sy(12.24),
+        gutter: 16,
+        scoreRow: Number.isFinite(Number(remembered.scoreRow))
+          ? Math.round(Number(remembered.scoreRow))
+          : null,
+        leaderRow: Number.isFinite(Number(remembered.leaderRow))
+          ? Math.round(Number(remembered.leaderRow))
+          : null,
+        homeWidth: fullPageWidth,
+        scorecardWidth: fullPageWidth,
+        leaderboardWidth: fullPageWidth,
+        popupWidth: afterPlayWidth
+      };
+    }
+
+    function controlCenterViewportLineV188() {
+      const snap = controlCenterViewportSnapshotV2128 ||
+        buildControlCenterViewportSnapshotV2128(false);
+      return (
+        'VIEW ' + snap.innerWidth + '×' + snap.innerHeight +
+        ' • DPR ' + snap.dpr.toFixed(2) +
+        ' • ' + snap.mode +
+        ' • ' + (snap.settled ? 'SETTLED' : 'SETTLING')
+      );
+    }
+
+    function controlCenterGeometryLineV188() {
+      const snap = controlCenterViewportSnapshotV2128 ||
+        buildControlCenterViewportSnapshotV2128(false);
+
+      const scaleText = Math.abs(snap.viewScale - snap.shellScale) <= 0.002
+        ? ('SCALE ×' + snap.shellScale.toFixed(3))
+        : (
+            'SCALE V×' + snap.viewScale.toFixed(3) +
+            '/S×' + snap.shellScale.toFixed(3)
+          );
+
+      const rowText =
+        'S' + (snap.scoreRow ?? '—') +
+        '/L' + (snap.leaderRow ?? '—');
+
+      return [
+        scaleText +
+          ' • NAV ' + snap.nav +
+          ' • CTX ' + snap.context +
+          ' • HEAD ' + snap.header +
+          ' • FOOT ' + snap.footer,
+        'SPACE T→F ' + snap.tableFooterGap +
+          ' • BOTTOM ' + snap.bottomGap +
+          ' • GUTTER ' + snap.gutter +
+          ' • ROW ' + rowText,
+        'WIDTH WHP ' + controlCenterWidthTextV2128(snap.homeWidth, 760) +
+          ' • WSC ' + controlCenterWidthTextV2128(snap.scorecardWidth, 760) +
+          ' • WLB ' + controlCenterWidthTextV2128(snap.leaderboardWidth, 760) +
+          ' • WPUAP ' + controlCenterWidthTextV2128(snap.popupWidth, 744.8)
+      ].join('\n');
     }
 
     function updateControlCenterViewportMetricsV188() {
@@ -18362,6 +18455,40 @@ let scoreTimingDetail =
       els.controlCenterViewportMetricsV188.textContent =
         controlCenterViewportLineV188() + '\n' + controlCenterGeometryLineV188();
     }
+
+    function scheduleControlCenterViewportSnapshotV2128() {
+      window.clearTimeout(controlCenterViewportSettleTimerV2128);
+
+      controlCenterViewportSnapshotV2128 =
+        buildControlCenterViewportSnapshotV2128(false);
+      if (currentView === 'testlog') {
+        updateControlCenterViewportMetricsV188();
+      }
+
+      const signature = controlCenterViewportSignatureV2128();
+      controlCenterViewportSettleTimerV2128 = window.setTimeout(() => {
+        const nextSignature = controlCenterViewportSignatureV2128();
+        if (nextSignature !== signature) {
+          scheduleControlCenterViewportSnapshotV2128();
+          return;
+        }
+
+        controlCenterViewportSnapshotV2128 =
+          buildControlCenterViewportSnapshotV2128(true);
+        try {
+          sessionStorage.setItem(
+            'sshcpControlCenterViewportV2128',
+            JSON.stringify(controlCenterViewportSnapshotV2128)
+          );
+        } catch (_) {}
+
+        if (currentView === 'testlog') {
+          updateControlCenterViewportMetricsV188();
+          requestAnimationFrame(fitTestPageButtonText);
+        }
+      }, 260);
+    }
+
 
     /* =========================================================
        SSHCP V19.38 — GEEK DETAIL AUDIT
@@ -20162,6 +20289,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
+      scheduleControlCenterViewportSnapshotV2128();
       updateControlCenterViewportMetricsV188();
       /* TEST PAGE opening refreshes the CF QR directory once. Existing cached
          data remains immediately usable until the fresh result succeeds. */
@@ -21568,6 +21696,11 @@ let scoreTimingDetail =
           2
         )
       ]);
+
+      /* V21.28 — HOME is the normal project reset/refresh surface. Once its
+         current presentation has completed, debounce one fresh diagnostic
+         snapshot so Control Center reports the final viewport/shell authority. */
+      scheduleControlCenterViewportSnapshotV2128();
 
     }
 
@@ -32947,12 +33080,14 @@ let scoreTimingDetail =
     els.testDeleteAllButton.addEventListener('click', () => showTestScoreWarning('clear', 'all'));
 
     window.addEventListener('resize', () => {
+      scheduleControlCenterViewportSnapshotV2128();
       if (currentView === 'testlog') {
         updateControlCenterViewportMetricsV188();
       }
     }, { passive:true });
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', () => {
+        scheduleControlCenterViewportSnapshotV2128();
         if (currentView === 'testlog') {
           updateControlCenterViewportMetricsV188();
           requestAnimationFrame(fitTestPageButtonText);
@@ -33699,6 +33834,15 @@ let scoreTimingDetail =
       const rememberedView =
         getRememberedView();
       const restoreTeamsPopupV1626 = false; /* V18.40: Control Center TEAMS row retired. */
+      try {
+        const savedControlCenterSnapshotV2128 = JSON.parse(
+          sessionStorage.getItem('sshcpControlCenterViewportV2128') || 'null'
+        );
+        if (savedControlCenterSnapshotV2128 && typeof savedControlCenterSnapshotV2128 === 'object') {
+          controlCenterViewportSnapshotV2128 = savedControlCenterSnapshotV2128;
+        }
+      } catch (_) {}
+      scheduleControlCenterViewportSnapshotV2128();
       syncSharedGeometryV187();
       syncHomeTournamentCompleteV1630(
         sessionStorage.getItem('sshcpTournamentComplete') === '1'
