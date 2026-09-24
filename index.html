@@ -1,9 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.10-C7N5VX | BUILD KEY: 21.11-F8M2QZ -->
-<!-- SSHCP V21.11 — TEST build from exact V21.10.
-     Quick Guide progress-rail centerline test only. In the normal in-app Quick Guide, the CENTER of
-     the existing 5px progress rail is now anchored exactly on the rendered SCORECARD footer button's
-     right edge. V21.10's centered Quick Guide body, progress vertical geometry/thumb math, footer
-     geometry, Welcome/GOT IT guide, V21.08 GOLDEN scoring/audits/log semantics/tournament logic,
+<!-- SSHCP | BASE KEY: 21.11-F8M2QZ | BUILD KEY: 21.12-N4T8QX -->
+<!-- SSHCP V21.12 — TEST build from exact V21.11.
+     Scorecard custom progress-rail test only. The native/browser Scorecard scrollbar is hidden and a
+     5px custom rail matching the Quick Guide visual is centered directly on the Scorecard table body's
+     right border. Its Blue thumb represents the visible nine-hole window (50% of an 18-hole card) and
+     moves with the actual Scorecard scroll position. V21.11 Quick Guide positioning and V21.10 guide
+     content centering remain unchanged. V21.08 GOLDEN scoring/audits/log semantics/tournament logic,
      timings, Skins, GEEK, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
@@ -14399,6 +14400,58 @@ body.team-info-open-v2032{
 .modal-overlay.quick-guide.quick-guide-normal-v2110 .quick-guide-scroll-v2050{
   padding-right:0!important;
 }
+
+/* V21.12 — Scorecard-only custom scroll progress. The native indicator is
+   suppressed; this 5px rail is measured onto the exact outer right border of
+   the Scorecard body. The thumb is the visible 9-hole window and travels with
+   the real scoreScroll position. */
+#scorecardView .score-scroll{
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+}
+#scorecardView .score-scroll::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+  display:none!important;
+  background:transparent!important;
+}
+#scorecardView .score-scroll::-webkit-scrollbar-thumb{
+  background:transparent!important;
+}
+#scorecardView .score-progress-v2112{
+  position:absolute!important;
+  left:var(--score-progress-left-v2112,auto)!important;
+  top:var(--score-progress-top-v2112,0px)!important;
+  width:5px!important;
+  height:var(--score-progress-height-v2112,0px)!important;
+  transform:translateX(-50%)!important;
+  border-radius:999px!important;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+  z-index:85!important;
+  opacity:1!important;
+}
+#scorecardView .score-progress-thumb-v2112{
+  position:absolute!important;
+  left:0!important;
+  top:var(--score-progress-thumb-top-v2112,0%)!important;
+  width:100%!important;
+  height:var(--score-progress-thumb-size-v2112,50%)!important;
+  min-height:18px!important;
+  max-height:100%!important;
+  border-radius:999px!important;
+  background:var(--accent)!important;
+  transition:top .06s linear,height .08s linear,opacity .15s ease!important;
+  opacity:.92!important;
+}
+#scorecardView .score-progress-v2112.no-scroll-v2112{
+  opacity:.28!important;
+}
+#scorecardView .score-progress-v2112.no-scroll-v2112 .score-progress-thumb-v2112{
+  top:0!important;
+  height:100%!important;
+}
 .quick-guide-legend-v2050{
   margin-top:var(--v2074-qg-legend-mt,2px)!important;
   padding-top:var(--v2074-qg-legend-pad,12px)!important;
@@ -14682,7 +14735,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.11</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.12</span></span>
         </button>
 
       </div>
@@ -14855,6 +14908,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
           })();
         </script>
 
+      </div>
+
+      <div id="scoreProgressV2112" class="score-progress-v2112" aria-hidden="true">
+        <div class="score-progress-thumb-v2112"></div>
       </div>
 
 
@@ -21537,6 +21594,8 @@ let scoreTimingDetail =
       setActiveView(
         'scorecard'
       );
+
+      requestAnimationFrame(updateScorecardProgressV2112);
 
       /* V20.26 — Game Mode metadata is an adjunct read. Start it in parallel
          with the normal fresh Scorecard load; never await it or block scoring. */
@@ -31265,6 +31324,83 @@ let scoreTimingDetail =
     }
 
 
+    function updateScorecardProgressV2112() {
+      const screen = els.scorecardView
+        ? els.scorecardView.querySelector('.scorecard-screen')
+        : null;
+      const scroller = els.scoreScroll;
+      const rail = document.getElementById('scoreProgressV2112');
+      const thumb = rail
+        ? rail.querySelector('.score-progress-thumb-v2112')
+        : null;
+
+      if (!screen || !scroller || !rail || !thumb) return;
+      if (currentView !== 'scorecard') return;
+
+      const screenRect = screen.getBoundingClientRect();
+      const scrollRect = scroller.getBoundingClientRect();
+      if (!(scrollRect.width > 0) || !(scrollRect.height > 0)) return;
+
+      /* Match the Quick Guide's 2px top/bottom inset while centering the rail
+         itself on the Scorecard body's exact outer right border. */
+      const leftPx = scrollRect.right - screenRect.left;
+      const topPx = scrollRect.top - screenRect.top + 2;
+      const railHeightPx = Math.max(0, scrollRect.height - 4);
+
+      rail.style.setProperty('--score-progress-left-v2112', leftPx.toFixed(2) + 'px');
+      rail.style.setProperty('--score-progress-top-v2112', topPx.toFixed(2) + 'px');
+      rail.style.setProperty('--score-progress-height-v2112', railHeightPx.toFixed(2) + 'px');
+
+      const client = scroller.clientHeight;
+      const scroll = scroller.scrollHeight;
+      const max = Math.max(0, scroll - client);
+
+      if (!(client > 0) || !(scroll > 0) || max <= 1) {
+        rail.classList.add('no-scroll-v2112');
+        rail.style.setProperty('--score-progress-thumb-size-v2112', '100%');
+        rail.style.setProperty('--score-progress-thumb-top-v2112', '0%');
+        return;
+      }
+
+      rail.classList.remove('no-scroll-v2112');
+
+      /* Scorecard contract: nine holes are visible at once. With the normal
+         18-hole card, the Blue thumb is therefore exactly half of the rail.
+         Derive from rendered rows so the indicator remains truthful if a test
+         dataset ever contains a different count. */
+      const totalRows = Math.max(1, els.scoreRows ? els.scoreRows.children.length : 18);
+      const visibleRows = Math.min(9, totalRows);
+      const sizePct = Math.max(0, Math.min(100, (visibleRows / totalRows) * 100));
+      const travelPct = 100 - sizePct;
+      const ratio = Math.max(0, Math.min(1, scroller.scrollTop / max));
+      const topPct = travelPct * ratio;
+
+      rail.style.setProperty('--score-progress-thumb-size-v2112', sizePct.toFixed(2) + '%');
+      rail.style.setProperty('--score-progress-thumb-top-v2112', topPct.toFixed(2) + '%');
+    }
+
+    function wireScorecardProgressV2112() {
+      if (!els.scoreScroll || !document.getElementById('scoreProgressV2112')) return;
+
+      const update = () => updateScorecardProgressV2112();
+      els.scoreScroll.addEventListener('scroll', update, { passive:true });
+      window.addEventListener('resize', update, { passive:true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', update, { passive:true });
+      }
+
+      if (window.ResizeObserver) {
+        const observer = new ResizeObserver(update);
+        observer.observe(els.scoreScroll);
+        if (els.scoreRows) observer.observe(els.scoreRows);
+      }
+
+      requestAnimationFrame(() => {
+        update();
+        requestAnimationFrame(update);
+      });
+    }
+
     function wireQuickGuideProgressV2050() {
       const scroller = els.modalBody.querySelector('.quick-guide-scroll-v2050');
       const rail = els.modalBody.querySelector('.quick-guide-progress-v2050');
@@ -32309,6 +32445,8 @@ let scoreTimingDetail =
             true
         }
       );
+
+    wireScorecardProgressV2112();
 
 
     els.leaderContent
