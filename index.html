@@ -1,11 +1,12 @@
-<!-- SSHCP | BASE KEY: 21.12-N4T8QX | BUILD KEY: 21.13-R6L4KP -->
-<!-- SSHCP V21.13 — TEST build from exact V21.12.
-     Scorecard custom progress-rail refinement only. The native/browser Scorecard scrollbar remains hidden and the
-     5px custom rail is now fully contained inside the Scorecard table body, with its RIGHT EDGE aligned to the
-     table's exact right border. Its Blue thumb represents the visible nine-hole window (50% of an 18-hole card) and
-     moves with the actual Scorecard scroll position. V21.11 Quick Guide positioning and V21.10 guide
-     content centering remain unchanged. V21.08 GOLDEN scoring/audits/log semantics/tournament logic,
-     timings, Skins, GEEK, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.13-R6L4KP | BUILD KEY: 21.14-P5M8QK -->
+<!-- SSHCP V21.14 — TEST build from exact V21.13.
+     Scorecard progress-rail position refinement only. The native/browser Scorecard scrollbar remains hidden. The
+     existing 5px custom rail now sits OUTSIDE the LEFT edge of the Scorecard table beside the HOLE column. Its
+     center is placed midway through the available left gutter, but never more than 5px from the table edge on wider
+     screens. The rail still follows the real Scorecard scroll position, and its bottom now stops exactly where the
+     table's lower corner radius begins. V21.13/V21.12 scorecard progress behavior, V21.11 Quick Guide positioning,
+     V21.10 guide content centering, and V21.08 GOLDEN scoring/audits/log semantics/tournament logic, timings, Skins,
+     GEEK, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14401,11 +14402,11 @@ body.team-info-open-v2032{
   padding-right:0!important;
 }
 
-/* V21.13 — Scorecard-only custom scroll progress refinement. The native
-   indicator remains suppressed; this 5px rail is fully contained INSIDE the
-   Scorecard body so its right edge sits on the table's exact right border.
-   The thumb is the visible 9-hole window and travels with the real
-   scoreScroll position. */
+/* V21.14 — Scorecard-only custom scroll progress position refinement. The
+   native indicator remains suppressed. The 5px rail sits OUTSIDE the LEFT
+   edge of the Scorecard body beside the HOLE column. Its center occupies the
+   left gutter but is capped at 5px from the table edge, and its bottom stops
+   where the Scorecard body's lower radius begins. */
 #scorecardView .score-scroll{
   scrollbar-width:none!important;
   -ms-overflow-style:none!important;
@@ -14736,7 +14737,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.13</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.14</span></span>
         </button>
 
       </div>
@@ -31342,13 +31343,22 @@ let scoreTimingDetail =
       const scrollRect = scroller.getBoundingClientRect();
       if (!(scrollRect.width > 0) || !(scrollRect.height > 0)) return;
 
-      /* Match the Quick Guide's 2px top/bottom inset, but keep the entire
-         5px rail INSIDE the Scorecard body so its right edge lands exactly on
-         the Scorecard table's right border. */
-      const railWidthPx = 5;
-      const leftPx = scrollRect.right - screenRect.left - railWidthPx;
-      const topPx = scrollRect.top - screenRect.top + 2;
-      const railHeightPx = Math.max(0, scrollRect.height - 4);
+      /* V21.14: place the rail OUTSIDE the LEFT table edge beside the HOLE
+         column. Use the midpoint of the available left gutter, but cap the
+         table-edge offset at 5px on wider layouts. Keep the established 2px
+         top inset. At the bottom, stop exactly where the table's lower corner
+         radius begins instead of running through the rounded corner. */
+      const gutterPx = Math.max(0, scrollRect.left - screenRect.left);
+      const tableEdgeOffsetPx = Math.min(gutterPx / 2, 5);
+      const leftPx = scrollRect.left - screenRect.left - tableEdgeOffsetPx;
+      const topInsetPx = 2;
+      const computedScrollStyle = window.getComputedStyle(scroller);
+      const bottomRadiusPx = Math.max(0,
+        parseFloat(computedScrollStyle.borderBottomLeftRadius) ||
+        parseFloat(computedScrollStyle.borderBottomRightRadius) || 0
+      );
+      const topPx = scrollRect.top - screenRect.top + topInsetPx;
+      const railHeightPx = Math.max(0, scrollRect.height - topInsetPx - bottomRadiusPx);
 
       rail.style.setProperty('--score-progress-left-v2112', leftPx.toFixed(2) + 'px');
       rail.style.setProperty('--score-progress-top-v2112', topPx.toFixed(2) + 'px');
