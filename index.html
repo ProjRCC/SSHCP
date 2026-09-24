@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.20-H7M4QZ | BUILD KEY: 21.21-R4K8MV -->
-<!-- SSHCP V21.21 — TEST build from exact V21.20.
-     After-play popup progress-rail horizontal-lane normalization only. Scramble Summary and GEEK MODE now use the same
-     3px rail positioning contract against their shared 98x98 popup shell: target 5px from the visible table, never
-     farther outward than the popup/table midpoint, while ignoring any decorative popup border when establishing the
-     common rail lane. This leaves Summary visually unchanged and aligns GEEK to the same popup-relative lane. All
-     vertical endpoints, thumb math, hidden native scrollbars, Scorecard, Leaderboard, Quick Guide, scoring/audits/log
-     semantics/tournament logic, timings, Skins, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.21-R4K8MV | BUILD KEY: 21.22-C6P4VX -->
+<!-- SSHCP V21.22 — TEST build from exact V21.21.
+     GAME MODE custom progress-rail addition only. GAME MODE now uses the same after-play popup rail language as
+     Scramble Summary and GEEK MODE, but on the RIGHT side: 3px rail, 5px target table gap with midpoint cap against
+     the popup edge, native GAME MODE scrollbar hidden, radius-safe top/bottom inset, and a Blue thumb representing
+     the actual visible share of the combined SKINS + GAMES scroll content. Scorecard, Leaderboard, Scramble Summary,
+     GEEK MODE, Quick Guide, scoring/audits/log semantics/tournament logic, timings, Skins data, QR/auth, Scramble Mode,
+     and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12572,6 +12572,52 @@ button.sshcp-button-pressed-v172{
 }
 
 
+/* V21.22 — GAME MODE joins the shared after-play popup rail language, but
+   deliberately uses the RIGHT side. The native combined-content scrollbar is
+   suppressed. Horizontal placement targets 5px clear of the visible table and
+   is capped at the midpoint of the table-to-popup gutter. */
+.modal-overlay.game-mode-results-v2026 .modal-text{
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+  scrollbar-gutter:auto!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-text::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+  display:none!important;
+  background:transparent!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-text::-webkit-scrollbar-thumb{
+  background:transparent!important;
+}
+.modal-overlay.game-mode-results-v2026 .game-progress-v2122{
+  position:absolute!important;
+  left:var(--game-progress-left-v2122,auto)!important;
+  top:var(--game-progress-top-v2122,0px)!important;
+  width:3px!important;
+  height:var(--game-progress-height-v2122,0px)!important;
+  transform:translateX(-50%)!important;
+  border-radius:999px!important;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+  z-index:85!important;
+  opacity:1!important;
+}
+.modal-overlay.game-mode-results-v2026 .game-progress-thumb-v2122{
+  position:absolute!important;
+  left:0!important;
+  top:var(--game-progress-thumb-top-v2122,0%)!important;
+  width:100%!important;
+  height:var(--game-progress-thumb-size-v2122,100%)!important;
+  min-height:18px!important;
+  max-height:100%!important;
+  border-radius:999px!important;
+  background:var(--accent)!important;
+  transition:top .06s linear,height .08s linear,opacity .15s ease!important;
+  opacity:.92!important;
+}
+
 .quick-guide-legend-v2050{
   margin-top:2px;
   padding-top:12px;
@@ -14875,7 +14921,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.21</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.22</span></span>
         </button>
 
       </div>
@@ -16406,6 +16452,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
     let tournamentSummaryResizeObserver = null;
     let tournamentSummaryProgressResizeObserverV2116 = null;
     let geekProgressResizeObserverV2119 = null;
+    let gameProgressResizeObserverV2122 = null;
 
     let scorecardHydratedFromSnapshotV53 = false;
     let scorecardHydratedScrollTopV53 = 0;
@@ -29456,9 +29503,15 @@ let scoreTimingDetail =
       els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
       els.modalBody.scrollTop = 0;
-      requestAnimationFrame(fitGameModeTablesV2027);
+      requestAnimationFrame(() => {
+        fitGameModeTablesV2027();
+        wireGameModeProgressV2122();
+      });
       if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => requestAnimationFrame(fitGameModeTablesV2027)).catch(() => {});
+        document.fonts.ready.then(() => requestAnimationFrame(() => {
+          fitGameModeTablesV2027();
+          updateGameModeProgressV2122();
+        })).catch(() => {});
       }
     }
 
@@ -31853,6 +31906,88 @@ let scoreTimingDetail =
       });
     }
 
+    function updateGameModeProgressV2122() {
+      if (!els.modalOverlay || !els.modalOverlay.classList.contains('game-mode-results-v2026')) return;
+      if (!els.modalOverlay.classList.contains('open')) return;
+
+      const box = els.modalBox;
+      const scroller = els.modalBody;
+      const firstTable = scroller ? scroller.querySelector('.game-mode-table-v2026') : null;
+      const rail = box ? box.querySelector('.game-progress-v2122') : null;
+      const thumb = rail ? rail.querySelector('.game-progress-thumb-v2122') : null;
+      if (!box || !scroller || !firstTable || !rail || !thumb) return;
+
+      const boxRect = box.getBoundingClientRect();
+      const scrollerRect = scroller.getBoundingClientRect();
+      const tableRect = firstTable.getBoundingClientRect();
+      if (!(scrollerRect.width > 0) || !(scrollerRect.height > 0) || !(tableRect.width > 0)) return;
+
+      /* Shared V21.21 after-play lane logic mirrored to the RIGHT side. */
+      const railWidthPx = 3;
+      const desiredTableGapPx = 5;
+      const boxStyle = window.getComputedStyle(box);
+      const popupBorderRightPx = Math.max(0, parseFloat(boxStyle.borderRightWidth) || 0);
+      const normalizedTableRightPx = tableRect.right + popupBorderRightPx;
+      const gutterPx = Math.max(0, boxRect.right - normalizedTableRightPx);
+      const maxGapAtMidpointPx = Math.max(0, (gutterPx / 2) - (railWidthPx / 2));
+      const tableGapPx = Math.min(desiredTableGapPx, maxGapAtMidpointPx);
+      const leftPx = normalizedTableRightPx - boxRect.left + tableGapPx + (railWidthPx / 2);
+
+      /* GAME MODE's combined scrolling body is already clipped to a 9px radius.
+         Keep the custom rail inside those curved ends. */
+      const radiusPx = 9;
+      const topPx = scrollerRect.top - boxRect.top + radiusPx;
+      const railHeightPx = Math.max(0, scrollerRect.height - (radiusPx * 2));
+
+      rail.style.setProperty('--game-progress-left-v2122', leftPx.toFixed(2) + 'px');
+      rail.style.setProperty('--game-progress-top-v2122', topPx.toFixed(2) + 'px');
+      rail.style.setProperty('--game-progress-height-v2122', railHeightPx.toFixed(2) + 'px');
+
+      const client = scroller.clientHeight;
+      const scroll = scroller.scrollHeight;
+      const max = Math.max(0, scroll - client);
+      const sizePct = (client > 0 && scroll > 0)
+        ? Math.max(0, Math.min(100, (client / scroll) * 100))
+        : 100;
+      const travelPct = 100 - sizePct;
+      const ratio = max > 1 ? Math.max(0, Math.min(1, scroller.scrollTop / max)) : 0;
+      const topPct = travelPct * ratio;
+
+      rail.style.setProperty('--game-progress-thumb-size-v2122', sizePct.toFixed(2) + '%');
+      rail.style.setProperty('--game-progress-thumb-top-v2122', topPct.toFixed(2) + '%');
+    }
+
+    function wireGameModeProgressV2122() {
+      if (!els.modalBox || !els.modalBody) return;
+      if (!els.modalOverlay.classList.contains('game-mode-results-v2026')) return;
+      if (!els.modalBody.querySelector('.game-mode-table-v2026')) return;
+
+      els.modalBox.querySelectorAll('.game-progress-v2122').forEach(node => node.remove());
+      const rail = document.createElement('div');
+      rail.className = 'game-progress-v2122';
+      rail.setAttribute('aria-hidden', 'true');
+      rail.innerHTML = '<div class="game-progress-thumb-v2122"></div>';
+      els.modalBox.appendChild(rail);
+
+      const update = () => updateGameModeProgressV2122();
+      els.modalBody.addEventListener('scroll', update, { passive:true });
+
+      if (gameProgressResizeObserverV2122) {
+        gameProgressResizeObserverV2122.disconnect();
+        gameProgressResizeObserverV2122 = null;
+      }
+      if (window.ResizeObserver) {
+        gameProgressResizeObserverV2122 = new ResizeObserver(update);
+        gameProgressResizeObserverV2122.observe(els.modalBody);
+        els.modalBody.querySelectorAll('.game-mode-table-v2026').forEach(table => gameProgressResizeObserverV2122.observe(table));
+      }
+
+      requestAnimationFrame(() => {
+        update();
+        requestAnimationFrame(update);
+      });
+    }
+
     function wireQuickGuideProgressV2050() {
       const scroller = els.modalBody.querySelector('.quick-guide-scroll-v2050');
       const rail = els.modalBody.querySelector('.quick-guide-progress-v2050');
@@ -32150,6 +32285,10 @@ let scoreTimingDetail =
         geekProgressResizeObserverV2119.disconnect();
         geekProgressResizeObserverV2119 = null;
       }
+      if (gameProgressResizeObserverV2122) {
+        gameProgressResizeObserverV2122.disconnect();
+        gameProgressResizeObserverV2122 = null;
+      }
 
 
 
@@ -32210,7 +32349,7 @@ let scoreTimingDetail =
       if (geekCopyV180b) geekCopyV180b.remove();
 
       if (els.modalBox) {
-        els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182,.summary-progress-v2116,.geek-filter-popover-v186').forEach(node => node.remove());
+        els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182,.summary-progress-v2116,.geek-progress-v2119,.game-progress-v2122,.geek-filter-popover-v186').forEach(node => node.remove());
         removeGeekFilterBlurV189();
       }
 
