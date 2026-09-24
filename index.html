@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.25-M7Q4VX | BUILD KEY: 21.26-P6R3QK -->
-<!-- SSHCP V21.26 — TEST build from exact V21.25.
-     After-play popup shell cleanup only. Outer popup borders and shell shadows are removed from Scramble Summary,
-     tie/result, GEEK MODE, GEEK Detail, GAME MODE, and Skins result popups. GEEK MODE returns to true midpoint rail
-     math (the V21.25 2px visual nudge is removed) and its horizontal content padding returns to the full shared 16px
-     gutter now that the decorative 2px border is gone. NESR transparent/black-border press protection from V21.25,
-     all vertical rail start/stop rules, thumb math, table/button geometry, scoring logic, timings, and Worker behavior
-     remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.26-P6R3QK | BUILD KEY: 21.27-B8N4QX -->
+<!-- SSHCP V21.27 — TEST build from exact V21.26 GOLDEN.
+     Custom progress-rail visibility only: Leaderboard hides its rail for 1-8 teams and shows it for 9+; Scramble
+     Summary hides its rail when the lower standings contain seven or fewer rows (10 teams or less) and shows it
+     only when additional lower rows require scrolling; GAME MODE shows its rail only when the combined SKINS +
+     GAMES content actually overflows its scrolling body. Scorecard and GEEK rail behavior are unchanged. Hidden
+     rails do not alter the shared 16px gutter, table geometry, vertical rail rules, thumb math, scoring logic, timings,
+     NESR behavior, or Worker behavior. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15053,7 +15053,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.26</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.27</span></span>
         </button>
 
       </div>
@@ -31779,6 +31779,13 @@ let scoreTimingDetail =
       const scrollRect = scroller.getBoundingClientRect();
       if (!(scrollRect.width > 0) || !(scrollRect.height > 0)) return;
 
+      /* V21.27 — the rail is an overflow cue, not decoration. The Leaderboard
+         has eight visible rows by contract, so fields of 1-8 teams never need it. */
+      const totalRows = Math.max(1, els.leaderRows ? els.leaderRows.children.length : 1);
+      const leaderRailNeededV2127 = totalRows > 8;
+      rail.style.display = leaderRailNeededV2127 ? '' : 'none';
+      if (!leaderRailNeededV2127) return;
+
       const railWidthPx = 4;
       const minimumTableClearancePx = 5;
       const gutterPx = Math.max(0, scrollRect.left - screenRect.left);
@@ -31802,7 +31809,6 @@ let scoreTimingDetail =
       rail.style.setProperty('--leader-progress-top-v2115', topPx.toFixed(2) + 'px');
       rail.style.setProperty('--leader-progress-height-v2115', railHeightPx.toFixed(2) + 'px');
 
-      const totalRows = Math.max(1, els.leaderRows ? els.leaderRows.children.length : 1);
       const visibleRows = Math.min(8, totalRows);
       const sizePct = Math.max(0, Math.min(100, (visibleRows / totalRows) * 100));
 
@@ -31963,6 +31969,13 @@ let scoreTimingDetail =
       const clipRect = clip.getBoundingClientRect();
       if (!(clipRect.width > 0) || !(clipRect.height > 0)) return;
 
+      /* V21.27 — places 1-3 are fixed and seven lower rows fit by contract.
+         Therefore 10 teams or fewer have nothing hidden below the fold. */
+      const totalLowerRows = Math.max(0, scroller.querySelectorAll('.tournament-summary-remaining-row').length);
+      const summaryRailNeededV2127 = totalLowerRows > 7;
+      rail.style.display = summaryRailNeededV2127 ? '' : 'none';
+      if (!summaryRailNeededV2127) return;
+
       /* V21.23 shared after-play lane: target the visible popup/table gutter
          midpoint, while preserving at least 5px clear to the table edge. */
       const railWidthPx = 4;
@@ -31994,7 +32007,6 @@ let scoreTimingDetail =
 
       /* Summary contract: places 1-3 are fixed; seven LOWER rows (places 4-10)
          are visible. Thumb length therefore uses 7 / total lower rows. */
-      const totalLowerRows = Math.max(1, scroller.querySelectorAll('.tournament-summary-remaining-row').length);
       const visibleLowerRows = Math.min(7, totalLowerRows);
       const sizePct = Math.max(0, Math.min(100, (visibleLowerRows / totalLowerRows) * 100));
 
@@ -32060,6 +32072,15 @@ let scoreTimingDetail =
       const tableRect = firstTable.getBoundingClientRect();
       if (!(scrollerRect.width > 0) || !(scrollerRect.height > 0) || !(tableRect.width > 0)) return;
 
+      /* V21.27 — GAME MODE has variable SKINS + GAMES content, so rail
+         visibility follows real rendered overflow rather than a team-count rule. */
+      const client = scroller.clientHeight;
+      const scroll = scroller.scrollHeight;
+      const max = Math.max(0, scroll - client);
+      const gameRailNeededV2127 = client > 0 && scroll > 0 && max > 1;
+      rail.style.display = gameRailNeededV2127 ? '' : 'none';
+      if (!gameRailNeededV2127) return;
+
       /* V21.23 shared after-play lane mirrored to the RIGHT side: midpoint
          target with a 5px minimum clear gap from table to rail edge. */
       const railWidthPx = 4;
@@ -32083,9 +32104,6 @@ let scoreTimingDetail =
       rail.style.setProperty('--game-progress-top-v2122', topPx.toFixed(2) + 'px');
       rail.style.setProperty('--game-progress-height-v2122', railHeightPx.toFixed(2) + 'px');
 
-      const client = scroller.clientHeight;
-      const scroll = scroller.scrollHeight;
-      const max = Math.max(0, scroll - client);
       const sizePct = (client > 0 && scroll > 0)
         ? Math.max(0, Math.min(100, (client / scroll) * 100))
         : 100;
