@@ -1,11 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.27-B8N4QX | BUILD KEY: 21.28-N5R8QK -->
-<!-- SSHCP V21.28 — TEST build from exact V21.27.
-     Control Center viewport diagnostics only: replace the mixed boot/runtime two-line readout with a four-line
-     settled-device snapshot. The diagnostic now reports current view/mode, effective viewport/shell scale,
-     effective vertical geometry, spacing/rows, and actual capped widths for HOME / Scorecard / Leaderboard /
-     after-play popups. HOME completion and viewport resize events re-snapshot after a short settle debounce.
-     No Scorecard, Leaderboard, popup, scoring, NESR, GEEK, GAME, QR/auth, Worker/API, or Sheet behavior changes.
-     V21.27 progress-rail behavior is preserved unchanged. -->
+<!-- SSHCP | BASE KEY: 21.28-N5R8QK | BUILD KEY: 21.29-K4V7QM -->
+<!-- SSHCP V21.29 — TEST build from exact V21.28.
+     Control Center diagnostic presentation only: increase only the settled viewport information block height
+     enough to expose all four existing diagnostic rows, including WIDTH WHP/WSC/WLB/WPUAP. The added height
+     is taken upward from the flexible visible log area; score controls, authorization, SCRAMBLE MODE and bottom
+     navigation geometry remain unchanged. No diagnostic math, runtime page geometry, scoring, NESR, GEEK, GAME,
+     QR/auth, Worker/API, or Sheet behavior changes. V21.28 settled-device diagnostic logic is preserved unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11017,7 +11016,7 @@ body option{
   --cc-stack-top-v1824:7px;
   --cc-stack-gap-v1824:7px;
   --cc-utility-h-v1824:46px;
-  --cc-metrics-h-v1824:58px;
+  --cc-metrics-h-v1824:53px;
   --cc-check-h-v1824:46px;
   --cc-mode-h-v1824:46px;
   --cc-score-h-v1824:46px;
@@ -15053,7 +15052,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.28</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.29</span></span>
         </button>
 
       </div>
@@ -23076,7 +23075,7 @@ let scoreTimingDetail =
       setPx('--cc-stack-top-v1824', 10);
       setPx('--cc-stack-gap-v1824', 7);
       setPx('--cc-utility-h-v1824', 42);
-      setPx('--cc-metrics-h-v1824', 38);
+      setPx('--cc-metrics-h-v1824', 53);
       setPx('--cc-check-h-v1824', 42);
       setPx('--cc-mode-h-v1824', 46);
       setPx('--cc-score-h-v1824', 46);
