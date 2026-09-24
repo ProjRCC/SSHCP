@@ -1,12 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.18-V8K3QN | BUILD KEY: 21.19-Q5N8VK -->
-<!-- SSHCP V21.19 — TEST build from exact V21.18.
-     GEEK MODE custom progress-rail addition only. Scorecard, Leaderboard, and V21.18 Scramble Summary rails remain
-     unchanged. GEEK MODE now uses the same popup/table geometry as Scramble Summary: a 3px LEFT-side rail targeting
-     a 5px clear table gap, capped so its center never moves farther outward than the midpoint between the table and
-     popup edge. Native GEEK scrolling remains intact but its stock scrollbar is hidden; the Blue thumb represents the
-     actual visible fraction of the GEEK scroll body and follows real scroll position. The rail begins/ends at the table
-     rounded-corner starts. Quick Guide, scoring/audits/log semantics/tournament logic, timings, Skins, QR/auth,
-     Scramble Mode, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.19-Q5N8VK | BUILD KEY: 21.20-H7M4QZ -->
+<!-- SSHCP V21.20 — TEST build from exact V21.19.
+     GEEK MODE progress-rail vertical-start refinement only. Scorecard, Leaderboard, and Scramble Summary rails remain
+     unchanged. The GEEK rail keeps its V21.19 3px width, 5px target table gap, popup-midpoint cap, hidden native
+     scrollbar, actual-scroll thumb behavior, and bottom-radius stop. Its TOP now begins exactly below the primary
+     STAT / US / ALL / TEAM header row; category rows such as SCORES remain subheadings inside the scrolling body.
+     Quick Guide, scoring/audits/log semantics/tournament logic, timings, Skins, QR/auth, Scramble Mode, and Worker
+     behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12526,10 +12525,10 @@ button.sshcp-button-pressed-v172{
   opacity:.92!important;
 }
 
-/* V21.19 — GEEK MODE popup/table custom progress rail.
-   Same 3px / 5px-target / popup-midpoint horizontal contract as Scramble
-   Summary. The stock GEEK scrollbar is hidden; the rail itself remains purely
-   visual and follows the real scroll viewport. */
+/* V21.20 — GEEK MODE popup/table custom progress rail.
+   V21.19 horizontal geometry and thumb behavior are preserved. The rail now
+   begins below the primary STAT / US / ALL / TEAM header; category rows such
+   as SCORES remain within the scroll body. */
 .modal-overlay.geek-mode-v180 .geek-table-scroll-v180{
   scrollbar-width:none!important;
   -ms-overflow-style:none!important;
@@ -14875,7 +14874,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.19</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.20</span></span>
         </button>
 
       </div>
@@ -31681,16 +31680,17 @@ let scoreTimingDetail =
       const leftPx = shellRect.left - boxRect.left - tableGapPx - (railWidthPx / 2);
 
       const shellStyle = window.getComputedStyle(shell);
-      const topRadiusPx = Math.max(0,
-        parseFloat(shellStyle.borderTopLeftRadius) ||
-        parseFloat(shellStyle.borderTopRightRadius) || 0
-      );
       const bottomRadiusPx = Math.max(0,
         parseFloat(shellStyle.borderBottomLeftRadius) ||
         parseFloat(shellStyle.borderBottomRightRadius) || 0
       );
-      const topPx = shellRect.top - boxRect.top + topRadiusPx;
-      const railHeightPx = Math.max(0, shellRect.height - topRadiusPx - bottomRadiusPx);
+      const scrollerRect = scroller.getBoundingClientRect();
+      /* V21.20: the primary STAT / US / ALL / TEAM row is a fixed header.
+         Start the rail immediately below that row at the top of the scrolling
+         body; SCORES and the other category labels are subheadings within it. */
+      const topPx = scrollerRect.top - boxRect.top;
+      const shellBottomStopPx = shellRect.bottom - boxRect.top - bottomRadiusPx;
+      const railHeightPx = Math.max(0, shellBottomStopPx - topPx);
 
       rail.style.setProperty('--geek-progress-left-v2119', leftPx.toFixed(2) + 'px');
       rail.style.setProperty('--geek-progress-top-v2119', topPx.toFixed(2) + 'px');
