@@ -1,11 +1,13 @@
-<!-- SSHCP | BASE KEY: 21.04-H6R9QM | BUILD KEY: 21.05-P4N8RX -->
-<!-- SSHCP V21.05 — TEST build from exact V21.04.
-     HOME tie-break placement correction only. The extra V21.04 HOME TIE BREAK row is removed.
-     When the existing completed-round first-place tie state is unresolved, the normal HOME
-     primary SCRAMBLE SUMMARY button itself becomes the red TIE BREAK button in the exact same
-     position/size; tapping it calls the exact existing showTieBreakResult() path. After the
-     per-device tie-break result is viewed, that same slot returns to SCRAMBLE SUMMARY. V21.04
-     tie state logic and all V21.03 geometry/timings/scoring/audit/Worker behavior are unchanged. -->
+<!-- SSHCP | BASE KEY: 21.05-P4N8RX | BUILD KEY: 21.06-Q8M4VK -->
+<!-- SSHCP V21.06 — TEST build from exact V21.05.
+     Automatic Scramble Summary audit synchronization only. The Summary audit no longer compares
+     against whatever Leaderboard DOM happened to be rendered previously; it builds the app's
+     current Leaderboard order/place snapshot from the same freshly-read leaderboard dataset used
+     by the audit, then compares that current app projection to the independent expected Result Log.
+     This makes ADD RANDOM 2 -> HOME -> SCRAMBLE SUMMARY a complete audit path without requiring a
+     visible Leaderboard visit. GEEK remains fully lazy: no GEEK request/calculation/audit occurs
+     until GEEK is explicitly opened. V21.05 HOME tie-break behavior and all tournament logic,
+     geometry, timings, scoring, Skins rules, QR/auth, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +15,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V21.05 — TIMING TEST PANEL
+       SSHCP V21.06 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -14669,7 +14671,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.05</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.06</span></span>
         </button>
 
       </div>
@@ -19021,6 +19023,77 @@ let scoreTimingDetail =
       }).filter(row => row.team);
     }
 
+    /* SSHCP V21.06 — Summary audit must never depend on a previously-rendered
+       Leaderboard DOM. Project the CURRENT freshly-read leaderboard rows through
+       the same app ordering/place rules used by renderLeaderboard(), but without
+       opening/rendering the Leaderboard view or adding any extra Worker request. */
+    function currentLeaderboardAuditSnapshotV2106(sourceRows) {
+      let rows = Array.isArray(sourceRows)
+        ? sourceRows.map(row => ({ ...row }))
+        : [];
+
+      if (tournamentIsComplete(rows)) {
+        const firstTie = firstPlaceTiedRows(rows);
+        const mayShowResolvedPodium =
+          firstTie.length < 2 || hasViewedTournamentTieBreak();
+
+        if (mayShowResolvedPodium) {
+          const podium = buildTournamentPodium(rows);
+          const podiumOrder = new Map(
+            podium.ordered.map((row, index) => [Number(row.slot), index])
+          );
+
+          rows = [...rows].sort((a, b) => {
+            const aNet = Number(a.net);
+            const bNet = Number(b.net);
+
+            if (Number.isFinite(aNet) && Number.isFinite(bNet) && aNet !== bNet) {
+              return aNet - bNet;
+            }
+
+            const aOrder = podiumOrder.get(Number(a.slot));
+            const bOrder = podiumOrder.get(Number(b.slot));
+            if (Number.isFinite(aOrder) && Number.isFinite(bOrder)) {
+              return aOrder - bOrder;
+            }
+            return 0;
+          });
+        }
+      }
+
+      const completedForPlaces = tournamentIsComplete(rows);
+      const firstPlaceTieForPlaces = completedForPlaces
+        ? firstPlaceTiedRows(rows)
+        : [];
+      const useResolvedTournamentPlaces =
+        completedForPlaces &&
+        (firstPlaceTieForPlaces.length < 2 || hasViewedTournamentTieBreak());
+
+      let previousNet = null;
+      let previousPlace = 0;
+
+      return rows.map((row, index) => {
+        const netKey = Number(row.net);
+        const samePlace =
+          index > 0 &&
+          Number.isFinite(netKey) &&
+          Number.isFinite(previousNet) &&
+          netKey === previousNet;
+
+        const place = useResolvedTournamentPlaces
+          ? resolvedTournamentPlaceLabel(rows, index)
+          : (samePlace ? previousPlace : index + 1);
+
+        previousNet = netKey;
+        previousPlace = place;
+
+        return {
+          place: normalizeAuditTextV189(String(place)),
+          team: normalizeAuditTextV189(displayTeamName(row.team || ''))
+        };
+      }).filter(row => row.team);
+    }
+
     function compareExpectedToRenderedLeaderboardV2081(expected, actualRows) {
       const mismatches = [];
       const actual = Array.isArray(actualRows) ? actualRows : [];
@@ -19424,7 +19497,7 @@ let scoreTimingDetail =
       return lines.join('\n');
     }
 
-    async function runSummaryResultAuditV189(renderedSnapshot, leaderboardSnapshotV2081, epochAtStart) {
+    async function runSummaryResultAuditV189(renderedSnapshot, epochAtStart) {
       try {
         const stamp = Date.now();
         const [scoreResponse, leaderResponse, teamsResponse] = await Promise.all([
@@ -19443,6 +19516,7 @@ let scoreTimingDetail =
         if (!teamsResponse.ok || !teamsData || teamsData.ok !== true) throw new Error('RAW TEAMS / SKINS READ FAILED');
 
         const rawLeaderRows = Array.isArray(leaderData.leaderboard) ? leaderData.leaderboard : [];
+        const leaderboardSnapshotV2106 = currentLeaderboardAuditSnapshotV2106(rawLeaderRows);
         const expected = independentExpectedSummaryV189(scoreData, rawLeaderRows);
         const skinsExpected = independentExpectedSkinsV2081(scoreData, teamsData);
         const skinsActual = appSkinsSnapshotV2081(scoreData, teamsData);
@@ -19450,7 +19524,7 @@ let scoreTimingDetail =
         if (getResultAuditLogV189().some(item => item && item.fingerprint === fingerprint)) return;
 
         const summaryMismatches = compareExpectedToRenderedSummaryV189(expected, renderedSnapshot);
-        const leaderboardMismatches = compareExpectedToRenderedLeaderboardV2081(expected, leaderboardSnapshotV2081);
+        const leaderboardMismatches = compareExpectedToRenderedLeaderboardV2081(expected, leaderboardSnapshotV2106);
         const skinsMismatches = compareExpectedToAppSkinsV2081(skinsExpected, skinsActual);
         const mismatches = [...summaryMismatches, ...leaderboardMismatches, ...skinsMismatches];
 
@@ -19466,7 +19540,7 @@ let scoreTimingDetail =
           traces: expected.traces,
           actualRows: renderedSnapshot ? renderedSnapshot.rows : [],
           actualNotes: renderedSnapshot ? renderedSnapshot.notes : [],
-          leaderboardRows: Array.isArray(leaderboardSnapshotV2081) ? leaderboardSnapshotV2081 : [],
+          leaderboardRows: Array.isArray(leaderboardSnapshotV2106) ? leaderboardSnapshotV2106 : [],
           leaderboardMismatches,
           skinsExpected,
           skinsActual,
@@ -19499,7 +19573,7 @@ let scoreTimingDetail =
           traces: [],
           actualRows: renderedSnapshot ? renderedSnapshot.rows : [],
           actualNotes: renderedSnapshot ? renderedSnapshot.notes : [],
-          leaderboardRows: Array.isArray(leaderboardSnapshotV2081) ? leaderboardSnapshotV2081 : [],
+          leaderboardRows: [],
           leaderboardMismatches: [],
           skinsExpected: null,
           skinsActual: null,
@@ -19514,11 +19588,9 @@ let scoreTimingDetail =
     function captureTournamentSummaryAuditV189() {
       const renderedSnapshot = snapshotRenderedSummaryV189();
       if (!renderedSnapshot) return;
-      const leaderboardSnapshotV2081 = snapshotRenderedLeaderboardV2081();
       const epochAtStart = resultAuditEpochV189;
       const promise = runSummaryResultAuditV189(
         renderedSnapshot,
-        leaderboardSnapshotV2081,
         epochAtStart
       );
       pendingResultAuditsV189.add(promise);
