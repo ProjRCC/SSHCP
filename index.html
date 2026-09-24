@@ -1,13 +1,13 @@
-<!-- SSHCP | BASE KEY: 21.22-C6P4VX | BUILD KEY: 21.23-N6R4QX -->
-<!-- SSHCP V21.23 — TEST build from exact V21.22.
-     Horizontal geometry unification only. Scorecard, Leaderboard, Scramble Summary, GEEK MODE and GAME MODE now share
-     an 18px left/right content gutter measured from the effective page/popup edge; main-page geometry remains capped at
-     760px, while after-play popup width is 98% of that capped viewport (maximum 744.8px). Table edges plus page/popup
-     header/footer control-row outer edges align to the same gutter. All custom progress rails are now 4px wide and use
-     the shared rule: target the gutter midpoint, but never allow the rail edge closer than 5px to its associated table.
-     Quick Guide keeps its own established content gutter but adopts the same 4px rail and midpoint/minimum-clearance
-     rule. All existing vertical geometry, rounded-corner rail stops, thumb math, scrolling, scoring/audits/log semantics,
-     tournament logic, timings, Skins, GEEK, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.23-N6R4QX | BUILD KEY: 21.24-L8Q5RV -->
+<!-- SSHCP V21.24 — TEST build from exact V21.23.
+     Horizontal refinement only. The shared Scorecard / Leaderboard / Scramble Summary / GEEK MODE / GAME MODE gutter
+     changes from 18px to 16px; every custom rail remains 4px wide and centered in its actual gutter, which yields 6px
+     clear to the table at a normal 16px gutter while preserving the existing 5px minimum-clearance rule. FINAL RESULTS
+     now explicitly applies the shared gutter to its scrolling rows and footer/final-action outer edges so the entire
+     after-play Leaderboard stays aligned with its table header. GAME MODE's decorative 2px popup border is removed and
+     its popup padding now uses the same visible 16px gutter as Summary. All vertical geometry, rounded-corner rail
+     starts/stops, thumb math, scrolling, scoring/audits/log semantics, tournament logic, timings, Skins, GEEK, QR/auth,
+     Scramble Mode, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14797,18 +14797,18 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
 <style id="sshcp-v2123-shared-horizontal-geometry">
 /* =========================================================
-   SSHCP V21.23 — SHARED HORIZONTAL GEOMETRY ONLY.
+   SSHCP V21.24 — SHARED HORIZONTAL GEOMETRY REFINEMENT.
    No vertical dimensions, row counts, thumb math, rounded-corner rail stops,
    scroll behavior, or presentation timing are changed here.
    ========================================================= */
 :root{
-  --sshcp-shared-gutter-v2123:18px;
+  --sshcp-shared-gutter-v2123:16px;
   --sshcp-progress-rail-w-v2123:4px;
   --sshcp-effective-max-w-v2123:760px;
   --sshcp-afterplay-popup-max-w-v2123:744.8px; /* 98% of 760px */
 }
 
-/* Main pages: one 18px content lane for header controls, table and footer controls. */
+/* Main pages: one 16px content lane for header controls, table and footer controls. */
 #scorecardView .scorecard-screen,
 #leaderboardView .leaderboard-screen{
   width:min(100%,var(--sshcp-effective-max-w-v2123))!important;
@@ -14844,17 +14844,40 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   max-width:var(--sshcp-afterplay-popup-max-w-v2123)!important;
 }
 
-/* Exact visible popup-edge -> table/control gutter = 18px.
-   Summary has no card border; GEEK/GAME keep their established 2px card border,
-   so their content padding is 16px to preserve the same 18px outer gutter. */
-.modal-overlay.tournament-summary .modal-box{
+/* Exact visible popup-edge -> table/control gutter = 16px.
+   Summary and GAME have no card border and therefore use the full 16px padding.
+   GEEK retains its established 2px decorative border, so its content padding is
+   14px to preserve the same visible 16px outer gutter. */
+.modal-overlay.tournament-summary .modal-box,
+.modal-overlay.game-mode-results-v2026 .modal-box{
   padding-left:var(--sshcp-shared-gutter-v2123)!important;
   padding-right:var(--sshcp-shared-gutter-v2123)!important;
 }
-.modal-overlay.geek-mode-v180 .modal-box,
-.modal-overlay.game-mode-results-v2026 .modal-box{
+.modal-overlay.geek-mode-v180 .modal-box{
   padding-left:calc(var(--sshcp-shared-gutter-v2123) - 2px)!important;
   padding-right:calc(var(--sshcp-shared-gutter-v2123) - 2px)!important;
+}
+
+/* V21.24 — GAME MODE no longer needs a decorative popup outline. Removing it
+   also makes the visible popup-edge gutter use the same coordinate origin as
+   Scramble Summary. */
+.modal-overlay.game-mode-results-v2026 .modal-box{
+  border:0!important;
+}
+
+/* V21.24 — FINAL RESULTS had higher-specificity legacy 12px/14px rules below
+   the table header. Reassert the shared gutter on the scrolling rows and the
+   outer footer/final-action edges so the complete Leaderboard is one lane. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-content{
+  margin-left:var(--sshcp-shared-gutter-v2123)!important;
+  margin-right:var(--sshcp-shared-gutter-v2123)!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-bottom{
+  padding-left:var(--sshcp-shared-gutter-v2123)!important;
+  padding-right:var(--sshcp-shared-gutter-v2123)!important;
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-final-slot{
+  right:var(--sshcp-shared-gutter-v2123)!important;
 }
 
 /* GAME previously carried an extra 5px inset inside the popup lane. Remove only
@@ -15010,7 +15033,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.23</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.24</span></span>
         </button>
 
       </div>
