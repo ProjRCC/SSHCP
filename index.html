@@ -1,12 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.09-R6K4QP | BUILD KEY: 21.10-C7N5VX -->
-<!-- SSHCP V21.10 — TEST build from exact V21.09.
-     Quick Guide horizontal-alignment test only. In the normal in-app Quick Guide, the LEFT edge of
-     the existing 5px progress rail now begins exactly at the rendered SCORECARD footer button's
-     right edge (0px gap). The normal guide body also removes the old right-side scrollbar reserve,
-     recentering the actual guide content within the symmetric LEADERBOARD-to-SCORECARD footer span.
-     Progress vertical geometry/thumb math, footer geometry, Welcome/GOT IT guide, V21.08 GOLDEN
-     scoring/audits/log semantics/tournament logic/timings/Skins/GEEK/QR/auth/Scramble Mode, and
-     Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.10-C7N5VX | BUILD KEY: 21.11-F8M2QZ -->
+<!-- SSHCP V21.11 — TEST build from exact V21.10.
+     Quick Guide progress-rail centerline test only. In the normal in-app Quick Guide, the CENTER of
+     the existing 5px progress rail is now anchored exactly on the rendered SCORECARD footer button's
+     right edge. V21.10's centered Quick Guide body, progress vertical geometry/thumb math, footer
+     geometry, Welcome/GOT IT guide, V21.08 GOLDEN scoring/audits/log semantics/tournament logic,
+     timings, Skins, GEEK, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14387,12 +14385,13 @@ body.team-info-open-v2032{
 .quick-guide-progress-thumb-v2050{
   min-height:var(--v2074-qg-progress-thumb-min,18px)!important;
 }
-/* V21.10 — normal Quick Guide only: progress rail begins exactly at the
-   rendered SCORECARD footer button's right edge. The old right-side rail
-   reserve is removed so the guide BODY is horizontally centered again. */
+/* V21.11 — normal Quick Guide only: the 5px progress rail CENTERLINE sits
+   exactly on the rendered SCORECARD footer button's right edge. V21.10's
+   centered guide body remains unchanged. */
 .quick-guide-progress-v2050.anchor-scorecard-v2110{
   left:var(--quick-guide-progress-left-v2110,auto)!important;
   right:auto!important;
+  transform:translateX(-50%)!important;
 }
 .modal-overlay.quick-guide.quick-guide-normal-v2110 .modal-text{
   padding-right:0!important;
@@ -14683,7 +14682,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.10</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.11</span></span>
         </button>
 
       </div>
@@ -31272,10 +31271,10 @@ let scoreTimingDetail =
       const thumb = els.modalBody.querySelector('.quick-guide-progress-thumb-v2050');
       if (!scroller || !rail || !thumb) return;
 
-      /* V21.10 — for the normal 3-button Quick Guide, anchor the LEFT edge
-         of the progress rail exactly on the rendered SCORECARD button's
-         right edge (0px gap). The Welcome/GOT IT guide intentionally keeps
-         its established right-edge rail and body reserve. */
+      /* V21.11 — for the normal 3-button Quick Guide, anchor the rail's
+         CENTERLINE exactly on the rendered SCORECARD button's right edge.
+         CSS translateX(-50%) centers the 5px rail on this measured x-position.
+         The Welcome/GOT IT guide intentionally keeps its established rail. */
       const positionRailV2110 = () => {
         const actions = els.modalActions;
         const welcomeGuide = !!(
