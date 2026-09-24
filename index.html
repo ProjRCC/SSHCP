@@ -1,11 +1,13 @@
-<!-- SSHCP | BASE KEY: 21.21-R4K8MV | BUILD KEY: 21.22-C6P4VX -->
-<!-- SSHCP V21.22 — TEST build from exact V21.21.
-     GAME MODE custom progress-rail addition only. GAME MODE now uses the same after-play popup rail language as
-     Scramble Summary and GEEK MODE, but on the RIGHT side: 3px rail, 5px target table gap with midpoint cap against
-     the popup edge, native GAME MODE scrollbar hidden, radius-safe top/bottom inset, and a Blue thumb representing
-     the actual visible share of the combined SKINS + GAMES scroll content. Scorecard, Leaderboard, Scramble Summary,
-     GEEK MODE, Quick Guide, scoring/audits/log semantics/tournament logic, timings, Skins data, QR/auth, Scramble Mode,
-     and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.22-C6P4VX | BUILD KEY: 21.23-N6R4QX -->
+<!-- SSHCP V21.23 — TEST build from exact V21.22.
+     Horizontal geometry unification only. Scorecard, Leaderboard, Scramble Summary, GEEK MODE and GAME MODE now share
+     an 18px left/right content gutter measured from the effective page/popup edge; main-page geometry remains capped at
+     760px, while after-play popup width is 98% of that capped viewport (maximum 744.8px). Table edges plus page/popup
+     header/footer control-row outer edges align to the same gutter. All custom progress rails are now 4px wide and use
+     the shared rule: target the gutter midpoint, but never allow the rail edge closer than 5px to its associated table.
+     Quick Guide keeps its own established content gutter but adopts the same 4px rail and midpoint/minimum-clearance
+     rule. All existing vertical geometry, rounded-corner rail stops, thumb math, scrolling, scoring/audits/log semantics,
+     tournament logic, timings, Skins, GEEK, QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14792,6 +14794,93 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 </style>
 
+
+<style id="sshcp-v2123-shared-horizontal-geometry">
+/* =========================================================
+   SSHCP V21.23 — SHARED HORIZONTAL GEOMETRY ONLY.
+   No vertical dimensions, row counts, thumb math, rounded-corner rail stops,
+   scroll behavior, or presentation timing are changed here.
+   ========================================================= */
+:root{
+  --sshcp-shared-gutter-v2123:18px;
+  --sshcp-progress-rail-w-v2123:4px;
+  --sshcp-effective-max-w-v2123:760px;
+  --sshcp-afterplay-popup-max-w-v2123:744.8px; /* 98% of 760px */
+}
+
+/* Main pages: one 18px content lane for header controls, table and footer controls. */
+#scorecardView .scorecard-screen,
+#leaderboardView .leaderboard-screen{
+  width:min(100%,var(--sshcp-effective-max-w-v2123))!important;
+  max-width:var(--sshcp-effective-max-w-v2123)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+#scorecardView .score-fixed-top,
+#scorecardView .score-fixed-bottom{
+  padding-left:var(--sshcp-shared-gutter-v2123)!important;
+  padding-right:var(--sshcp-shared-gutter-v2123)!important;
+}
+#scorecardView .score-scroll{
+  margin-left:var(--sshcp-shared-gutter-v2123)!important;
+  margin-right:var(--sshcp-shared-gutter-v2123)!important;
+}
+#leaderboardView .leader-top,
+#leaderboardView .leader-bottom{
+  padding-left:var(--sshcp-shared-gutter-v2123)!important;
+  padding-right:var(--sshcp-shared-gutter-v2123)!important;
+}
+#leaderboardView .leader-table-head,
+#leaderboardView .leader-content{
+  margin-left:var(--sshcp-shared-gutter-v2123)!important;
+  margin-right:var(--sshcp-shared-gutter-v2123)!important;
+}
+
+/* After-play shells: 98% of the capped 760px effective viewport. */
+.modal-overlay.tournament-summary .modal-box,
+.modal-overlay.geek-mode-v180 .modal-box,
+.modal-overlay.game-mode-results-v2026 .modal-box{
+  width:min(98vw,var(--sshcp-afterplay-popup-max-w-v2123))!important;
+  max-width:var(--sshcp-afterplay-popup-max-w-v2123)!important;
+}
+
+/* Exact visible popup-edge -> table/control gutter = 18px.
+   Summary has no card border; GEEK/GAME keep their established 2px card border,
+   so their content padding is 16px to preserve the same 18px outer gutter. */
+.modal-overlay.tournament-summary .modal-box{
+  padding-left:var(--sshcp-shared-gutter-v2123)!important;
+  padding-right:var(--sshcp-shared-gutter-v2123)!important;
+}
+.modal-overlay.geek-mode-v180 .modal-box,
+.modal-overlay.game-mode-results-v2026 .modal-box{
+  padding-left:calc(var(--sshcp-shared-gutter-v2123) - 2px)!important;
+  padding-right:calc(var(--sshcp-shared-gutter-v2123) - 2px)!important;
+}
+
+/* GAME previously carried an extra 5px inset inside the popup lane. Remove only
+   that horizontal inset so its tables and footer align with Summary/GEEK. */
+.modal-overlay.game-mode-results-v2026 .modal-text{
+  width:100%!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-actions .modal-btn{
+  width:100%!important;
+  max-width:none!important;
+}
+
+/* Universal custom progress-rail width. Existing vertical placement remains owned
+   by each surface's established rules. */
+.quick-guide-progress-v2050,
+#scorecardView .score-progress-v2112,
+#leaderboardView .leader-progress-v2115,
+.modal-overlay.tournament-summary .summary-progress-v2116,
+.modal-overlay.geek-mode-v180 .geek-progress-v2119,
+.modal-overlay.game-mode-results-v2026 .game-progress-v2122{
+  width:var(--sshcp-progress-rail-w-v2123)!important;
+}
+</style>
+
 </head>
 
 
@@ -14921,7 +15010,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.22</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.23</span></span>
         </button>
 
       </div>
@@ -31555,17 +31644,18 @@ let scoreTimingDetail =
       const scrollRect = scroller.getBoundingClientRect();
       if (!(scrollRect.width > 0) || !(scrollRect.height > 0)) return;
 
-      /* V21.15: keep the rail OUTSIDE the LEFT table edge beside HOLE.
-         Prefer a small 3px clear gap from the table, but never let the rail's
-         CENTER travel farther outward than the midpoint of the available gutter.
-         This keeps the rail visually attached to the table on wide layouts while
-         protecting narrow layouts from pushing it too close to the screen edge. */
-      const railWidthPx = 5;
-      const desiredTableGapPx = 3;
+      /* V21.23 universal rail lane: target the gutter midpoint, but never let
+         the 4px rail's nearest edge come closer than 5px to the table. */
+      const railWidthPx = 4;
+      const minimumTableClearancePx = 5;
       const gutterPx = Math.max(0, scrollRect.left - screenRect.left);
-      const maxGapAtMidpointPx = Math.max(0, (gutterPx / 2) - (railWidthPx / 2));
-      const tableGapPx = Math.min(desiredTableGapPx, maxGapAtMidpointPx);
-      const leftPx = scrollRect.left - screenRect.left - tableGapPx - (railWidthPx / 2);
+      const targetCenterFromTablePx = Math.max(
+        gutterPx / 2,
+        minimumTableClearancePx + (railWidthPx / 2)
+      );
+      const maxCenterFromTablePx = Math.max(railWidthPx / 2, gutterPx - (railWidthPx / 2));
+      const centerFromTablePx = Math.min(targetCenterFromTablePx, maxCenterFromTablePx);
+      const leftPx = scrollRect.left - screenRect.left - centerFromTablePx;
       const topInsetPx = 2;
       const computedScrollStyle = window.getComputedStyle(scroller);
       const bottomRadiusPx = Math.max(0,
@@ -31646,12 +31736,16 @@ let scoreTimingDetail =
       const scrollRect = scroller.getBoundingClientRect();
       if (!(scrollRect.width > 0) || !(scrollRect.height > 0)) return;
 
-      const railWidthPx = 5;
-      const desiredTableGapPx = 3;
+      const railWidthPx = 4;
+      const minimumTableClearancePx = 5;
       const gutterPx = Math.max(0, scrollRect.left - screenRect.left);
-      const maxGapAtMidpointPx = Math.max(0, (gutterPx / 2) - (railWidthPx / 2));
-      const tableGapPx = Math.min(desiredTableGapPx, maxGapAtMidpointPx);
-      const leftPx = scrollRect.left - screenRect.left - tableGapPx - (railWidthPx / 2);
+      const targetCenterFromTablePx = Math.max(
+        gutterPx / 2,
+        minimumTableClearancePx + (railWidthPx / 2)
+      );
+      const maxCenterFromTablePx = Math.max(railWidthPx / 2, gutterPx - (railWidthPx / 2));
+      const centerFromTablePx = Math.min(targetCenterFromTablePx, maxCenterFromTablePx);
+      const leftPx = scrollRect.left - screenRect.left - centerFromTablePx;
       const topInsetPx = 2;
       const computedScrollStyle = window.getComputedStyle(scroller);
       const bottomRadiusPx = Math.max(0,
@@ -31724,19 +31818,19 @@ let scoreTimingDetail =
       const shellRect = shell.getBoundingClientRect();
       if (!(shellRect.width > 0) || !(shellRect.height > 0)) return;
 
-      /* V21.21 shared after-play rail lane. Summary and GEEK both target 5px
-         clear of the visible table with the same midpoint cap. GEEK's popup
-         has a decorative border while Summary's does not, so remove that
-         border from the horizontal reference before calculating the lane. */
-      const railWidthPx = 3;
-      const desiredTableGapPx = 5;
-      const boxStyleV2121 = window.getComputedStyle(box);
-      const popupBorderLeftPxV2121 = Math.max(0, parseFloat(boxStyleV2121.borderLeftWidth) || 0);
-      const normalizedTableLeftPxV2121 = shellRect.left - popupBorderLeftPxV2121;
-      const gutterPx = Math.max(0, normalizedTableLeftPxV2121 - boxRect.left);
-      const maxGapAtMidpointPx = Math.max(0, (gutterPx / 2) - (railWidthPx / 2));
-      const tableGapPx = Math.min(desiredTableGapPx, maxGapAtMidpointPx);
-      const leftPx = normalizedTableLeftPxV2121 - boxRect.left - tableGapPx - (railWidthPx / 2);
+      /* V21.23 shared after-play lane: the visible popup edge and visible table
+         edge define the gutter. Target its midpoint, with at least 5px clear
+         between the table and the nearest edge of the 4px rail. */
+      const railWidthPx = 4;
+      const minimumTableClearancePx = 5;
+      const gutterPx = Math.max(0, shellRect.left - boxRect.left);
+      const targetCenterFromTablePx = Math.max(
+        gutterPx / 2,
+        minimumTableClearancePx + (railWidthPx / 2)
+      );
+      const maxCenterFromTablePx = Math.max(railWidthPx / 2, gutterPx - (railWidthPx / 2));
+      const centerFromTablePx = Math.min(targetCenterFromTablePx, maxCenterFromTablePx);
+      const leftPx = shellRect.left - boxRect.left - centerFromTablePx;
 
       const shellStyle = window.getComputedStyle(shell);
       const bottomRadiusPx = Math.max(0,
@@ -31824,19 +31918,18 @@ let scoreTimingDetail =
       const clipRect = clip.getBoundingClientRect();
       if (!(clipRect.width > 0) || !(clipRect.height > 0)) return;
 
-      /* V21.21 shared after-play rail lane. Use the same normalized popup/table
-         reference as GEEK MODE so both 98x98 post-play popup tables position
-         their 3px rail consistently. Summary has no decorative popup border,
-         so this preserves its established visual position. */
-      const railWidthPx = 3;
-      const desiredTableGapPx = 5;
-      const boxStyleV2121 = window.getComputedStyle(box);
-      const popupBorderLeftPxV2121 = Math.max(0, parseFloat(boxStyleV2121.borderLeftWidth) || 0);
-      const normalizedTableLeftPxV2121 = clipRect.left - popupBorderLeftPxV2121;
-      const gutterPx = Math.max(0, normalizedTableLeftPxV2121 - boxRect.left);
-      const maxGapAtMidpointPx = Math.max(0, (gutterPx / 2) - (railWidthPx / 2));
-      const tableGapPx = Math.min(desiredTableGapPx, maxGapAtMidpointPx);
-      const leftPx = normalizedTableLeftPxV2121 - boxRect.left - tableGapPx - (railWidthPx / 2);
+      /* V21.23 shared after-play lane: target the visible popup/table gutter
+         midpoint, while preserving at least 5px clear to the table edge. */
+      const railWidthPx = 4;
+      const minimumTableClearancePx = 5;
+      const gutterPx = Math.max(0, clipRect.left - boxRect.left);
+      const targetCenterFromTablePx = Math.max(
+        gutterPx / 2,
+        minimumTableClearancePx + (railWidthPx / 2)
+      );
+      const maxCenterFromTablePx = Math.max(railWidthPx / 2, gutterPx - (railWidthPx / 2));
+      const centerFromTablePx = Math.min(targetCenterFromTablePx, maxCenterFromTablePx);
+      const leftPx = clipRect.left - boxRect.left - centerFromTablePx;
 
       const clipStyle = window.getComputedStyle(clip);
       const topRadiusPx = Math.max(0,
@@ -31922,16 +32015,18 @@ let scoreTimingDetail =
       const tableRect = firstTable.getBoundingClientRect();
       if (!(scrollerRect.width > 0) || !(scrollerRect.height > 0) || !(tableRect.width > 0)) return;
 
-      /* Shared V21.21 after-play lane logic mirrored to the RIGHT side. */
-      const railWidthPx = 3;
-      const desiredTableGapPx = 5;
-      const boxStyle = window.getComputedStyle(box);
-      const popupBorderRightPx = Math.max(0, parseFloat(boxStyle.borderRightWidth) || 0);
-      const normalizedTableRightPx = tableRect.right + popupBorderRightPx;
-      const gutterPx = Math.max(0, boxRect.right - normalizedTableRightPx);
-      const maxGapAtMidpointPx = Math.max(0, (gutterPx / 2) - (railWidthPx / 2));
-      const tableGapPx = Math.min(desiredTableGapPx, maxGapAtMidpointPx);
-      const leftPx = normalizedTableRightPx - boxRect.left + tableGapPx + (railWidthPx / 2);
+      /* V21.23 shared after-play lane mirrored to the RIGHT side: midpoint
+         target with a 5px minimum clear gap from table to rail edge. */
+      const railWidthPx = 4;
+      const minimumTableClearancePx = 5;
+      const gutterPx = Math.max(0, boxRect.right - tableRect.right);
+      const targetCenterFromTablePx = Math.max(
+        gutterPx / 2,
+        minimumTableClearancePx + (railWidthPx / 2)
+      );
+      const maxCenterFromTablePx = Math.max(railWidthPx / 2, gutterPx - (railWidthPx / 2));
+      const centerFromTablePx = Math.min(targetCenterFromTablePx, maxCenterFromTablePx);
+      const leftPx = tableRect.right - boxRect.left + centerFromTablePx;
 
       /* GAME MODE's combined scrolling body is already clipped to a 9px radius.
          Keep the custom rail inside those curved ends. */
@@ -31994,10 +32089,10 @@ let scoreTimingDetail =
       const thumb = els.modalBody.querySelector('.quick-guide-progress-thumb-v2050');
       if (!scroller || !rail || !thumb) return;
 
-      /* V21.11 — for the normal 3-button Quick Guide, anchor the rail's
-         CENTERLINE exactly on the rendered SCORECARD button's right edge.
-         CSS translateX(-50%) centers the 5px rail on this measured x-position.
-         The Welcome/GOT IT guide intentionally keeps its established rail. */
+      /* V21.23 — normal in-app Quick Guide keeps its own established gutter,
+         but its 4px rail now follows the universal horizontal rule: target the
+         gutter midpoint and keep at least 5px clear from the guide content. The
+         Welcome/GOT IT guide keeps its established horizontal placement. */
       const positionRailV2110 = () => {
         const actions = els.modalActions;
         const welcomeGuide = !!(
@@ -32016,19 +32111,26 @@ let scoreTimingDetail =
           return;
         }
 
-        const scorecardButton = actions.lastElementChild;
-        if (!scorecardButton) return;
-
+        const boxRect = els.modalBox.getBoundingClientRect();
         const bodyRect = els.modalBody.getBoundingClientRect();
-        const buttonRect = scorecardButton.getBoundingClientRect();
-        const leftPx = buttonRect.right - bodyRect.left;
+        const scrollerRect = scroller.getBoundingClientRect();
+        const railWidthPx = 4;
+        const minimumTableClearancePx = 5;
+        const gutterPx = Math.max(0, boxRect.right - scrollerRect.right);
+        const targetCenterFromContentPx = Math.max(
+          gutterPx / 2,
+          minimumTableClearancePx + (railWidthPx / 2)
+        );
+        const maxCenterFromContentPx = Math.max(railWidthPx / 2, gutterPx - (railWidthPx / 2));
+        const centerFromContentPx = Math.min(targetCenterFromContentPx, maxCenterFromContentPx);
+        const railLeftEdgePx = scrollerRect.right - bodyRect.left + centerFromContentPx - (railWidthPx / 2);
 
-        if (!Number.isFinite(leftPx)) return;
+        if (!Number.isFinite(railLeftEdgePx)) return;
 
         rail.classList.add('anchor-scorecard-v2110');
         rail.style.setProperty(
           '--quick-guide-progress-left-v2110',
-          leftPx.toFixed(2) + 'px'
+          railLeftEdgePx.toFixed(2) + 'px'
         );
       };
 
