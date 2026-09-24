@@ -1,12 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.07-L5Q9RW | BUILD KEY: 21.08-H3V7NX -->
-<!-- SSHCP V21.08 — TEST build from exact V21.07.
-     Diagnostic-log semantics and labels only. DELETE ALL remains a score-only Control Center action
-     and now appends its VERIFIED row without clearing Control Center or Result Audit history. The
-     Control Center diagnostic reset is relabeled CLEAR LOG and remains the sole explicit reset for
-     those local logs. Scramble Mode's audit reset is relabeled CLEAR SM LOG; its existing Worker
-     scrambleDelete behavior is unchanged. V21.07 append-only GEEK history, V21.06 automatic Summary
-     audit synchronization, lazy GEEK loading, HOME tie-break behavior, tournament logic, geometry,
-     timings, scoring, Skins rules, QR/auth, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.08-H3V7NX | BUILD KEY: 21.09-R6K4QP -->
+<!-- SSHCP V21.09 — TEST build from exact V21.08 GOLDEN.
+     Quick Guide progress-rail horizontal-position test only. In the normal in-app Quick Guide, the
+     LEFT edge of the existing 5px progress rail is dynamically anchored 5px to the RIGHT of the
+     rendered SCORECARD footer button's right edge. The rail's vertical geometry, thumb math, colors,
+     scrolling, Quick Guide content/footer geometry, and Welcome/GOT IT guide remain unchanged.
+     V21.08 GOLDEN scoring, audits, log semantics, tournament logic, geometry, timings, Skins, GEEK,
+     QR/auth, Scramble Mode, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14387,6 +14386,12 @@ body.team-info-open-v2032{
 .quick-guide-progress-thumb-v2050{
   min-height:var(--v2074-qg-progress-thumb-min,18px)!important;
 }
+/* V21.09 — normal Quick Guide only: position the progress rail from the
+   rendered SCORECARD footer button instead of the modal/body right edge. */
+.quick-guide-progress-v2050.anchor-scorecard-v2109{
+  left:var(--quick-guide-progress-left-v2109,auto)!important;
+  right:auto!important;
+}
 .quick-guide-legend-v2050{
   margin-top:var(--v2074-qg-legend-mt,2px)!important;
   padding-top:var(--v2074-qg-legend-pad,12px)!important;
@@ -14670,7 +14675,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.08</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.09</span></span>
         </button>
 
       </div>
@@ -31259,7 +31264,42 @@ let scoreTimingDetail =
       const thumb = els.modalBody.querySelector('.quick-guide-progress-thumb-v2050');
       if (!scroller || !rail || !thumb) return;
 
+      /* V21.09 — for the normal 3-button Quick Guide, anchor the LEFT edge
+         of the progress rail exactly 5px to the right of the rendered
+         SCORECARD button's right edge. The Welcome/GOT IT guide has no
+         SCORECARD footer button, so it intentionally keeps the existing
+         right-edge rail position. */
+      const positionRailV2109 = () => {
+        const actions = els.modalActions;
+        const welcomeGuide = !!(
+          actions &&
+          actions.classList.contains('quick-guide-welcome-actions-v175')
+        );
+
+        if (!actions || welcomeGuide) {
+          rail.classList.remove('anchor-scorecard-v2109');
+          rail.style.removeProperty('--quick-guide-progress-left-v2109');
+          return;
+        }
+
+        const scorecardButton = actions.lastElementChild;
+        if (!scorecardButton) return;
+
+        const bodyRect = els.modalBody.getBoundingClientRect();
+        const buttonRect = scorecardButton.getBoundingClientRect();
+        const leftPx = buttonRect.right - bodyRect.left + 5;
+
+        if (!Number.isFinite(leftPx)) return;
+
+        rail.classList.add('anchor-scorecard-v2109');
+        rail.style.setProperty(
+          '--quick-guide-progress-left-v2109',
+          leftPx.toFixed(2) + 'px'
+        );
+      };
+
       const update = () => {
+        positionRailV2109();
         const client = scroller.clientHeight;
         const scroll = scroller.scrollHeight;
         const max = Math.max(0, scroll - client);
