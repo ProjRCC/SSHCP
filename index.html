@@ -1,13 +1,12 @@
-<!-- SSHCP | BASE KEY: 21.05-P4N8RX | BUILD KEY: 21.06-Q8M4VK -->
-<!-- SSHCP V21.06 — TEST build from exact V21.05.
-     Automatic Scramble Summary audit synchronization only. The Summary audit no longer compares
-     against whatever Leaderboard DOM happened to be rendered previously; it builds the app's
-     current Leaderboard order/place snapshot from the same freshly-read leaderboard dataset used
-     by the audit, then compares that current app projection to the independent expected Result Log.
-     This makes ADD RANDOM 2 -> HOME -> SCRAMBLE SUMMARY a complete audit path without requiring a
-     visible Leaderboard visit. GEEK remains fully lazy: no GEEK request/calculation/audit occurs
-     until GEEK is explicitly opened. V21.05 HOME tie-break behavior and all tournament logic,
-     geometry, timings, scoring, Skins rules, QR/auth, and Worker behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.07-L5Q9RW | BUILD KEY: 21.08-H3V7NX -->
+<!-- SSHCP V21.08 — TEST build from exact V21.07.
+     Diagnostic-log semantics and labels only. DELETE ALL remains a score-only Control Center action
+     and now appends its VERIFIED row without clearing Control Center or Result Audit history. The
+     Control Center diagnostic reset is relabeled CLEAR LOG and remains the sole explicit reset for
+     those local logs. Scramble Mode's audit reset is relabeled CLEAR SM LOG; its existing Worker
+     scrambleDelete behavior is unchanged. V21.07 append-only GEEK history, V21.06 automatic Summary
+     audit synchronization, lazy GEEK loading, HOME tie-break behavior, tournament logic, geometry,
+     timings, scoring, Skins rules, QR/auth, and Worker behavior remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +14,7 @@
 
   <script>
     /* =========================================================
-       SSHCP V21.06 — TIMING TEST PANEL
+       SSHCP V21.08 — TIMING TEST PANEL
        Change ONLY these numbers to test presentation timing.
        Values are in SECONDS. Safety fallbacks follow automatically.
 
@@ -14671,7 +14670,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.06</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.08</span></span>
         </button>
 
       </div>
@@ -15083,7 +15082,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
       <div class="control-center-bottom-stack">
         <div class="test-log-utility-row">
-          <button id="testLogResetButton" class="test-log-reset" type="button">DELETE TEST DATA</button>
+          <button id="testLogResetButton" class="test-log-reset" type="button">CLEAR LOG</button>
           <button id="testCopyLogButton" class="test-copy-log" type="button">COPY LOG</button>
         </div>
 
@@ -15143,7 +15142,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
         <div class="scramble-actions-v1938">
           <button id="scrambleStartButtonV1938" class="scramble-action-button-v1938" type="button">START SCRAMBLE</button>
           <button id="scrambleCopyLogButtonV1938" class="scramble-action-button-v1938" type="button">COPY LOG</button>
-          <button id="scrambleDeleteLogButtonV1938" class="scramble-action-button-v1938 delete" type="button">DELETE LOG</button>
+          <button id="scrambleDeleteLogButtonV1938" class="scramble-action-button-v1938 delete" type="button">CLEAR SM LOG</button>
         </div>
         <div class="scramble-nav-v1941">
           <button id="scrambleBackButtonV1938" class="scramble-back-v1938" type="button">BACK</button>
@@ -17906,8 +17905,8 @@ let scoreTimingDetail =
         detail: String(detail || '')
       });
 
-      /* SSHCP V5.2 — no 20-entry truncation. History remains until the
-         user explicitly taps DELETE TEST DATA. */
+      /* SSHCP V21.08 — no entry truncation. Diagnostic history remains until
+         the user explicitly taps CLEAR LOG. DELETE ALL clears scores only. */
       localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
       if (currentView === 'testlog') renderTestLog();
@@ -17982,12 +17981,8 @@ let scoreTimingDetail =
       geekDetailAuditRunIdV1932 = Date.now();
       startGeekDiagnosticV180b();
 
-      /* A fresh GEEK entry retires only older GEEK validation rows. Keep the
-         user's RANDOM / Scorecard / Leaderboard / Result Audit history intact. */
-      const retired = new Set(['GEEK MODE LOAD', 'GEEK CHECK', 'GEEK DETAIL AUDIT']);
-      const kept = getTestLog().filter(entry => !retired.has(String(entry && entry.action || '').toUpperCase()));
-      localStorage.setItem(TEST_LOG_KEY, JSON.stringify(kept));
-      if (currentView === 'testlog') renderTestLog();
+      /* V21.08 — Control Center history is append-only until CLEAR LOG.
+         Starting a new GEEK session and DELETE ALL must not retire earlier rows. */
     }
 
     function geekAuditNumberV1932(value) {
@@ -20166,13 +20161,13 @@ let scoreTimingDetail =
         scrambleAuditActiveV1939 = false;
         resetScrambleFeedV1940('NOT STARTED');
         stopScrambleStatusPollV1939();
-        addTestLog('DELETE SCRAMBLE LOG', 'OK', '—', 'AUDIT CLEARED / INACTIVE');
+        addTestLog('CLEAR SM LOG', 'OK', '—', 'AUDIT CLEARED / INACTIVE');
 
         if (els.scrambleDeleteLogButtonV1938) {
-          els.scrambleDeleteLogButtonV1938.textContent = 'DELETED';
+          els.scrambleDeleteLogButtonV1938.textContent = 'CLEARED';
           setTimeout(() => {
             if (els.scrambleDeleteLogButtonV1938) {
-              els.scrambleDeleteLogButtonV1938.textContent = 'DELETE LOG';
+              els.scrambleDeleteLogButtonV1938.textContent = 'CLEAR SM LOG';
               requestAnimationFrame(fitScrambleModeButtonTextV1938);
             }
           }, 1200);
@@ -20180,7 +20175,7 @@ let scoreTimingDetail =
       }
       catch (error) {
         showScrambleErrorV1939(
-          'DELETE LOG FAILED',
+          'CLEAR SM LOG FAILED',
           error && error.message ? error.message : 'Scramble Audit could not be deleted.'
         );
       }
@@ -20653,25 +20648,15 @@ let scoreTimingDetail =
           testDetailParts.push(data.random2Summary);
         }
 
-        if (mode === 'clear' && scope === 'all') {
-          /* V18.12: DELETE ALL behavior is unchanged. After the verified clear,
-             start a fresh QA cycle and keep this successful DELETE ALL as the
-             first visible row in the new Control Center log. */
-          resetTestLog();
-          addTestLog(
-            actionLabel,
-            'VERIFIED',
-            timerSeconds(started) + 's',
-            testDetailParts.join(' • ')
-          );
-        } else {
-          addTestLog(
-            actionLabel,
-            'VERIFIED',
-            timerSeconds(started) + 's',
-            testDetailParts.join(' • ')
-          );
-        }
+        /* V21.08 — DELETE ALL is a score-only action. Like every other
+           Control Center test action, its successful verification appends to
+           diagnostic history; only CLEAR LOG resets Control Center/Result logs. */
+        addTestLog(
+          actionLabel,
+          'VERIFIED',
+          timerSeconds(started) + 's',
+          testDetailParts.join(' • ')
+        );
 
         completeLoadingLine();
         renderTestLog();
