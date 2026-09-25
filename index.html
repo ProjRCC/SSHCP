@@ -1,8 +1,9 @@
-<!-- SSHCP | BASE KEY: 21.30-R6M2PX | BUILD KEY: 21.31-C8R4MX -->
-<!-- SSHCP V21.31 CLEANUP TEST - exact V21.30 GOLDEN donor.
-     Stage 1 cleanup only: remove CSS declarations provably shadowed by later declarations with the exact same
-     selector/context/property, and remove historical CSS comments now preserved in the living handover.
-     JavaScript, HTML structure, IDs, runtime logic, timings, data paths, and Worker/API behavior remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.31-C8R4MX | BUILD KEY: 21.32-H6Q9NV -->
+<!-- SSHCP V21.32 CLEANUP TEST - exact validated V21.31 donor.
+     Stage 2 JavaScript dead-code pruning only: removed top-level function declarations and side-effect-free globals
+     proven to have zero identifier references in all 14 scripts, zero HTML references, and zero string-based references.
+     CSS, live JavaScript paths, DOM structure, scoring/NESR, Leaderboard movement, Summary, GEEK, GAME, Skins,
+     Control Center, QR/auth, Worker/API, Sheet behavior, geometry, timings, and presentation are otherwise unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11725,7 +11726,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.31</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.32</span></span>
         </button>
 
       </div>
@@ -13475,8 +13476,7 @@ let scoreTimingDetail =
     const SSHCP_QR_ID_KEY = 'sshcpQrId';
     const SSHCP_QR_TEAM_KEY = 'sshcpQrTeam';
     const SSHCP_QR_SLOT_KEY = 'sshcpQrSlot';
-    const SSHCP_TEAM_AUTH_KEY = 'sshcpTeamAuthorization';
-    const SSHCP_PREAUTHORIZE_KEY = 'sshcpPreAuthorizeV1962';
+        const SSHCP_PREAUTHORIZE_KEY = 'sshcpPreAuthorizeV1962';
     const SSHCP_PREAUTHORIZE_ACTIVE_KEY = 'sshcpPreAuthorizeActiveV1958';
     const SSHCP_MASTER_TEST_KEY = 'glmNnV63TWS42fcRB8z2yldF';
 
@@ -13673,8 +13673,7 @@ let scoreTimingDetail =
     function getQrTeam(){ return localStorage.getItem(SSHCP_QR_TEAM_KEY) || ''; }
     function isMasterQr(){ return getQrRole() === 'MASTER'; }
     function isTeamQr(){ return getQrRole() === 'QR'; }
-    function isTeamAuthorizationEnabled(){ return localStorage.getItem(SSHCP_TEAM_AUTH_KEY) !== '0'; }
-    function isPreAuthorizeEnabledV1958(){ return localStorage.getItem(SSHCP_PREAUTHORIZE_KEY) !== '0'; }
+        function isPreAuthorizeEnabledV1958(){ return localStorage.getItem(SSHCP_PREAUTHORIZE_KEY) !== '0'; }
     function syncTeamQrLockedUi(){
       const locked = isTeamQr() && !!getQrTeam();
       const master = isMasterQr();
@@ -13716,12 +13715,7 @@ let scoreTimingDetail =
 
       requestAnimationFrame(fitTestPageButtonText);
     }
-    function setTeamAuthorizationEnabled(enabled){
-      localStorage.setItem(SSHCP_TEAM_AUTH_KEY, enabled ? '1' : '0');
-      syncTestAuthorizationToggle();
-      updateHomeScorecardAccess();
-    }
-    function setPreAuthorizeEnabledV1958(enabled){
+        function setPreAuthorizeEnabledV1958(enabled){
       localStorage.setItem(SSHCP_PREAUTHORIZE_KEY, enabled ? '1' : '0');
       /* V19.59 — PREAUTH is a MASTER browsing/scoring convenience only.
          It never converts MASTER into a fixed QR/team authorization. */
@@ -15583,38 +15577,7 @@ let scoreTimingDetail =
       return {errors, stats:stats.length, teams:model.teams.length, checks};
     }
 
-    async function runControlCenterGeekCheckV188() {
-      const started = timerStart();
-      startLoadingLine();
-      try {
-        const audit = runGeekDetailAuditCoreV1932();
-        if (audit.errors.length) {
-          addTestLog(
-            'GEEK DETAIL AUDIT',
-            'FAILED',
-            audit.stats + ' STATS',
-            audit.errors.slice(0, 8).join(' • ') + (audit.errors.length > 8 ? ' • +' + (audit.errors.length - 8) + ' MORE' : '')
-          );
-        } else {
-          const c = audit.checks;
-          addTestLog(
-            'GEEK DETAIL AUDIT',
-            'OK',
-            audit.stats + ' STATS',
-            audit.teams + ' TEAMS • VALUES ' + c.values + '/32 • OWNERS ' + c.owners + '/32 • TEAM RESULTS ' + c.results +
-            ' • CONTEXT ' + c.context + '/32 • DETAIL ' + c.detail + '/32 • EVIDENCE ' + c.evidence +
-            ' • LARGE TIES ' + c.largeTies + ' • RUN ' + geekDetailAuditRunIdV1932
-          );
-        }
-        completeLoadingLine();
-      } catch (error) {
-        stopLoadingLine();
-        addTestLog('GEEK DETAIL AUDIT','FAILED',timerSeconds(started) + 's',String(error && error.message || 'Audit failed'));
-      }
-      renderTestLog();
-      requestAnimationFrame(fitTestPageButtonText);
-    }
-
+    
     /* =========================================================
        SSHCP V20.82 — automatic GEEK audit -> matching RESULT test.
        The established GEEK audit math is unchanged. Once a fresh visible
@@ -15740,179 +15703,9 @@ let scoreTimingDetail =
       }
     }
 
-    function numericTeamHandicapV188(team, leaderRow) {
-      const candidates = [
-        team && team.handicap,
-        team && team.hcp,
-        leaderRow && leaderRow.handicap,
-        leaderRow && leaderRow.hcp,
-        leaderRow && leaderRow.teamHandicap,
-        leaderRow && leaderRow.teamHcp
-      ];
-      for (const value of candidates) {
-        if (value === '' || value === null || value === undefined) continue;
-        const number = Number(value);
-        if (Number.isFinite(number)) return Math.abs(number);
-      }
-      return null;
-    }
-
-    function officialRoundCheckV188(scoreSource, leaderboardRows) {
-      const sourceTeams = Array.isArray(scoreSource && scoreSource.teams)
-        ? scoreSource.teams.filter(team => team && String(team.name || '').trim() !== '')
-        : [];
-      const sourceHoles = Array.isArray(scoreSource && scoreSource.course && scoreSource.course.holes)
-        ? scoreSource.course.holes.slice(0, 18)
-        : [];
-      const rows = Array.isArray(leaderboardRows) ? leaderboardRows : [];
-      const failures = [];
-
-      if (!sourceTeams.length) failures.push('NO OFFICIAL TEAMS');
-      if (sourceHoles.length !== 18) failures.push('COURSE != 18 HOLES');
-      if (!rows.length) failures.push('NO LEADERBOARD ROWS');
-      if (failures.length) return { ok:false, failures };
-
-      const parTotal = sourceHoles.reduce((sum, hole) => {
-        const par = Number(hole && hole.par);
-        return sum + (Number.isFinite(par) ? par : 0);
-      }, 0);
-
-      const rowsBySlot = new Map(
-        rows.map(row => [Number(row && row.slot), row])
-      );
-
-      sourceTeams.forEach(team => {
-        const slot = Number(team && team.slot);
-        const row = rowsBySlot.get(slot);
-        if (!row) {
-          failures.push('T' + slot + ' MISSING FROM LEADERBOARD');
-          return;
-        }
-
-        const rawScores = Array.isArray(team.scores) ? team.scores.slice(0, 18) : [];
-        const validScores = rawScores.map(value => Number(value))
-          .filter(value => Number.isFinite(value) && value > 0);
-        const thru = validScores.length;
-
-        if (thru !== Number(row.thru)) {
-          failures.push('T' + slot + ' THRU ' + thru + '!=' + row.thru);
-        }
-
-        if (thru === 18) {
-          const totalStrokes = validScores.reduce((sum, value) => sum + value, 0);
-          const grossVsPar = totalStrokes - parTotal;
-          const hcp = numericTeamHandicapV188(team, row);
-          const netVsPar = hcp === null ? NaN : grossVsPar - hcp;
-
-          if (Number.isFinite(Number(row.totalStrokes)) &&
-              Number(row.totalStrokes) !== totalStrokes) {
-            failures.push('T' + slot + ' STROKES ' + totalStrokes + '!=' + row.totalStrokes);
-          }
-          if (Number.isFinite(Number(row.gross)) &&
-              Number(row.gross) !== grossVsPar) {
-            failures.push('T' + slot + ' GROSS ' + grossVsPar + '!=' + row.gross);
-          }
-          if (Number.isFinite(netVsPar) &&
-              Number.isFinite(Number(row.net)) &&
-              Number(row.net) !== netVsPar) {
-            failures.push('T' + slot + ' NET ' + netVsPar + '!=' + row.net);
-          }
-
-          const tbScores = Array.isArray(row.tiebreakScores) ? row.tiebreakScores : [];
-          const tbHoles = Array.isArray(row.tiebreakHoles) ? row.tiebreakHoles : [];
-          const tbCount = Math.min(tbScores.length, tbHoles.length);
-          for (let index = 0; index < tbCount; index++) {
-            const actualHole = Number(tbHoles[index]);
-            const listed = Number(tbScores[index]);
-            const official = Number(rawScores[actualHole - 1]);
-            if (
-              !Number.isInteger(actualHole) ||
-              actualHole < 1 ||
-              actualHole > 18 ||
-              !Number.isFinite(listed) ||
-              !Number.isFinite(official) ||
-              listed !== official
-            ) {
-              failures.push(
-                'T' + slot + ' TB' + (index + 1) +
-                ' H' + String(tbHoles[index]) +
-                ' ' + String(tbScores[index]) +
-                '!=' + String(official)
-              );
-              break;
-            }
-          }
-        }
-      });
-
-      const completeRows = rows.filter(row => Number(row && row.thru) === 18);
-      if (completeRows.length === rows.length && rows.length) {
-        try {
-          buildTournamentPodium(rows);
-          const firstTie = firstPlaceTiedRows(rows);
-          if (firstTie.length >= 2) {
-            const resolution = resolveTieContenders(firstTie);
-            if (!resolution) failures.push('TIE BREAK RESOLUTION MISSING');
-          }
-        } catch (error) {
-          failures.push('PODIUM ' + String(error && error.message || 'ERROR'));
-        }
-      }
-
-      return { ok: failures.length === 0, failures };
-    }
-
-    async function runControlCenterResultsCheckV188() {
-      const started = timerStart();
-      startLoadingLine();
-
-      try {
-        const stamp = Date.now();
-        const [scoreResponse, leaderResponse] = await Promise.all([
-          fetch(CLOUDFLARE_API_URL + '?refresh=' + stamp + '-results-check', { cache:'no-store' }),
-          fetch(CLOUDFLARE_API_URL + '?action=leaderboard&refresh=' + stamp + '-results-check', { cache:'no-store' })
-        ]);
-
-        const [scoreData, leaderData] = await Promise.all([
-          scoreResponse.json(),
-          leaderResponse.json()
-        ]);
-
-        if (!scoreResponse.ok || !scoreData || scoreData.ok !== true) {
-          throw new Error((scoreData && scoreData.error) || 'OFFICIAL score read failed.');
-        }
-        if (!leaderResponse.ok || !leaderData || leaderData.ok !== true) {
-          throw new Error((leaderData && leaderData.error) || 'Leaderboard read failed.');
-        }
-
-        const rows = Array.isArray(leaderData.leaderboard) ? leaderData.leaderboard : [];
-        const check = officialRoundCheckV188(scoreData, rows);
-
-        if (!check.ok) {
-          throw new Error(check.failures.slice(0, 8).join(' • ') || 'RESULTS mismatch');
-        }
-
-        addTestLog(
-          'RESULTS CHECK',
-          'OK',
-          rows.length + ' TEAMS',
-          'Actual Scores match the Scramble Summary RESULTS / Tie Break interpretation'
-        );
-        completeLoadingLine();
-      } catch (error) {
-        stopLoadingLine();
-        addTestLog(
-          'RESULTS CHECK',
-          'FAILED',
-          timerSeconds(started) + 's',
-          String(error && error.message || 'Request failed')
-        );
-      }
-
-      renderTestLog();
-      requestAnimationFrame(fitTestPageButtonText);
-    }
-
+    
+    
+    
 
     /* =========================================================
        SSHCP V18.9 — INDEPENDENT ACCUMULATED RESULT AUDIT
@@ -16198,20 +15991,7 @@ let scoreTimingDetail =
        Snapshot the already-rendered final Leaderboard underneath Scramble Summary
        and compare its visible place/team sequence to the independently derived
        Result Log order. */
-    function snapshotRenderedLeaderboardV2081() {
-      if (!els.leaderRows) return [];
-      return [...els.leaderRows.querySelectorAll('.leader-row')].map(row => {
-        const placeNode = row.querySelector('.leader-place-number');
-        const teamNode = row.querySelector('.leader-team-name');
-        return {
-          place: normalizeAuditTextV189(placeNode && placeNode.textContent),
-          team: normalizeAuditTextV189(
-            teamNode && (teamNode.dataset.v58Name || teamNode.dataset.fullTeamName || teamNode.textContent)
-          )
-        };
-      }).filter(row => row.team);
-    }
-
+    
     /* SSHCP V21.06 — Summary audit must never depend on a previously-rendered
        Leaderboard DOM. Project the CURRENT freshly-read leaderboard rows through
        the same app ordering/place rules used by renderLeaderboard(), but without
@@ -17410,10 +17190,7 @@ let scoreTimingDetail =
     const TEAMS_POPUP_SCROLL_KEY_V1626 = 'sshcpTeamsPopupScrollTopV1626';
     const TEAMS_POPUP_DATA_KEY_V1626 = 'sshcpTeamsPopupDataV1626';
 
-    function teamsPopupWasOpenOnRefreshV1626() {
-      return sessionStorage.getItem(TEAMS_POPUP_OPEN_KEY_V1626) === '1';
-    }
-
+    
     function rememberTeamsPopupScrollV1626() {
       if (!els.teamsPopupTableScroll) return;
       sessionStorage.setItem(
@@ -19729,8 +19506,7 @@ let scoreTimingDetail =
       return true;
     }
 
-    let testButtonMeasureProbe = null;
-
+    
     function syncControlCenterLayoutV1824() {
       if (!els.testLogView) return null;
       const metrics = getVerticalMetricsV188();
@@ -22465,27 +22241,7 @@ let scoreTimingDetail =
       } catch (e) {}
     }
 
-    function measureCompletedActionSpaceV53() {
-      const screen = els.leaderboardView
-        ? els.leaderboardView.querySelector('.leaderboard-screen')
-        : null;
-      const titleBar = els.leaderboardView
-        ? els.leaderboardView.querySelector('.leader-title-bar')
-        : null;
-      if (!screen) return;
-
-      let freed = 0;
-      if (titleBar && getComputedStyle(titleBar).display !== 'none') {
-        const style = getComputedStyle(titleBar);
-        freed += titleBar.getBoundingClientRect().height +
-          (parseFloat(style.marginTop) || 0) +
-          (parseFloat(style.marginBottom) || 0);
-      }
-      if (freed > 0) {
-        screen.style.setProperty('--v53-final-slot-h', freed + 'px');
-      }
-    }
-
+    
     function positionCompletedFinalAction() {
       const screen = els.leaderboardView
         ? els.leaderboardView.querySelector('.leaderboard-screen')
@@ -22840,30 +22596,7 @@ let scoreTimingDetail =
     }
 
 
-    function getSummaryHandicap(row) {
-      const match = teams.find(team => Number(team.slot) === Number(row.slot));
-      const candidates = [
-        row.handicap,
-        row.hcp,
-        row.teamHandicap,
-        row.teamHcp,
-        match ? match.handicap : undefined,
-        match ? match.hcp : undefined
-      ];
-      const direct = candidates.find(value =>
-        value !== undefined && value !== null && String(value).trim() !== ''
-      );
-      let hcp = Number(direct);
-      if (!Number.isFinite(hcp)) {
-        const gross = Number(row.gross);
-        const net = Number(row.net);
-        if (Number.isFinite(gross) && Number.isFinite(net)) {
-          hcp = Math.abs(gross - net);
-        }
-      }
-      return Number.isFinite(hcp) ? Math.abs(hcp) : null;
-    }
-
+    
     function buildTournamentPodium(rows) {
       const source = Array.isArray(rows)
         ? rows.filter(row => row && Number.isFinite(Number(row.net)))
@@ -23641,14 +23374,7 @@ let scoreTimingDetail =
     let geekSelectedCategoriesV180 = geekFullFilterSetV1830();
     let geekPendingFiltersV186 = geekFullFilterSetV1830();
 
-    const GEEK_WACKY_STAT_BY_CATEGORY_V186 = {
-      'SCORES':'we doubled',
-      'FIELD':'withdrew',
-      'RUN':'bogeeee train',
-      'STEADY':'par train',
-      'SETUP':'water ball'
-    };
-
+    
     /* V18.0b — temporary compact diagnostics. No additional request is ever
        made: COPY compresses the already-loaded CF V2.0 response and current
        Geek filter/tap state into a tiny paste intended for ChatGPT testing. */
@@ -23845,11 +23571,7 @@ let scoreTimingDetail =
       return 'neutral';
     }
 
-    function geekIsWackyStatV186(category, statName) {
-      const expected = GEEK_WACKY_STAT_BY_CATEGORY_V186[String(category || '').trim().toUpperCase()] || '';
-      return expected && geekStatKeyV186(statName) === expected;
-    }
-
+    
     function startGeekDiagnosticV180b() {
       geekDiagnosticActiveV180b = true;
       geekDiagnosticStartedAtV180b = Date.now();
@@ -24035,17 +23757,8 @@ let scoreTimingDetail =
       return [];
     }
 
-    function geekHoleCountV1918(predicate) {
-      const source = geekCourseHolesV1918();
-      if (!source.length) return 0;
-      return source.reduce((count, hole) => count + (predicate(hole || {}) ? 1 : 0), 0);
-    }
-
-    function geekParHoleCountV1918(par) {
-      const target = Number(par);
-      return geekHoleCountV1918(hole => Number(hole.par) === target);
-    }
-
+    
+    
     /* V19.26 — SHORT keeps the approved lower thresholds. LONG now has an
        intentional middle band so only obviously long holes qualify. */
     function geekIsShortHoleV1926(hole) {
@@ -24068,62 +23781,10 @@ let scoreTimingDetail =
       return false;
     }
 
-    function geekShortHoleCountV1918() {
-      return geekHoleCountV1918(geekIsShortHoleV1926);
-    }
-
-    function geekDrivablePar4CountV1918() {
-      return geekHoleCountV1918(hole => Number(hole.par) === 4 && Number(hole.white) < 300);
-    }
-
-    function geekPluralV1918(value, singular, plural) {
-      const n = Number(String(value || '').replace(/[^0-9.-]/g, ''));
-      return Number.isFinite(n) && Math.abs(n) === 1 ? singular : plural;
-    }
-
-    function geekDetailResultPartsV1918(stat) {
-      const name = geekStatKeyV186(stat && stat.stat);
-      const roundedMainValueV1813 = geekMainValueV1813(stat, stat);
-      const value = name.includes('%')
-        ? roundedMainValueV1813
-        : String(stat && stat.value != null ? stat.value : '').trim();
-      let count = 0;
-
-      switch (name) {
-        case 'par-3 birdies':
-          count = geekParHoleCountV1918(3);
-          return { main:value + ' ' + geekPluralV1918(value, 'Birdie', 'Birdies'), context:count ? count + ' PAR 3' + (count === 1 ? '' : 's') : '' };
-        case 'par-4 birdies':
-          count = geekParHoleCountV1918(4);
-          return { main:value + ' ' + geekPluralV1918(value, 'Birdie', 'Birdies'), context:count ? count + ' PAR 4' + (count === 1 ? '' : 's') : '' };
-        case 'par-5 birdies':
-          count = geekParHoleCountV1918(5);
-          return { main:value + ' ' + geekPluralV1918(value, 'Birdie', 'Birdies'), context:count ? count + ' PAR 5' + (count === 1 ? '' : 's') : '' };
-        case 'par-3 vs par':
-          count = geekParHoleCountV1918(3);
-          return { main:value, context:count ? count + ' PAR 3' + (count === 1 ? '' : 's') : '' };
-        case 'par-4 vs par':
-          count = geekParHoleCountV1918(4);
-          return { main:value, context:count ? count + ' PAR 4' + (count === 1 ? '' : 's') : '' };
-        case 'par-5 vs par':
-          count = geekParHoleCountV1918(5);
-          return { main:value, context:count ? count + ' PAR 5' + (count === 1 ? '' : 's') : '' };
-        case 'short vs par':
-          count = geekShortHoleCountV1918();
-          return { main:value, context:count ? count + ' HOLES' : '' };
-        case 'drivable par-4 birdies':
-          count = geekDrivablePar4CountV1918();
-          return { main:value + ' ' + geekPluralV1918(value, 'Birdie', 'Birdies'), context:count ? count + ' PAR 4' + (count === 1 ? '' : 's') : '' };
-        case 'front 9 vs par':
-        case 'back 9 vs par':
-        case '9 easy holes vs par':
-        case '9 hard holes vs par':
-          return { main:value, context:'9 HOLES' };
-        default:
-          return null;
-      }
-    }
-
+    
+    
+    
+    
     function geekResultUnitV1926(value, singular, plural) {
       const n = Number(String(value == null ? '' : value).replace(/[^0-9.+-]/g, ''));
       return Number.isFinite(n) && Math.abs(n) === 1 ? singular : plural;
@@ -24713,72 +24374,7 @@ let scoreTimingDetail =
       }
     }
 
-    function geekDetailResultV180(stat) {
-      const name = geekStatKeyV186(stat && stat.stat);
-      const roundedMainValueV1813 = geekMainValueV1813(stat, stat);
-      const value = name.includes('%')
-        ? roundedMainValueV1813
-        : String(stat && stat.value != null ? stat.value : '').trim();
-      const first = stat && Array.isArray(stat.teams) && stat.teams.length ? stat.teams[0] : null;
-      const detail = first && first.detail ? first.detail : {};
-
-      switch (name) {
-        case 'eagles': return value + ' Eagles';
-        case 'birdies': return value + ' Birdies';
-        case 'pars': return value + ' Pars';
-        case 'bogeys': return value + ' Bogeys';
-        case 'eagle %': return value + ' Eagle Rate';
-        case 'birdie %': return value + ' Birdie Rate';
-        case 'par-or-better %': return value + ' Par-or-Better';
-        case 'bogey-or-worse %': return value + ' Bogey-or-Worse';
-        case 'front 9 vs par': return value + ' on Front 9';
-        case 'back 9 vs par': return value + ' on Back 9';
-        case 'we doubled': return value + ' Double Bogeys';
-        case 'par-3 birdies': return value + ' Birdies on Par-3s';
-        case 'par-4 birdies': return value + ' Birdies on Par-4s';
-        case 'par-5 birdies': return value + ' Birdies on Par-5s';
-        case 'hole wins': return value + ' Hole Wins';
-        case 'best hole vs field':
-        case 'worst hole vs field':
-          return value + ' vs Field';
-        case 'withdrew': return value;
-        case 'best 9-hole stretch':
-        case 'worst 9-hole stretch':
-          return value + ' over 9 Holes';
-        case 'back-9 comeback': {
-          const firstNine = Number(detail.firstNine);
-          const backNine = Number(detail.backNine);
-          const improvement = Number(stat && stat.rawValue);
-          const count = Number.isFinite(improvement) ? Math.abs(improvement) : Math.abs(Number(value));
-          const label = Number.isFinite(count)
-            ? String(count).replace(/\.0+$/, '') + '-Stroke Improvement'
-            : value + ' Improvement';
-          if (Number.isFinite(firstNine) && Number.isFinite(backNine)) {
-            return label + ' (' + formatGolfScore(firstNine) + ' → ' + formatGolfScore(backNine) + ')';
-          }
-          return label;
-        }
-        case 'closing birdie streak': return value + '-Hole Closing Birdie Streak';
-        case 'longest birdie streak': return value + '-Hole Birdie Streak';
-        case 'bogeeee train': return value + '-Hole Bogey Train';
-        case 'highest hole score':
-        case 'lowest hole score': return value + ' Strokes';
-        case 'longest par/under streak': return value + ' Holes';
-        case 'score range': return value + '-Stroke Range';
-        case 'par train': return value + '-Hole Par Train';
-        case 'par-3 vs par': return value + ' on Par-3s';
-        case 'par-4 vs par': return value + ' on Par-4s';
-        case 'par-5 vs par': return value + ' on Par-5s';
-        case 'short vs par': return value + ' on Short Holes';
-        case 'long vs par': return value + ' on Long Holes';
-        case '9 easy holes vs par': return value + ' on Easiest 9';
-        case '9 hard holes vs par': return value + ' on Hardest 9';
-        case 'drivable par-4 birdies': return value + ' Birdies on Drivable Par-4s';
-        case 'water ball': return value || 'N/A';
-        default: return value || '—';
-      }
-    }
-
+    
     function geekEveryChildFilterCheckedV1830(filterSet) {
       const source = filterSet instanceof Set ? filterSet : new Set();
       return GEEK_FILTER_ORDER_V186.every(filter => source.has(filter));
@@ -24791,48 +24387,9 @@ let scoreTimingDetail =
       return filterSet;
     }
 
-    function geekAllSelectedV180() {
-      return geekEveryChildFilterCheckedV1830(geekSelectedCategoriesV180);
-    }
-
-    function geekSetAllV180(enabled) {
-      geekSelectedCategoriesV180 = enabled ? geekFullFilterSetV1830() : new Set();
-      geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
-    }
-
-    function measureGeekSharedFontV181(texts, targetPx, minPx, availablePx, fontWeight) {
-      const target = Math.max(minPx, Number(targetPx) || minPx);
-      const available = Math.max(1, Number(availablePx) || 1);
-      const probe = document.createElement('span');
-      probe.setAttribute('aria-hidden', 'true');
-      probe.style.position = 'fixed';
-      probe.style.left = '-10000px';
-      probe.style.top = '-10000px';
-      probe.style.width = 'max-content';
-      probe.style.height = 'auto';
-      probe.style.visibility = 'hidden';
-      probe.style.pointerEvents = 'none';
-      probe.style.whiteSpace = 'nowrap';
-      probe.style.fontFamily = "'Oswald', Arial, sans-serif";
-      probe.style.fontWeight = String(fontWeight || 600);
-      probe.style.lineHeight = '1';
-      probe.style.textTransform = 'uppercase';
-      probe.style.fontSize = target + 'px';
-      document.body.appendChild(probe);
-
-      let shared = target;
-      (Array.isArray(texts) ? texts : []).forEach(value => {
-        probe.textContent = String(value ?? '');
-        const width = probe.getBoundingClientRect().width;
-        if (width > available && width > 0) {
-          shared = Math.min(shared, target * (available / width));
-        }
-      });
-
-      probe.remove();
-      return Math.max(minPx, Math.min(target, shared * 0.985));
-    }
-
+    
+    
+    
     function allGeekStatsV181() {
       if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return [];
       return geekDataV180.categories.flatMap(categoryBlock =>
@@ -25589,45 +25146,8 @@ let scoreTimingDetail =
       }
     }
 
-    function installGeekDetailReturnCoverV1816() {
-      if (!els.modalBox) return;
-      if (els.modalTitle) {
-        const boxRect = els.modalBox.getBoundingClientRect();
-        const titleRect = els.modalTitle.getBoundingClientRect();
-        const coverTop = Math.max(0, Math.round(titleRect.bottom - boxRect.top));
-        els.modalBox.style.setProperty(
-          '--v1816-geek-return-cover-top',
-          coverTop + 'px'
-        );
-      }
-      els.modalBox.classList.remove('geek-detail-return-reveal-v1816');
-      els.modalBox.classList.add('geek-detail-return-cover-v1816');
-    }
-
-    function revealGeekDetailReturnCoverV1816() {
-      if (
-        !els.modalBox ||
-        !els.modalBox.classList.contains('geek-detail-return-cover-v1816')
-      ) return;
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (els.modalBox) {
-            els.modalBox.classList.add('geek-detail-return-reveal-v1816');
-          }
-        });
-      });
-
-      window.setTimeout(() => {
-        if (!els.modalBox) return;
-        els.modalBox.classList.remove(
-          'geek-detail-return-cover-v1816',
-          'geek-detail-return-reveal-v1816'
-        );
-        els.modalBox.style.removeProperty('--v1816-geek-return-cover-top');
-      }, 540);
-    }
-
+    
+    
     function returnToGeekModeV180() {
       const geekReturnCurtainV2086 = beginAfterPlayCurtainV2086('after-play-geek-return-v2086');
 
@@ -26073,102 +25593,8 @@ let scoreTimingDetail =
       return { teams: sourceTeams, holes: sourceHoles };
     }
 
-    function renderSkinsPopupV1627(results) {
-      syncSharedGeometryV187();
-      closeModal();
-      els.modalOverlay.classList.add('skins-results-v1627');
-      els.modalTitle.textContent = 'SKINS';
-      els.modalInput.style.display = 'none';
-
-      const sharedV187 = syncSharedGeometryV187();
-      const frame = document.createElement('div');
-      frame.className = 'skins-table-frame-v1627';
-      const scroll = document.createElement('div');
-      scroll.className = 'skins-table-scroll-v1627';
-
-      const visibleBodyRows = Math.max(1, results.length);
-      const desiredTableHeight = sharedV187.skinsHeader + (visibleBodyRows * sharedV187.skinsRow);
-      const maxTableHeight = Math.max(sharedV187.skinsHeader + sharedV187.skinsRow, Math.floor((window.innerHeight || 800) * 0.62));
-      scroll.style.height = Math.min(desiredTableHeight, maxTableHeight) + 'px';
-
-      const header = document.createElement('div');
-      header.className = 'skins-row-v1627 header';
-      ['TEAM','HOLE','SCORE'].forEach(label => {
-        const cell = document.createElement('div');
-        cell.className = 'skins-cell-v1627';
-        cell.textContent = label;
-        header.appendChild(cell);
-      });
-      scroll.appendChild(header);
-
-      if (!results.length) {
-        const emptyRow = document.createElement('div');
-        emptyRow.className = 'skins-row-v1627 skins-no-skins-row-v187';
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'skins-cell-v1627 skins-no-skins-cell-v187';
-        emptyCell.textContent = 'NO SKINS';
-        emptyRow.appendChild(emptyCell);
-        scroll.appendChild(emptyRow);
-      } else {
-        results.forEach(item => {
-          const row = document.createElement('div');
-          row.className = 'skins-row-v1627';
-
-          const team = document.createElement('div');
-          team.className = 'skins-cell-v1627 skins-team-v1627';
-          team.textContent = displayTeamName(item.team.name || '');
-
-          const hole = document.createElement('div');
-          hole.className = 'skins-cell-v1627 skins-hole-v1627';
-          hole.textContent = String(item.hole);
-
-          const score = document.createElement('div');
-          score.className = 'skins-cell-v1627 skins-score-v1627';
-          score.appendChild(makeSkinsScoreMarkV1627(item.score, item.par));
-
-          row.append(team, hole, score);
-          scroll.appendChild(row);
-        });
-      }
-
-      frame.appendChild(scroll);
-      els.modalBody.replaceChildren(frame);
-
-      const back = makeModalButton('BACK', '', () => {
-        showTournamentSummary();
-      });
-      els.modalActions.className = 'modal-actions single skins-back-only-v181';
-      els.modalActions.replaceChildren(back);
-      els.modalOverlay.classList.add('open');
-      requestAnimationFrame(fitSkinsTableTextV1627);
-    }
-
-    async function showSkinsPopupV1627() {
-      if (!skinsEnabledV1627()) return;
-      const skinsCurtainV2086 = beginAfterPlayCurtainV2086('after-play-skins-v2086');
-      startLoadingLine();
-      try {
-        const source = await fetchSkinsSourceV1627();
-        const results = buildSkinsResultsV1627(source.teams, source.holes);
-        completeLoadingLine();
-        renderSkinsPopupV1627(results);
-        revealAfterPlayCurtainV2086('after-play-skins-v2086', skinsCurtainV2086, 2);
-      } catch (error) {
-        completeLoadingLine();
-        addTestLog('SKINS LOAD', 'FAILED', '—', String(error && error.message || 'Request failed'));
-        closeModal();
-        els.modalOverlay.classList.add('skins-results-v1627');
-        els.modalTitle.textContent = 'SKINS';
-        els.modalBody.textContent = 'SKINS DATA UNAVAILABLE';
-        els.modalInput.style.display = 'none';
-        const back = makeModalButton('BACK', '', showTournamentSummary);
-        els.modalActions.className = 'modal-actions single';
-        els.modalActions.replaceChildren(back);
-        els.modalOverlay.classList.add('open');
-        revealAfterPlayCurtainV2086('after-play-skins-v2086', skinsCurtainV2086, 2);
-      }
-    }
-
+    
+    
     /* SSHCP V20.27/V20.30 — Game Mode text fitting.
        GAME and WINNER preserve intact tokens: quotes do not create arbitrary
        character-level break points. V20.30 raises GAME to the same 50%-of-row
@@ -26492,93 +25918,8 @@ let scoreTimingDetail =
       );
     }
 
-    function positionSummaryNavigationV182() {
-      if (!els.modalOverlay.classList.contains('tournament-summary')) return;
-      if (!els.modalBox || !els.modalTitle || !els.modalBody) return;
-
-      const subtitle = els.modalBody.querySelector('.tournament-summary-subtitle');
-      const table = els.modalBody.querySelector('.tournament-summary-grid');
-      const home = els.modalBox.querySelector('.summary-home-overlay-v182');
-      const leaderboard = els.modalBox.querySelector('.summary-leaderboard-overlay-v182');
-      if (!subtitle || !table || !home || !leaderboard) return;
-
-      /* V18.5: RESULTS/TOP 10 remains centered vertically in the open band.
-         HOME and LEADERBOARD each own exactly 25% of the table width. Their
-         OUTER edges align exactly with the table edges, leaving the middle 50%
-         as the stable centered subtitle zone. */
-      subtitle.style.setProperty('transform', 'none', 'important');
-      const titleRect = els.modalTitle.getBoundingClientRect();
-      const tableRect = table.getBoundingClientRect();
-      const subtitleRect = subtitle.getBoundingClientRect();
-      const boxRect = els.modalBox.getBoundingClientRect();
-      if (!(tableRect.width > 0) || !(boxRect.width > 0)) return;
-
-      const centerY = (titleRect.bottom + tableRect.top) / 2;
-      const subtitleCenterY = subtitleRect.top + (subtitleRect.height / 2);
-      subtitle.style.setProperty(
-        'transform',
-        'translateY(' + (centerY - subtitleCenterY).toFixed(2) + 'px)',
-        'important'
-      );
-
-      /* V18.9: Summary top navigation is NOT part of the bottom-button family.
-         It owns only the open band between the title and TABLE HEADER ROW,
-         preserving a small buffer on both sides and shrinking locally if the
-         band is tighter on another device. */
-      const sharedV189 = syncSharedGeometryV187();
-      const navBand = Math.max(1, tableRect.top - titleRect.bottom);
-      const navBuffer = Math.max(2, Math.round(6 * sharedV189.multiplier));
-      const scorecardNavH = Math.max(1, Math.round(35 * sharedV189.multiplier));
-      const buttonH = Math.max(1, Math.min(
-        scorecardNavH,
-        Math.floor(navBand - (navBuffer * 2))
-      ));
-      const buttonW = Math.max(1, tableRect.width * 0.25);
-      const tableLeftInBox = tableRect.left - boxRect.left;
-      const tableRightInBox = tableRect.right - boxRect.left;
-      const top = centerY - boxRect.top - (buttonH / 2);
-
-      home.style.setProperty('width', buttonW + 'px', 'important');
-      home.style.setProperty('height', buttonH + 'px', 'important');
-      home.style.setProperty('left', tableLeftInBox + 'px', 'important');
-      home.style.setProperty('top', top + 'px', 'important');
-
-      leaderboard.style.setProperty('width', buttonW + 'px', 'important');
-      leaderboard.style.setProperty('height', buttonH + 'px', 'important');
-      leaderboard.style.setProperty('left', (tableRightInBox - buttonW) + 'px', 'important');
-      leaderboard.style.setProperty('top', top + 'px', 'important');
-
-      [home, leaderboard].forEach(button => {
-        fitTextToBoxV5(button, button, buttonH * 0.40, 9, {
-          horizontalPad: 12,
-          verticalPad: 6,
-          wrap: false,
-          lineHeight: 1
-        });
-      });
-    }
-
-    function installSummaryNavigationV182() {
-      if (!els.modalBox) return;
-      els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182').forEach(node => node.remove());
-
-      const home = document.createElement('button');
-      home.type = 'button';
-      home.className = 'summary-nav-overlay-v182 summary-home-overlay-v182';
-      home.textContent = 'HOME';
-      home.addEventListener('click', showHome);
-
-      const leaderboard = document.createElement('button');
-      leaderboard.type = 'button';
-      leaderboard.className = 'summary-nav-overlay-v182 summary-leaderboard-overlay-v182';
-      leaderboard.textContent = 'LEADERBOARD';
-      leaderboard.addEventListener('click', showLeaderboard);
-
-      els.modalBox.appendChild(home);
-      els.modalBox.appendChild(leaderboard);
-      requestAnimationFrame(positionSummaryNavigationV182);
-    }
-
+    
+    
     function showTournamentSummary() {
       setHomeHamburgerVisibleV2055(false);
       syncSharedGeometryV187();
@@ -29453,14 +28794,7 @@ let scoreTimingDetail =
       };
     }
 
-    function monochromeCssV172(value, transparentAsWhite) {
-      const c = parseCssColorV172(value);
-      if (!c) return transparentAsWhite ? '#fff' : '#333';
-      if (c.a < .08) return transparentAsWhite ? '#fff' : 'transparent';
-      const luminance = ((.2126 * c.r) + (.7152 * c.g) + (.0722 * c.b)) / 255;
-      return luminance >= .5 ? '#fff' : '#333';
-    }
-
+    
     function triggerHapticV185(ms = 10) {
       if (navigator && typeof navigator.vibrate === 'function') {
         try { navigator.vibrate(ms); } catch (_) {}
@@ -29541,38 +28875,7 @@ let scoreTimingDetail =
       if (!button.classList.contains('score-button')) triggerHapticV185(10);
     }
 
-    function releaseLiteralButtonVisualV1850() {
-      const button = sshcpPressedButtonV172;
-      const rest = sshcpPressedRestComputedV1850;
-      const prior = sshcpPressedRestoreV172;
-      if (!button || !rest) return;
-
-      button.style.setProperty('transition', 'none', 'important');
-      button.classList.remove('sshcp-button-pressed-v172');
-      button.style.setProperty('background', rest.bg, 'important');
-      button.style.setProperty('color', rest.color, 'important');
-      button.style.setProperty('border-color', rest.border, 'important');
-      button.style.setProperty('-webkit-text-fill-color', rest.color, 'important');
-      button.style.setProperty('filter', 'none', 'important');
-      button.style.removeProperty('--sshcp-press-bg-v172');
-      button.style.removeProperty('--sshcp-press-fg-v172');
-      button.style.removeProperty('--sshcp-press-border-v172');
-
-      if (sshcpPressedTransitionRestoreV1852 != null) {
-        cancelAnimationFrame(sshcpPressedTransitionRestoreV1852);
-      }
-      sshcpPressedTransitionRestoreV1852 = requestAnimationFrame(() => {
-        sshcpPressedTransitionRestoreV1852 = requestAnimationFrame(() => {
-          if (prior && prior.transition) {
-            button.style.setProperty('transition', prior.transition, prior.transitionPriority || '');
-          } else {
-            button.style.removeProperty('transition');
-          }
-          sshcpPressedTransitionRestoreV1852 = null;
-        });
-      });
-    }
-
+    
     function endLiteralButtonPressV172() {
       const button = sshcpPressedButtonV172;
       const prior = sshcpPressedRestoreV172;
