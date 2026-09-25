@@ -1,11 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.42-N6R4QX | BUILD KEY: 21.43-P7K2MV -->
-<!-- SSHCP V21.43 CC/SM REFRESH CURTAIN + EMPTY-LOG STATE - exact V21.42 donor.
-     Paired with unchanged CF V3.3: (1) keeps zero automatic Scramble-state polling, (2) browser/PWA
-     refresh preserves both CONTROL CENTER and SCRAMBLE MODE, performs one fresh Worker state/log read,
-     and reveals the restored screen through a full-screen white 0.5s curtain, (3) END keeps its black
-     confirmation button but uses Gray 8 for the pressed visual before the existing black transition,
-     and (4) CLEAR SM LOG is Gray 2.5 and disabled whenever the Audit tab is empty. START SCRAMBLE keeps
-     the existing server behavior: a new start clears any prior ended Audit and begins a fresh log. -->
+<!-- SSHCP | BASE KEY: 21.43-P7K2MV | BUILD KEY: 21.44-H7M4QX -->
+<!-- SSHCP V21.44 RETURNING-QR WELCOME FIX - exact V21.43 donor.
+     Paired with unchanged CF V3.3. Preserves all V21.43 Scramble refresh/transition/log behavior.
+     Startup now distinguishes a genuinely new incoming QR/key from the exact passkey already saved on
+     this device: reopening the PWA/browser on the same QR URL silently revalidates the stored authorization,
+     strips the stale passkey/key from the URL, does NOT show WELCOME again, and does NOT create a duplicate
+     QR AUTHORIZED audit event. A different/new incoming QR keeps the established Welcome + audited auth flow. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,13 +70,32 @@
            Center. START SCRAMBLE / COPY LOG / DELETE LOG are layout-only placeholders in
            this build. No Worker/API/Sheet/audit/scoring logic changes are included. */
         var initialQrParams = new URLSearchParams(window.location.search);
+        var incomingQrPasskeyV2144 = String(
+          initialQrParams.get('passkey') || initialQrParams.get('key') || ''
+        ).trim();
+        var storedQrPasskeyV2144 = String(
+          localStorage.getItem('sshcpQrPasskey') || ''
+        ).trim();
+
+        /* V21.44 — an installed PWA/browser can reopen the exact QR URL that
+           originally authorized this device. That stale URL is NOT a new scan.
+           Suppress the Welcome presentation only when the incoming passkey is
+           exactly the same passkey already saved locally; runtime still silently
+           revalidates it against the Worker before normal app use. */
+        var returningStoredQrV2144 = !!(
+          incomingQrPasskeyV2144 &&
+          storedQrPasskeyV2144 &&
+          incomingQrPasskeyV2144 === storedQrPasskeyV2144
+        );
+        window.__sshcpReturningStoredQrV2144 = returningStoredQrV2144;
+
         var hasIncomingQrWelcome = !!(
-          initialQrParams.get('passkey') || initialQrParams.get('key')
+          incomingQrPasskeyV2144 && !returningStoredQrV2144
         );
 
         /* V18.0b — direct/plain entry gets the protected Welcome presentation
            only while this device has no saved QR or local scoring authorization.
-           Existing incoming-QR Welcome behavior stays unchanged. */
+           V21.44 treats the same already-saved incoming QR as returning auth. */
         var hasSavedAuthorizationV180b = !!(
           localStorage.getItem('sshcpQrPasskey') ||
           localStorage.getItem('rotbAuthorizedTeam')
@@ -11971,7 +11989,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.43</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.44</span></span>
         </button>
 
       </div>
@@ -14243,12 +14261,30 @@ let scoreTimingDetail =
 
     async function initializeQrAuthorization(){
       const params=new URLSearchParams(window.location.search);
-      const incoming=params.get('passkey') || params.get('key') || '';
+      const incoming=String(params.get('passkey') || params.get('key') || '').trim();
       if(incoming){
-        /* V19.84 — the incoming QR Welcome owns invalid/unassigned presentation.
-           Return the result so initialize() can keep the full-screen Welcome
-           alive instead of falling through to HOME, whose normal closeModal()
-           would otherwise erase the failure explanation. */
+        const storedPasskeyV2144 = String(getQrPasskey() || '').trim();
+        const returningStoredQrV2144 = !!(
+          storedPasskeyV2144 && incoming === storedPasskeyV2144
+        );
+
+        if (returningStoredQrV2144) {
+          /* V21.44 — reopening from the same QR URL is a returning session,
+             not a fresh authorization. Revalidate silently and without audit,
+             then strip the stale query key exactly as the fresh-QR path does. */
+          const storedOk = await validateQrPasskey(incoming,false,false,false);
+          params.delete('passkey'); params.delete('key');
+          const q=params.toString();
+          history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
+          if (storedOk === false) {
+            clearQrAuthorization();
+            localStorage.removeItem('rotbAuthorizedTeam');
+          }
+          return { incoming:false, returningIncoming:true, ok:storedOk };
+        }
+
+        /* V19.84 — a genuinely new/different incoming QR Welcome owns
+           invalid/unassigned presentation and remains an audited auth event. */
         const incomingOk = await validateQrPasskey(incoming,true,true,true);
         params.delete('passkey'); params.delete('key');
         const q=params.toString();
