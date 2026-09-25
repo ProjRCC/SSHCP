@@ -1,11 +1,14 @@
-<!-- SSHCP | BASE KEY: 21.34-R5K8MW | BUILD KEY: 21.35-T7N4QX -->
-<!-- SSHCP V21.35 CONTROL CENTER AUTH-GATE TEST - exact V21.34 donor.
-     Surgical Control Center gate refinement only: (1) the K/k access-key prompt may appear only
-     when entering CONTROL CENTER from HOME, (2) no authorization action inside CONTROL CENTER
-     asks for K/k, (3) a real authorization change or removal silently rearms the gate for the next
-     HOME -> CONTROL CENTER entry, and (4) V21.34 upper-half gate placement plus V21.33 AUTH TEAM
-     auto-open behavior remain unchanged. Scoring/NESR, Leaderboard, Summary/tiebreak, Skins, GEEK,
-     GAME, QR validation, Worker/API, geometry, timings, and all other presentation remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.35-T7N4QX | BUILD KEY: 21.36-W8R4KM -->
+<!-- SSHCP V21.36 SUNDAY SCRAMBLE PROTECTION TEST - exact V21.35 donor.
+     Surgical tournament-safety changes only: (1) HOME -> CONTROL CENTER access key is CC,
+     (2) START SCRAMBLE arms a persistent local protection lock and becomes red END SCRAMBLE,
+     (3) while protected, DELETE ALL / ADD PAR / RANDOM / RANDOM 2 and CLEAR SM LOG are truly
+     disabled using Gray 2.5 with white text, (4) CONTROL CENTER shows red SCRAMBLE MODE ACTIVE,
+     (5) END SCRAMBLE opens an 80% red-on-black danger confirmation with large blue MISTAKE and
+     smaller black/red END; MISTAKE returns HOME, END only restores CC controls and never changes
+     score or Audit data, and (6) unauthenticated GAIN AUTH uses Gray 8 with white text. CF V3.1,
+     scoring/NESR, Leaderboard, Summary/tiebreak, Skins, GEEK, GAME, QR validation, geometry,
+     timing, and all other presentation remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11616,6 +11619,132 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   padding-right:var(--sshcp-shared-gutter-v2123)!important;
 }
 </style>
+
+<style id="sshcp-v2136-sunday-scramble-protection">
+/* V21.36 — tournament protection presentation. */
+#testLogView .test-score-action.scramble-protected-disabled-v2136,
+#scrambleModeView .scramble-action-button-v1938.scramble-protected-disabled-v2136{
+  background:var(--sshcp-gray-2-5-v2040,#ededed)!important;
+  border-color:var(--sshcp-gray-2-5-v2040,#ededed)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  opacity:1!important;
+  box-shadow:none!important;
+  filter:none!important;
+  pointer-events:none!important;
+  cursor:default!important;
+}
+
+#testLogView .control-center-scramble-button-v1938.scramble-active-v2136,
+#scrambleModeView .scramble-action-button-v1938.scramble-end-v2136{
+  background:var(--red)!important;
+  border-color:var(--red)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+
+#testLogView .test-switch-auth.gain-auth-v2136{
+  background:var(--sshcp-gray-8-v2102,#2C2C2C)!important;
+  border-color:var(--sshcp-gray-8-v2102,#2C2C2C)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:none!important;
+}
+
+.modal-overlay.end-scramble-confirm-v2136{
+  position:fixed!important;
+  inset:0!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  background:#000!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  overflow:hidden!important;
+}
+.modal-overlay.end-scramble-confirm-v2136.open{display:flex!important;}
+.modal-overlay.end-scramble-confirm-v2136 .modal-box{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:80vw!important;
+  height:80dvh!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:80vw!important;
+  max-height:80dvh!important;
+  margin:0!important;
+  padding:clamp(20px,4dvh,36px) clamp(16px,5vw,38px)!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:18px!important;
+  background:var(--red)!important;
+  color:#fff!important;
+}
+.modal-overlay.end-scramble-confirm-v2136 .modal-title{
+  margin:0!important;
+  padding:0!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-size:clamp(28px,7vw,44px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.modal-overlay.end-scramble-confirm-v2136 .modal-text{
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:clamp(12px,3dvh,26px) 0!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-size:clamp(22px,5.5vw,34px)!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+  text-align:center!important;
+}
+.modal-overlay.end-scramble-confirm-v2136 .scramble-end-actions-v2136{
+  width:100%!important;
+  margin:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,7fr) minmax(0,3fr)!important;
+  gap:clamp(8px,2vw,16px)!important;
+}
+.modal-overlay.end-scramble-confirm-v2136 .modal-btn.scramble-mistake-v2136{
+  min-width:0!important;
+  min-height:clamp(64px,10dvh,90px)!important;
+  padding:0 8px!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-size:clamp(24px,6vw,38px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+  box-shadow:none!important;
+}
+.modal-overlay.end-scramble-confirm-v2136 .modal-btn.scramble-end-confirm-v2136{
+  min-width:0!important;
+  min-height:clamp(64px,10dvh,90px)!important;
+  padding:0 6px!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:#000!important;
+  color:var(--red)!important;
+  -webkit-text-fill-color:var(--red)!important;
+  font-size:clamp(22px,5.2vw,34px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+  box-shadow:none!important;
+}
+</style>
+
 </head>
 
 
@@ -11745,7 +11874,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.35</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.36</span></span>
         </button>
 
       </div>
@@ -13722,6 +13851,7 @@ let scoreTimingDetail =
 
       if (els.testSwitchAuthorizationButton) {
         els.testSwitchAuthorizationButton.classList.toggle('authorized', authorized);
+        els.testSwitchAuthorizationButton.classList.toggle('gain-auth-v2136', !authorized);
 
         if (isMasterQr()) {
           els.testSwitchAuthorizationButton.textContent = 'MASTER AUTH';
@@ -16770,7 +16900,7 @@ let scoreTimingDetail =
       }).join('');
     }
 
-    const SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133 = 'sshcpControlCenterUnlockedV2133';
+    const SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136 = 'sshcpControlCenterUnlockedV2136';
     let controlCenterUnlockedV2133 = false;
     let accessKeyViewportHandlerV2134 = null;
     let accessKeyFullHeightV2134 = 0;
@@ -16778,7 +16908,7 @@ let scoreTimingDetail =
     function isControlCenterUnlockedV2133() {
       if (controlCenterUnlockedV2133) return true;
       try {
-        return sessionStorage.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133) === '1';
+        return sessionStorage.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136) === '1';
       } catch (_) {
         return false;
       }
@@ -16786,12 +16916,12 @@ let scoreTimingDetail =
 
     function markControlCenterUnlockedV2133() {
       controlCenterUnlockedV2133 = true;
-      try { sessionStorage.setItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133, '1'); } catch (_) {}
+      try { sessionStorage.setItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136, '1'); } catch (_) {}
     }
 
     function resetControlCenterUnlockedV2135() {
       controlCenterUnlockedV2133 = false;
-      try { sessionStorage.removeItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133); } catch (_) {}
+      try { sessionStorage.removeItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136); } catch (_) {}
     }
 
     function openControlCenterUnlockedV2133() {
@@ -16800,6 +16930,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
+      syncScrambleProtectionUiV2136();
       scheduleControlCenterViewportSnapshotV2128();
       updateControlCenterViewportMetricsV188();
       /* TEST PAGE opening refreshes the CF QR directory once. Existing cached
@@ -16853,23 +16984,24 @@ let scoreTimingDetail =
       els.modalBody.textContent = 'ACCESS KEY';
       els.modalInput.style.display = '';
       els.modalInput.value = '';
-      els.modalInput.setAttribute('maxlength', '1');
+      els.modalInput.setAttribute('maxlength', '2');
       els.modalInput.setAttribute('aria-label', title + ' access key');
       els.modalActions.className = 'modal-actions';
       els.modalActions.innerHTML = '';
       els.modalOverlay.classList.add('open');
 
-      /* One-key tournament gate: K/k succeeds immediately; no Enter/Done/OK. */
+      /* V21.36 — two-key tournament gate: CC in any capitalization succeeds
+         immediately; no Enter/Done/OK. Invalid prefixes clear themselves. */
       els.modalInput.oninput = () => {
         const value = String(els.modalInput.value || '').trim().toLowerCase();
-        if (value === 'k') {
+        if (value === 'cc') {
           if (rememberControlCenter) markControlCenterUnlockedV2133();
           const action = onSuccess;
           closeModal();
           if (typeof action === 'function') action();
           return;
         }
-        if (value) els.modalInput.value = '';
+        if (value && !'cc'.startsWith(value)) els.modalInput.value = '';
       };
 
       const initialViewport = window.visualViewport;
@@ -16899,7 +17031,7 @@ let scoreTimingDetail =
       showAccessKeyGateV2134('CONTROL CENTER', openControlCenterUnlockedV2133, true);
     }
 
-    /* V21.35 — only the HOME -> CONTROL CENTER entry owns the access-key gate.
+    /* V21.36 — only the HOME -> CONTROL CENTER entry owns the CC access-key gate.
        Internal returns/reopens inside the Control Center workflow never prompt. */
     function showTestLogFromHomeV2135() {
       if (isControlCenterUnlockedV2133()) {
@@ -16917,6 +17049,7 @@ let scoreTimingDetail =
       closeModal();
       closeScoreEntry(false);
       setActiveView('scramble');
+      syncScrambleProtectionUiV2136();
       syncScrambleModeLayoutV1938();
       requestAnimationFrame(fitScrambleModeButtonTextV1938);
       window.scrollTo(0,0);
@@ -16938,6 +17071,101 @@ let scoreTimingDetail =
     let scrambleFeedLastRowV1940 = 1;
     let scrambleFeedSessionV1940 = '';
     let scrambleFeedHasOfficialEntriesV1940 = false;
+
+    /* V21.36 — Sunday tournament safety lock. This is deliberately separate
+       from the Worker Audit-active flag: END SCRAMBLE restores CC access only
+       and never deletes/stops/re-writes Audit or score data. localStorage keeps
+       the protection armed across refresh/PWA restart until END is confirmed. */
+    const SSHCP_SCRAMBLE_PROTECTION_KEY_V2136 = 'sshcpScrambleProtectionV2136';
+    let scrambleProtectionActiveV2136 = (() => {
+      try { return localStorage.getItem(SSHCP_SCRAMBLE_PROTECTION_KEY_V2136) === '1'; }
+      catch (_) { return false; }
+    })();
+
+    function isScrambleProtectionActiveV2136() {
+      return Boolean(scrambleProtectionActiveV2136);
+    }
+
+    function setScrambleProtectionActiveV2136(active) {
+      scrambleProtectionActiveV2136 = Boolean(active);
+      try {
+        localStorage.setItem(
+          SSHCP_SCRAMBLE_PROTECTION_KEY_V2136,
+          scrambleProtectionActiveV2136 ? '1' : '0'
+        );
+      } catch (_) {}
+      syncScrambleProtectionUiV2136();
+    }
+
+    function syncScrambleProtectionUiV2136() {
+      const active = isScrambleProtectionActiveV2136();
+      const protectedCcButtons = [
+        els.testAddParCurrentButton,
+        els.testAddRandomCurrentButton,
+        els.testAddRandom2CurrentButton,
+        els.testDeleteAllButton
+      ].filter(Boolean);
+
+      protectedCcButtons.forEach(button => {
+        button.disabled = active;
+        button.classList.toggle('scramble-protected-disabled-v2136', active);
+      });
+
+      if (els.scrambleDeleteLogButtonV1938) {
+        els.scrambleDeleteLogButtonV1938.disabled = active;
+        els.scrambleDeleteLogButtonV1938.classList.toggle('scramble-protected-disabled-v2136', active);
+      }
+
+      if (els.scrambleStartButtonV1938) {
+        els.scrambleStartButtonV1938.textContent = active ? 'END SCRAMBLE' : 'START SCRAMBLE';
+        els.scrambleStartButtonV1938.classList.toggle('scramble-end-v2136', active);
+      }
+
+      if (els.controlCenterScrambleButtonV1938) {
+        els.controlCenterScrambleButtonV1938.textContent = active ? 'SCRAMBLE MODE ACTIVE' : 'SCRAMBLE MODE';
+        els.controlCenterScrambleButtonV1938.classList.toggle('scramble-active-v2136', active);
+      }
+
+      requestAnimationFrame(() => {
+        fitTestPageButtonText();
+        fitScrambleModeButtonTextV1938();
+      });
+    }
+
+    function showEndScrambleConfirmV2136() {
+      if (!isScrambleProtectionActiveV2136()) return;
+
+      closeModal();
+      els.modalOverlay.classList.add('end-scramble-confirm-v2136');
+      els.modalTitle.textContent = 'END SCRAMBLE?';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent =
+        'ARE YOU SURE YOU WANT TO END THE CURRENT SCRAMBLE AND REGAIN FULL CC ACCESS?';
+      els.modalInput.style.display = 'none';
+
+      const mistake = makeModalButton('MISTAKE', 'scramble-mistake-v2136', () => {
+        closeModal();
+        showHome();
+      });
+      const end = makeModalButton('END', 'scramble-end-confirm-v2136', () => {
+        setScrambleProtectionActiveV2136(false);
+        addTestLog('END SCRAMBLE', 'OK', '—', 'CC PROTECTION RELEASED / SCORES UNCHANGED');
+        closeModal();
+        showTestLog();
+      });
+
+      els.modalActions.className = 'modal-actions scramble-end-actions-v2136';
+      els.modalActions.replaceChildren(mistake, end);
+      els.modalOverlay.classList.add('open');
+    }
+
+    function handleScramblePrimaryV2136() {
+      if (isScrambleProtectionActiveV2136()) {
+        showEndScrambleConfirmV2136();
+        return;
+      }
+      runScrambleStartV1939(false);
+    }
 
     function setScrambleLatestActivityV1939(value) {
       if (!els.scrambleLatestActivityV1938) return;
@@ -16993,7 +17221,10 @@ let scoreTimingDetail =
         els.scrambleBackButtonV1938,
         els.scrambleHomeButtonV1941
       ].filter(Boolean).forEach(button => {
-        button.disabled = Boolean(disabled);
+        const protectedClear =
+          button === els.scrambleDeleteLogButtonV1938 &&
+          isScrambleProtectionActiveV2136();
+        button.disabled = Boolean(disabled) || protectedClear;
       });
     }
 
@@ -17164,6 +17395,7 @@ let scoreTimingDetail =
         );
 
         scrambleAuditActiveV1939 = true;
+        setScrambleProtectionActiveV2136(true);
         setScrambleLatestActivityV1939('WAITING FOR OFFICIAL SCORE SAVES');
         scrambleFeedSessionV1940 = String(data.sessionToken || '');
         const startLastRow = Number(data.lastRow);
@@ -17271,6 +17503,7 @@ let scoreTimingDetail =
     }
 
     function showScrambleDeleteLogConfirmV1939() {
+      if (isScrambleProtectionActiveV2136()) return;
       closeModal();
       els.modalOverlay.classList.add('reset-authorization');
       els.modalTitle.textContent = 'DELETE SCRAMBLE LOG?';
@@ -17291,12 +17524,14 @@ let scoreTimingDetail =
     }
 
     async function runScrambleDeleteLogV1939() {
+      if (isScrambleProtectionActiveV2136()) return;
       setScrambleButtonsDisabledV1939(true);
       startLoadingLine();
 
       try {
         await scrambleApiRequestV1939('scrambleDelete');
         scrambleAuditActiveV1939 = false;
+        setScrambleProtectionActiveV2136(false);
         resetScrambleFeedV1940('NOT STARTED');
         stopScrambleStatusPollV1939();
         addTestLog('CLEAR SM LOG', 'OK', '—', 'AUDIT CLEARED / INACTIVE');
@@ -17650,6 +17885,7 @@ let scoreTimingDetail =
     }
 
     function showTestScoreWarning(mode, scope) {
+      if (isScrambleProtectionActiveV2136()) return;
       closeModal();
 
       const isPar = mode === 'par';
@@ -17694,6 +17930,7 @@ let scoreTimingDetail =
     }
 
     async function runTestScoreAction(mode, scope) {
+      if (isScrambleProtectionActiveV2136()) return;
       closeModal();
       startLoadingLine();
 
@@ -28841,6 +29078,7 @@ let scoreTimingDetail =
           'quick-guide-normal-v2110',
           'switch-authorization',
           'access-key-gate-v2134',
+          'end-scramble-confirm-v2136',
           'tournament-result',
           'tournament-summary',
           'skins-results-v1627',
@@ -29236,7 +29474,7 @@ let scoreTimingDetail =
 
     els.testLogHotspot.addEventListener('click', showTestLogFromHomeV2135);
     if (els.controlCenterScrambleButtonV1938) els.controlCenterScrambleButtonV1938.addEventListener('click', showScrambleModeV1938);
-    if (els.scrambleStartButtonV1938) els.scrambleStartButtonV1938.addEventListener('click', () => runScrambleStartV1939(false));
+    if (els.scrambleStartButtonV1938) els.scrambleStartButtonV1938.addEventListener('click', handleScramblePrimaryV2136);
     if (els.scrambleCopyLogButtonV1938) els.scrambleCopyLogButtonV1938.addEventListener('click', runScrambleCopyLogV1939);
     if (els.scrambleDeleteLogButtonV1938) els.scrambleDeleteLogButtonV1938.addEventListener('click', showScrambleDeleteLogConfirmV1939);
     if (els.scrambleBackButtonV1938) els.scrambleBackButtonV1938.addEventListener('click', showTestLog);
@@ -29271,7 +29509,7 @@ let scoreTimingDetail =
         }
       }, { passive: true });
     }
-    /* V21.35 — no access-key prompts inside Control Center. Authorization
+    /* V21.36 — no access-key prompts inside Control Center. Authorization
        mutations proceed directly; successful change/removal silently rearms
        only the next HOME -> CONTROL CENTER entry gate. */
     if (els.testSwitchAuthorizationButton) {
@@ -29673,7 +29911,8 @@ let scoreTimingDetail =
             if (
               els.modalOverlay.classList.contains('geek-detail-v180') ||
               els.modalOverlay.classList.contains('skins-results-v1627') ||
-              els.modalOverlay.classList.contains('game-mode-results-v2026')
+              els.modalOverlay.classList.contains('game-mode-results-v2026') ||
+              els.modalOverlay.classList.contains('end-scramble-confirm-v2136')
             ) {
               return;
             }
