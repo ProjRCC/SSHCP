@@ -1,14 +1,13 @@
-<!-- SSHCP | BASE KEY: 21.35-T7N4QX | BUILD KEY: 21.36-W8R4KM -->
-<!-- SSHCP V21.36 SUNDAY SCRAMBLE PROTECTION TEST - exact V21.35 donor.
-     Surgical tournament-safety changes only: (1) HOME -> CONTROL CENTER access key is CC,
-     (2) START SCRAMBLE arms a persistent local protection lock and becomes red END SCRAMBLE,
-     (3) while protected, DELETE ALL / ADD PAR / RANDOM / RANDOM 2 and CLEAR SM LOG are truly
-     disabled using Gray 2.5 with white text, (4) CONTROL CENTER shows red SCRAMBLE MODE ACTIVE,
-     (5) END SCRAMBLE opens an 80% red-on-black danger confirmation with large blue MISTAKE and
-     smaller black/red END; MISTAKE returns HOME, END only restores CC controls and never changes
-     score or Audit data, and (6) unauthenticated GAIN AUTH uses Gray 8 with white text. CF V3.1,
-     scoring/NESR, Leaderboard, Summary/tiebreak, Skins, GEEK, GAME, QR validation, geometry,
-     timing, and all other presentation remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.36-W8R4KM | BUILD KEY: 21.37-F4N8QK -->
+<!-- SSHCP V21.37 SUNDAY SCRAMBLE PROTECTION POLISH - exact V21.36 donor.
+     Surgical presentation/flow changes only: (1) the four CONTROL CENTER score-data buttons use
+     Gray 3 with white text, including while Scramble protection disables them, (2) CONTROL CENTER
+     SCRAMBLE MODE ACTIVE uses the established antique/feature gold, (3) START SCRAMBLE in Scramble
+     Mode uses the same antique gold until active, while END SCRAMBLE remains red, (4) successful
+     START SCRAMBLE returns directly to CONTROL CENTER with protection active, and (5) the END button
+     on the full-screen warning uses white text. All V21.36 protection logic, CC password CC, MISTAKE
+     behavior, score/Audit preservation, CF V3.1, scoring/NESR, Leaderboard, Summary/tiebreak, Skins,
+     GEEK, GAME, QR validation, geometry, timing, and all other presentation remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11621,11 +11620,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 </style>
 
 <style id="sshcp-v2136-sunday-scramble-protection">
-/* V21.36 — tournament protection presentation. */
+/* V21.37 — Sunday protection presentation polish on exact V21.36 logic. */
 #testLogView .test-score-action.scramble-protected-disabled-v2136,
 #scrambleModeView .scramble-action-button-v1938.scramble-protected-disabled-v2136{
-  background:var(--sshcp-gray-2-5-v2040,#ededed)!important;
-  border-color:var(--sshcp-gray-2-5-v2040,#ededed)!important;
+  background:var(--sshcp-gray-3-v1842,#707070)!important;
+  border-color:var(--sshcp-gray-3-v1842,#707070)!important;
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
   opacity:1!important;
@@ -11635,7 +11634,25 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   cursor:default!important;
 }
 
+#testLogView #testAddParCurrentButton,
+#testLogView #testAddRandomCurrentButton,
+#testLogView #testAddRandom2CurrentButton,
+#testLogView #testDeleteAllButton{
+  background:var(--sshcp-gray-3-v1842,#707070)!important;
+  border-color:var(--sshcp-gray-3-v1842,#707070)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:none!important;
+}
+
 #testLogView .control-center-scramble-button-v1938.scramble-active-v2136,
+#scrambleModeView #scrambleStartButtonV1938:not(.scramble-end-v2136){
+  background:var(--feature-gold-v1825,#D4AF37)!important;
+  border-color:var(--feature-gold-v1825,#D4AF37)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+
 #scrambleModeView .scramble-action-button-v1938.scramble-end-v2136{
   background:var(--red)!important;
   border-color:var(--red)!important;
@@ -11736,8 +11753,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   border:0!important;
   border-radius:12px!important;
   background:#000!important;
-  color:var(--red)!important;
-  -webkit-text-fill-color:var(--red)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
   font-size:clamp(22px,5.2vw,34px)!important;
   font-weight:900!important;
   line-height:1!important;
@@ -11874,7 +11891,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.36</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.37</span></span>
         </button>
 
       </div>
@@ -17412,6 +17429,7 @@ let scoreTimingDetail =
         );
 
         startScrambleStatusPollV1939();
+        showTestLog();
       }
       catch (error) {
         showScrambleErrorV1939(
