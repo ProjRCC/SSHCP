@@ -1,12 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.41-Q6N8TK | BUILD KEY: 21.42-N6R4QX -->
-<!-- SSHCP V21.42 SCRAMBLE ON-DEMAND STATE + TRANSITION / LOG REFINEMENT - exact live V21.41 donor.
-     Paired with CF V3.3: (1) removes all automatic Scramble-state polling; state reads occur only on
-     CONTROL CENTER entry/return, SCRAMBLE MODE entry, and browser/PWA refresh restored to CONTROL CENTER,
-     (2) a refresh while in CONTROL CENTER returns directly to CONTROL CENTER and performs one fresh state
-     read, (3) START/END use a touch-blocking full-screen black transition; START confirms then fades 1.0s
-     into CONTROL CENTER ACTIVE, END gives a brief light-gray button press then confirms and fades 1.0s into
-     SCRAMBLE MODE / START SCRAMBLE, with no redundant post-change status read, and (4) the visible SCRAMBLE
-     LOG shows only meaningful completed events while the full Audit/COPY LOG remains exhaustive. -->
+<!-- SSHCP | BASE KEY: 21.42-N6R4QX | BUILD KEY: 21.43-P7K2MV -->
+<!-- SSHCP V21.43 CC/SM REFRESH CURTAIN + EMPTY-LOG STATE - exact V21.42 donor.
+     Paired with unchanged CF V3.3: (1) keeps zero automatic Scramble-state polling, (2) browser/PWA
+     refresh preserves both CONTROL CENTER and SCRAMBLE MODE, performs one fresh Worker state/log read,
+     and reveals the restored screen through a full-screen white 0.5s curtain, (3) END keeps its black
+     confirmation button but uses Gray 8 for the pressed visual before the existing black transition,
+     and (4) CLEAR SM LOG is Gray 2.5 and disabled whenever the Audit tab is empty. START SCRAMBLE keeps
+     the existing server behavior: a new start clears any prior ended Audit and begins a fresh log. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +23,7 @@
        3  = ALL AFTER-PLAY full-screen white curtains
             (Summary / Tie Break / GEEK / GEEK Detail / Game / Skins)
        4  = QUICK GUIDE full-screen white curtain
+       5  = CONTROL CENTER + SCRAMBLE MODE manual-refresh white curtain
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
@@ -32,6 +32,7 @@
       FADE_2_SCORECARD_LEADERBOARD: 0.60,
       FADE_3_AFTER_PLAY: 0.80,
       FADE_4_QUICK_GUIDE: 0.80,
+      FADE_5_CC_SM_REFRESH: 0.50,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -48,6 +49,7 @@
       setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.60);
       setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 0.80);
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
+      setSeconds('--sshcp-fade-5-cc-sm-refresh', timing.FADE_5_CC_SM_REFRESH, 0.50);
     })();
   </script>
   <meta
@@ -101,6 +103,17 @@
         window.__sshcpBootView = rememberedView;
         if (rememberedView === 'scorecard' || rememberedView === 'leaderboard') {
           document.documentElement.classList.add('sshcp-pre-' + rememberedView);
+        }
+
+        /* V21.43 — manual browser/PWA refresh from CONTROL CENTER or SCRAMBLE
+           MODE is white-covered from the first possible paint. Runtime adopts
+           the curtain before removing this boot-only layer, then reveals the
+           freshly restored destination over exactly 0.5s. */
+        if (
+          (rememberedView === 'testlog' || rememberedView === 'scramble') &&
+          !window.__sshcpIncomingQrWelcomeV170
+        ) {
+          document.documentElement.classList.add('sshcp-pre-cc-sm-full-v2143');
         }
 
         /* SSHCP V20.69 — simple main-page first-paint contract.
@@ -4042,6 +4055,20 @@ html.sshcp-pre-home-full-v1987 body::after{
   position:fixed!important;
   inset:0!important;
   z-index:4790!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:#fff!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+
+/* V21.43 — first-paint white cover for manual refresh from CC / Scramble Mode. */
+html.sshcp-pre-cc-sm-full-v2143 body::after{
+  content:""!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:214290!important;
   margin:0!important;
   padding:0!important;
   border:0!important;
@@ -11784,12 +11811,34 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   transition:opacity 1s ease-out!important;
 }
 .modal-overlay.end-scramble-confirm-v2136 .modal-btn.scramble-end-confirm-v2136.scramble-end-pressed-v2142{
-  background:var(--sshcp-gray-2-5-v2040,#ededed)!important;
-  border-color:var(--sshcp-gray-2-5-v2040,#ededed)!important;
+  background:var(--sshcp-gray-8-v2102,#2C2C2C)!important;
+  border-color:var(--sshcp-gray-8-v2102,#2C2C2C)!important;
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
   opacity:1!important;
   filter:none!important;
+}
+
+/* V21.43 — CC / Scramble manual-refresh runtime curtain. Unlike START/END,
+   refresh uses white and a 0.5s reveal. It blocks every touch until the fresh
+   Worker read has completed and the destination is fully staged underneath. */
+.sshcp-cc-sm-refresh-curtain-v2143{
+  position:fixed!important;
+  inset:0!important;
+  z-index:214300!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:#fff!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  touch-action:none!important;
+  transition:none!important;
+}
+.sshcp-cc-sm-refresh-curtain-v2143.reveal-v2143{
+  opacity:0!important;
+  pointer-events:none!important;
+  transition:opacity var(--sshcp-fade-5-cc-sm-refresh,.5s) ease-out!important;
 }
 </style>
 
@@ -11922,7 +11971,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.42</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.43</span></span>
         </button>
 
       </div>
@@ -15114,6 +15163,7 @@ let scoreTimingDetail =
         value === 'scorecard' ||
         value === 'leaderboard' ||
         value === 'testlog' ||
+        value === 'scramble' ||
         value === 'home'
       ) {
 
@@ -16982,6 +17032,7 @@ let scoreTimingDetail =
         typeof options === 'object' &&
         options.refreshScrambleState === false
       );
+      let scrambleStateRefreshPromiseV2143 = Promise.resolve(null);
 
       closeModal();
       closeScoreEntry(false);
@@ -17002,10 +17053,11 @@ let scoreTimingDetail =
          data remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
       if (shouldRefreshScrambleStateV2142) {
-        refreshScrambleProtectionFromServerV2141(true);
+        scrambleStateRefreshPromiseV2143 = refreshScrambleProtectionFromServerV2141(true);
       }
       requestAnimationFrame(fitTestPageButtonText);
       window.scrollTo(0, 0);
+      return scrambleStateRefreshPromiseV2143;
     }
 
     function clearAccessKeyViewportHandlerV2134() {
@@ -17116,7 +17168,7 @@ let scoreTimingDetail =
     }
 
     function showTestLog() {
-      openControlCenterUnlockedV2133();
+      return openControlCenterUnlockedV2133();
     }
 
     function showScrambleModeV1938(options = {}) {
@@ -17125,6 +17177,7 @@ let scoreTimingDetail =
         typeof options === 'object' &&
         options.refreshScrambleState === false
       );
+      let scrambleModeRefreshPromiseV2143 = Promise.resolve(null);
 
       closeModal();
       closeScoreEntry(false);
@@ -17141,8 +17194,9 @@ let scoreTimingDetail =
         scrambleFeedSessionV1940 = '';
         setScrambleVisibleEventCountV2142(0);
         setScrambleLatestActivityV1939('LOADING SCRAMBLE LOG');
-        refreshScrambleStatusV1939(true);
+        scrambleModeRefreshPromiseV2143 = refreshScrambleStatusV1939(true);
       }
+      return scrambleModeRefreshPromiseV2143;
     }
 
 
@@ -17161,6 +17215,38 @@ let scoreTimingDetail =
     let scrambleFeedHasOfficialEntriesV1940 = false;
     let scrambleVisibleEventCountV2142 = 0;
     let scrambleTransitionOverlayV2142 = null;
+    let ccSmRefreshCurtainV2143 = null;
+
+    function mountCcSmRefreshCurtainV2143() {
+      if (ccSmRefreshCurtainV2143 && ccSmRefreshCurtainV2143.isConnected) {
+        ccSmRefreshCurtainV2143.remove();
+      }
+
+      const curtain = document.createElement('div');
+      curtain.className = 'sshcp-cc-sm-refresh-curtain-v2143';
+      curtain.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(curtain);
+      ccSmRefreshCurtainV2143 = curtain;
+
+      /* Runtime curtain is now painted above the boot pseudo-layer. Removing
+         the boot class here cannot expose HOME or stale CC/SM for one frame. */
+      document.documentElement.classList.remove('sshcp-pre-cc-sm-full-v2143');
+      return curtain;
+    }
+
+    async function revealCcSmRefreshCurtainV2143(curtain) {
+      if (!curtain || !curtain.isConnected) return;
+      await waitForAnimationFrameV2142();
+      curtain.classList.add('reveal-v2143');
+
+      const timing = window.SSHCP_FADE_TIMING_V2092 || {};
+      const seconds = Number(timing.FADE_5_CC_SM_REFRESH);
+      const durationMs = 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : 0.5);
+      await waitMsV2142(durationMs + 60);
+
+      if (curtain.isConnected) curtain.remove();
+      if (ccSmRefreshCurtainV2143 === curtain) ccSmRefreshCurtainV2143 = null;
+    }
 
     /* V21.41 — Sunday tournament safety state is server-authoritative (CF V3.2).
        The frontend retains only the last confirmed state for presentation. On every
@@ -17227,8 +17313,12 @@ let scoreTimingDetail =
       });
 
       if (els.scrambleDeleteLogButtonV1938) {
-        els.scrambleDeleteLogButtonV1938.disabled = safetyLocked;
-        els.scrambleDeleteLogButtonV1938.classList.toggle('scramble-protected-disabled-v2136', safetyLocked);
+        const clearUnavailableV2143 = Boolean(safetyLocked || !scrambleAuditActiveV1939);
+        els.scrambleDeleteLogButtonV1938.disabled = clearUnavailableV2143;
+        els.scrambleDeleteLogButtonV1938.classList.toggle(
+          'scramble-protected-disabled-v2136',
+          clearUnavailableV2143
+        );
       }
 
       if (els.scrambleStartButtonV1938) {
@@ -17442,7 +17532,7 @@ let scoreTimingDetail =
       ].filter(Boolean).forEach(button => {
         const protectedClear =
           button === els.scrambleDeleteLogButtonV1938 &&
-          isScrambleProtectionActiveV2136();
+          (isScrambleProtectionActiveV2136() || !scrambleAuditActiveV1939);
         button.disabled = Boolean(disabled) || protectedClear;
       });
     }
@@ -30598,11 +30688,24 @@ let scoreTimingDetail =
         return;
       }
 
-      /* V21.42 — browser/PWA refresh while CONTROL CENTER is the remembered
-         view returns directly to CC and performs its normal one-time server
-         state read instead of falling through to HOME. */
+      /* V21.43 — manual browser/PWA refresh preserves CONTROL CENTER and
+         SCRAMBLE MODE. Adopt the first-paint white cover, perform exactly one
+         fresh Worker read, then reveal the restored destination over 0.5s. */
       if (rememberedView === 'testlog') {
-        showTestLog();
+        const refreshCurtainV2143 = !window.__sshcpIncomingQrWelcomeV170
+          ? mountCcSmRefreshCurtainV2143()
+          : null;
+        await showTestLog();
+        await revealCcSmRefreshCurtainV2143(refreshCurtainV2143);
+        return;
+      }
+
+      if (rememberedView === 'scramble') {
+        const refreshCurtainV2143 = !window.__sshcpIncomingQrWelcomeV170
+          ? mountCcSmRefreshCurtainV2143()
+          : null;
+        await showScrambleModeV1938();
+        await revealCcSmRefreshCurtainV2143(refreshCurtainV2143);
         return;
       }
 
