@@ -1,9 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.44-H7M4QX | BUILD KEY: 21.45-K8R5NV -->
-<!-- SSHCP V21.45 PERSISTENT CC ACCESS + HOME 1A-ONLY REVEAL - exact V21.44 donor.
-     Paired with unchanged CF V3.3. Preserves V21.44 returning-QR behavior and all V21.43 Scramble behavior.
-     CONTROL CENTER access-key success now persists across browser/PWA closes while the same authorization
-     remains active; removing or changing authorization rearms the gate. HOME reveal is simplified to the
-     single full-screen 1A white curtain; the former 1B middle/action-area curtain is no longer created. -->
+<!-- SSHCP | BASE KEY: 21.45-K8R5NV | BUILD KEY: 21.46-M7Q2RV -->
+<!-- SSHCP V21.46 CONTROL CENTER WHITE ENTRY / REFRESH REVEAL - exact V21.45 donor.
+     Paired with unchanged CF V3.3. Preserves all validated V21.45 behavior. CONTROL CENTER now enters
+     behind a full-screen white curtain and reveals over exactly 0.25s after its one authoritative Scramble
+     state read; manual refresh while already in CONTROL CENTER uses the same 0.25s white reveal and stays
+     in CONTROL CENTER. SCRAMBLE MODE refresh remains the established 0.50s white reveal. START SCRAMBLE
+     keeps its dedicated black 1.0s transition and does not stack a white CC curtain underneath. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,15 +21,17 @@
        3  = ALL AFTER-PLAY full-screen white curtains
             (Summary / Tie Break / GEEK / GEEK Detail / Game / Skins)
        4  = QUICK GUIDE full-screen white curtain
-       5  = CONTROL CENTER + SCRAMBLE MODE manual-refresh white curtain
+       5A = CONTROL CENTER entry + manual-refresh white curtain
+       5B = SCRAMBLE MODE manual-refresh white curtain
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
-      FADE_1A_HOME_FULL: 0.60,
+      FADE_1A_HOME_FULL: 0.30,
       FADE_2_SCORECARD_LEADERBOARD: 0.60,
       FADE_3_AFTER_PLAY: 0.80,
       FADE_4_QUICK_GUIDE: 0.80,
-      FADE_5_CC_SM_REFRESH: 0.50,
+      FADE_5A_CC_ENTER_REFRESH: 0.25,
+      FADE_5B_SM_REFRESH: 0.50,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -44,7 +47,8 @@
       setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.60);
       setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 0.80);
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
-      setSeconds('--sshcp-fade-5-cc-sm-refresh', timing.FADE_5_CC_SM_REFRESH, 0.50);
+      setSeconds('--sshcp-fade-5a-cc-enter-refresh', timing.FADE_5A_CC_ENTER_REFRESH, 0.25);
+      setSeconds('--sshcp-fade-5b-sm-refresh', timing.FADE_5B_SM_REFRESH, 0.50);
     })();
   </script>
   <meta
@@ -122,7 +126,7 @@
         /* V21.43 — manual browser/PWA refresh from CONTROL CENTER or SCRAMBLE
            MODE is white-covered from the first possible paint. Runtime adopts
            the curtain before removing this boot-only layer, then reveals the
-           freshly restored destination over exactly 0.5s. */
+           freshly restored destination (CC 0.25s / Scramble Mode 0.50s). */
         if (
           (rememberedView === 'testlog' || rememberedView === 'scramble') &&
           !window.__sshcpIncomingQrWelcomeV170
@@ -11834,7 +11838,12 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .sshcp-cc-sm-refresh-curtain-v2143.reveal-v2143{
   opacity:0!important;
   pointer-events:none!important;
-  transition:opacity var(--sshcp-fade-5-cc-sm-refresh,.5s) ease-out!important;
+  transition:opacity var(--sshcp-fade-5b-sm-refresh,.5s) ease-out!important;
+}
+/* V21.46 — any normal CONTROL CENTER entry/refresh uses the same full-screen
+   white shield but a faster 0.25s reveal. */
+.sshcp-cc-sm-refresh-curtain-v2143.cc-entry-refresh-v2146.reveal-v2143{
+  transition:opacity var(--sshcp-fade-5a-cc-enter-refresh,.25s) ease-out!important;
 }
 </style>
 
@@ -17062,7 +17071,15 @@ let scoreTimingDetail =
         typeof options === 'object' &&
         options.refreshScrambleState === false
       );
+      const shouldUseCcWhiteCurtainV2146 = !(
+        options &&
+        typeof options === 'object' &&
+        options.suppressCcCurtain === true
+      );
       let scrambleStateRefreshPromiseV2143 = Promise.resolve(null);
+      const ccEntryCurtainV2146 = shouldUseCcWhiteCurtainV2146
+        ? mountCcSmRefreshCurtainV2143('cc')
+        : null;
 
       closeModal();
       closeScoreEntry(false);
@@ -17087,6 +17104,15 @@ let scoreTimingDetail =
       }
       requestAnimationFrame(fitTestPageButtonText);
       window.scrollTo(0, 0);
+
+      /* V21.46 — keep the white shield until the one deliberate server-state
+         read has settled, then reveal the fully staged CC over exactly 0.25s. */
+      if (ccEntryCurtainV2146) {
+        return Promise.resolve(scrambleStateRefreshPromiseV2143).then(async result => {
+          await revealCcSmRefreshCurtainV2143(ccEntryCurtainV2146);
+          return result;
+        });
+      }
       return scrambleStateRefreshPromiseV2143;
     }
 
@@ -17247,13 +17273,14 @@ let scoreTimingDetail =
     let scrambleTransitionOverlayV2142 = null;
     let ccSmRefreshCurtainV2143 = null;
 
-    function mountCcSmRefreshCurtainV2143() {
+    function mountCcSmRefreshCurtainV2143(mode = 'sm') {
       if (ccSmRefreshCurtainV2143 && ccSmRefreshCurtainV2143.isConnected) {
         ccSmRefreshCurtainV2143.remove();
       }
 
       const curtain = document.createElement('div');
       curtain.className = 'sshcp-cc-sm-refresh-curtain-v2143';
+      if (mode === 'cc') curtain.classList.add('cc-entry-refresh-v2146');
       curtain.setAttribute('aria-hidden', 'true');
       document.body.appendChild(curtain);
       ccSmRefreshCurtainV2143 = curtain;
@@ -17270,8 +17297,14 @@ let scoreTimingDetail =
       curtain.classList.add('reveal-v2143');
 
       const timing = window.SSHCP_FADE_TIMING_V2092 || {};
-      const seconds = Number(timing.FADE_5_CC_SM_REFRESH);
-      const durationMs = 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : 0.5);
+      const isControlCenterCurtainV2146 = curtain.classList.contains('cc-entry-refresh-v2146');
+      const seconds = Number(
+        isControlCenterCurtainV2146
+          ? timing.FADE_5A_CC_ENTER_REFRESH
+          : timing.FADE_5B_SM_REFRESH
+      );
+      const fallbackSeconds = isControlCenterCurtainV2146 ? 0.25 : 0.50;
+      const durationMs = 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : fallbackSeconds);
       await waitMsV2142(durationMs + 60);
 
       if (curtain.isConnected) curtain.remove();
@@ -17732,7 +17765,7 @@ let scoreTimingDetail =
         );
 
         /* START response itself confirms ACTIVE. Do not spend another state read. */
-        openControlCenterUnlockedV2133({ refreshScrambleState: false });
+        openControlCenterUnlockedV2133({ refreshScrambleState: false, suppressCcCurtain: true });
         await revealScrambleTransitionV2142(transitionV2142);
       }
       catch (error) {
@@ -30682,11 +30715,7 @@ let scoreTimingDetail =
          SCRAMBLE MODE. Adopt the first-paint white cover, perform exactly one
          fresh Worker read, then reveal the restored destination over 0.5s. */
       if (rememberedView === 'testlog') {
-        const refreshCurtainV2143 = !window.__sshcpIncomingQrWelcomeV170
-          ? mountCcSmRefreshCurtainV2143()
-          : null;
         await showTestLog();
-        await revealCcSmRefreshCurtainV2143(refreshCurtainV2143);
         return;
       }
 
