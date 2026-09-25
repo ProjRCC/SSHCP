@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 21.38-J6P2VX | BUILD KEY: 21.39-L5R8NX -->
-<!-- SSHCP V21.39 SCRAMBLE START UX CORRECTION - exact V21.38 donor.
-     Surgical Scramble Mode corrections only: (1) START SCRAMBLE no longer shows the legacy
-     START NEW SCRAMBLE confirmation and starts immediately, then returns directly to CONTROL CENTER,
-     (2) protected score-generation controls and CLEAR SM LOG use Gray 2.5 with white text so their
-     disabled state is visibly distinct from normal Gray 3 controls, and (3) START SCRAMBLE plus
-     SCRAMBLE MODE ACTIVE are hard-set to the established after-play antique gold #8A6414.
-     All V21.38 Sunday protection behavior, score/Audit safety, END warning flow, CF V3.1, scoring/NESR,
-     Leaderboard, Summary/tiebreak, Skins, GEEK, GAME, QR validation, geometry, and timing remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.40-M7Q3RV | BUILD KEY: 21.41-Q6N8TK -->
+<!-- SSHCP V21.41 SERVER SCRAMBLE STATE + SUMMARY AUDIT TEST - exact V21.40 donor.
+     Surgical tournament-safety continuation paired with CF V3.2: (1) Scramble protection state is no
+     longer device/localStorage authoritative; every CONTROL CENTER / SCRAMBLE MODE entry synchronizes
+     from the Worker and fails safe locked if status cannot be confirmed, (2) CC status polling keeps
+     the shared state current across devices, (3) START/END use Worker state; END still changes no scores
+     and leaves Scramble Audit recording until CLEAR SM LOG, (4) every displayed SCRAMBLE SUMMARY sends
+     a non-blocking SCRAMBLE SUMMARY VIEWED audit event, and (5) V21.40 MASTER CC bypass plus all V21.39
+     Sunday styling/protection presentation remain unchanged. Requires CF V3.2 for full server authority. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11893,7 +11893,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.39</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.41</span></span>
         </button>
 
       </div>
@@ -16949,12 +16949,18 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
+      /* V21.41 — server status is authoritative. Enter CC fail-safe locked until
+         the Worker confirms ACTIVE vs ENDED/INACTIVE, then keep polling while CC
+         remains open so another device cannot silently leave this CC stale. */
+      setScrambleProtectionSyncPendingV2141(true);
       syncScrambleProtectionUiV2136();
       scheduleControlCenterViewportSnapshotV2128();
       updateControlCenterViewportMetricsV188();
       /* TEST PAGE opening refreshes the CF QR directory once. Existing cached
          data remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
+      refreshScrambleProtectionFromServerV2141(true);
+      startScrambleStatusPollV1939();
       requestAnimationFrame(fitTestPageButtonText);
       window.scrollTo(0, 0);
     }
@@ -17050,9 +17056,15 @@ let scoreTimingDetail =
       showAccessKeyGateV2134('CONTROL CENTER', openControlCenterUnlockedV2133, true);
     }
 
-    /* V21.36 — only the HOME -> CONTROL CENTER entry owns the CC access-key gate.
-       Internal returns/reopens inside the Control Center workflow never prompt. */
+    /* V21.40 — MASTER authorization is itself sufficient CONTROL CENTER authority.
+       HOME -> CONTROL CENTER therefore bypasses the CC access-key gate whenever the
+       current stored QR role is MASTER, even after a fresh browser/PWA session.
+       Non-MASTER entry keeps the established V21.36 session-gate behavior unchanged. */
     function showTestLogFromHomeV2135() {
+      if (isMasterQr()) {
+        openControlCenterUnlockedV2133();
+        return;
+      }
       if (isControlCenterUnlockedV2133()) {
         openControlCenterUnlockedV2133();
         return;
@@ -17072,7 +17084,7 @@ let scoreTimingDetail =
       syncScrambleModeLayoutV1938();
       requestAnimationFrame(fitScrambleModeButtonTextV1938);
       window.scrollTo(0,0);
-      refreshScrambleStatusV1939(true);
+      refreshScrambleProtectionFromServerV2141(true);
       startScrambleStatusPollV1939();
     }
 
@@ -17091,33 +17103,58 @@ let scoreTimingDetail =
     let scrambleFeedSessionV1940 = '';
     let scrambleFeedHasOfficialEntriesV1940 = false;
 
-    /* V21.36 — Sunday tournament safety lock. This is deliberately separate
-       from the Worker Audit-active flag: END SCRAMBLE restores CC access only
-       and never deletes/stops/re-writes Audit or score data. localStorage keeps
-       the protection armed across refresh/PWA restart until END is confirmed. */
-    const SSHCP_SCRAMBLE_PROTECTION_KEY_V2136 = 'sshcpScrambleProtectionV2136';
-    let scrambleProtectionActiveV2136 = (() => {
-      try { return localStorage.getItem(SSHCP_SCRAMBLE_PROTECTION_KEY_V2136) === '1'; }
-      catch (_) { return false; }
-    })();
+    /* V21.41 — Sunday tournament safety state is server-authoritative (CF V3.2).
+       The frontend retains only the last confirmed state for presentation. On every
+       CC/Scramble entry we fail-safe lock the dangerous controls until the Worker
+       confirms the shared state. The old V21.36 localStorage flag is intentionally
+       ignored so cache/PWA/device state can never be the tournament authority. */
+    let scrambleProtectionActiveV2136 = false;
+    let scrambleProtectionSyncPendingV2141 = false;
+    let scrambleProtectionSyncFailedV2141 = false;
 
     function isScrambleProtectionActiveV2136() {
       return Boolean(scrambleProtectionActiveV2136);
     }
 
+    function scrambleProtectionUiLockedV2141() {
+      return Boolean(
+        scrambleProtectionActiveV2136 ||
+        scrambleProtectionSyncPendingV2141 ||
+        scrambleProtectionSyncFailedV2141
+      );
+    }
+
+    function setScrambleProtectionSyncPendingV2141(pending) {
+      scrambleProtectionSyncPendingV2141 = Boolean(pending);
+      if (pending) scrambleProtectionSyncFailedV2141 = false;
+      syncScrambleProtectionUiV2136();
+    }
+
     function setScrambleProtectionActiveV2136(active) {
       scrambleProtectionActiveV2136 = Boolean(active);
-      try {
-        localStorage.setItem(
-          SSHCP_SCRAMBLE_PROTECTION_KEY_V2136,
-          scrambleProtectionActiveV2136 ? '1' : '0'
-        );
-      } catch (_) {}
+      scrambleProtectionSyncPendingV2141 = false;
+      scrambleProtectionSyncFailedV2141 = false;
+      syncScrambleProtectionUiV2136();
+    }
+
+    function applyScrambleServerStatusV2141(data) {
+      const serverProtection = data && Object.prototype.hasOwnProperty.call(data, 'protectionActive')
+        ? Boolean(data.protectionActive)
+        : Boolean(data && data.active); // CF V3.1 fallback fails safe to legacy Audit-active.
+      scrambleAuditActiveV1939 = Boolean(data && data.active);
+      setScrambleProtectionActiveV2136(serverProtection);
+    }
+
+    function markScrambleProtectionStatusFailedV2141() {
+      scrambleProtectionSyncPendingV2141 = false;
+      scrambleProtectionSyncFailedV2141 = true;
       syncScrambleProtectionUiV2136();
     }
 
     function syncScrambleProtectionUiV2136() {
       const active = isScrambleProtectionActiveV2136();
+      const safetyLocked = scrambleProtectionUiLockedV2141();
+      const statusUnavailable = scrambleProtectionSyncFailedV2141;
       const protectedCcButtons = [
         els.testAddParCurrentButton,
         els.testAddRandomCurrentButton,
@@ -17126,18 +17163,19 @@ let scoreTimingDetail =
       ].filter(Boolean);
 
       protectedCcButtons.forEach(button => {
-        button.disabled = active;
-        button.classList.toggle('scramble-protected-disabled-v2136', active);
+        button.disabled = safetyLocked;
+        button.classList.toggle('scramble-protected-disabled-v2136', safetyLocked);
       });
 
       if (els.scrambleDeleteLogButtonV1938) {
-        els.scrambleDeleteLogButtonV1938.disabled = active;
-        els.scrambleDeleteLogButtonV1938.classList.toggle('scramble-protected-disabled-v2136', active);
+        els.scrambleDeleteLogButtonV1938.disabled = safetyLocked;
+        els.scrambleDeleteLogButtonV1938.classList.toggle('scramble-protected-disabled-v2136', safetyLocked);
       }
 
       if (els.scrambleStartButtonV1938) {
         els.scrambleStartButtonV1938.textContent = active ? 'END SCRAMBLE' : 'START SCRAMBLE';
         els.scrambleStartButtonV1938.classList.toggle('scramble-end-v2136', active);
+        els.scrambleStartButtonV1938.disabled = Boolean(scrambleProtectionSyncPendingV2141 || statusUnavailable);
       }
 
       if (els.controlCenterScrambleButtonV1938) {
@@ -17149,6 +17187,17 @@ let scoreTimingDetail =
         fitTestPageButtonText();
         fitScrambleModeButtonTextV1938();
       });
+    }
+
+    async function refreshScrambleProtectionFromServerV2141(silent = true) {
+      setScrambleProtectionSyncPendingV2141(true);
+      const data = await refreshScrambleStatusV1939(silent);
+      if (!data) {
+        markScrambleProtectionStatusFailedV2141();
+        return null;
+      }
+      applyScrambleServerStatusV2141(data);
+      return data;
     }
 
     function showEndScrambleConfirmV2136() {
@@ -17166,11 +17215,33 @@ let scoreTimingDetail =
         closeModal();
         showHome();
       });
-      const end = makeModalButton('END', 'scramble-end-confirm-v2136', () => {
-        setScrambleProtectionActiveV2136(false);
-        addTestLog('END SCRAMBLE', 'OK', '—', 'CC PROTECTION RELEASED / SCORES UNCHANGED');
-        closeModal();
-        showTestLog();
+      const end = makeModalButton('END', 'scramble-end-confirm-v2136', async () => {
+        mistake.disabled = true;
+        end.disabled = true;
+        startLoadingLine();
+
+        try {
+          const data = await scrambleApiRequestV1939('scrambleEnd');
+          scrambleAuditActiveV1939 = Boolean(data.active);
+          setScrambleProtectionActiveV2136(Boolean(data.protectionActive));
+          addTestLog(
+            'END SCRAMBLE',
+            'OK',
+            '—',
+            'SERVER PROTECTION RELEASED / AUDIT CONTINUES / SCORES UNCHANGED'
+          );
+          closeModal();
+          showTestLog();
+        }
+        catch (error) {
+          showScrambleErrorV1939(
+            'END SCRAMBLE FAILED',
+            error && error.message ? error.message : 'Server scramble protection could not be ended.'
+          );
+        }
+        finally {
+          completeLoadingLine();
+        }
       });
 
       els.modalActions.className = 'modal-actions scramble-end-actions-v2136';
@@ -17248,7 +17319,8 @@ let scoreTimingDetail =
     }
 
     async function scrambleApiRequestV1939(action, extra = {}) {
-      const passkey = getQrPasskey();
+      const storedPasskey = getQrPasskey();
+      const passkey = storedPasskey || (action === 'scrambleStatus' ? SSHCP_MASTER_TEST_KEY : '');
       if (!passkey) {
         throw new Error('A valid QR authorization is required.');
       }
@@ -17284,12 +17356,6 @@ let scoreTimingDetail =
     }
 
     async function refreshScrambleStatusV1939(silent = false) {
-      if (!getQrPasskey()) {
-        scrambleAuditActiveV1939 = false;
-        resetScrambleFeedV1940('NOT AUTHORIZED');
-        return null;
-      }
-
       try {
         if (!silent) startLoadingLine();
 
@@ -17301,7 +17367,7 @@ let scoreTimingDetail =
           }
         );
 
-        scrambleAuditActiveV1939 = Boolean(data.active);
+        applyScrambleServerStatusV2141(data);
 
         if (!data.active) {
           resetScrambleFeedV1940('NOT STARTED');
@@ -17337,6 +17403,7 @@ let scoreTimingDetail =
         return data;
       }
       catch (error) {
+        markScrambleProtectionStatusFailedV2141();
         if (!silent || !scrambleFeedHasOfficialEntriesV1940) {
           setScrambleLatestActivityV1939('STATUS UNAVAILABLE');
         }
@@ -17362,7 +17429,7 @@ let scoreTimingDetail =
       stopScrambleStatusPollV1939();
 
       scrambleStatusTimerV1939 = window.setInterval(() => {
-        if (currentView !== 'scramble' || document.hidden) return;
+        if ((currentView !== 'scramble' && currentView !== 'testlog') || document.hidden) return;
         refreshScrambleStatusV1939(true);
       }, 10000);
     }
@@ -17392,8 +17459,12 @@ let scoreTimingDetail =
           }
         );
 
-        scrambleAuditActiveV1939 = true;
-        setScrambleProtectionActiveV2136(true);
+        scrambleAuditActiveV1939 = Boolean(data.active);
+        setScrambleProtectionActiveV2136(
+          Object.prototype.hasOwnProperty.call(data, 'protectionActive')
+            ? Boolean(data.protectionActive)
+            : true
+        );
         setScrambleLatestActivityV1939('WAITING FOR OFFICIAL SCORE SAVES');
         scrambleFeedSessionV1940 = String(data.sessionToken || '');
         const startLastRow = Number(data.lastRow);
@@ -17570,6 +17641,20 @@ let scoreTimingDetail =
         );
       } catch (_) {
         /* Audit is secondary to scoring authorization. Never block scoring. */
+      }
+    }
+
+
+    async function recordScrambleSummaryViewedV2141() {
+      if (!getQrPasskey()) return;
+
+      try {
+        await scrambleApiRequestV1939(
+          'scrambleEvent',
+          { type: 'summary' }
+        );
+      } catch (_) {
+        /* Summary display must never be blocked by secondary audit logging. */
       }
     }
 
@@ -18151,7 +18236,7 @@ let scoreTimingDetail =
         view
       );
 
-      if (view !== 'scramble') {
+      if (view !== 'scramble' && view !== 'testlog') {
         stopScrambleStatusPollV1939();
       }
 
@@ -26459,6 +26544,7 @@ let scoreTimingDetail =
         summaryCurtainV2086,
         2
       );
+      void recordScrambleSummaryViewedV2141();
     }
 
     function handleLeaderboardFinalAction() {
