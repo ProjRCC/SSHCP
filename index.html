@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.33-Q4N8VK | BUILD KEY: 21.34-R5K8MW -->
-<!-- SSHCP V21.34 TOURNAMENT HARDENING TEST - exact V21.33 donor.
-     Surgical authorization hardening only: (1) CONTROL CENTER keeps the one-key K/k gate,
-     (2) REMOVE AUTH and SWITCH/GAIN AUTH each require a fresh K/k key before changing authorization,
-     (3) access-key popups are constrained to the upper half of the screen so the popup stays above
-     the on-screen keyboard, and (4) V21.33 AUTH TEAM auto-open behavior is preserved unchanged.
-     Scoring/NESR, Leaderboard, Summary/tiebreak, Skins, GEEK, GAME, QR validation, Worker/API,
-     geometry, timings, and all other presentation remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.34-R5K8MW | BUILD KEY: 21.35-T7N4QX -->
+<!-- SSHCP V21.35 CONTROL CENTER AUTH-GATE TEST - exact V21.34 donor.
+     Surgical Control Center gate refinement only: (1) the K/k access-key prompt may appear only
+     when entering CONTROL CENTER from HOME, (2) no authorization action inside CONTROL CENTER
+     asks for K/k, (3) a real authorization change or removal silently rearms the gate for the next
+     HOME -> CONTROL CENTER entry, and (4) V21.34 upper-half gate placement plus V21.33 AUTH TEAM
+     auto-open behavior remain unchanged. Scoring/NESR, Leaderboard, Summary/tiebreak, Skins, GEEK,
+     GAME, QR validation, Worker/API, geometry, timings, and all other presentation remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11745,7 +11745,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.34</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.35</span></span>
         </button>
 
       </div>
@@ -13762,7 +13762,15 @@ let scoreTimingDetail =
       return true;
     }
     function clearQrAuthorization(){
+      const hadQrAuthorizationV2135 = !!(
+        localStorage.getItem(SSHCP_QR_PASSKEY_KEY) ||
+        localStorage.getItem(SSHCP_QR_ROLE_KEY) ||
+        localStorage.getItem(SSHCP_QR_ID_KEY) ||
+        localStorage.getItem(SSHCP_QR_TEAM_KEY) ||
+        localStorage.getItem(SSHCP_QR_SLOT_KEY)
+      );
       [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
+      if (hadQrAuthorizationV2135) resetControlCenterUnlockedV2135();
       clearFirstScorecardAfterAuthorizationV1979();
       syncTeamQrLockedUi();
     }
@@ -13793,6 +13801,7 @@ let scoreTimingDetail =
 
       const nextFingerprintV1979 = qrAuthorizationFingerprintV1979();
       if (nextFingerprintV1979 && nextFingerprintV1979 !== priorFingerprintV1979) {
+        resetControlCenterUnlockedV2135();
         armFirstScorecardAfterAuthorizationV1979(nextFingerprintV1979);
       }
 
@@ -16780,6 +16789,11 @@ let scoreTimingDetail =
       try { sessionStorage.setItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133, '1'); } catch (_) {}
     }
 
+    function resetControlCenterUnlockedV2135() {
+      controlCenterUnlockedV2133 = false;
+      try { sessionStorage.removeItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133); } catch (_) {}
+    }
+
     function openControlCenterUnlockedV2133() {
       closeModal();
       closeScoreEntry(false);
@@ -16885,16 +16899,18 @@ let scoreTimingDetail =
       showAccessKeyGateV2134('CONTROL CENTER', openControlCenterUnlockedV2133, true);
     }
 
-    function showAuthorizationChangeGateV2134(action) {
-      showAccessKeyGateV2134('AUTHORIZATION', action, false);
-    }
-
-    function showTestLog() {
+    /* V21.35 — only the HOME -> CONTROL CENTER entry owns the access-key gate.
+       Internal returns/reopens inside the Control Center workflow never prompt. */
+    function showTestLogFromHomeV2135() {
       if (isControlCenterUnlockedV2133()) {
         openControlCenterUnlockedV2133();
         return;
       }
       showControlCenterGateV2133();
+    }
+
+    function showTestLog() {
+      openControlCenterUnlockedV2133();
     }
 
     function showScrambleModeV1938() {
@@ -29218,7 +29234,7 @@ let scoreTimingDetail =
       els.teamMenuBackdrop.addEventListener('click', closeAllTeamMenus);
     }
 
-    els.testLogHotspot.addEventListener('click', showTestLog);
+    els.testLogHotspot.addEventListener('click', showTestLogFromHomeV2135);
     if (els.controlCenterScrambleButtonV1938) els.controlCenterScrambleButtonV1938.addEventListener('click', showScrambleModeV1938);
     if (els.scrambleStartButtonV1938) els.scrambleStartButtonV1938.addEventListener('click', () => runScrambleStartV1939(false));
     if (els.scrambleCopyLogButtonV1938) els.scrambleCopyLogButtonV1938.addEventListener('click', runScrambleCopyLogV1939);
@@ -29255,17 +29271,14 @@ let scoreTimingDetail =
         }
       }, { passive: true });
     }
-    /* V21.34 — Control Center authorization mutation is separately gated even
-       after the Control Center itself has been session-unlocked. */
+    /* V21.35 — no access-key prompts inside Control Center. Authorization
+       mutations proceed directly; successful change/removal silently rearms
+       only the next HOME -> CONTROL CENTER entry gate. */
     if (els.testSwitchAuthorizationButton) {
-      els.testSwitchAuthorizationButton.addEventListener('click', () => {
-        showAuthorizationChangeGateV2134(showSwitchAuthorization);
-      });
+      els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
     }
     if (els.testRemoveAuthorizationButton) {
-      els.testRemoveAuthorizationButton.addEventListener('click', () => {
-        showAuthorizationChangeGateV2134(removeQrAuthorization);
-      });
+      els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
     }
     if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
 
