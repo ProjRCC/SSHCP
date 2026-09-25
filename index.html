@@ -1,9 +1,7 @@
-<!-- SSHCP | BASE KEY: 21.31-C8R4MX | BUILD KEY: 21.32-H6Q9NV -->
-<!-- SSHCP V21.32 CLEANUP TEST - exact validated V21.31 donor.
-     Stage 2 JavaScript dead-code pruning only: removed top-level function declarations and side-effect-free globals
-     proven to have zero identifier references in all 14 scripts, zero HTML references, and zero string-based references.
-     CSS, live JavaScript paths, DOM structure, scoring/NESR, Leaderboard movement, Summary, GEEK, GAME, Skins,
-     Control Center, QR/auth, Worker/API, Sheet behavior, geometry, timings, and presentation are otherwise unchanged. -->
+<!-- SSHCP | BASE KEY: 21.32-H6Q9NV | BUILD KEY: 21.33-Q4N8VK -->
+<!-- SSHCP V21.33 TOURNAMENT HARDENING TEST - exact validated V21.32 donor.
+     Two surgical UX changes only: (1) CONTROL CENTER requires one-key session gate; typing K/k opens immediately with no Enter, and (2) AUTH TEAM opens its team menu automatically.
+     Scoring/NESR, Leaderboard, Summary/tiebreak, Skins, GEEK, GAME, QR validation, Worker/API, geometry, timings, and all other presentation remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11726,7 +11724,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.32</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.33</span></span>
         </button>
 
       </div>
@@ -14319,7 +14317,14 @@ let scoreTimingDetail =
         });
       }
       populatePasskeyTeamSelect(menu, directory || []);
-      requestAnimationFrame(()=>fitPasskeyTeamButtonV58(button));
+      /* V21.33 — AUTH TEAM is already a direct user gesture. Once the AUTH TEAM
+         modal is mounted, immediately open the existing custom team menu so the
+         extra SELECT TEAM tap is unnecessary. Selection/authorization logic is
+         otherwise unchanged. */
+      requestAnimationFrame(()=>{
+        fitPasskeyTeamButtonV58(button);
+        openTeamMenu();
+      });
     }
     async function decodeQrImage(file){
       if(!file) return;
@@ -16735,7 +16740,24 @@ let scoreTimingDetail =
       }).join('');
     }
 
-    function showTestLog() {
+    const SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133 = 'sshcpControlCenterUnlockedV2133';
+    let controlCenterUnlockedV2133 = false;
+
+    function isControlCenterUnlockedV2133() {
+      if (controlCenterUnlockedV2133) return true;
+      try {
+        return sessionStorage.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133) === '1';
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function markControlCenterUnlockedV2133() {
+      controlCenterUnlockedV2133 = true;
+      try { sessionStorage.setItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133, '1'); } catch (_) {}
+    }
+
+    function openControlCenterUnlockedV2133() {
       closeModal();
       closeScoreEntry(false);
       setActiveView('testlog');
@@ -16748,6 +16770,45 @@ let scoreTimingDetail =
       runAssignedPasskeyLoad();
       requestAnimationFrame(fitTestPageButtonText);
       window.scrollTo(0, 0);
+    }
+
+    function showControlCenterGateV2133() {
+      closeModal();
+      els.modalOverlay.classList.add('authorization');
+      els.modalTitle.textContent = 'CONTROL CENTER';
+      els.modalTitle.classList.remove('testing');
+      els.modalBody.textContent = 'ACCESS KEY';
+      els.modalInput.style.display = '';
+      els.modalInput.value = '';
+      els.modalInput.setAttribute('maxlength', '1');
+      els.modalInput.setAttribute('aria-label', 'Control Center access key');
+      els.modalActions.className = 'modal-actions';
+      els.modalActions.innerHTML = '';
+      els.modalOverlay.classList.add('open');
+
+      /* V21.33 — one-key tournament gate. K/k opens immediately; no Enter,
+         Done, OK, or submit action is required. Any other single character is
+         cleared and the gate remains open. */
+      els.modalInput.oninput = () => {
+        const value = String(els.modalInput.value || '').trim().toLowerCase();
+        if (value === 'k') {
+          markControlCenterUnlockedV2133();
+          openControlCenterUnlockedV2133();
+          return;
+        }
+        if (value) els.modalInput.value = '';
+      };
+
+      try { els.modalInput.focus({ preventScroll:true }); }
+      catch (_) { els.modalInput.focus(); }
+    }
+
+    function showTestLog() {
+      if (isControlCenterUnlockedV2133()) {
+        openControlCenterUnlockedV2133();
+        return;
+      }
+      showControlCenterGateV2133();
     }
 
     function showScrambleModeV1938() {
@@ -28710,6 +28771,9 @@ let scoreTimingDetail =
       els.modalInput.removeAttribute('maxlength');
 
       els.modalInput.onkeydown =
+        null;
+
+      els.modalInput.oninput =
         null;
 
 
