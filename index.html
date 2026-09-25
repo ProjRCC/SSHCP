@@ -1,7 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.32-H6Q9NV | BUILD KEY: 21.33-Q4N8VK -->
-<!-- SSHCP V21.33 TOURNAMENT HARDENING TEST - exact validated V21.32 donor.
-     Two surgical UX changes only: (1) CONTROL CENTER requires one-key session gate; typing K/k opens immediately with no Enter, and (2) AUTH TEAM opens its team menu automatically.
-     Scoring/NESR, Leaderboard, Summary/tiebreak, Skins, GEEK, GAME, QR validation, Worker/API, geometry, timings, and all other presentation remain unchanged. -->
+<!-- SSHCP | BASE KEY: 21.33-Q4N8VK | BUILD KEY: 21.34-R5K8MW -->
+<!-- SSHCP V21.34 TOURNAMENT HARDENING TEST - exact V21.33 donor.
+     Surgical authorization hardening only: (1) CONTROL CENTER keeps the one-key K/k gate,
+     (2) REMOVE AUTH and SWITCH/GAIN AUTH each require a fresh K/k key before changing authorization,
+     (3) access-key popups are constrained to the upper half of the screen so the popup stays above
+     the on-screen keyboard, and (4) V21.33 AUTH TEAM auto-open behavior is preserved unchanged.
+     Scoring/NESR, Leaderboard, Summary/tiebreak, Skins, GEEK, GAME, QR validation, Worker/API,
+     geometry, timings, and all other presentation remain unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1541,6 +1545,23 @@
 .modal-overlay.authorization .modal-btn:disabled{border-color:#999;background:#999;color:#d9d9d9;opacity:1;cursor:default;}
 .modal-close-x{display:none;position:absolute;top:8px;right:10px;width:34px;height:34px;padding:0;border:0;background:transparent;color:#bfbfbf;font-family:Arial,sans-serif;font-size:30px;line-height:1;z-index:2;}
 .modal-overlay.authorization .modal-close-x{display:block;}
+/* V21.34 — access-key gates live entirely in the upper half of the screen.
+   JS positions the box against visualViewport while the keyboard opens/closes;
+   this CSS provides the fixed geometry and a strict half-screen max-height. */
+.modal-overlay.authorization.access-key-gate-v2134{
+  align-items:flex-start!important;
+  justify-content:center!important;
+  padding:0 20px!important;
+}
+.modal-overlay.authorization.access-key-gate-v2134 .modal-box{
+  position:fixed!important;
+  left:50%!important;
+  width:min(420px,calc(100% - 44px))!important;
+  max-height:calc(50dvh - 12px)!important;
+  margin:0!important;
+  transform:translateX(-50%)!important;
+  overflow-y:auto!important;
+}
 .modal-title.testing{color:#000;}
 .modal-btn.testing{background:#fafafa;}
 .score-entry-control{}
@@ -11724,7 +11745,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.33</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.34</span></span>
         </button>
 
       </div>
@@ -16742,6 +16763,8 @@ let scoreTimingDetail =
 
     const SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2133 = 'sshcpControlCenterUnlockedV2133';
     let controlCenterUnlockedV2133 = false;
+    let accessKeyViewportHandlerV2134 = null;
+    let accessKeyFullHeightV2134 = 0;
 
     function isControlCenterUnlockedV2133() {
       if (controlCenterUnlockedV2133) return true;
@@ -16772,35 +16795,98 @@ let scoreTimingDetail =
       window.scrollTo(0, 0);
     }
 
-    function showControlCenterGateV2133() {
+    function clearAccessKeyViewportHandlerV2134() {
+      const viewport = window.visualViewport;
+      if (viewport && accessKeyViewportHandlerV2134) {
+        viewport.removeEventListener('resize', accessKeyViewportHandlerV2134);
+        viewport.removeEventListener('scroll', accessKeyViewportHandlerV2134);
+      }
+      accessKeyViewportHandlerV2134 = null;
+      accessKeyFullHeightV2134 = 0;
+      if (els.modalBox) els.modalBox.style.removeProperty('top');
+    }
+
+    function positionAccessKeyGateV2134() {
+      if (!els.modalOverlay.classList.contains('access-key-gate-v2134') || !els.modalBox) return;
+
+      const viewport = window.visualViewport;
+      const viewportTop = viewport ? viewport.offsetTop : 0;
+      const viewportHeight = viewport ? viewport.height : window.innerHeight;
+      const viewportBottom = viewportTop + viewportHeight;
+
+      /* The popup's BOTTOM may never cross the physical-layout halfway line.
+         Keyboard top (visualViewport bottom) is an additional upper bound. */
+      const halfScreen = Math.max(1, (accessKeyFullHeightV2134 || window.innerHeight) * 0.5);
+      const bottomLimit = Math.min(halfScreen, viewportBottom - 10);
+      const boxHeight = Math.max(1, els.modalBox.getBoundingClientRect().height);
+
+      /* Center the box inside the usable upper region rather than simply pinning
+         it to the very top. This keeps it readable on both PWA and browser. */
+      const usableTop = viewportTop + 8;
+      const usableHeight = Math.max(1, bottomLimit - usableTop);
+      let top = usableTop + Math.max(0, (usableHeight - boxHeight) / 2);
+      top = Math.min(top, bottomLimit - boxHeight);
+      top = Math.max(usableTop, top);
+
+      els.modalBox.style.top = Math.round(top) + 'px';
+    }
+
+    function showAccessKeyGateV2134(title, onSuccess, rememberControlCenter) {
       closeModal();
-      els.modalOverlay.classList.add('authorization');
-      els.modalTitle.textContent = 'CONTROL CENTER';
+      els.modalOverlay.classList.add('authorization', 'access-key-gate-v2134');
+      els.modalTitle.textContent = title;
       els.modalTitle.classList.remove('testing');
       els.modalBody.textContent = 'ACCESS KEY';
       els.modalInput.style.display = '';
       els.modalInput.value = '';
       els.modalInput.setAttribute('maxlength', '1');
-      els.modalInput.setAttribute('aria-label', 'Control Center access key');
+      els.modalInput.setAttribute('aria-label', title + ' access key');
       els.modalActions.className = 'modal-actions';
       els.modalActions.innerHTML = '';
       els.modalOverlay.classList.add('open');
 
-      /* V21.33 — one-key tournament gate. K/k opens immediately; no Enter,
-         Done, OK, or submit action is required. Any other single character is
-         cleared and the gate remains open. */
+      /* One-key tournament gate: K/k succeeds immediately; no Enter/Done/OK. */
       els.modalInput.oninput = () => {
         const value = String(els.modalInput.value || '').trim().toLowerCase();
         if (value === 'k') {
-          markControlCenterUnlockedV2133();
-          openControlCenterUnlockedV2133();
+          if (rememberControlCenter) markControlCenterUnlockedV2133();
+          const action = onSuccess;
+          closeModal();
+          if (typeof action === 'function') action();
           return;
         }
         if (value) els.modalInput.value = '';
       };
 
-      try { els.modalInput.focus({ preventScroll:true }); }
-      catch (_) { els.modalInput.focus(); }
+      const initialViewport = window.visualViewport;
+      accessKeyFullHeightV2134 = Math.max(
+        window.innerHeight || 0,
+        initialViewport ? (initialViewport.offsetTop + initialViewport.height) : 0
+      );
+
+      accessKeyViewportHandlerV2134 = () => {
+        requestAnimationFrame(positionAccessKeyGateV2134);
+      };
+      const viewport = window.visualViewport;
+      if (viewport) {
+        viewport.addEventListener('resize', accessKeyViewportHandlerV2134, { passive:true });
+        viewport.addEventListener('scroll', accessKeyViewportHandlerV2134, { passive:true });
+      }
+
+      requestAnimationFrame(() => {
+        positionAccessKeyGateV2134();
+        try { els.modalInput.focus({ preventScroll:true }); }
+        catch (_) { els.modalInput.focus(); }
+        requestAnimationFrame(positionAccessKeyGateV2134);
+      });
+    }
+
+    function showControlCenterGateV2133() {
+      showAccessKeyGateV2134('CONTROL CENTER', openControlCenterUnlockedV2133, true);
+    }
+
+    function showAuthorizationChangeGateV2134(action) {
+      showAccessKeyGateV2134('AUTHORIZATION', action, false);
     }
 
     function showTestLog() {
@@ -28709,6 +28795,7 @@ let scoreTimingDetail =
 
 
     function closeModal() {
+      clearAccessKeyViewportHandlerV2134();
       if (tournamentSummaryResizeObserver) {
         tournamentSummaryResizeObserver.disconnect();
         tournamentSummaryResizeObserver = null;
@@ -28737,6 +28824,7 @@ let scoreTimingDetail =
           'quick-guide',
           'quick-guide-normal-v2110',
           'switch-authorization',
+          'access-key-gate-v2134',
           'tournament-result',
           'tournament-summary',
           'skins-results-v1627',
@@ -29167,8 +29255,18 @@ let scoreTimingDetail =
         }
       }, { passive: true });
     }
-    if (els.testSwitchAuthorizationButton) els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
-    if (els.testRemoveAuthorizationButton) els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
+    /* V21.34 — Control Center authorization mutation is separately gated even
+       after the Control Center itself has been session-unlocked. */
+    if (els.testSwitchAuthorizationButton) {
+      els.testSwitchAuthorizationButton.addEventListener('click', () => {
+        showAuthorizationChangeGateV2134(showSwitchAuthorization);
+      });
+    }
+    if (els.testRemoveAuthorizationButton) {
+      els.testRemoveAuthorizationButton.addEventListener('click', () => {
+        showAuthorizationChangeGateV2134(removeQrAuthorization);
+      });
+    }
     if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
 
     document.addEventListener('visibilitychange', () => {
