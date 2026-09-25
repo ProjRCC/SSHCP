@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 21.40-M7Q3RV | BUILD KEY: 21.41-Q6N8TK -->
-<!-- SSHCP V21.41 SERVER SCRAMBLE STATE + SUMMARY AUDIT TEST - exact V21.40 donor.
-     Surgical tournament-safety continuation paired with CF V3.2: (1) Scramble protection state is no
-     longer device/localStorage authoritative; every CONTROL CENTER / SCRAMBLE MODE entry synchronizes
-     from the Worker and fails safe locked if status cannot be confirmed, (2) CC status polling keeps
-     the shared state current across devices, (3) START/END use Worker state; END still changes no scores
-     and leaves Scramble Audit recording until CLEAR SM LOG, (4) every displayed SCRAMBLE SUMMARY sends
-     a non-blocking SCRAMBLE SUMMARY VIEWED audit event, and (5) V21.40 MASTER CC bypass plus all V21.39
-     Sunday styling/protection presentation remain unchanged. Requires CF V3.2 for full server authority. -->
+<!-- SSHCP | BASE KEY: 21.41-Q6N8TK | BUILD KEY: 21.42-N6R4QX -->
+<!-- SSHCP V21.42 SCRAMBLE ON-DEMAND STATE + TRANSITION / LOG REFINEMENT - exact live V21.41 donor.
+     Paired with CF V3.3: (1) removes all automatic Scramble-state polling; state reads occur only on
+     CONTROL CENTER entry/return, SCRAMBLE MODE entry, and browser/PWA refresh restored to CONTROL CENTER,
+     (2) a refresh while in CONTROL CENTER returns directly to CONTROL CENTER and performs one fresh state
+     read, (3) START/END use a touch-blocking full-screen black transition; START confirms then fades 1.0s
+     into CONTROL CENTER ACTIVE, END gives a brief light-gray button press then confirms and fades 1.0s into
+     SCRAMBLE MODE / START SCRAMBLE, with no redundant post-change status read, and (4) the visible SCRAMBLE
+     LOG shows only meaningful completed events while the full Audit/COPY LOG remains exhaustive. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11764,6 +11764,35 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 </style>
 
+<style id="sshcp-v2142-scramble-transition">
+/* V21.42 — START/END transition shield. It owns the whole viewport and blocks
+   touch until the confirmed destination is fully staged underneath. */
+.sshcp-scramble-transition-v2142{
+  position:fixed!important;
+  inset:0!important;
+  z-index:214200!important;
+  margin:0!important;
+  padding:0!important;
+  background:#000!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  touch-action:none!important;
+  transition:none!important;
+}
+.sshcp-scramble-transition-v2142.reveal-v2142{
+  opacity:0!important;
+  transition:opacity 1s ease-out!important;
+}
+.modal-overlay.end-scramble-confirm-v2136 .modal-btn.scramble-end-confirm-v2136.scramble-end-pressed-v2142{
+  background:var(--sshcp-gray-2-5-v2040,#ededed)!important;
+  border-color:var(--sshcp-gray-2-5-v2040,#ededed)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  opacity:1!important;
+  filter:none!important;
+}
+</style>
+
 </head>
 
 
@@ -11893,7 +11922,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.41</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.42</span></span>
         </button>
 
       </div>
@@ -12366,8 +12395,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
       <div class="test-log-header">
         <div class="test-log-title">SCRAMBLE MODE</div>
       </div>
-      <div class="scramble-activity-v1938" aria-label="Latest score activity">
-        <div class="scramble-activity-head-v1938">LATEST SCORE ACTIVITY</div>
+      <div class="scramble-activity-v1938" aria-label="Scramble log">
+        <div id="scrambleActivityHeadV2142" class="scramble-activity-head-v1938">SCRAMBLE LOG • 0 EVENTS</div>
         <div id="scrambleLatestActivityV1938" class="scramble-activity-body-v1938">NOT STARTED</div>
       </div>
       <div class="scramble-bottom-stack-v1938">
@@ -12628,6 +12657,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
       scrambleLatestActivityV1938:
         document.getElementById('scrambleLatestActivityV1938'),
+
+      scrambleActivityHeadV2142:
+        document.getElementById('scrambleActivityHeadV2142'),
 
       testLogHotspot:
         document.getElementById('testLogHotspot'),
@@ -15081,6 +15113,7 @@ let scoreTimingDetail =
       if (
         value === 'scorecard' ||
         value === 'leaderboard' ||
+        value === 'testlog' ||
         value === 'home'
       ) {
 
@@ -16943,24 +16976,34 @@ let scoreTimingDetail =
       try { sessionStorage.removeItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136); } catch (_) {}
     }
 
-    function openControlCenterUnlockedV2133() {
+    function openControlCenterUnlockedV2133(options = {}) {
+      const shouldRefreshScrambleStateV2142 = !(
+        options &&
+        typeof options === 'object' &&
+        options.refreshScrambleState === false
+      );
+
       closeModal();
       closeScoreEntry(false);
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      /* V21.41 — server status is authoritative. Enter CC fail-safe locked until
-         the Worker confirms ACTIVE vs ENDED/INACTIVE, then keep polling while CC
-         remains open so another device cannot silently leave this CC stale. */
-      setScrambleProtectionSyncPendingV2141(true);
+      /* V21.42 — server status remains authoritative, but there is NO background
+         polling. A normal CC entry/return performs one state-only read. START
+         success may skip that redundant read because the change response itself
+         already confirmed ACTIVE. */
+      if (shouldRefreshScrambleStateV2142) {
+        setScrambleProtectionSyncPendingV2141(true);
+      }
       syncScrambleProtectionUiV2136();
       scheduleControlCenterViewportSnapshotV2128();
       updateControlCenterViewportMetricsV188();
       /* TEST PAGE opening refreshes the CF QR directory once. Existing cached
          data remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
-      refreshScrambleProtectionFromServerV2141(true);
-      startScrambleStatusPollV1939();
+      if (shouldRefreshScrambleStateV2142) {
+        refreshScrambleProtectionFromServerV2141(true);
+      }
       requestAnimationFrame(fitTestPageButtonText);
       window.scrollTo(0, 0);
     }
@@ -17076,7 +17119,13 @@ let scoreTimingDetail =
       openControlCenterUnlockedV2133();
     }
 
-    function showScrambleModeV1938() {
+    function showScrambleModeV1938(options = {}) {
+      const shouldRefreshScrambleStateV2142 = !(
+        options &&
+        typeof options === 'object' &&
+        options.refreshScrambleState === false
+      );
+
       closeModal();
       closeScoreEntry(false);
       setActiveView('scramble');
@@ -17084,8 +17133,16 @@ let scoreTimingDetail =
       syncScrambleModeLayoutV1938();
       requestAnimationFrame(fitScrambleModeButtonTextV1938);
       window.scrollTo(0,0);
-      refreshScrambleProtectionFromServerV2141(true);
-      startScrambleStatusPollV1939();
+
+      if (shouldRefreshScrambleStateV2142) {
+        /* Every deliberate Scramble Mode entry reloads the complete curated
+           visible log from the current Audit. There is no timer afterward. */
+        scrambleFeedLastRowV1940 = 1;
+        scrambleFeedSessionV1940 = '';
+        setScrambleVisibleEventCountV2142(0);
+        setScrambleLatestActivityV1939('LOADING SCRAMBLE LOG');
+        refreshScrambleStatusV1939(true);
+      }
     }
 
 
@@ -17098,10 +17155,12 @@ let scoreTimingDetail =
        ========================================================= */
 
     let scrambleAuditActiveV1939 = false;
-    let scrambleStatusTimerV1939 = null;
+    let scrambleStatusTimerV1939 = null; /* V21.42 legacy handle; no interval is created. */
     let scrambleFeedLastRowV1940 = 1;
     let scrambleFeedSessionV1940 = '';
     let scrambleFeedHasOfficialEntriesV1940 = false;
+    let scrambleVisibleEventCountV2142 = 0;
+    let scrambleTransitionOverlayV2142 = null;
 
     /* V21.41 — Sunday tournament safety state is server-authoritative (CF V3.2).
        The frontend retains only the last confirmed state for presentation. On every
@@ -17191,13 +17250,60 @@ let scoreTimingDetail =
 
     async function refreshScrambleProtectionFromServerV2141(silent = true) {
       setScrambleProtectionSyncPendingV2141(true);
-      const data = await refreshScrambleStatusV1939(silent);
-      if (!data) {
+
+      try {
+        const data = await scrambleApiRequestV1939(
+          'scrambleStatus',
+          { includeFeed: 0 }
+        );
+        applyScrambleServerStatusV2141(data);
+        return data;
+      }
+      catch (error) {
         markScrambleProtectionStatusFailedV2141();
+        if (!silent) {
+          showScrambleErrorV1939(
+            'SCRAMBLE STATUS',
+            error && error.message ? error.message : 'Status could not be loaded.'
+          );
+        }
         return null;
       }
-      applyScrambleServerStatusV2141(data);
-      return data;
+    }
+
+    function waitForAnimationFrameV2142() {
+      return new Promise(resolve => requestAnimationFrame(() => resolve()));
+    }
+
+    function waitMsV2142(ms) {
+      return new Promise(resolve => window.setTimeout(resolve, Math.max(0, Number(ms) || 0)));
+    }
+
+    async function beginScrambleTransitionV2142() {
+      if (scrambleTransitionOverlayV2142 && scrambleTransitionOverlayV2142.isConnected) {
+        scrambleTransitionOverlayV2142.remove();
+      }
+
+      const overlay = document.createElement('div');
+      overlay.className = 'sshcp-scramble-transition-v2142';
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(overlay);
+      scrambleTransitionOverlayV2142 = overlay;
+
+      /* Yield a paint before network work so the black response is immediate. */
+      await waitForAnimationFrameV2142();
+      return overlay;
+    }
+
+    async function revealScrambleTransitionV2142(overlay) {
+      if (!overlay || !overlay.isConnected) return;
+      await waitForAnimationFrameV2142();
+      overlay.classList.add('reveal-v2142');
+      await waitMsV2142(1050);
+      if (overlay.isConnected) overlay.remove();
+      if (scrambleTransitionOverlayV2142 === overlay) {
+        scrambleTransitionOverlayV2142 = null;
+      }
     }
 
     function showEndScrambleConfirmV2136() {
@@ -17216,28 +17322,42 @@ let scoreTimingDetail =
         showHome();
       });
       const end = makeModalButton('END', 'scramble-end-confirm-v2136', async () => {
+        /* V21.42 — visual haptic first, then a full black touch shield. */
         mistake.disabled = true;
         end.disabled = true;
+        end.classList.add('scramble-end-pressed-v2142');
+        await waitMsV2142(85);
+        const transitionV2142 = await beginScrambleTransitionV2142();
         startLoadingLine();
 
         try {
           const data = await scrambleApiRequestV1939('scrambleEnd');
           scrambleAuditActiveV1939 = Boolean(data.active);
           setScrambleProtectionActiveV2136(Boolean(data.protectionActive));
+
+          if (data.visibleEvent && data.visibleEvent.text) {
+            appendScrambleFeedEntriesV1940([data.visibleEvent]);
+            setScrambleVisibleEventCountV2142(scrambleVisibleEventCountV2142 + 1);
+          }
+
           addTestLog(
             'END SCRAMBLE',
             'OK',
             '—',
             'SERVER PROTECTION RELEASED / AUDIT CONTINUES / SCORES UNCHANGED'
           );
-          closeModal();
-          showTestLog();
+
+          /* END response already confirms ENDED. Stage Scramble Mode locally,
+             then fade the black shield for exactly the deliberate reveal. */
+          showScrambleModeV1938({ refreshScrambleState: false });
+          await revealScrambleTransitionV2142(transitionV2142);
         }
         catch (error) {
           showScrambleErrorV1939(
             'END SCRAMBLE FAILED',
             error && error.message ? error.message : 'Server scramble protection could not be ended.'
           );
+          await revealScrambleTransitionV2142(transitionV2142);
         }
         finally {
           completeLoadingLine();
@@ -17257,6 +17377,14 @@ let scoreTimingDetail =
       runScrambleStartV1939();
     }
 
+    function setScrambleVisibleEventCountV2142(value) {
+      scrambleVisibleEventCountV2142 = Math.max(0, Math.floor(Number(value) || 0));
+      if (!els.scrambleActivityHeadV2142) return;
+      const noun = scrambleVisibleEventCountV2142 === 1 ? 'EVENT' : 'EVENTS';
+      els.scrambleActivityHeadV2142.textContent =
+        'SCRAMBLE LOG • ' + scrambleVisibleEventCountV2142 + ' ' + noun;
+    }
+
     function setScrambleLatestActivityV1939(value) {
       if (!els.scrambleLatestActivityV1938) return;
 
@@ -17268,9 +17396,10 @@ let scoreTimingDetail =
       els.scrambleLatestActivityV1938.scrollTop = 0;
     }
 
-    function resetScrambleFeedV1940(message = 'WAITING FOR OFFICIAL SCORE SAVES') {
+    function resetScrambleFeedV1940(message = 'WAITING FOR SCRAMBLE ACTIVITY') {
       scrambleFeedLastRowV1940 = 1;
       scrambleFeedSessionV1940 = '';
+      setScrambleVisibleEventCountV2142(0);
       setScrambleLatestActivityV1939(message);
     }
 
@@ -17363,7 +17492,8 @@ let scoreTimingDetail =
           'scrambleStatus',
           {
             afterRow: scrambleFeedLastRowV1940,
-            session: scrambleFeedSessionV1940
+            session: scrambleFeedSessionV1940,
+            includeFeed: 1
           }
         );
 
@@ -17381,7 +17511,7 @@ let scoreTimingDetail =
         );
 
         if (sessionChanged) {
-          setScrambleLatestActivityV1939('WAITING FOR OFFICIAL SCORE SAVES');
+          setScrambleLatestActivityV1939('WAITING FOR SCRAMBLE ACTIVITY');
           scrambleFeedLastRowV1940 = 1;
         }
 
@@ -17390,6 +17520,9 @@ let scoreTimingDetail =
         }
 
         appendScrambleFeedEntriesV1940(data.feedEntries || []);
+        if (Number.isFinite(Number(data.visibleEventCount))) {
+          setScrambleVisibleEventCountV2142(Number(data.visibleEventCount));
+        }
 
         const returnedLastRow = Number(data.lastRow);
         if (Number.isInteger(returnedLastRow) && returnedLastRow >= 1) {
@@ -17397,7 +17530,7 @@ let scoreTimingDetail =
         }
 
         if (!scrambleFeedHasOfficialEntriesV1940) {
-          setScrambleLatestActivityV1939('WAITING FOR OFFICIAL SCORE SAVES');
+          setScrambleLatestActivityV1939('WAITING FOR SCRAMBLE ACTIVITY');
         }
 
         return data;
@@ -17426,12 +17559,9 @@ let scoreTimingDetail =
     }
 
     function startScrambleStatusPollV1939() {
+      /* V21.42 — intentionally NO automatic polling. This legacy entry point is
+         retained as a no-op so no stale call site can accidentally create a timer. */
       stopScrambleStatusPollV1939();
-
-      scrambleStatusTimerV1939 = window.setInterval(() => {
-        if ((currentView !== 'scramble' && currentView !== 'testlog') || document.hidden) return;
-        refreshScrambleStatusV1939(true);
-      }, 10000);
     }
 
     function showScrambleErrorV1939(title, message) {
@@ -17449,6 +17579,7 @@ let scoreTimingDetail =
 
     async function runScrambleStartV1939() {
       setScrambleButtonsDisabledV1939(true);
+      const transitionV2142 = await beginScrambleTransitionV2142();
       startLoadingLine();
 
       try {
@@ -17465,7 +17596,7 @@ let scoreTimingDetail =
             ? Boolean(data.protectionActive)
             : true
         );
-        setScrambleLatestActivityV1939('WAITING FOR OFFICIAL SCORE SAVES');
+        resetScrambleFeedV1940('WAITING FOR SCRAMBLE ACTIVITY');
         scrambleFeedSessionV1940 = String(data.sessionToken || '');
         const startLastRow = Number(data.lastRow);
         scrambleFeedLastRowV1940 =
@@ -17480,14 +17611,16 @@ let scoreTimingDetail =
           String(data.assignedTeams || 0) + ' ASSIGNED TEAMS'
         );
 
-        startScrambleStatusPollV1939();
-        showTestLog();
+        /* START response itself confirms ACTIVE. Do not spend another state read. */
+        openControlCenterUnlockedV2133({ refreshScrambleState: false });
+        await revealScrambleTransitionV2142(transitionV2142);
       }
       catch (error) {
         showScrambleErrorV1939(
           'START SCRAMBLE FAILED',
           error && error.message ? error.message : 'Scramble Audit could not be started.'
         );
+        await revealScrambleTransitionV2142(transitionV2142);
       }
       finally {
         completeLoadingLine();
@@ -29605,11 +29738,8 @@ let scoreTimingDetail =
     }
     if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
 
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && currentView === 'scramble') {
-        refreshScrambleStatusV1939(true);
-      }
-    });
+    /* V21.42 — no visibilitychange Scramble read. Cross-device state is
+       intentionally refreshed only by explicit navigation/refresh actions. */
 
     els.testAddParCurrentButton.addEventListener('click', () => showTestScoreWarning('par', 'current'));
     els.testAddRandomCurrentButton.addEventListener('click', () => showTestScoreWarning('random', 'current'));
@@ -30465,6 +30595,14 @@ let scoreTimingDetail =
       if (restoreTeamsPopupV1626) {
         showTestLog();
         openTeamsPopup({ restoreAfterRefresh: true });
+        return;
+      }
+
+      /* V21.42 — browser/PWA refresh while CONTROL CENTER is the remembered
+         view returns directly to CC and performs its normal one-time server
+         state read instead of falling through to HOME. */
+      if (rememberedView === 'testlog') {
+        showTestLog();
         return;
       }
 
