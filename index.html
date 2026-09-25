@@ -1,10 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.28-N5R8QK | BUILD KEY: 21.29-K4V7QM -->
-<!-- SSHCP V21.29 — TEST build from exact V21.28.
-     Control Center diagnostic presentation only: increase only the settled viewport information block height
-     enough to expose all four existing diagnostic rows, including WIDTH WHP/WSC/WLB/WPUAP. The added height
-     is taken upward from the flexible visible log area; score controls, authorization, SCRAMBLE MODE and bottom
-     navigation geometry remain unchanged. No diagnostic math, runtime page geometry, scoring, NESR, GEEK, GAME,
-     QR/auth, Worker/API, or Sheet behavior changes. V21.28 settled-device diagnostic logic is preserved unchanged. -->
+<!-- SSHCP | BASE KEY: 21.29-K4V7QM | BUILD KEY: 21.30-R6M2PX -->
+<!-- SSHCP V21.30 — TEST build from exact V21.29.
+     Leaderboard progress-thumb movement only: preserve the exact Leaderboard contents, row geometry, rail location,
+     rail visibility rule, 8/team-count thumb size, endpoints, and scroll behavior, while continuously sampling the
+     Leaderboard's real scrollTop on animation frames during active/flick momentum scrolling so the Blue thumb tracks
+     with the same smooth visual continuity seen on the Scorecard. No Scorecard, Summary, GEEK, GAME, Control Center
+     diagnostics, scoring, NESR, QR/auth, Worker/API, or Sheet behavior changes. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15052,7 +15052,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.29</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.30</span></span>
         </button>
 
       </div>
@@ -31957,11 +31957,75 @@ let scoreTimingDetail =
       rail.style.setProperty('--leader-progress-thumb-top-v2115', topPct.toFixed(2) + '%');
     }
 
+    let leaderboardProgressFrameV2130 = 0;
+    let leaderboardProgressLastScrollTopV2130 = NaN;
+    let leaderboardProgressStableFramesV2130 = 0;
+
+    function updateLeaderboardProgressMovementV2130() {
+      const scroller = els.leaderContent;
+      const rail = document.getElementById('leaderProgressV2115');
+      if (!scroller || !rail || currentView !== 'leaderboard') return;
+
+      const totalRows = Math.max(1, els.leaderRows ? els.leaderRows.children.length : 1);
+      if (totalRows <= 8) return;
+
+      const visibleRows = Math.min(8, totalRows);
+      const sizePct = Math.max(0, Math.min(100, (visibleRows / totalRows) * 100));
+      const client = scroller.clientHeight;
+      const scroll = scroller.scrollHeight;
+      const max = Math.max(0, scroll - client);
+      const travelPct = 100 - sizePct;
+      const ratio = max > 1
+        ? Math.max(0, Math.min(1, scroller.scrollTop / max))
+        : 0;
+      const topPct = travelPct * ratio;
+
+      rail.style.setProperty('--leader-progress-thumb-top-v2115', topPct.toFixed(2) + '%');
+    }
+
+    function runLeaderboardProgressMovementV2130() {
+      leaderboardProgressFrameV2130 = 0;
+      if (!els.leaderContent || currentView !== 'leaderboard') {
+        leaderboardProgressLastScrollTopV2130 = NaN;
+        leaderboardProgressStableFramesV2130 = 0;
+        return;
+      }
+
+      updateLeaderboardProgressMovementV2130();
+
+      const currentTop = Number(els.leaderContent.scrollTop) || 0;
+      if (
+        Number.isFinite(leaderboardProgressLastScrollTopV2130) &&
+        Math.abs(currentTop - leaderboardProgressLastScrollTopV2130) < 0.01
+      ) {
+        leaderboardProgressStableFramesV2130 += 1;
+      } else {
+        leaderboardProgressStableFramesV2130 = 0;
+      }
+      leaderboardProgressLastScrollTopV2130 = currentTop;
+
+      /* V21.30 — keep sampling for a short settled tail so iPad/Safari momentum
+         scroll can move the thumb every animation frame instead of only when its
+         main-thread scroll event happens to arrive. */
+      if (leaderboardProgressStableFramesV2130 < 8) {
+        leaderboardProgressFrameV2130 =
+          requestAnimationFrame(runLeaderboardProgressMovementV2130);
+      }
+    }
+
+    function requestLeaderboardProgressMovementV2130() {
+      leaderboardProgressStableFramesV2130 = 0;
+      if (leaderboardProgressFrameV2130) return;
+      leaderboardProgressLastScrollTopV2130 = NaN;
+      leaderboardProgressFrameV2130 =
+        requestAnimationFrame(runLeaderboardProgressMovementV2130);
+    }
+
     function wireLeaderboardProgressV2115() {
       if (!els.leaderContent || !document.getElementById('leaderProgressV2115')) return;
 
       const update = () => updateLeaderboardProgressV2115();
-      els.leaderContent.addEventListener('scroll', update, { passive:true });
+      els.leaderContent.addEventListener('scroll', requestLeaderboardProgressMovementV2130, { passive:true });
       window.addEventListener('resize', update, { passive:true });
       if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', update, { passive:true });
