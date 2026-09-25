@@ -1,10 +1,9 @@
-<!-- SSHCP | BASE KEY: 21.43-P7K2MV | BUILD KEY: 21.44-H7M4QX -->
-<!-- SSHCP V21.44 RETURNING-QR WELCOME FIX - exact V21.43 donor.
-     Paired with unchanged CF V3.3. Preserves all V21.43 Scramble refresh/transition/log behavior.
-     Startup now distinguishes a genuinely new incoming QR/key from the exact passkey already saved on
-     this device: reopening the PWA/browser on the same QR URL silently revalidates the stored authorization,
-     strips the stale passkey/key from the URL, does NOT show WELCOME again, and does NOT create a duplicate
-     QR AUTHORIZED audit event. A different/new incoming QR keeps the established Welcome + audited auth flow. -->
+<!-- SSHCP | BASE KEY: 21.44-H7M4QX | BUILD KEY: 21.45-K8R5NV -->
+<!-- SSHCP V21.45 PERSISTENT CC ACCESS + HOME 1A-ONLY REVEAL - exact V21.44 donor.
+     Paired with unchanged CF V3.3. Preserves V21.44 returning-QR behavior and all V21.43 Scramble behavior.
+     CONTROL CENTER access-key success now persists across browser/PWA closes while the same authorization
+     remains active; removing or changing authorization rearms the gate. HOME reveal is simplified to the
+     single full-screen 1A white curtain; the former 1B middle/action-area curtain is no longer created. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +16,6 @@
        Values are in SECONDS. Safety fallbacks follow automatically.
 
        1A = HOME full-screen white curtain
-       1B = HOME middle/action-area white curtain
        2  = SCORECARD + LEADERBOARD full-screen white curtain
        3  = ALL AFTER-PLAY full-screen white curtains
             (Summary / Tie Break / GEEK / GEEK Detail / Game / Skins)
@@ -27,7 +25,6 @@
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
       FADE_1A_HOME_FULL: 0.30,
-      FADE_1B_HOME_MIDDLE: 0.70,
       FADE_2_SCORECARD_LEADERBOARD: 0.60,
       FADE_3_AFTER_PLAY: 0.80,
       FADE_4_QUICK_GUIDE: 0.80,
@@ -44,7 +41,6 @@
         rootStyle.setProperty(cssName, safeSeconds + 's');
       };
       setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.30);
-      setSeconds('--sshcp-fade-1b-home-middle', timing.FADE_1B_HOME_MIDDLE, 0.70);
       setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.60);
       setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 0.80);
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
@@ -146,23 +142,14 @@
           document.documentElement.classList.add('sshcp-pre-main-full-v2069');
         }
 
-        /* V19.76 — HOME's V19.63 curtain is deliberately created later, after
-           normal startup/auth has enough runtime geometry to own the existing
-           logo-bottom -> QUICK GUIDE-top reveal zone. On a browser refresh,
-           however, the static boot HOME can paint before initialize()/showHome()
-           reaches that curtain. Conceal only the two mutable HOME actions from
-           the very first paint, then transfer them directly underneath the real
-           V19.63 curtain once it exists. Logo, QUICK GUIDE, event/version, and
-           Welcome presentation remain untouched. */
+        /* V21.45 — HOME refresh uses only the full-screen 1A curtain. The
+           former middle/action-area 1B concealment is retired. Start behind the
+           existing full-screen first-paint white layer and hand directly to the
+           runtime 1A curtain in showHome(). */
         if (
           rememberedView === 'home' &&
           !window.__sshcpIncomingQrWelcomeV170
         ) {
-          document.documentElement.classList.add('sshcp-pre-home-v1976');
-          /* V19.87 — browser refresh that resolves directly back to HOME must
-             be white-covered from the first paint, before initialize()/showHome()
-             can mount V19.86's runtime full-screen curtain. This boot-only
-             layer hands off synchronously to that existing curtain later. */
           document.documentElement.classList.add('sshcp-pre-home-full-v1987');
         }
 
@@ -4063,11 +4050,6 @@ html.sshcp-pre-main-full-v2069 body::after{
   z-index:8990!important;
 }
 
-html.sshcp-pre-home-v1976 #homeView #homeLeaderboardButton,
-html.sshcp-pre-home-v1976 #homeView #homeScorecardAccess{
-  visibility:hidden!important;
-}
-
 html.sshcp-pre-home-full-v1987 body::after{
   content:""!important;
   position:fixed!important;
@@ -7325,10 +7307,6 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
   pointer-events:auto!important;
   transition:opacity .5s ease-out!important;
   will-change:opacity;
-}
-
-.sshcp-data-reveal-shield-v177.sshcp-home-reveal-v1985{
-  transition:opacity var(--sshcp-fade-1b-home-middle,.7s) ease-out!important;
 }
 
 .sshcp-data-reveal-shield-v177.is-revealing-v177{
@@ -11989,7 +11967,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.44</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.45</span></span>
         </button>
 
       </div>
@@ -17038,15 +17016,26 @@ let scoreTimingDetail =
       }).join('');
     }
 
-    const SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136 = 'sshcpControlCenterUnlockedV2136';
+    const SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145 = 'sshcpControlCenterUnlockedV2145';
     let controlCenterUnlockedV2133 = false;
     let accessKeyViewportHandlerV2134 = null;
     let accessKeyFullHeightV2134 = 0;
 
+    function controlCenterUnlockFingerprintV2145() {
+      const authFingerprint = String(qrAuthorizationFingerprintV1979() || '').trim();
+      return authFingerprint || 'NO_AUTH';
+    }
+
     function isControlCenterUnlockedV2133() {
-      if (controlCenterUnlockedV2133) return true;
+      const fingerprint = controlCenterUnlockFingerprintV2145();
+      if (controlCenterUnlockedV2133) {
+        try {
+          if (localStorage.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145) === fingerprint) return true;
+        } catch (_) {}
+        controlCenterUnlockedV2133 = false;
+      }
       try {
-        return sessionStorage.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136) === '1';
+        return localStorage.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145) === fingerprint;
       } catch (_) {
         return false;
       }
@@ -17054,12 +17043,17 @@ let scoreTimingDetail =
 
     function markControlCenterUnlockedV2133() {
       controlCenterUnlockedV2133 = true;
-      try { sessionStorage.setItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136, '1'); } catch (_) {}
+      try {
+        localStorage.setItem(
+          SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145,
+          controlCenterUnlockFingerprintV2145()
+        );
+      } catch (_) {}
     }
 
     function resetControlCenterUnlockedV2135() {
       controlCenterUnlockedV2133 = false;
-      try { sessionStorage.removeItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2136); } catch (_) {}
+      try { localStorage.removeItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145); } catch (_) {}
     }
 
     function openControlCenterUnlockedV2133(options = {}) {
@@ -17187,10 +17181,10 @@ let scoreTimingDetail =
       showAccessKeyGateV2134('CONTROL CENTER', openControlCenterUnlockedV2133, true);
     }
 
-    /* V21.40 — MASTER authorization is itself sufficient CONTROL CENTER authority.
-       HOME -> CONTROL CENTER therefore bypasses the CC access-key gate whenever the
-       current stored QR role is MASTER, even after a fresh browser/PWA session.
-       Non-MASTER entry keeps the established V21.36 session-gate behavior unchanged. */
+    /* V21.45 — MASTER authorization remains sufficient CONTROL CENTER authority.
+       For non-MASTER use, one successful CC access-key entry persists across browser/PWA
+       closes while the same authorization fingerprint remains active. Removing or
+       changing authorization rearms the gate through resetControlCenterUnlockedV2135(). */
     function showTestLogFromHomeV2135() {
       if (isMasterQr()) {
         openControlCenterUnlockedV2133();
@@ -18826,24 +18820,9 @@ let scoreTimingDetail =
         0
       );
 
-      /* V19.63 — every HOME entry is resolved behind a white curtain over only
-         the mutable middle action zone. The logo and QUICK GUIDE stay visible.
-         Reuse the established reveal-shield fade/timing rather than introducing
-         a separate transition system. */
-      const homeRevealShieldV1963 = beginHomeRevealV1963();
-
-      /* V20.59 — restore HOME hamburger only after both reveal shields exist.
-         It remains below both curtains and therefore reveals with HOME. */
+      /* V21.45 — HOME now uses only the full-screen 1A reveal curtain. The
+         former 1B middle/action-area curtain is intentionally not created. */
       setHomeHamburgerVisibleV2055(true);
-
-      /* V19.76 — on a browser refresh HOME's mutable buttons were intentionally
-         concealed before first paint. Do not expose them until the established
-         HOME curtain is physically mounted above them. Removing the boot class
-         here is synchronous, so the browser never paints the stale buttons
-         between boot concealment and curtain ownership. */
-      if (homeRevealShieldV1963) {
-        document.documentElement.classList.remove('sshcp-pre-home-v1976');
-      }
 
       /* V20.78 — on a direct HOME browser refresh, initialize() starts the
          lightweight leaderboard-status read in parallel with stored QR/auth
@@ -18859,35 +18838,19 @@ let scoreTimingDetail =
         window.refreshHomeMenuV2054();
       }
 
-      /* Geometry failure is not expected, but never strand the HOME controls
-         hidden: if no curtain could be created, expose only after the fresh HOME
-         state has finished resolving. */
-      if (!homeRevealShieldV1963) {
-        document.documentElement.classList.remove('sshcp-pre-home-v1976');
-      }
-
-      /* V19.87 fallback — a full-screen runtime curtain is expected on HOME
-         refresh, but never strand the boot first-paint layer if creation failed.
-         Fresh HOME state is settled here, so exposing it is safe. */
+      /* V21.45 fallback — a full-screen runtime 1A curtain is expected on HOME
+         refresh/navigation, but never strand the boot first-paint layer if
+         creation failed. Fresh HOME state is settled here, so exposing it is safe. */
       if (!homeFullRevealShieldV1986) {
         document.documentElement.classList.remove('sshcp-pre-home-full-v1987');
       }
 
-      /* V20.79 — reveal both HOME curtains from the same settled layout frame.
-         The full-screen layer completes at .2s and the mutable-zone layer at
-         .8s. Welcome -> HOME has no full layer and remains unchanged. */
-      await Promise.all([
-        revealDataShieldAfterLayoutV177(
-          'home',
-          homeRevealShieldV1963,
-          2
-        ),
-        revealDataShieldAfterLayoutV177(
-          'home-full-v1986',
-          homeFullRevealShieldV1986,
-          2
-        )
-      ]);
+      /* V21.45 — reveal HOME with the single full-screen 1A curtain. */
+      await revealDataShieldAfterLayoutV177(
+        'home-full-v1986',
+        homeFullRevealShieldV1986,
+        2
+      );
 
       /* V21.28 — HOME is the normal project reset/refresh surface. Once its
          current presentation has completed, debounce one fresh diagnostic
@@ -19049,11 +19012,9 @@ let scoreTimingDetail =
         };
         const afterPlayKeyV2092 = String(key || '').startsWith('after-play-');
         const revealDurationMsV2092 =
-          key === 'home'
-            ? timingMsV2092(timingV2092.FADE_1B_HOME_MIDDLE, 0.70)
-            : key === 'home-full-v1986'
-              ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.30)
-              : (key === 'scorecard' || key === 'leaderboard')
+          key === 'home-full-v1986'
+            ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.30)
+            : (key === 'scorecard' || key === 'leaderboard')
                 ? timingMsV2092(timingV2092.FADE_2_SCORECARD_LEADERBOARD, 0.60)
                 : afterPlayKeyV2092
                   ? timingMsV2092(timingV2092.FADE_3_AFTER_PLAY, 0.80)
@@ -19191,13 +19152,6 @@ let scoreTimingDetail =
       }
 
       return beginLeaderboardRevealV177();
-    }
-
-    function beginHomeRevealV1963() {
-      if (currentView !== 'home') return null;
-      const shield = beginDataRevealShieldV177('home', [], '#fff', false, 4800, 'home');
-      if (shield) shield.classList.add('sshcp-home-reveal-v1985');
-      return shield;
     }
 
     function beginHomeFullRevealV1986() {
