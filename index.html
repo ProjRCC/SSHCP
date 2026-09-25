@@ -1,10 +1,9 @@
-<!-- SSHCP | BASE KEY: 21.45-K8R5NV | BUILD KEY: 21.46-M7Q2RV -->
-<!-- SSHCP V21.46 CONTROL CENTER WHITE ENTRY / REFRESH REVEAL - exact V21.45 donor.
-     Paired with unchanged CF V3.3. Preserves all validated V21.45 behavior. CONTROL CENTER now enters
-     behind a full-screen white curtain and reveals over exactly 0.25s after its one authoritative Scramble
-     state read; manual refresh while already in CONTROL CENTER uses the same 0.25s white reveal and stays
-     in CONTROL CENTER. SCRAMBLE MODE refresh remains the established 0.50s white reveal. START SCRAMBLE
-     keeps its dedicated black 1.0s transition and does not stack a white CC curtain underneath. -->
+<!-- SSHCP | BASE KEY: 21.46-M7Q2RV | BUILD KEY: 21.47-R4N8QK -->
+<!-- SSHCP V21.47 HOME 1A FADE / VERSION LABEL FIX - exact V21.46 donor.
+     Paired with unchanged CF V3.3. Preserves all validated V21.46 behavior. Corrects the visible HOME
+     version label that V21.46 accidentally left at V21.45. HOME now uses the single full-screen 1A white
+     curtain with a 0.50s reveal fade. No CONTROL CENTER, SCRAMBLE MODE, scoring, audit, authorization,
+     Worker, leaderboard, summary, skins, GEEK, GAME, or other transition behavior is changed. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +25,7 @@
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
-      FADE_1A_HOME_FULL: 0.30,
+      FADE_1A_HOME_FULL: 0.50,
       FADE_2_SCORECARD_LEADERBOARD: 0.60,
       FADE_3_AFTER_PLAY: 0.80,
       FADE_4_QUICK_GUIDE: 0.80,
@@ -43,7 +42,7 @@
         const safeSeconds = Number.isFinite(seconds) && seconds >= 0 ? seconds : fallback;
         rootStyle.setProperty(cssName, safeSeconds + 's');
       };
-      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.30);
+      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.50);
       setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.60);
       setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 0.80);
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
@@ -7328,7 +7327,7 @@ body.master-qr #homeScorecardAccess.sshcp-team-selector-pressed-v174 .home-score
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-home-full-reveal-v1986{
   background:#fff!important;
   z-index:4790!important;
-  transition:opacity var(--sshcp-fade-1a-home-full,.3s) ease-out!important;
+  transition:opacity var(--sshcp-fade-1a-home-full,.5s) ease-out!important;
 }
 
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-main-full-reveal-v2069{
@@ -11976,7 +11975,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.45</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.47</span></span>
         </button>
 
       </div>
@@ -19046,7 +19045,7 @@ let scoreTimingDetail =
         const afterPlayKeyV2092 = String(key || '').startsWith('after-play-');
         const revealDurationMsV2092 =
           key === 'home-full-v1986'
-            ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.30)
+            ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.50)
             : (key === 'scorecard' || key === 'leaderboard')
                 ? timingMsV2092(timingV2092.FADE_2_SCORECARD_LEADERBOARD, 0.60)
                 : afterPlayKeyV2092
