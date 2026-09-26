@@ -1,11 +1,12 @@
-<!-- SSHCP | BASE KEY: 21.61-V6K3RP | BUILD KEY: 21.62-M7Q4VX -->
-<!-- SSHCP V21.62 TIPS POSITION + CUES + 0.1S FADE - exact V21.61 donor.
+<!-- SSHCP | BASE KEY: 21.62-M7Q4VX | BUILD KEY: 21.63-R4K8MX -->
+<!-- SSHCP V21.63 TIPS CENTERING + QUICK GUIDE CUE CLEANUP - exact V21.62 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
      after-play white popup/card family. QUICK GUIDE now uses the same Gray 3 backdrop and same faint
-     white-card shadow. V21.62 keeps all V21.61 behavior while refining HOME cue presentation,
-     adaptive Scorecard-tip positioning, Quick Guide wording, and 0.10s Tips popup open/close fades. -->
+     white-card shadow. V21.63 keeps all V21.62 behavior while centering contextual Tips cards
+     vertically, preserving thumb-friendly OK placement on short cards with internal white space,
+     and moving the GAME-circle cue out of the HOME/visual legend and into SCORECARD only. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11987,9 +11988,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-card-v2154{
   position:absolute!important;
   left:50%!important;
-  top:auto!important;
-  bottom:24dvh!important;
-  transform:translateX(-50%)!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translate(-50%,-50%)!important;
+  display:flex!important;
+  flex-direction:column!important;
   box-sizing:border-box!important;
   width:96vw!important;
   max-width:min(570px,calc(100vw - 12px))!important;
@@ -12002,10 +12005,14 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   box-shadow:0 5px 18px rgba(0,0,0,.10)!important;
   text-align:center!important;
 }
-/* V21.62 — preserve the preferred thumb-zone placement for normal tips, but let
-   the taller Scorecard card sit lower instead of forcing its OK button too high. */
-.tips-overlay-v2154.scorecard-lower-v2162 .tips-card-v2154{
-  bottom:16dvh!important;
+/* V21.63 — contextual cards are vertically centered. Short cards get extra internal
+   height so the controls can remain comfortably low without moving the whole card off center. */
+.tips-overlay-v2154.tips-short-v2163 .tips-card-v2154{
+  min-height:52dvh!important;
+}
+.tips-overlay-v2154.tips-short-v2163 .tips-card-toggle-v2161{
+  margin-top:auto!important;
+  padding-top:calc(14px * var(--v2074-utility-scale,1))!important;
 }
 .tips-title-v2154{
   margin:0 0 calc(12px * var(--v2074-utility-scale,1))!important;
@@ -12131,7 +12138,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-gap-v2161{
   height:calc(7px * var(--v2074-utility-scale,1))!important;
 }
-/* V21.62 — HOME uses the same visual navigation cue language as Quick Guide. */
+/* V21.63 — HOME keeps the same BLUE / GRAY / GOLD navigation cue language as Quick Guide. */
 .tips-cue-row-v2162{
   display:flex!important;
   align-items:center!important;
@@ -12314,7 +12321,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.62</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.63</span></span>
         </button>
 
       </div>
@@ -19166,7 +19173,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V21.62 — OPTIONAL TIPS & TRICKS
+       SSHCP V21.63 — OPTIONAL TIPS & TRICKS
        One player-facing setting shared by Welcome, Quick Guide and each popup.
        Contextual tips remain once per authorization unless the setting is re-armed.
        ========================================================= */
@@ -19401,7 +19408,7 @@ let scoreTimingDetail =
         window.clearTimeout(tipsCloseTimerV2162);
         tipsCloseTimerV2162 = null;
       }
-      overlay.classList.toggle('scorecard-lower-v2162', activeTipsIdV2154 === 'scorecard');
+      overlay.classList.toggle('tips-short-v2163', ['leaderboard-live','leaderboard-final','summary','geek'].includes(activeTipsIdV2154));
       overlay.classList.add('open-v2154');
       overlay.setAttribute('aria-hidden', 'false');
       const ok = document.getElementById('tipsOkButtonV2154');
@@ -19426,7 +19433,7 @@ let scoreTimingDetail =
       if (tipsCloseTimerV2162) window.clearTimeout(tipsCloseTimerV2162);
       tipsCloseTimerV2162 = window.setTimeout(() => {
         tipsCloseTimerV2162 = null;
-        if (overlay) overlay.classList.remove('scorecard-lower-v2162');
+        if (overlay) overlay.classList.remove('tips-short-v2163');
         if (typeof afterCloseV2155 === 'function') afterCloseV2155();
       }, TIPS_POPUP_FADE_MS_V2162);
     }
@@ -29870,10 +29877,6 @@ let scoreTimingDetail =
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 gray-v2050">GRAY</span>' +
                 '<span class="quick-guide-legend-copy-v2050"><strong>SECONDARY NAV</strong></span>' +
-              '</div>' +
-              '<div class="quick-guide-legend-row-v2050">' +
-                '<span class="quick-guide-cue-icon-v2051"><span class="quick-guide-game-hole-sample-v2050">HOLE</span></span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>GAME</strong> - TAP FOR DETAIL</span>' +
               '</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 gold-v2050">GOLD</span>' +
