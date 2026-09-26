@@ -1,9 +1,9 @@
-<!-- SSHCP | BASE KEY: 22.5-N4V7QK | BUILD KEY: 22.6-L3R8PD -->
-<!-- SSHCP V22.6 TIPS / QUICK GUIDE SURFACE CORRECTION - exact V22.5 donor.
-     Keeps V22.5 visual simplification intent, V22.4 copy, V22.3 score-popup placement, V22.2 typography, scoring,
-     authorization, audit, Worker/API, CC/SM, table geometry, GEEK stepping, GAME row math, result logic and global
-     VPH×DPR scaling unchanged. Corrects the V22.5 surface interpretation: the surrounding backdrop is Gray-3, while
-     the actual Quick Guide and Tips & Tricks popup card remains white with a subtle drop shadow. No logic or geometry changes. -->
+<!-- SSHCP | BASE KEY: 22.6-L3R8PD | BUILD KEY: 22.7-Q5H2XM -->
+<!-- SSHCP V22.7 TIPS SURFACE + HEADER TOGGLE - exact V22.6 donor.
+     Keeps V22.6 white cards, V22.4 copy, V22.3 score-popup placement, V22.2 typography, scoring, authorization, audit,
+     Worker/API, CC/SM, table geometry, GEEK stepping, GAME row math, result logic and global VPH×DPR scaling unchanged.
+     Changes Quick Guide and Tips backdrops to 90%-opaque Gray-3 with a slight 4px blur. Contextual Tips & Tricks moves
+     the shared checked TIPS & TRICKS control directly under the popup title and makes that control slightly larger. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12427,26 +12427,38 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 </style>
 
 
-<style id="sshcp-v2260-guide-surface">
-/* SSHCP V22.6 — Correct V22.5 interpretation: the full-screen backdrop is Gray-3,
-   while the Quick Guide and Tips & Tricks popup card itself stays white. Blur/desaturation remain removed. */
-.modal-overlay.quick-guide{
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
-}
-.modal-overlay.quick-guide .modal-box{
-  background:#ffffff!important;
-  box-shadow:0 calc(4px * var(--v2074-utility-scale,1)) calc(14px * var(--v2074-utility-scale,1)) rgba(0,0,0,.14)!important;
-}
+<style id="sshcp-v2270-guide-surface">
+/* SSHCP V22.7 — Gray-3 remains the surrounding surface, now at 90% opacity with only a slight blur.
+   The actual Quick Guide / Tips card remains opaque white with the existing subtle shadow. */
+.modal-overlay.quick-guide,
 .tips-overlay-v2154{
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
+  background:rgba(232,232,232,.90)!important;
+  -webkit-backdrop-filter:blur(4px)!important;
+  backdrop-filter:blur(4px)!important;
 }
+.modal-overlay.quick-guide .modal-box,
 .tips-card-v2154{
   background:#ffffff!important;
   box-shadow:0 calc(4px * var(--v2074-utility-scale,1)) calc(14px * var(--v2074-utility-scale,1)) rgba(0,0,0,.14)!important;
+}
+/* Contextual Tips card: title, then the shared preference control, then instructional copy. */
+.tips-card-v2154 .tips-title-v2154{
+  margin-bottom:calc(5px * var(--v221-global-scale,1))!important;
+}
+.tips-card-v2154 .tips-card-toggle-v2161,
+.tips-overlay-v2154.tips-short-v2163 .tips-card-toggle-v2161{
+  width:100%!important;
+  min-height:calc(30px * var(--v221-global-scale,1))!important;
+  margin:0 0 calc(11px * var(--v221-global-scale,1))!important;
+  padding:0!important;
+  font-size:calc(18px * var(--v221-global-scale,1))!important;
+  line-height:1!important;
+}
+.tips-card-v2154 .tips-card-toggle-v2161 .tips-check-box-v2154{
+  width:calc(21px * var(--v221-global-scale,1))!important;
+  height:calc(21px * var(--v221-global-scale,1))!important;
+  flex:0 0 calc(21px * var(--v221-global-scale,1))!important;
+  font-size:calc(15px * var(--v221-global-scale,1))!important;
 }
 </style>
 </head>
@@ -12583,7 +12595,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.6</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.7</span></span>
         </button>
 
       </div>
@@ -13102,12 +13114,12 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   <div id="tipsOverlayV2154" class="tips-overlay-v2154" aria-hidden="true">
     <div class="tips-card-v2154" role="dialog" aria-modal="true" aria-labelledby="tipsTitleV2154">
       <div id="tipsTitleV2154" class="tips-title-v2154"></div>
-      <div id="tipsBodyV2154" class="tips-body-v2154"></div>
       <label id="tipsCardToggleV2161" class="tips-card-toggle-v2161">
         <input id="tipsCardCheckV2161" type="checkbox">
         <span class="tips-check-box-v2154" aria-hidden="true">✓</span>
         <span>TIPS &amp; TRICKS</span>
       </label>
+      <div id="tipsBodyV2154" class="tips-body-v2154"></div>
       <button id="tipsOkButtonV2154" class="tips-ok-v2154" type="button">OK</button>
     </div>
   </div>
