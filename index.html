@@ -1,10 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.60-N4V7QX | BUILD KEY: 21.61-V6K3RP -->
-<!-- SSHCP V21.61 UNIFIED TIPS + QUICK GUIDE - exact V21.60 donor.
+<!-- SSHCP | BASE KEY: 21.61-V6K3RP | BUILD KEY: 21.62-M7Q4VX -->
+<!-- SSHCP V21.62 TIPS POSITION + CUES + 0.1S FADE - exact V21.61 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
      after-play white popup/card family. QUICK GUIDE now uses the same Gray 3 backdrop and same faint
-     white-card shadow. No borders and no other visual or functional changes. -->
+     white-card shadow. V21.62 keeps all V21.61 behavior while refining HOME cue presentation,
+     adaptive Scorecard-tip positioning, Quick Guide wording, and 0.10s Tips popup open/close fades. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11968,14 +11969,20 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   position:fixed!important;
   inset:0!important;
   z-index:9800!important;
-  display:none!important;
+  display:block!important;
   background:rgba(255,255,255,.18)!important;
   backdrop-filter:blur(17px) grayscale(.95) saturate(.22)!important;
   -webkit-backdrop-filter:blur(17px) grayscale(.95) saturate(.22)!important;
-  pointer-events:auto!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transition:opacity .10s ease,visibility 0s linear .10s!important;
 }
 .tips-overlay-v2154.open-v2154{
-  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  transition:opacity .10s ease,visibility 0s linear 0s!important;
 }
 .tips-card-v2154{
   position:absolute!important;
@@ -11994,6 +12001,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   background:#fff!important;
   box-shadow:0 5px 18px rgba(0,0,0,.10)!important;
   text-align:center!important;
+}
+/* V21.62 — preserve the preferred thumb-zone placement for normal tips, but let
+   the taller Scorecard card sit lower instead of forcing its OK button too high. */
+.tips-overlay-v2154.scorecard-lower-v2162 .tips-card-v2154{
+  bottom:16dvh!important;
 }
 .tips-title-v2154{
   margin:0 0 calc(12px * var(--v2074-utility-scale,1))!important;
@@ -12118,6 +12130,38 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 .tips-gap-v2161{
   height:calc(7px * var(--v2074-utility-scale,1))!important;
+}
+/* V21.62 — HOME uses the same visual navigation cue language as Quick Guide. */
+.tips-cue-row-v2162{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:calc(9px * var(--v2074-utility-scale,1))!important;
+  min-height:calc(30px * var(--v2074-utility-scale,1))!important;
+  margin:0 0 calc(8px * var(--v2074-utility-scale,1))!important;
+}
+.tips-cue-box-v2162{
+  width:calc(64px * var(--v2074-utility-scale,1))!important;
+  height:calc(30px * var(--v2074-utility-scale,1))!important;
+  flex:0 0 calc(64px * var(--v2074-utility-scale,1))!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:calc(7px * var(--v2074-utility-scale,1))!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-size:calc(13px * var(--v2074-utility-scale,1))!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.tips-cue-box-v2162.blue-v2162{background:var(--accent)!important;}
+.tips-cue-box-v2162.gray-v2162{background:var(--sshcp-gray-5-v1850,#666666)!important;}
+.tips-cue-box-v2162.gold-v2162{background:#8A6414!important;}
+.tips-cue-copy-v2162{
+  min-width:0!important;
+  font-weight:900!important;
+  line-height:1.05!important;
+  text-align:left!important;
 }
 .quick-guide-lines-v172.quick-guide-unified-v2161{
   justify-content:flex-start!important;
@@ -12270,7 +12314,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.61</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.62</span></span>
         </button>
 
       </div>
@@ -19122,7 +19166,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V21.61 — OPTIONAL TIPS & TRICKS
+       SSHCP V21.62 — OPTIONAL TIPS & TRICKS
        One player-facing setting shared by Welcome, Quick Guide and each popup.
        Contextual tips remain once per authorization unless the setting is re-armed.
        ========================================================= */
@@ -19130,6 +19174,8 @@ let scoreTimingDetail =
     const SSHCP_TIPS_SEEN_PREFIX_V2154 = 'sshcpTipsSeenV2154|';
     let activeTipsIdV2154 = '';
     let pendingAfterTipsActionV2155 = null;
+    let tipsCloseTimerV2162 = null;
+    const TIPS_POPUP_FADE_MS_V2162 = 100;
 
     function showTipsAfterSettledV2155(tipId) {
       window.setTimeout(() => {
@@ -19268,9 +19314,9 @@ let scoreTimingDetail =
             'Closing the browser or app will <strong>NOT</strong> reset your scores.',
             'Use the <strong>MENU</strong> in the top-left to navigate the app.',
             '__GAP__',
-            '<strong>BLUE</strong> — primary navigation.',
-            '<strong>GRAY</strong> — secondary navigation.',
-            '<strong>GOLD</strong> — after-play features.',
+            '__CUE_BLUE__',
+            '__CUE_GRAY__',
+            '__CUE_GOLD__',
             '<strong>SCORECARD</strong> — enter and edit scores.',
             '<strong>LEADERBOARD</strong> — view current standings.',
             '<strong>SCRAMBLE SUMMARY</strong> — available after the scramble is complete.'
@@ -19343,12 +19389,19 @@ let scoreTimingDetail =
       if (!content || !overlay || !title || !body) return false;
       activeTipsIdV2154 = String(tipId || '');
       title.textContent = content.title;
-      body.innerHTML = content.lines.map(line =>
-        line === '__GAP__'
-          ? '<div class="tips-gap-v2161" aria-hidden="true"></div>'
-          : '<div class="tips-line-v2154">' + line + '</div>'
-      ).join('');
+      body.innerHTML = content.lines.map(line => {
+        if (line === '__GAP__') return '<div class="tips-gap-v2161" aria-hidden="true"></div>';
+        if (line === '__CUE_BLUE__') return '<div class="tips-cue-row-v2162"><span class="tips-cue-box-v2162 blue-v2162">BLUE</span><span class="tips-cue-copy-v2162">PRIMARY NAV</span></div>';
+        if (line === '__CUE_GRAY__') return '<div class="tips-cue-row-v2162"><span class="tips-cue-box-v2162 gray-v2162">GRAY</span><span class="tips-cue-copy-v2162">SECONDARY NAV</span></div>';
+        if (line === '__CUE_GOLD__') return '<div class="tips-cue-row-v2162"><span class="tips-cue-box-v2162 gold-v2162">GOLD</span><span class="tips-cue-copy-v2162">AFTER-PLAY FEATURES</span></div>';
+        return '<div class="tips-line-v2154">' + line + '</div>';
+      }).join('');
       syncTipsTogglesV2154();
+      if (tipsCloseTimerV2162) {
+        window.clearTimeout(tipsCloseTimerV2162);
+        tipsCloseTimerV2162 = null;
+      }
+      overlay.classList.toggle('scorecard-lower-v2162', activeTipsIdV2154 === 'scorecard');
       overlay.classList.add('open-v2154');
       overlay.setAttribute('aria-hidden', 'false');
       const ok = document.getElementById('tipsOkButtonV2154');
@@ -19370,9 +19423,12 @@ let scoreTimingDetail =
       }
       const afterCloseV2155 = pendingAfterTipsActionV2155;
       pendingAfterTipsActionV2155 = null;
-      if (typeof afterCloseV2155 === 'function') {
-        window.setTimeout(afterCloseV2155, 0);
-      }
+      if (tipsCloseTimerV2162) window.clearTimeout(tipsCloseTimerV2162);
+      tipsCloseTimerV2162 = window.setTimeout(() => {
+        tipsCloseTimerV2162 = null;
+        if (overlay) overlay.classList.remove('scorecard-lower-v2162');
+        if (typeof afterCloseV2155 === 'function') afterCloseV2155();
+      }, TIPS_POPUP_FADE_MS_V2162);
     }
 
     function maybeShowTipsV2154(tipId) {
@@ -29807,8 +29863,6 @@ let scoreTimingDetail =
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Closing the browser or app will <strong>NOT</strong> reset your scores.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Use the <strong>MENU</strong> in the top-left to navigate the app.</div>' +
             '<div class="quick-guide-legend-v2050">' +
-              '<div class="quick-guide-legend-heading-v2050">VISUAL CUES</div>' +
-              '<div class="quick-guide-legend-divider-v2057"></div>' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 blue-v2050">BLUE</span>' +
                 '<span class="quick-guide-legend-copy-v2050"><strong>PRIMARY NAV</strong></span>' +
@@ -29837,7 +29891,6 @@ let scoreTimingDetail =
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>20s AUTO REFRESH</strong>.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>REFRESH</strong> any time.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Touch the Leaderboard to pause Auto Refresh while reviewing.</div>' +
-            '<div class="quick-guide-section-heading-v2161">AFTER PLAY</div>' +
             '<div class="quick-guide-line-v172 quick-guide-note-v2161">When the <strong>SCRAMBLE IS COMPLETE</strong>, explore <strong>SCRAMBLE SUMMARY</strong>, <strong>SKINS</strong>, <strong>GEEK MODE</strong>, and <strong>GAME MODE</strong> for final results and additional detail.</div>' +
             '<div class="quick-guide-section-heading-v2161">SCRAMBLE SUMMARY</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Final <strong>NET SCORES</strong> include handicap.</div>' +
@@ -29848,7 +29901,7 @@ let scoreTimingDetail =
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Detailed tournament statistics.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap any <strong>STAT</strong> for more detail.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>FILTER</strong> stat categories.</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>YOU / MAX</strong> compares your team with the tournament best.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>YOU / MAX</strong> compares your team with the <strong>FIELD</strong>.</div>' +
             '<div class="quick-guide-section-heading-v2161">SKINS / GAME MODE</div>' +
             '<div class="quick-guide-line-v172 quick-guide-note-v2161">Review final game results and additional game-specific details after play.</div>' +
           '</div>' +
