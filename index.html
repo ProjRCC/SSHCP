@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 21.49-Q7M4VX | BUILD KEY: 21.51-N5Q8RV -->
-<!-- SSHCP V21.51 GRAY 3 CARD DEPTH / QUICK GUIDE MATCH - exact V21.49 donor.
+<!-- SSHCP | BASE KEY: 21.51-N5Q8RV | BUILD KEY: 21.52-H7L4QM -->
+<!-- SSHCP V21.52 WELCOME QUICK GUIDE MATCH - exact V21.51 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
@@ -7250,10 +7250,22 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 }
 
 .modal-overlay.quick-guide .quick-guide-welcome-actions-v175{
-  display:flex!important;
-  grid-template-columns:none!important;
-  justify-content:center!important;
-  align-items:center!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr 1fr!important;
+  justify-content:stretch!important;
+  align-items:stretch!important;
+}
+
+.modal-overlay.quick-guide .quick-guide-welcome-actions-v175::before,
+.modal-overlay.quick-guide .quick-guide-welcome-actions-v175::after{
+  content:"";
+  display:block;
+}
+
+.modal-overlay.quick-guide .quick-guide-welcome-actions-v175 .quick-guide-got-it-v175{
+  grid-column:2;
+  width:100%!important;
+  max-width:none!important;
 }
 
 .modal-overlay.quick-guide .quick-guide-got-it-v175{
@@ -11849,7 +11861,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
 
 <style id="sshcp-v2151-gray3-card-depth">
-/* V21.51 — retain V21.49's light Gray 3 after-play field, but give the
+/* V21.52 — keep V21.51's Gray 3 popup treatment, and make the Welcome QUICK GUIDE mirror the in-app QUICK GUIDE layout with a single centered GOT IT action.
    white card the faintest deliberate edge. QUICK GUIDE uses the same treatment. */
 .modal-overlay.tournament-summary,
 .modal-overlay.tournament-result,
@@ -12001,7 +12013,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.51</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.52</span></span>
         </button>
 
       </div>
@@ -29291,6 +29303,12 @@ let scoreTimingDetail =
         els.modalActions.className =
           'modal-actions quick-guide-actions-v172 quick-guide-welcome-actions-v175';
 
+        els.modalOverlay
+          .classList
+          .add(
+            'quick-guide-normal-v2110'
+          );
+
         els.modalActions.replaceChildren(gotIt);
 
         els.modalOverlay
@@ -29300,6 +29318,7 @@ let scoreTimingDetail =
           );
 
         wireQuickGuideProgressV2050();
+        scheduleQuickGuideFooterFitV1971(gotIt);
         scheduleQuickGuideVisualCueFitV2079();
 
         /* V19.77 — keep the established 60%-of-button-height GOT IT target,
