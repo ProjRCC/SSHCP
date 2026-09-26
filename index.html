@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 21.52-H7L4QM | BUILD KEY: 21.53-R6M8QK -->
-<!-- SSHCP V21.53 WELCOME QUICK GUIDE GEOMETRY MATCH - exact V21.52 donor.
+<!-- SSHCP | BASE KEY: 21.53-R6M8QK | BUILD KEY: 21.54-W5K8QM -->
+<!-- SSHCP V21.54 TIPS & TRICKS / GEEK LABELS - exact V21.53 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
@@ -11884,6 +11884,139 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
 }
 </style>
+
+<style id="sshcp-v2154-tips-and-tricks">
+/* V21.54 — optional contextual help. INFO / Quick Guide remain unchanged. */
+.qr-welcome-tips-toggle-v2154,
+#testLogView .control-center-tips-toggle-v2154{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:calc(7px * var(--v2074-utility-scale,1))!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+  user-select:none!important;
+}
+.qr-welcome-tips-toggle-v2154{
+  width:100%!important;
+  min-height:calc(32px * var(--v2074-utility-scale,1))!important;
+  font-size:calc(14px * var(--v2074-utility-scale,1))!important;
+}
+#testLogView .control-center-tips-toggle-v2154{
+  flex:0 0 auto!important;
+  min-height:calc(28px * var(--cc-mult-v1824,1))!important;
+  margin:calc(2px * var(--cc-mult-v1824,1)) 0!important;
+  font-size:calc(12px * var(--cc-mult-v1824,1))!important;
+}
+.qr-welcome-tips-toggle-v2154 input,
+#testLogView .control-center-tips-toggle-v2154 input{
+  position:absolute!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.tips-check-box-v2154{
+  width:calc(18px * var(--v2074-utility-scale,1))!important;
+  height:calc(18px * var(--v2074-utility-scale,1))!important;
+  flex:0 0 calc(18px * var(--v2074-utility-scale,1))!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:2px solid var(--accent)!important;
+  border-radius:4px!important;
+  background:#fff!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  font-size:calc(13px * var(--v2074-utility-scale,1))!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+#testLogView .tips-check-box-v2154{
+  width:calc(17px * var(--cc-mult-v1824,1))!important;
+  height:calc(17px * var(--cc-mult-v1824,1))!important;
+  flex-basis:calc(17px * var(--cc-mult-v1824,1))!important;
+  font-size:calc(12px * var(--cc-mult-v1824,1))!important;
+}
+.qr-welcome-tips-toggle-v2154 input:checked + .tips-check-box-v2154,
+#testLogView .control-center-tips-toggle-v2154 input:checked + .tips-check-box-v2154{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+}
+.tips-overlay-v2154{
+  position:fixed!important;
+  inset:0!important;
+  z-index:9800!important;
+  display:none!important;
+  background:rgba(255,255,255,.16)!important;
+  backdrop-filter:blur(7px)!important;
+  -webkit-backdrop-filter:blur(7px)!important;
+  pointer-events:auto!important;
+}
+.tips-overlay-v2154.open-v2154{
+  display:block!important;
+}
+.tips-card-v2154{
+  position:absolute!important;
+  left:50%!important;
+  top:58%!important;
+  transform:translate(-50%,-50%)!important;
+  box-sizing:border-box!important;
+  width:min(60vw,400px)!important;
+  max-width:calc(100vw - 28px)!important;
+  max-height:72dvh!important;
+  overflow:auto!important;
+  padding:calc(20px * var(--v2074-utility-scale,1)) calc(18px * var(--v2074-utility-scale,1))!important;
+  border:0!important;
+  border-radius:calc(16px * var(--v2074-utility-scale,1))!important;
+  background:#fff!important;
+  box-shadow:0 4px 18px rgba(0,0,0,.10)!important;
+  text-align:center!important;
+}
+.tips-title-v2154{
+  margin:0 0 calc(12px * var(--v2074-utility-scale,1))!important;
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  font-size:calc(22px * var(--v2074-utility-scale,1))!important;
+  font-weight:900!important;
+  line-height:1.05!important;
+  text-align:center!important;
+}
+.tips-body-v2154{
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  font-size:calc(20px * var(--v2074-utility-scale,1))!important;
+  font-weight:400!important;
+  line-height:1.18!important;
+  text-align:center!important;
+}
+.tips-body-v2154 .tips-line-v2154{
+  margin:0 0 calc(10px * var(--v2074-utility-scale,1))!important;
+}
+.tips-body-v2154 .tips-line-v2154:last-child{
+  margin-bottom:0!important;
+}
+.tips-body-v2154 strong{
+  font-weight:900!important;
+}
+.tips-ok-v2154{
+  display:block!important;
+  width:100%!important;
+  min-height:calc(48px * var(--v2074-utility-scale,1))!important;
+  margin:calc(16px * var(--v2074-utility-scale,1)) 0 0!important;
+  padding:0 calc(10px * var(--v2074-utility-scale,1))!important;
+  border:2px solid var(--accent)!important;
+  border-radius:calc(9px * var(--v2074-utility-scale,1))!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  font-size:calc(18px * var(--v2074-utility-scale,1))!important;
+  font-weight:900!important;
+}
+</style>
 </head>
 
 
@@ -11896,6 +12029,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
       <div id="qrWelcomeTeamV170" class="qr-welcome-team-v170"></div>
       <div class="qr-welcome-actions-v170">
         <button id="qrWelcomeGuideV170" class="qr-welcome-button-v170 qr-welcome-guide-v170" type="button">QUICK GUIDE</button>
+        <label id="qrWelcomeTipsToggleV2154" class="qr-welcome-tips-toggle-v2154">
+          <input id="qrWelcomeTipsCheckV2154" type="checkbox">
+          <span class="tips-check-box-v2154" aria-hidden="true">✓</span>
+          <span>SHOW TIPS &amp; TRICKS</span>
+        </label>
         <button id="qrWelcomeEnterV170" class="qr-welcome-button-v170 qr-welcome-enter-v170" type="button">ENTER</button>
       </div>
     </div>
@@ -12013,7 +12151,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.53</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.54</span></span>
         </button>
 
       </div>
@@ -12462,6 +12600,12 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <div class="control-center-nav-buffer" aria-hidden="true"></div>
 
+        <label id="controlCenterTipsToggleV2154" class="control-center-tips-toggle-v2154">
+          <input id="controlCenterTipsCheckV2154" type="checkbox">
+          <span class="tips-check-box-v2154" aria-hidden="true">✓</span>
+          <span>SHOW TIPS &amp; TRICKS</span>
+        </label>
+
         <div class="control-center-scramble-row-v1938">
           <button id="controlCenterScrambleButtonV1938" class="control-center-scramble-button-v1938" type="button">SCRAMBLE MODE</button>
         </div>
@@ -12526,6 +12670,15 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
     </div>
   </div>
 
+
+  <!-- SSHCP V21.54 — optional contextual Tips & Tricks overlay. -->
+  <div id="tipsOverlayV2154" class="tips-overlay-v2154" aria-hidden="true">
+    <div class="tips-card-v2154" role="dialog" aria-modal="true" aria-labelledby="tipsTitleV2154">
+      <div id="tipsTitleV2154" class="tips-title-v2154"></div>
+      <div id="tipsBodyV2154" class="tips-body-v2154"></div>
+      <button id="tipsOkButtonV2154" class="tips-ok-v2154" type="button">OK</button>
+    </div>
+  </div>
 
   <!-- =======================================================
        GENERAL MODAL
@@ -14034,6 +14187,7 @@ let scoreTimingDetail =
       return true;
     }
     function clearQrAuthorization(){
+      const priorTipsFingerprintV2154 = qrAuthorizationFingerprintV1979();
       const hadQrAuthorizationV2135 = !!(
         localStorage.getItem(SSHCP_QR_PASSKEY_KEY) ||
         localStorage.getItem(SSHCP_QR_ROLE_KEY) ||
@@ -14043,7 +14197,9 @@ let scoreTimingDetail =
       );
       [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
       if (hadQrAuthorizationV2135) resetControlCenterUnlockedV2135();
+      if (priorTipsFingerprintV2154) resetTipsForFingerprintV2154(priorTipsFingerprintV2154, true);
       clearFirstScorecardAfterAuthorizationV1979();
+      syncTipsTogglesV2154();
       syncTeamQrLockedUi();
     }
     function removeQrAuthorization(){
@@ -14074,9 +14230,11 @@ let scoreTimingDetail =
       const nextFingerprintV1979 = qrAuthorizationFingerprintV1979();
       if (nextFingerprintV1979 && nextFingerprintV1979 !== priorFingerprintV1979) {
         resetControlCenterUnlockedV2135();
+        resetTipsForFingerprintV2154(nextFingerprintV1979, true);
         armFirstScorecardAfterAuthorizationV1979(nextFingerprintV1979);
       }
 
+      syncTipsTogglesV2154();
       syncTeamQrLockedUi();
     }
     function showInvalidQrPasskey(){
@@ -17123,6 +17281,7 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
+      syncTipsTogglesV2154();
       /* V21.42 — server status remains authoritative, but there is NO background
          polling. A normal CC entry/return performs one state-only read. START
          success may skip that redundant read because the change response itself
@@ -18823,6 +18982,213 @@ let scoreTimingDetail =
     }
 
 
+    /* =========================================================
+       SSHCP V21.54 — OPTIONAL TIPS & TRICKS
+       Once per authorization unless re-armed by turning the CC toggle OFF/ON.
+       ========================================================= */
+    const SSHCP_TIPS_ENABLED_PREFIX_V2154 = 'sshcpTipsEnabledV2154|';
+    const SSHCP_TIPS_SEEN_PREFIX_V2154 = 'sshcpTipsSeenV2154|';
+    let activeTipsIdV2154 = '';
+
+    function tipsAuthorizationFingerprintV2154() {
+      return String(qrAuthorizationFingerprintV1979() || 'NO_AUTH').trim() || 'NO_AUTH';
+    }
+
+    function tipsEnabledKeyV2154(fingerprint = tipsAuthorizationFingerprintV2154()) {
+      return SSHCP_TIPS_ENABLED_PREFIX_V2154 + String(fingerprint || 'NO_AUTH');
+    }
+
+    function tipsSeenKeyV2154(fingerprint = tipsAuthorizationFingerprintV2154()) {
+      return SSHCP_TIPS_SEEN_PREFIX_V2154 + String(fingerprint || 'NO_AUTH');
+    }
+
+    function tipsEnabledV2154() {
+      try {
+        return localStorage.getItem(tipsEnabledKeyV2154()) === '1';
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function readSeenTipsV2154() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(tipsSeenKeyV2154()) || '[]');
+        return new Set(Array.isArray(parsed) ? parsed.map(String) : []);
+      } catch (_) {
+        return new Set();
+      }
+    }
+
+    function writeSeenTipsV2154(setV2154) {
+      try {
+        localStorage.setItem(tipsSeenKeyV2154(), JSON.stringify([...setV2154]));
+      } catch (_) {}
+    }
+
+    function resetTipsForFingerprintV2154(fingerprint, clearPreference = true) {
+      const clean = String(fingerprint || '').trim();
+      if (!clean) return;
+      try {
+        localStorage.removeItem(tipsSeenKeyV2154(clean));
+        if (clearPreference) localStorage.removeItem(tipsEnabledKeyV2154(clean));
+      } catch (_) {}
+    }
+
+    function syncTipsTogglesV2154() {
+      const enabled = tipsEnabledV2154();
+      const welcome = document.getElementById('qrWelcomeTipsCheckV2154');
+      const cc = document.getElementById('controlCenterTipsCheckV2154');
+      if (welcome) welcome.checked = enabled;
+      if (cc) cc.checked = enabled;
+    }
+
+    function setTipsEnabledV2154(enabled, rearm = false) {
+      try {
+        if (enabled) localStorage.setItem(tipsEnabledKeyV2154(), '1');
+        else localStorage.removeItem(tipsEnabledKeyV2154());
+        if (enabled && rearm) localStorage.removeItem(tipsSeenKeyV2154());
+      } catch (_) {}
+      syncTipsTogglesV2154();
+    }
+
+    function setupTipsAndTricksV2154() {
+      const welcome = document.getElementById('qrWelcomeTipsCheckV2154');
+      const cc = document.getElementById('controlCenterTipsCheckV2154');
+      if (welcome && !welcome.dataset.tipsWiredV2154) {
+        welcome.dataset.tipsWiredV2154 = '1';
+        welcome.addEventListener('change', () => {
+          setTipsEnabledV2154(!!welcome.checked, !!welcome.checked);
+        });
+      }
+      if (cc && !cc.dataset.tipsWiredV2154) {
+        cc.dataset.tipsWiredV2154 = '1';
+        cc.addEventListener('change', () => {
+          /* OFF -> ON intentionally re-arms every contextual tip for the current auth. */
+          setTipsEnabledV2154(!!cc.checked, !!cc.checked);
+        });
+      }
+      const ok = document.getElementById('tipsOkButtonV2154');
+      if (ok && !ok.dataset.tipsWiredV2154) {
+        ok.dataset.tipsWiredV2154 = '1';
+        ok.addEventListener('click', closeTipsCardV2154);
+      }
+      syncTipsTogglesV2154();
+    }
+
+    function tipsWelcomeIsVisibleV2154() {
+      const welcome = document.getElementById('qrWelcomeOverlayV170');
+      return !!(welcome && welcome.getAttribute('aria-hidden') !== 'true');
+    }
+
+    function tipsContentV2154(tipId) {
+      if (tipId === 'home') {
+        return {
+          title:'HOME',
+          lines:[
+            'Use the <strong>MENU</strong> in the top-left to navigate the app.',
+            '<strong>SCORECARD</strong> — enter and edit your team\'s scores.',
+            '<strong>LEADERBOARD</strong> — view current standings.',
+            '<strong>SCRAMBLE SUMMARY</strong> — available after the round is complete.'
+          ]
+        };
+      }
+      if (tipId === 'scorecard') {
+        return {
+          title:'SCORECARD',
+          lines:[
+            'Tap a <strong>SCORE BOX</strong> — it starts at <strong>PAR</strong>.',
+            'Use <strong>− / + / CLEAR</strong>, then <strong>ENTER</strong> to save.',
+            'Tap a submitted score to <strong>EDIT</strong> it.',
+            'Tap the <strong>GRAY GAME CIRCLES</strong> for Game information.',
+            'At the top of the SCORE column, the <strong>LEFT</strong> score is <strong>GROSS</strong> and the <strong>RIGHT</strong> score is <strong>NET</strong>.'
+          ]
+        };
+      }
+      if (tipId === 'leaderboard-live') {
+        return {
+          title:'LEADERBOARD',
+          lines:[
+            'Auto-refreshes every <strong>20 SECONDS</strong> during play.',
+            'Use the lower-right <strong>REFRESH</strong> button anytime for a manual update.',
+            'Touch the <strong>LEADERBOARD</strong> to pause the auto-refresh timer while you review the standings.'
+          ]
+        };
+      }
+      if (tipId === 'leaderboard-final') {
+        return {
+          title:'LEADERBOARD',
+          lines:[
+            'The round is <strong>COMPLETE</strong>.',
+            'Visit <strong>SCRAMBLE SUMMARY</strong> for the final results.',
+            'If needed, use <strong>BREAK TIE</strong> to apply the automatic tiebreak order.'
+          ]
+        };
+      }
+      if (tipId === 'summary') {
+        const assignedCount = Math.max(0, Array.isArray(lastLeaderboardRows) ? lastLeaderboardRows.length : 0);
+        const lowerLine = assignedCount > 3
+          ? '<strong>TEAMS 4 THROUGH ' + assignedCount + '</strong> are shown below.'
+          : '';
+        return {
+          title:'SCRAMBLE SUMMARY',
+          lines:[
+            'Shows each team\'s final <strong>NET SCORE</strong> after handicap.',
+            'The <strong>TOP 3</strong> teams are featured above.',
+            lowerLine
+          ].filter(Boolean)
+        };
+      }
+      if (tipId === 'geek') {
+        return {
+          title:'GEEK MODE',
+          lines:[
+            'Tap a <strong>STAT</strong> for more detail.',
+            'Use <strong>FILTERS</strong> to filter stat categories.'
+          ]
+        };
+      }
+      return null;
+    }
+
+    function showTipsCardV2154(tipId) {
+      const content = tipsContentV2154(tipId);
+      const overlay = document.getElementById('tipsOverlayV2154');
+      const title = document.getElementById('tipsTitleV2154');
+      const body = document.getElementById('tipsBodyV2154');
+      if (!content || !overlay || !title || !body) return false;
+      activeTipsIdV2154 = String(tipId || '');
+      title.textContent = content.title;
+      body.innerHTML = content.lines.map(line => '<div class="tips-line-v2154">' + line + '</div>').join('');
+      overlay.classList.add('open-v2154');
+      overlay.setAttribute('aria-hidden', 'false');
+      const ok = document.getElementById('tipsOkButtonV2154');
+      if (ok) requestAnimationFrame(() => ok.focus({ preventScroll:true }));
+      return true;
+    }
+
+    function closeTipsCardV2154() {
+      const overlay = document.getElementById('tipsOverlayV2154');
+      if (activeTipsIdV2154) {
+        const seen = readSeenTipsV2154();
+        seen.add(activeTipsIdV2154);
+        writeSeenTipsV2154(seen);
+      }
+      activeTipsIdV2154 = '';
+      if (overlay) {
+        overlay.classList.remove('open-v2154');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    function maybeShowTipsV2154(tipId) {
+      if (!tipsEnabledV2154() || tipsWelcomeIsVisibleV2154()) return false;
+      const overlay = document.getElementById('tipsOverlayV2154');
+      if (overlay && overlay.classList.contains('open-v2154')) return false;
+      const seen = readSeenTipsV2154();
+      if (seen.has(String(tipId))) return false;
+      return showTipsCardV2154(tipId);
+    }
+
     async function showHome() {
 
       /* V19.88 — extend the proven V19.86/V19.87 HOME double-curtain entry
@@ -18926,6 +19292,7 @@ let scoreTimingDetail =
          current presentation has completed, debounce one fresh diagnostic
          snapshot so Control Center reports the final viewport/shell authority. */
       scheduleControlCenterViewportSnapshotV2128();
+      maybeShowTipsV2154('home');
 
     }
 
@@ -19310,6 +19677,7 @@ let scoreTimingDetail =
          every later Scorecard return uses the normal positioning path. */
       firstScorecardTopIntentV1979 = false;
       firstScorecardTopActiveV1979 = false;
+      maybeShowTipsV2154('scorecard');
 
     }
 
@@ -22778,6 +23146,7 @@ let scoreTimingDetail =
         /* V19.30 — reveal completes with no automatic leaderboard positioning.
            Authorized-team highlighting remains intact; the golfer controls scroll. */
         await leaderboardRevealDoneV179;
+        maybeShowTipsV2154(tournamentIsComplete(rows) ? 'leaderboard-final' : 'leaderboard-live');
 
 
       }
@@ -25756,8 +26125,8 @@ let scoreTimingDetail =
           '<div class="geek-table-shell-v180">' +
             '<div class="geek-row-v180 header">' +
               '<div class="geek-cell-v180">STAT</div>' +
-              '<div class="geek-cell-v180 geek-us-header-v1813">US</div>' +
-              '<div class="geek-cell-v180">ALL</div>' +
+              '<div class="geek-cell-v180 geek-us-header-v1813">YOU</div>' +
+              '<div class="geek-cell-v180">MAX</div>' +
               '<div class="geek-cell-v180">TEAM</div>' +
             '</div>' +
             '<div class="geek-table-scroll-v180"></div>' +
@@ -25863,11 +26232,11 @@ let scoreTimingDetail =
         requestAnimationFrame(() => {
           fitGeekRowsV180();
           requestAnimationFrame(() => {
-            revealAfterPlayCurtainV2086(
+            Promise.resolve(revealAfterPlayCurtainV2086(
               'after-play-geek-v2086',
               geekAfterPlayCurtainV2086,
               2
-            );
+            )).then(() => maybeShowTipsV2154('geek'));
           });
         });
 
@@ -26822,11 +27191,11 @@ let scoreTimingDetail =
         if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
       });
       requestAnimationFrame(() => captureTournamentSummaryAuditV189());
-      revealAfterPlayCurtainV2086(
+      Promise.resolve(revealAfterPlayCurtainV2086(
         'after-play-summary-v2086',
         summaryCurtainV2086,
         2
-      );
+      )).then(() => maybeShowTipsV2154('summary'));
       void recordScrambleSummaryViewedV2141();
     }
 
@@ -30464,6 +30833,7 @@ let scoreTimingDetail =
         overlay.style.removeProperty('opacity');
         overlay.style.removeProperty('transition');
         dismissQrWelcomeV170();
+        window.setTimeout(() => maybeShowTipsV2154('home'), 0);
       }, 520);
     }
 
@@ -30700,6 +31070,7 @@ let scoreTimingDetail =
       }
 
       setupQrWelcomeV170();
+      setupTipsAndTricksV2154();
 
       /* SSHCP V20.78 — HOME refresh previously serialized two independent
          read-only network waits: stored QR/auth validation first, then HOME's
@@ -30735,6 +31106,7 @@ let scoreTimingDetail =
       if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
       syncTestAuthorizationToggle();
       syncTeamQrLockedUi();
+      syncTipsTogglesV2154();
       updateHomeScorecardAccess();
 
       if (failedIncomingQrV1984) {
