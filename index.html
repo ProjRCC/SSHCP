@@ -1,9 +1,9 @@
-<!-- SSHCP | BASE KEY: 22.8-T7M4QZ | BUILD KEY: 22.9-B6K4NR -->
-<!-- SSHCP V22.9 QUICK GUIDE TIPS LABEL - exact V22.8 donor.
-     Keeps V22.8 contextual Tips backdrop, header-toggle placement, white cards, Quick Guide treatment, V22.4 copy,
-     V22.3 score-popup placement, V22.2 typography, scoring, authorization, audit, Worker/API, CC/SM, table geometry,
-     GEEK stepping, GAME row math, result logic and global VPH×DPR scaling unchanged. Changes only the Quick Guide
-     shared Tips preference label from SHOW TIPS & TRICKS DURING THE ROUND to SHOW TIPS & TRICKS ONCE. Behavior unchanged. -->
+<!-- SSHCP | BASE KEY: 22.9-B6K4NR | BUILD KEY: 22.10-J8P3LV -->
+<!-- SSHCP V22.10 TIPS FADE GEOMETRY HOLD - exact V22.9 donor.
+     Keeps V22.9 wording, V22.8 Gray-3.5 / 6px blur / 0.30s Tips fade, white cards, title-row placement,
+     scoring, authorization, audit, Worker/API, CC/SM, table geometry, GEEK stepping, GAME row math, result logic
+     and global VPH×DPR scaling unchanged. Fixes only the Tips close-timer mismatch: HOME/short-card geometry now
+     remains applied for the full 300ms fade instead of being removed after 100ms, eliminating the visible drop. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12609,7 +12609,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.9</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.10</span></span>
         </button>
 
       </div>
@@ -19470,7 +19470,7 @@ let scoreTimingDetail =
     let activeTipsIdV2154 = '';
     let pendingAfterTipsActionV2155 = null;
     let tipsCloseTimerV2162 = null;
-    const TIPS_POPUP_FADE_MS_V2162 = 100;
+    const TIPS_POPUP_FADE_MS_V2162 = 300;
 
     function showTipsAfterSettledV2155(tipId) {
       window.setTimeout(() => {
