@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 21.55-P8R4NX | BUILD KEY: 21.56-T7M4QK -->
-<!-- SSHCP V21.56 TIPS VISUAL + ORDER REFINEMENT - exact V21.55 donor.
+<!-- SSHCP | BASE KEY: 21.56-T7M4QK | BUILD KEY: 21.57-Q4N8VX -->
+<!-- SSHCP V21.57 TIPS WIDTH + TYPE + WELCOME ORDER REFINEMENT - exact V21.56 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
@@ -11886,7 +11886,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 </style>
 
 <style id="sshcp-v2154-tips-and-tricks">
-/* V21.56 — V21.55 contextual help retained; stronger blurred/desaturated backdrop, subtle card shadow, understated bullets, and top-to-bottom tip ordering. Timing unchanged. */
+/* V21.57 — exact V21.56 contextual-help behavior retained; tip card widened to 96vw, regular tip copy reduced to 18px × utility multiplier, and Welcome keeps SHOW TIPS & TRICKS below ENTER as an optional afterthought. Timing unchanged. */
 .qr-welcome-tips-toggle-v2154,
 #testLogView .control-center-tips-toggle-v2154{
   box-sizing:border-box!important;
@@ -11966,8 +11966,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   bottom:24dvh!important;
   transform:translateX(-50%)!important;
   box-sizing:border-box!important;
-  width:85vw!important;
-  max-width:min(570px,calc(100vw - 28px))!important;
+  width:96vw!important;
+  max-width:min(570px,calc(100vw - 12px))!important;
   max-height:72dvh!important;
   overflow:auto!important;
   padding:calc(20px * var(--v2074-utility-scale,1)) calc(18px * var(--v2074-utility-scale,1))!important;
@@ -11989,7 +11989,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-body-v2154{
   color:#000!important;
   -webkit-text-fill-color:#000!important;
-  font-size:calc(20px * var(--v2074-utility-scale,1))!important;
+  font-size:calc(18px * var(--v2074-utility-scale,1))!important;
   font-weight:400!important;
   line-height:1.18!important;
   text-align:center!important;
@@ -12039,12 +12039,12 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
       <div id="qrWelcomeTeamV170" class="qr-welcome-team-v170"></div>
       <div class="qr-welcome-actions-v170">
         <button id="qrWelcomeGuideV170" class="qr-welcome-button-v170 qr-welcome-guide-v170" type="button">QUICK GUIDE</button>
+        <button id="qrWelcomeEnterV170" class="qr-welcome-button-v170 qr-welcome-enter-v170" type="button">ENTER</button>
         <label id="qrWelcomeTipsToggleV2154" class="qr-welcome-tips-toggle-v2154">
           <input id="qrWelcomeTipsCheckV2154" type="checkbox">
           <span class="tips-check-box-v2154" aria-hidden="true">✓</span>
           <span>SHOW TIPS &amp; TRICKS</span>
         </label>
-        <button id="qrWelcomeEnterV170" class="qr-welcome-button-v170 qr-welcome-enter-v170" type="button">ENTER</button>
       </div>
     </div>
   </div>
@@ -12161,7 +12161,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.56</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.57</span></span>
         </button>
 
       </div>
