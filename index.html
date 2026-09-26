@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.64-Q7M3VK | BUILD KEY: 21.65-L6Q8RN -->
-<!-- SSHCP V21.65 HOME FIT + QUICK GUIDE COMPACT/BLUE HEADINGS - exact V21.64 donor.
-     Preserves V21.64 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
-     GEEK/GAME behavior, contextual copy, shared Tips preference, and 0.10s Tips open/close fade.
-     V21.65 removes the artificial HOME Tips scroll by allowing the card to use available viewport
-     height, biases contextual cards slightly lower while remaining centered, tightens the Quick Guide
-     Tips control spacing, colors Quick Guide section headings Blue, and leaves CLEAR unbolded in the
-     contextual Scorecard Tips line. -->
+<!-- SSHCP | BASE KEY: 21.65-L6Q8RN | BUILD KEY: 21.66-P5R8QK -->
+<!-- SSHCP V21.66 TIPS POPUP BALANCE + 19PX COPY - exact V21.65 donor.
+     Preserves V21.65 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
+     GEEK/GAME behavior, Quick Guide content, shared Tips preference, and 0.10s Tips open/close fade.
+     V21.66 raises contextual Tips body copy to 19px × utility multiplier, removes the forced short-card
+     height that created large dead zones, and biases each compact card lower on screen so the OK control
+     remains thumb-friendly without making the popup appear to float high. HOME still fits without an
+     internal scrollbar; controls remain naturally spaced under the instructions. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12021,6 +12021,21 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   max-height:92dvh!important;
   overflow:hidden!important;
 }
+/* V21.66 — prioritize a compact, low-biased card with natural internal spacing.
+   OK remains comfortably low by moving the card as a unit rather than stretching empty space. */
+.tips-card-v2154{
+  top:58%!important;
+}
+.tips-overlay-v2154.tips-short-v2163 .tips-card-v2154{
+  min-height:0!important;
+}
+.tips-overlay-v2154.tips-short-v2163 .tips-card-toggle-v2161{
+  margin-top:calc(15px * var(--v2074-utility-scale,1))!important;
+  padding-top:0!important;
+}
+.tips-body-v2154{
+  font-size:calc(19px * var(--v2074-utility-scale,1))!important;
+}
 .tips-title-v2154{
   margin:0 0 calc(12px * var(--v2074-utility-scale,1))!important;
   color:var(--accent)!important;
@@ -12033,7 +12048,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-body-v2154{
   color:#000!important;
   -webkit-text-fill-color:#000!important;
-  font-size:calc(18px * var(--v2074-utility-scale,1))!important;
+  font-size:calc(19px * var(--v2074-utility-scale,1))!important;
   font-weight:400!important;
   line-height:1.18!important;
   text-align:center!important;
@@ -12336,7 +12351,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.65</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.66</span></span>
         </button>
 
       </div>
