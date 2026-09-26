@@ -1,12 +1,9 @@
-<!-- SSHCP | BASE KEY: 21.62-M7Q4VX | BUILD KEY: 21.63-R4K8MX -->
-<!-- SSHCP V21.63 TIPS CENTERING + QUICK GUIDE CUE CLEANUP - exact V21.62 donor.
-     Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
-     summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
-     (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
-     after-play white popup/card family. QUICK GUIDE now uses the same Gray 3 backdrop and same faint
-     white-card shadow. V21.63 keeps all V21.62 behavior while centering contextual Tips cards
-     vertically, preserving thumb-friendly OK placement on short cards with internal white space,
-     and moving the GAME-circle cue out of the HOME/visual legend and into SCORECARD only. -->
+<!-- SSHCP | BASE KEY: 21.63-R4K8MX | BUILD KEY: 21.64-Q7M3VK -->
+<!-- SSHCP V21.64 COMPACT SHORT TIPS + CENTERED TIPS TOGGLE - exact V21.63 donor.
+     Preserves V21.63 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
+     GEEK/GAME behavior, Quick Guide structure, contextual copy, and 0.10s Tips open/close fade.
+     V21.64 only reduces the forced minimum height for Leaderboard / Scramble Summary / GEEK Tips
+     cards and explicitly centers the TIPS & TRICKS preference row inside every contextual popup. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12007,12 +12004,14 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 /* V21.63 — contextual cards are vertically centered. Short cards get extra internal
    height so the controls can remain comfortably low without moving the whole card off center. */
+/* V21.64 — Leaderboard, Scramble Summary and GEEK stay centered but use less
+   forced white space than V21.63. The lower controls still settle naturally. */
 .tips-overlay-v2154.tips-short-v2163 .tips-card-v2154{
-  min-height:52dvh!important;
+  min-height:46dvh!important;
 }
 .tips-overlay-v2154.tips-short-v2163 .tips-card-toggle-v2161{
   margin-top:auto!important;
-  padding-top:calc(14px * var(--v2074-utility-scale,1))!important;
+  padding-top:calc(12px * var(--v2074-utility-scale,1))!important;
 }
 .tips-title-v2154{
   margin:0 0 calc(12px * var(--v2074-utility-scale,1))!important;
@@ -12109,9 +12108,12 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   font-weight:800!important;
 }
 .tips-card-toggle-v2161{
-  margin:calc(15px * var(--v2074-utility-scale,1)) 0 0!important;
+  width:100%!important;
+  align-self:center!important;
+  margin:calc(15px * var(--v2074-utility-scale,1)) auto 0!important;
   min-height:calc(28px * var(--v2074-utility-scale,1))!important;
   font-size:calc(14px * var(--v2074-utility-scale,1))!important;
+  text-align:center!important;
 }
 .quick-guide-tips-toggle-v2161{
   width:100%!important;
@@ -12321,7 +12323,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.63</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.64</span></span>
         </button>
 
       </div>
@@ -19173,7 +19175,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V21.63 — OPTIONAL TIPS & TRICKS
+       SSHCP V21.64 — OPTIONAL TIPS & TRICKS
        One player-facing setting shared by Welcome, Quick Guide and each popup.
        Contextual tips remain once per authorization unless the setting is re-armed.
        ========================================================= */
