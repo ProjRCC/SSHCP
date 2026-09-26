@@ -1,9 +1,9 @@
-<!-- SSHCP | BASE KEY: 22.6-L3R8PD | BUILD KEY: 22.7-Q5H2XM -->
-<!-- SSHCP V22.7 TIPS SURFACE + HEADER TOGGLE - exact V22.6 donor.
-     Keeps V22.6 white cards, V22.4 copy, V22.3 score-popup placement, V22.2 typography, scoring, authorization, audit,
-     Worker/API, CC/SM, table geometry, GEEK stepping, GAME row math, result logic and global VPH×DPR scaling unchanged.
-     Changes Quick Guide and Tips backdrops to 90%-opaque Gray-3 with a slight 4px blur. Contextual Tips & Tricks moves
-     the shared checked TIPS & TRICKS control directly under the popup title and makes that control slightly larger. -->
+<!-- SSHCP | BASE KEY: 22.7-Q5H2XM | BUILD KEY: 22.8-T7M4QZ -->
+<!-- SSHCP V22.8 TIPS BACKDROP TUNING - exact V22.7 donor.
+     Keeps V22.7 contextual Tips header-toggle placement, white cards, Quick Guide treatment, V22.4 copy, V22.3
+     score-popup placement, V22.2 typography, scoring, authorization, audit, Worker/API, CC/SM, table geometry,
+     GEEK stepping, GAME row math, result logic and global VPH×DPR scaling unchanged. Changes only contextual Tips &
+     Tricks backdrop presentation: Gray-3.5 at 90% opacity, 6px blur, and 0.30s fade in/out. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12461,6 +12461,20 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   font-size:calc(15px * var(--v221-global-scale,1))!important;
 }
 </style>
+
+<style id="sshcp-v2280-tips-backdrop">
+/* SSHCP V22.8 — contextual Tips & Tricks only. Gray 3.5 is the midpoint between
+   established Gray 3 (#e8e8e8) and Gray 4 (#a6a6a6): #c7c7c7. */
+.tips-overlay-v2154{
+  background:rgba(199,199,199,.90)!important;
+  -webkit-backdrop-filter:blur(6px)!important;
+  backdrop-filter:blur(6px)!important;
+  transition:opacity .30s ease, visibility 0s linear .30s!important;
+}
+.tips-overlay-v2154.open-v2154{
+  transition:opacity .30s ease, visibility 0s linear 0s!important;
+}
+</style>
 </head>
 
 
@@ -12595,7 +12609,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.7</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.8</span></span>
         </button>
 
       </div>
