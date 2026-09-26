@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 21.54-W5K8QM | BUILD KEY: 21.55-P8R4NX -->
-<!-- SSHCP V21.55 TIPS GEOMETRY / SETTLED-SEQUENCE - exact V21.54 donor.
+<!-- SSHCP | BASE KEY: 21.55-P8R4NX | BUILD KEY: 21.56-T7M4QK -->
+<!-- SSHCP V21.56 TIPS VISUAL + ORDER REFINEMENT - exact V21.55 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
@@ -11886,7 +11886,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 </style>
 
 <style id="sshcp-v2154-tips-and-tricks">
-/* V21.55 — V21.54 contextual help retained; wider 85vw/570px card and settled +100ms presentation sequencing. */
+/* V21.56 — V21.55 contextual help retained; stronger blurred/desaturated backdrop, subtle card shadow, understated bullets, and top-to-bottom tip ordering. Timing unchanged. */
 .qr-welcome-tips-toggle-v2154,
 #testLogView .control-center-tips-toggle-v2154{
   box-sizing:border-box!important;
@@ -11951,9 +11951,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   inset:0!important;
   z-index:9800!important;
   display:none!important;
-  background:rgba(255,255,255,.16)!important;
-  backdrop-filter:blur(7px)!important;
-  -webkit-backdrop-filter:blur(7px)!important;
+  background:rgba(255,255,255,.18)!important;
+  backdrop-filter:blur(17px) grayscale(.95) saturate(.22)!important;
+  -webkit-backdrop-filter:blur(17px) grayscale(.95) saturate(.22)!important;
   pointer-events:auto!important;
 }
 .tips-overlay-v2154.open-v2154{
@@ -11974,7 +11974,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   border:0!important;
   border-radius:calc(16px * var(--v2074-utility-scale,1))!important;
   background:#fff!important;
-  box-shadow:0 4px 18px rgba(0,0,0,.10)!important;
+  box-shadow:0 5px 18px rgba(0,0,0,.10)!important;
   text-align:center!important;
 }
 .tips-title-v2154{
@@ -11996,6 +11996,15 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 .tips-body-v2154 .tips-line-v2154{
   margin:0 0 calc(10px * var(--v2074-utility-scale,1))!important;
+}
+.tips-body-v2154 .tips-line-v2154::before{
+  content:"•";
+  display:inline-block!important;
+  margin-right:.34em!important;
+  font-size:.78em!important;
+  font-weight:900!important;
+  line-height:1!important;
+  vertical-align:.06em!important;
 }
 .tips-body-v2154 .tips-line-v2154:last-child{
   margin-bottom:0!important;
@@ -12152,7 +12161,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.55</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.56</span></span>
         </button>
 
       </div>
@@ -19158,11 +19167,11 @@ let scoreTimingDetail =
         return {
           title:'SCORECARD',
           lines:[
+            'At the top of the SCORE column, the <strong>LEFT</strong> score is <strong>GROSS</strong> and the <strong>RIGHT</strong> score is <strong>NET</strong>.',
             'Tap a <strong>SCORE BOX</strong> — it starts at <strong>PAR</strong>.',
             'Use <strong>− / + / CLEAR</strong>, then <strong>ENTER</strong> to save.',
             'Tap a submitted score to <strong>EDIT</strong> it.',
-            'Tap the <strong>GRAY GAME CIRCLES</strong> for Game information.',
-            'At the top of the SCORE column, the <strong>LEFT</strong> score is <strong>GROSS</strong> and the <strong>RIGHT</strong> score is <strong>NET</strong>.'
+            'Tap the <strong>GRAY GAME CIRCLES</strong> for Game information.'
           ]
         };
       }
