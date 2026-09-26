@@ -1,9 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.63-R4K8MX | BUILD KEY: 21.64-Q7M3VK -->
-<!-- SSHCP V21.64 COMPACT SHORT TIPS + CENTERED TIPS TOGGLE - exact V21.63 donor.
-     Preserves V21.63 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
-     GEEK/GAME behavior, Quick Guide structure, contextual copy, and 0.10s Tips open/close fade.
-     V21.64 only reduces the forced minimum height for Leaderboard / Scramble Summary / GEEK Tips
-     cards and explicitly centers the TIPS & TRICKS preference row inside every contextual popup. -->
+<!-- SSHCP | BASE KEY: 21.64-Q7M3VK | BUILD KEY: 21.65-L6Q8RN -->
+<!-- SSHCP V21.65 HOME FIT + QUICK GUIDE COMPACT/BLUE HEADINGS - exact V21.64 donor.
+     Preserves V21.64 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
+     GEEK/GAME behavior, contextual copy, shared Tips preference, and 0.10s Tips open/close fade.
+     V21.65 removes the artificial HOME Tips scroll by allowing the card to use available viewport
+     height, biases contextual cards slightly lower while remaining centered, tightens the Quick Guide
+     Tips control spacing, colors Quick Guide section headings Blue, and leaves CLEAR unbolded in the
+     contextual Scorecard Tips line. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11985,7 +11987,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-card-v2154{
   position:absolute!important;
   left:50%!important;
-  top:50%!important;
+  top:52%!important;
   bottom:auto!important;
   transform:translate(-50%,-50%)!important;
   display:flex!important;
@@ -12012,6 +12014,12 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-overlay-v2154.tips-short-v2163 .tips-card-toggle-v2161{
   margin-top:auto!important;
   padding-top:calc(12px * var(--v2074-utility-scale,1))!important;
+}
+/* V21.65 — HOME has enough vertical room for the full guide without an internal
+   scrollbar. Let the card use the available viewport instead of forcing the old 72dvh cap. */
+.tips-overlay-v2154.tips-home-v2165 .tips-card-v2154{
+  max-height:92dvh!important;
+  overflow:hidden!important;
 }
 .tips-title-v2154{
   margin:0 0 calc(12px * var(--v2074-utility-scale,1))!important;
@@ -12117,8 +12125,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 .quick-guide-tips-toggle-v2161{
   width:100%!important;
-  min-height:calc(30px * var(--v2074-utility-scale,1))!important;
-  margin:0 0 calc(10px * var(--v2074-utility-scale,1))!important;
+  min-height:calc(28px * var(--v2074-utility-scale,1))!important;
+  margin:0 0 calc(-4px * var(--v2074-utility-scale,1))!important;
   font-size:calc(14px * var(--v2076-qg-text-scale,1))!important;
 }
 .tips-card-toggle-v2161 input,
@@ -12178,8 +12186,13 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 .quick-guide-section-heading-v2161{
   margin-top:calc(4px * var(--v2074-utility-scale,1))!important;
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
   font-weight:900!important;
   text-align:left!important;
+}
+.quick-guide-tips-toggle-v2161 + .quick-guide-section-heading-v2161{
+  margin-top:0!important;
 }
 .quick-guide-bullet-v2161{
   padding-left:1.05em!important;
@@ -12323,7 +12336,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.64</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.65</span></span>
         </button>
 
       </div>
@@ -19337,7 +19350,7 @@ let scoreTimingDetail =
           title:'SCORECARD',
           lines:[
             'Tap a <strong>SCORE BOX</strong> — it starts at <strong>PAR</strong>.',
-            'Use <strong>− / + / CLEAR - ENTER</strong> to save.',
+            'Use <strong>− / + /</strong> CLEAR - <strong>ENTER</strong> to save.',
             'Tap a submitted score to <strong>EDIT</strong> it.',
             'Tap the <strong>GRAY GAME CIRCLES</strong> for Game information.',
             '<strong>SCORE HEADER</strong> — left score is <strong>GROSS</strong> and right score is <strong>NET</strong>.'
@@ -19411,6 +19424,7 @@ let scoreTimingDetail =
         tipsCloseTimerV2162 = null;
       }
       overlay.classList.toggle('tips-short-v2163', ['leaderboard-live','leaderboard-final','summary','geek'].includes(activeTipsIdV2154));
+      overlay.classList.toggle('tips-home-v2165', activeTipsIdV2154 === 'home');
       overlay.classList.add('open-v2154');
       overlay.setAttribute('aria-hidden', 'false');
       const ok = document.getElementById('tipsOkButtonV2154');
@@ -19435,7 +19449,7 @@ let scoreTimingDetail =
       if (tipsCloseTimerV2162) window.clearTimeout(tipsCloseTimerV2162);
       tipsCloseTimerV2162 = window.setTimeout(() => {
         tipsCloseTimerV2162 = null;
-        if (overlay) overlay.classList.remove('tips-short-v2163');
+        if (overlay) overlay.classList.remove('tips-short-v2163', 'tips-home-v2165');
         if (typeof afterCloseV2155 === 'function') afterCloseV2155();
       }, TIPS_POPUP_FADE_MS_V2162);
     }
