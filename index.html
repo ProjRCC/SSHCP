@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 21.53-R6M8QK | BUILD KEY: 21.54-W5K8QM -->
-<!-- SSHCP V21.54 TIPS & TRICKS / GEEK LABELS - exact V21.53 donor.
+<!-- SSHCP | BASE KEY: 21.54-W5K8QM | BUILD KEY: 21.55-P8R4NX -->
+<!-- SSHCP V21.55 TIPS GEOMETRY / SETTLED-SEQUENCE - exact V21.54 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
@@ -11886,7 +11886,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 </style>
 
 <style id="sshcp-v2154-tips-and-tricks">
-/* V21.54 — optional contextual help. INFO / Quick Guide remain unchanged. */
+/* V21.55 — V21.54 contextual help retained; wider 85vw/570px card and settled +100ms presentation sequencing. */
 .qr-welcome-tips-toggle-v2154,
 #testLogView .control-center-tips-toggle-v2154{
   box-sizing:border-box!important;
@@ -11962,11 +11962,12 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-card-v2154{
   position:absolute!important;
   left:50%!important;
-  top:58%!important;
-  transform:translate(-50%,-50%)!important;
+  top:auto!important;
+  bottom:24dvh!important;
+  transform:translateX(-50%)!important;
   box-sizing:border-box!important;
-  width:min(60vw,400px)!important;
-  max-width:calc(100vw - 28px)!important;
+  width:85vw!important;
+  max-width:min(570px,calc(100vw - 28px))!important;
   max-height:72dvh!important;
   overflow:auto!important;
   padding:calc(20px * var(--v2074-utility-scale,1)) calc(18px * var(--v2074-utility-scale,1))!important;
@@ -12151,7 +12152,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.54</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.55</span></span>
         </button>
 
       </div>
@@ -15078,6 +15079,7 @@ let scoreTimingDetail =
            owns a 0.15s post-position Blue-cue reveal. Only after that reveal
            paints does the existing V19.80 shotgun popup hold begin. */
         releaseScorecardEntryCuesAfterPositionV1981(() => {
+          showTipsAfterSettledV2155('scorecard');
           requestAnimationFrame(() => {
             if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
             if (!selectedTeam || currentView !== 'scorecard') return;
@@ -15122,6 +15124,25 @@ let scoreTimingDetail =
                 !latestRowV1978.querySelector('.hole-cell.next-hole-cell') ||
                 !latestRowV1978.querySelector('.score-button.active-hole-score')
               ) {
+                return;
+              }
+
+              const tipsOverlayV2155 = document.getElementById('tipsOverlayV2154');
+              if (
+                tipsOverlayV2155 &&
+                tipsOverlayV2155.classList.contains('open-v2154') &&
+                activeTipsIdV2154 === 'scorecard'
+              ) {
+                pendingAfterTipsActionV2155 = () => {
+                  if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
+                  if (!selectedTeam || currentView !== 'scorecard') return;
+                  const deferredTeamKeyV2155 =
+                    String(selectedTeam.slot || '') + '|' + normalizeName(selectedTeam.name);
+                  if (deferredTeamKeyV2155 !== teamKeyV1978) return;
+                  if (!scorecardIsCompletelyBlankV1613(localScores)) return;
+                  if (!tournamentUsesShotgunStartV1613()) return;
+                  showStartingHoleIntroV1613();
+                };
                 return;
               }
 
@@ -18989,6 +19010,47 @@ let scoreTimingDetail =
     const SSHCP_TIPS_ENABLED_PREFIX_V2154 = 'sshcpTipsEnabledV2154|';
     const SSHCP_TIPS_SEEN_PREFIX_V2154 = 'sshcpTipsSeenV2154|';
     let activeTipsIdV2154 = '';
+    let pendingAfterTipsActionV2155 = null;
+
+    function showTipsAfterSettledV2155(tipId) {
+      window.setTimeout(() => {
+        maybeShowTipsV2154(tipId);
+      }, 100);
+    }
+
+    function waitForLeaderboardSettledV2155() {
+      return new Promise(resolve => {
+        const startedV2155 = performance.now();
+        let lastTopV2155 = els.leaderContent ? Number(els.leaderContent.scrollTop) || 0 : 0;
+        let stableSinceV2155 = performance.now();
+
+        const stepV2155 = nowV2155 => {
+          if (currentView !== 'leaderboard' || !els.leaderContent) {
+            resolve();
+            return;
+          }
+
+          const currentTopV2155 = Number(els.leaderContent.scrollTop) || 0;
+          if (Math.abs(currentTopV2155 - lastTopV2155) > 0.5) {
+            lastTopV2155 = currentTopV2155;
+            stableSinceV2155 = nowV2155;
+          }
+
+          const timerPendingV2155 = !!leaderboardAutoScrollTimer;
+          const scrollStableV2155 = (nowV2155 - stableSinceV2155) >= 120;
+          const safetyExpiredV2155 = (nowV2155 - startedV2155) >= 2800;
+
+          if ((!timerPendingV2155 && scrollStableV2155) || safetyExpiredV2155) {
+            resolve();
+            return;
+          }
+
+          requestAnimationFrame(stepV2155);
+        };
+
+        requestAnimationFrame(stepV2155);
+      });
+    }
 
     function tipsAuthorizationFingerprintV2154() {
       return String(qrAuthorizationFingerprintV1979() || 'NO_AUTH').trim() || 'NO_AUTH';
@@ -19178,6 +19240,11 @@ let scoreTimingDetail =
         overlay.classList.remove('open-v2154');
         overlay.setAttribute('aria-hidden', 'true');
       }
+      const afterCloseV2155 = pendingAfterTipsActionV2155;
+      pendingAfterTipsActionV2155 = null;
+      if (typeof afterCloseV2155 === 'function') {
+        window.setTimeout(afterCloseV2155, 0);
+      }
     }
 
     function maybeShowTipsV2154(tipId) {
@@ -19292,7 +19359,7 @@ let scoreTimingDetail =
          current presentation has completed, debounce one fresh diagnostic
          snapshot so Control Center reports the final viewport/shell authority. */
       scheduleControlCenterViewportSnapshotV2128();
-      maybeShowTipsV2154('home');
+      showTipsAfterSettledV2155('home');
 
     }
 
@@ -19677,7 +19744,6 @@ let scoreTimingDetail =
          every later Scorecard return uses the normal positioning path. */
       firstScorecardTopIntentV1979 = false;
       firstScorecardTopActiveV1979 = false;
-      maybeShowTipsV2154('scorecard');
 
     }
 
@@ -23146,7 +23212,8 @@ let scoreTimingDetail =
         /* V19.30 — reveal completes with no automatic leaderboard positioning.
            Authorized-team highlighting remains intact; the golfer controls scroll. */
         await leaderboardRevealDoneV179;
-        maybeShowTipsV2154(tournamentIsComplete(rows) ? 'leaderboard-final' : 'leaderboard-live');
+        await waitForLeaderboardSettledV2155();
+        showTipsAfterSettledV2155(tournamentIsComplete(rows) ? 'leaderboard-final' : 'leaderboard-live');
 
 
       }
@@ -26236,7 +26303,7 @@ let scoreTimingDetail =
               'after-play-geek-v2086',
               geekAfterPlayCurtainV2086,
               2
-            )).then(() => maybeShowTipsV2154('geek'));
+            )).then(() => showTipsAfterSettledV2155('geek'));
           });
         });
 
@@ -27195,7 +27262,7 @@ let scoreTimingDetail =
         'after-play-summary-v2086',
         summaryCurtainV2086,
         2
-      )).then(() => maybeShowTipsV2154('summary'));
+      )).then(() => showTipsAfterSettledV2155('summary'));
       void recordScrambleSummaryViewedV2141();
     }
 
@@ -30833,7 +30900,7 @@ let scoreTimingDetail =
         overlay.style.removeProperty('opacity');
         overlay.style.removeProperty('transition');
         dismissQrWelcomeV170();
-        window.setTimeout(() => maybeShowTipsV2154('home'), 0);
+        showTipsAfterSettledV2155('home');
       }, 520);
     }
 
