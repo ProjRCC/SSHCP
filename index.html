@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 21.51-N5Q8RV | BUILD KEY: 21.52-H7L4QM -->
-<!-- SSHCP V21.52 WELCOME QUICK GUIDE MATCH - exact V21.51 donor.
+<!-- SSHCP | BASE KEY: 21.52-H7L4QM | BUILD KEY: 21.53-R6M8QK -->
+<!-- SSHCP V21.53 WELCOME QUICK GUIDE GEOMETRY MATCH - exact V21.52 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
@@ -12013,7 +12013,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.52</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.53</span></span>
         </button>
 
       </div>
@@ -29130,23 +29130,18 @@ let scoreTimingDetail =
       const thumb = els.modalBody.querySelector('.quick-guide-progress-thumb-v2050');
       if (!scroller || !rail || !thumb) return;
 
-      /* V21.23 — normal in-app Quick Guide keeps its own established gutter,
-         but its 4px rail now follows the universal horizontal rule: target the
-         gutter midpoint and keep at least 5px clear from the guide content. The
-         Welcome/GOT IT guide keeps its established horizontal placement. */
+      /* V21.53 — Welcome QUICK GUIDE must use the exact same body width,
+         right gutter and progress-rail geometry as the normal in-app QUICK GUIDE.
+         The only Welcome difference is its single GOT IT footer action. */
       const positionRailV2110 = () => {
         const actions = els.modalActions;
-        const welcomeGuide = !!(
-          actions &&
-          actions.classList.contains('quick-guide-welcome-actions-v175')
-        );
 
         els.modalOverlay.classList.toggle(
           'quick-guide-normal-v2110',
-          !!actions && !welcomeGuide
+          !!actions
         );
 
-        if (!actions || welcomeGuide) {
+        if (!actions) {
           rail.classList.remove('anchor-scorecard-v2110');
           rail.style.removeProperty('--quick-guide-progress-left-v2110');
           return;
