@@ -1,6 +1,6 @@
-<!-- SSHCP | BASE KEY: 21.68-T6Q9MX | BUILD KEY: 21.69-J6V3QK -->
-<!-- SSHCP V21.69 DPR ACCESSIBILITY 40/60 TEST - exact V21.68 donor.
-     Preserves V21.68 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
+<!-- SSHCP | BASE KEY: 21.69-J6V3QK | BUILD KEY: 21.70-G5R8VK -->
+<!-- SSHCP V21.70 GEEK FOOTER GAP ALIGNMENT - exact V21.69 donor.
+     Preserves V21.69 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
      GEEK/GAME behavior, Tips & Tricks, Quick Guide, geometry rules, and presentation timing.
      Only the accessibility blend changes: DPR values at or below the SSHCP reference DPR 2.81 retain
      exact prior behavior; DPR values above 2.81 now use 40% of the existing viewport response and 60%
@@ -12365,7 +12365,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.69</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.70</span></span>
         </button>
 
       </div>
@@ -26024,12 +26024,12 @@ let scoreTimingDetail =
         ? scrollViewport.getBoundingClientRect().height
         : 0;
 
-      /* SSHCP V20.97 — preserve the established 22-unit GEEK viewport, but make
-         the base X unit a whole CSS pixel. The shell may already have been shortened
-         by a prior V20.97 pass, so reconstruct the full available viewport from the
-         parent GEEK main height before calculating X. Any remainder is removed from
-         the table shell itself, which turns those pixels into the real buffer between
-         the table bottom and the fixed BACK / FILTERS actions. */
+      /* SSHCP V21.70 — preserve the established 22-unit GEEK viewport and
+         whole-pixel X unit, but keep the table shell at the full available height.
+         Older V20.97 logic moved the 22-unit rounding remainder outside the table,
+         creating a variable extra gap above BACK / FILTERS. The fixed action margin
+         now owns that visual gap, matching the Scorecard / Leaderboard rhythm more
+         closely while row sizing and scrolling remain unchanged. */
       const geekMainV2097 = shell.closest('.geek-main-v180');
       const availableShellHeightV2097 = geekMainV2097
         ? geekMainV2097.getBoundingClientRect().height
@@ -26044,9 +26044,7 @@ let scoreTimingDetail =
       const xUnit = Math.max(1, Math.floor(availableDataPixelsV2097 / 22));
       const categoryHeight = xUnit;
       const statHeight = xUnit * 2;
-      const usedDataPixelsV2097 = xUnit * 22;
-      const remainderV2097 = Math.max(0, availableDataPixelsV2097 - usedDataPixelsV2097);
-      const exactShellHeightV2097 = Math.max(1, availableShellHeightV2097 - remainderV2097);
+      const exactShellHeightV2097 = Math.max(1, availableShellHeightV2097);
       const exactShellValueV2097 = exactShellHeightV2097 + 'px';
 
       shell.style.setProperty('flex', '0 0 ' + exactShellValueV2097, 'important');
