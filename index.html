@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 21.57-Q4N8VX | BUILD KEY: 21.58-H5M9RK -->
-<!-- SSHCP V21.58 SCORECARD TIP ORDER REFINEMENT - exact V21.57 donor.
+<!-- SSHCP | BASE KEY: 21.58-H5M9RK | BUILD KEY: 21.59-K8R5QM -->
+<!-- SSHCP V21.59 TIPS OK PRESS-STATE FIX - exact V21.58 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
@@ -12026,6 +12026,17 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   font-size:calc(18px * var(--v2074-utility-scale,1))!important;
   font-weight:900!important;
 }
+/* V21.59 — Tips OK stays in the blue family while pressed. Isolated from the
+   app-wide Gray 6 / pressed-button treatment; all other buttons are unchanged. */
+.tips-ok-v2154:active:not(:disabled),
+.tips-ok-v2154.sshcp-button-pressed-v172{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  filter:brightness(.92)!important;
+  box-shadow:none!important;
+}
 </style>
 </head>
 
@@ -12161,7 +12172,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.58</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.59</span></span>
         </button>
 
       </div>
