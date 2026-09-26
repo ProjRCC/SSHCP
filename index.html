@@ -1,10 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.49-Q7M4VX | BUILD KEY: 21.50-T8K5RM -->
-<!-- SSHCP V21.50 AFTER-PLAY GRAY 3.5 BACKDROP - exact V21.49 donor.
-     Paired with unchanged CF V3.3. Preserves all validated V21.49 behavior and timing values.
-     Changes only the full-screen AFTER-PLAY backdrop behind Tie Break, Scramble Summary, GEEK,
-     GEEK Detail, Game Mode, and Skins to Gray 3.5 (#c7c7c7). Reveal curtains remain white.
+<!-- SSHCP | BASE KEY: 21.48-V6M3QK | BUILD KEY: 21.49-Q7M4VX -->
+<!-- SSHCP V21.49 AFTER-PLAY GRAY 3 BACKDROP / TIMING PANEL RESET - exact V21.48 donor.
+     Paired with unchanged CF V3.3. Preserves all validated V21.48 behavior. Changes only the full-screen
+     AFTER-PLAY backdrop behind Tie Break, Scramble Summary, GEEK, GEEK Detail, Game Mode, and Skins from
+     Gray 2 to exact Gray 3 (#e8e8e8), while keeping the reveal curtain white. Restores the timing panel
+     exactly to the requested values: 1A .25 / 2 .30 / 3 .30 / 4 .80 / 5A .25 / 5B .50 / CLEAR .10.
      No scoring, audit, authorization, Worker, CC/SM, leaderboard math, summary math, skins math,
-     GEEK/GAME content, popup geometry, or fade timing is changed. -->
+     GEEK/GAME content, or popup geometry is changed. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11475,7 +11476,7 @@ body.team-info-open-v2032{
 .modal-overlay.geek-detail-v180,
 .modal-overlay.game-mode-results-v2026,
 .modal-overlay.skins-results-v1627{
-  background:#c7c7c7!important;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important;
 }
@@ -11976,7 +11977,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.50</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.49</span></span>
         </button>
 
       </div>
