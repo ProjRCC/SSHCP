@@ -1,10 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.47-R4N8QK | BUILD KEY: 21.48-V6M3QK -->
-<!-- SSHCP V21.48 AFTER-PLAY GRAY 2 BACKDROP / FADE TUNE - exact V21.47 donor.
-     Paired with unchanged CF V3.3. Preserves all validated V21.47 behavior. Changes only the full-screen
+<!-- SSHCP | BASE KEY: 21.48-V6M3QK | BUILD KEY: 21.49-Q7M4VX -->
+<!-- SSHCP V21.49 AFTER-PLAY GRAY 3 BACKDROP / TIMING PANEL RESET - exact V21.48 donor.
+     Paired with unchanged CF V3.3. Preserves all validated V21.48 behavior. Changes only the full-screen
      AFTER-PLAY backdrop behind Tie Break, Scramble Summary, GEEK, GEEK Detail, Game Mode, and Skins from
-     Gray 8/black-family to exact Gray 2 (#f2f2f2), while keeping the reveal curtain white. AFTER-PLAY
-     curtain fade is set to 0.50s. HOME 1A remains 0.50s. No scoring, audit, authorization, Worker, CC/SM,
-     leaderboard math, summary math, skins math, GEEK/GAME content, or popup geometry is changed. -->
+     Gray 2 to exact Gray 3 (#e8e8e8), while keeping the reveal curtain white. Restores the timing panel
+     exactly to the requested values: 1A .25 / 2 .30 / 3 .30 / 4 .80 / 5A .25 / 5B .50 / CLEAR .10.
+     No scoring, audit, authorization, Worker, CC/SM, leaderboard math, summary math, skins math,
+     GEEK/GAME content, or popup geometry is changed. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +27,7 @@
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
-            FADE_1A_HOME_FULL: 0.25,
+      FADE_1A_HOME_FULL: 0.25,
       FADE_2_SCORECARD_LEADERBOARD: 0.30,
       FADE_3_AFTER_PLAY: 0.30,
       FADE_4_QUICK_GUIDE: 0.80,
@@ -43,9 +44,9 @@
         const safeSeconds = Number.isFinite(seconds) && seconds >= 0 ? seconds : fallback;
         rootStyle.setProperty(cssName, safeSeconds + 's');
       };
-      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.50);
-      setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.60);
-      setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 0.50);
+      setSeconds('--sshcp-fade-1a-home-full', timing.FADE_1A_HOME_FULL, 0.25);
+      setSeconds('--sshcp-fade-2-scorecard-leaderboard', timing.FADE_2_SCORECARD_LEADERBOARD, 0.30);
+      setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 0.30);
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
       setSeconds('--sshcp-fade-5a-cc-enter-refresh', timing.FADE_5A_CC_ENTER_REFRESH, 0.25);
       setSeconds('--sshcp-fade-5b-sm-refresh', timing.FADE_5B_SM_REFRESH, 0.50);
@@ -9894,7 +9895,7 @@ button.sshcp-button-pressed-v172{
   height:var(--leader-progress-height-v2115,0px)!important;
   transform:translateX(-50%)!important;
   border-radius:999px!important;
-  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   overflow:hidden!important;
   pointer-events:none!important;
   z-index:85!important;
@@ -11496,7 +11497,7 @@ body.team-info-open-v2032{
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086{
   background:#fff!important;
   border-radius:0!important;
-  transition:opacity var(--sshcp-fade-3-after-play,.5s) ease-out!important;
+  transition:opacity var(--sshcp-fade-3-after-play,.3s) ease-out!important;
 }
 
 .modal-overlay.quick-guide{
@@ -11976,7 +11977,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.48</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.49</span></span>
         </button>
 
       </div>
@@ -19046,11 +19047,11 @@ let scoreTimingDetail =
         const afterPlayKeyV2092 = String(key || '').startsWith('after-play-');
         const revealDurationMsV2092 =
           key === 'home-full-v1986'
-            ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.50)
+            ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.25)
             : (key === 'scorecard' || key === 'leaderboard')
-                ? timingMsV2092(timingV2092.FADE_2_SCORECARD_LEADERBOARD, 0.60)
+                ? timingMsV2092(timingV2092.FADE_2_SCORECARD_LEADERBOARD, 0.30)
                 : afterPlayKeyV2092
-                  ? timingMsV2092(timingV2092.FADE_3_AFTER_PLAY, 0.50)
+                  ? timingMsV2092(timingV2092.FADE_3_AFTER_PLAY, 0.30)
                   : key === 'quick-guide-v2089'
                     ? timingMsV2092(timingV2092.FADE_4_QUICK_GUIDE, 0.80)
                     : 500;
