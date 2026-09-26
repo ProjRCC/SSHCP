@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.66-P5R8QK | BUILD KEY: 21.67-H8M4QV -->
-<!-- SSHCP V21.66 TIPS POPUP BALANCE + 19PX COPY - exact V21.65 donor.
-     Preserves V21.65 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
-     GEEK/GAME behavior, Quick Guide content, shared Tips preference, and 0.10s Tips open/close fade.
-     V21.66 raises contextual Tips body copy to 19px × utility multiplier, removes the forced short-card
-     height that created large dead zones, and biases each compact card lower on screen so the OK control
-     remains thumb-friendly without making the popup appear to float high. HOME still fits without an
-     internal scrollbar; controls remain naturally spaced under the instructions. -->
+<!-- SSHCP | BASE KEY: 21.67-H8M4QV | BUILD KEY: 21.68-T6Q9MX -->
+<!-- SSHCP V21.68 DPR ACCESSIBILITY SCALE TEST - exact V21.67 GOLDEN donor.
+     Preserves V21.67 GOLDEN scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary,
+     skins, GEEK/GAME behavior, Tips & Tricks, Quick Guide, geometry rules, and presentation timing.
+     Only the established vertical/device multiplier is changed: DPR values at or below the SSHCP
+     reference DPR 2.81 retain exact prior behavior; DPR values above 2.81 receive a 40% DPR correction
+     blended with 60% of the existing viewport response so Android accessibility zoom can enlarge the
+     interface without fully cancelling responsive protection for the reduced CSS viewport. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12365,7 +12365,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.67</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.68</span></span>
         </button>
 
       </div>
@@ -15744,7 +15744,16 @@ let scoreTimingDetail =
         Math.min(1.30, Number(metrics.multiplier) || 1)
       );
       const shellScale = stableSvh > 0
-        ? Math.max(0.70, Math.min(1.30, stableSvh / V189_S25_VISUAL_VIEWPORT_H))
+        ? Math.max(
+            0.70,
+            Math.min(
+              1.30,
+              applyDprAccessibilityScaleV2168(
+                stableSvh / V189_S25_VISUAL_VIEWPORT_H,
+                metrics.dpr
+              )
+            )
+          )
         : viewScale;
       const sy = value => Math.max(1, Math.round(Number(value) * shellScale));
 
@@ -21089,6 +21098,25 @@ let scoreTimingDetail =
     const V188_S25_SCREEN_CSS_FALLBACK_H = 832;
     const V189_S25_VISUAL_VIEWPORT_H = 724;
 
+    /* V21.68 — accessibility-aware DPR correction. The app was authored and
+       validated at reference DPR 2.81. Preserve every existing multiplier at
+       or below that reference. Above it, blend 60% of the existing viewport
+       response with 40% of the full DPR correction. */
+    const V2168_REFERENCE_DPR = 2.81;
+    const V2168_DPR_WEIGHT = 0.40;
+
+    function dprAccessibilityBoostV2168(dprValue) {
+      const dpr = Math.max(0.1, Number(dprValue) || 1);
+      if (dpr <= V2168_REFERENCE_DPR) return 1;
+      return (1 - V2168_DPR_WEIGHT) +
+        (V2168_DPR_WEIGHT * (dpr / V2168_REFERENCE_DPR));
+    }
+
+    function applyDprAccessibilityScaleV2168(baseScale, dprValue) {
+      const base = Number(baseScale) || 1;
+      return base * dprAccessibilityBoostV2168(dprValue);
+    }
+
     /* SSHCP V20.66 — JS companion to the standalone 100svh CSS above.
        Scorecard/Leaderboard shell geometry must not follow Android's transient
        visualViewport/100dvh value during installed-PWA reload settling. A tiny
@@ -21154,11 +21182,17 @@ let scoreTimingDetail =
       }
       if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
 
-      /* V18.9: device multiplier is based only on the app's visible browser
-         viewport. Samsung S25 measured visual viewport = 724 CSS px = 1.000. */
+      /* V21.68: keep the established visible-height multiplier intact through
+         reference DPR 2.81. Above 2.81, apply the 60/40 accessibility blend so
+         higher Android display/font zoom is no longer almost fully cancelled by
+         the corresponding reduction in CSS viewport height. */
+      const viewportMultiplierV2168 = visualHeight / V189_S25_VISUAL_VIEWPORT_H;
       const multiplier = Math.max(
         0.70,
-        Math.min(1.30, visualHeight / V189_S25_VISUAL_VIEWPORT_H)
+        Math.min(
+          1.30,
+          applyDprAccessibilityScaleV2168(viewportMultiplierV2168, dpr)
+        )
       );
 
       return {
@@ -21428,7 +21462,13 @@ let scoreTimingDetail =
       const sy = stableStandaloneHeightV2066 > 0
         ? Math.max(
             0.70,
-            Math.min(1.30, stableStandaloneHeightV2066 / V189_S25_VISUAL_VIEWPORT_H)
+            Math.min(
+              1.30,
+              applyDprAccessibilityScaleV2168(
+                stableStandaloneHeightV2066 / V189_S25_VISUAL_VIEWPORT_H,
+                metricsV188.dpr
+              )
+            )
           )
         : metricsV188.multiplier;
 
