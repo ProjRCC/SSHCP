@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.69-J6V3QK | BUILD KEY: 21.70-G5R8VK -->
-<!-- SSHCP V21.70 GEEK FOOTER GAP ALIGNMENT - exact V21.69 donor.
-     Preserves V21.69 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
-     GEEK/GAME behavior, Tips & Tricks, Quick Guide, geometry rules, and presentation timing.
-     Only the accessibility blend changes: DPR values at or below the SSHCP reference DPR 2.81 retain
-     exact prior behavior; DPR values above 2.81 now use 40% of the existing viewport response and 60%
-     of the full DPR correction so Android accessibility zoom can enlarge the interface while retaining
-     responsive protection for the reduced CSS viewport. -->
+<!-- SSHCP | BASE KEY: 21.69-J6V3QK | BUILD KEY: 22.0-R8K4VX -->
+<!-- SSHCP V22.0 GLOBAL EFFECTIVE-HEIGHT GEOMETRY - exact V21.69 donor.
+     Replaces the experimental 40/60 DPR blend with one global VPH×DPR / 2034 multiplier (0.70 floor, no cap),
+     adds clean Scorecard/Leaderboard footer-gap row math, stepped GEEK 22X→14X viewport units, GAME rows at
+     110% of table-header height, and removes table-content font floors on the major data views. Preserves scoring,
+     authorization, audit, Worker/API, CC/SM, Tips & Tricks, Quick Guide, result math, and presentation timing.
+     Scorecard remains nine visible hole rows; Leaderboard remains up to eight visible team rows. GEEK and GAME
+     preserve row readability by reducing visible capacity instead of compressing their data rows. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -298,13 +298,13 @@
             Math.abs(v188PhysLong - 2340) <= 180;
           var v188ScreenLong = Math.max(v188ScreenW, v188ScreenH);
           var v189BootVisualH = Math.max(1, Number(window.visualViewport && window.visualViewport.height) || v16NowH);
-          /* V19.75 — viewport metadata now exists before this boot pass, so
-             first-paint shell width/height use the same CSS viewport as runtime.
-             Preserve the exact S25 physical-device baseline while other devices
-             continue using the established visual-viewport / 724 multiplier. */
-          var v188BootMultiplier = v188LikelyS25
-            ? 1.00
-            : Math.max(0.70, Math.min(1.30, v189BootVisualH / 724));
+          /* V22.0 — one global physical/readability scale from effective
+             viewport height. VPH × DPR keeps the same physical display stable
+             across Android system zoom while larger displays scale naturally.
+             2034 is the approved normal-Web reference; 0.70 is the tested floor.
+             There is intentionally no upper cap. */
+          var v220BootEffectiveHeight = v189BootVisualH * v188Dpr;
+          var v188BootMultiplier = Math.max(0.70, v220BootEffectiveHeight / 2034);
           var v188RoundY = function (value) {
             return Math.max(1, Math.round(value * v188BootMultiplier));
           };
@@ -325,8 +325,8 @@
               '--v16-nav-context-gap': v188RoundY(8.16),
               '--v16-context-h': v188RoundY(40),
               '--v16-context-table-gap': v188RoundY(8.16),
-              '--v16-score-table-footer-gap': v188RoundY(12.24),
-              '--v16-leader-table-footer-gap': v188RoundY(12.24),
+              '--v16-score-table-footer-gap': v188RoundY(12),
+              '--v16-leader-table-footer-gap': v188RoundY(12),
               '--v16-footer-h': v188RoundY(50),
               '--v16-bottom-gap': v188RoundY(12.24),
               '--v16-internal-gap': v16Px(28)
@@ -337,8 +337,8 @@
               ((bootV16Vars['--v16-internal-gap'] * 2) / 3);
           } else {
             bootV16Vars['--v16-footer-h'] = v188RoundY(50);
-            bootV16Vars['--v16-score-table-footer-gap'] = v188RoundY(12.24);
-            bootV16Vars['--v16-leader-table-footer-gap'] = v188RoundY(12.24);
+            bootV16Vars['--v16-score-table-footer-gap'] = v188RoundY(12);
+            bootV16Vars['--v16-leader-table-footer-gap'] = v188RoundY(12);
           }
 
           /* V19.0: Leaderboard footer uses the exact same 8px internal gap as
@@ -12231,6 +12231,35 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   line-height:1.18!important;
 }
 </style>
+
+<style id="sshcp-v220-global-geometry">
+/* V22.0 — final geometry overrides. GAME rows are 110% of rendered header
+   height; short viewports therefore show fewer complete rows instead of
+   compressing row typography. GEEK/GAME action spacing targets 12px×M. */
+.modal-overlay.game-mode-results-v2026 .game-mode-row-v2026.header{
+  height:var(--v188-skins-header-h,var(--v187-table-header-h,46px))!important;
+  min-height:var(--v188-skins-header-h,var(--v187-table-header-h,46px))!important;
+  max-height:var(--v188-skins-header-h,var(--v187-table-header-h,46px))!important;
+}
+.modal-overlay.game-mode-results-v2026 .game-mode-row-v2026:not(.header),
+.modal-overlay.game-mode-results-v2026 .game-mode-empty-v2026{
+  height:var(--v220-game-row-h,50.6px)!important;
+  min-height:var(--v220-game-row-h,50.6px)!important;
+  max-height:var(--v220-game-row-h,50.6px)!important;
+}
+.modal-overlay.game-mode-results-v2026 .skins-score-mark-v1627{
+  max-width:calc(var(--v220-game-row-h,50.6px) - 6px)!important;
+  max-height:calc(var(--v220-game-row-h,50.6px) - 6px)!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-actions{
+  margin-top:var(--v220-table-footer-gap,12px)!important;
+}
+/* Initial GEEK action gap. fitGeekRowsV180 may consume part of this target
+   when doing so buys the next whole-X row size while preserving half-target. */
+.modal-overlay.geek-mode-v180 .modal-actions{
+  margin-top:var(--v220-table-footer-gap,12px)!important;
+}
+</style>
 </head>
 
 
@@ -12365,7 +12394,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.70</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.0</span></span>
         </button>
 
       </div>
@@ -15740,20 +15769,11 @@ let scoreTimingDetail =
       const stableSvh = standalone ? getStandaloneSmallViewportHeightV2066() : 0;
 
       const viewScale = Math.max(
-        0.70,
-        Math.min(1.30, Number(metrics.multiplier) || 1)
+        V220_MIN_GLOBAL_MULTIPLIER,
+        Number(metrics.multiplier) || 1
       );
       const shellScale = stableSvh > 0
-        ? Math.max(
-            0.70,
-            Math.min(
-              1.30,
-              applyDprAccessibilityScaleV2169(
-                stableSvh / V189_S25_VISUAL_VIEWPORT_H,
-                metrics.dpr
-              )
-            )
-          )
+        ? globalViewportDprScaleV220(stableSvh, metrics.dpr)
         : viewScale;
       const sy = value => Math.max(1, Math.round(Number(value) * shellScale));
 
@@ -15785,7 +15805,7 @@ let scoreTimingDetail =
         context: sy(40),
         header: sy(46),
         footer: sy(50),
-        tableFooterGap: sy(12.24),
+        tableFooterGap: sy(12),
         bottomGap: sy(12.24),
         gutter: 16,
         scoreRow: Number.isFinite(Number(remembered.scoreRow))
@@ -20661,7 +20681,8 @@ let scoreTimingDetail =
       v5MeasureProbe.style.width = options.wrap ? availableWidth + 'px' : 'auto';
       v5MeasureProbe.style.lineHeight = String(options.lineHeight || 1);
 
-      let low = Math.max(5, minPx);
+      const noMinimumV220 = options && options.noMin === true;
+      let low = noMinimumV220 ? 0.001 : Math.max(5, minPx);
       let high = Math.max(low, maxPx);
       let best = low;
 
@@ -20730,7 +20751,8 @@ let scoreTimingDetail =
       v5MeasureProbe.style.width = 'auto';
       v5MeasureProbe.style.lineHeight = String(options.lineHeight || 1);
 
-      let low = Math.max(5, minPx);
+      const noMinimumV220 = options && options.noMin === true;
+      let low = noMinimumV220 ? 0.001 : Math.max(5, minPx);
       let high = Math.max(low, maxPx);
       let best = low;
 
@@ -21096,25 +21118,22 @@ let scoreTimingDetail =
     const V188_S25_PHYSICAL_W = 1080;
     const V188_S25_PHYSICAL_H = 2340;
     const V188_S25_SCREEN_CSS_FALLBACK_H = 832;
-    const V189_S25_VISUAL_VIEWPORT_H = 724;
 
-    /* V21.69 — accessibility-aware DPR correction. The app was authored and
-       validated at reference DPR 2.81. Preserve every existing multiplier at
-       or below that reference. Above it, blend 40% of the existing viewport
-       response with 60% of the full DPR correction. */
-    const V2169_REFERENCE_DPR = 2.81;
-    const V2169_DPR_WEIGHT = 0.60;
+    /* V22.0 — global display scale. The approved normal-Web reference is
+       2034 effective vertical pixels (724 CSS px × DPR 2.81 ≈ 2034).
+       The global multiplier is VPH × DPR / 2034, with a tested 0.70 floor and
+       intentionally no upper cap. This is device-agnostic: iPad and Android
+       system zoom resolve naturally from the same relationship. */
+    const V220_EFFECTIVE_HEIGHT_BASELINE = 2034;
+    const V220_MIN_GLOBAL_MULTIPLIER = 0.70;
 
-    function dprAccessibilityBoostV2169(dprValue) {
+    function globalViewportDprScaleV220(viewportHeightValue, dprValue) {
+      const viewportHeight = Math.max(1, Number(viewportHeightValue) || 1);
       const dpr = Math.max(0.1, Number(dprValue) || 1);
-      if (dpr <= V2169_REFERENCE_DPR) return 1;
-      return (1 - V2169_DPR_WEIGHT) +
-        (V2169_DPR_WEIGHT * (dpr / V2169_REFERENCE_DPR));
-    }
-
-    function applyDprAccessibilityScaleV2169(baseScale, dprValue) {
-      const base = Number(baseScale) || 1;
-      return base * dprAccessibilityBoostV2169(dprValue);
+      return Math.max(
+        V220_MIN_GLOBAL_MULTIPLIER,
+        (viewportHeight * dpr) / V220_EFFECTIVE_HEIGHT_BASELINE
+      );
     }
 
     /* SSHCP V20.66 — JS companion to the standalone 100svh CSS above.
@@ -21182,18 +21201,11 @@ let scoreTimingDetail =
       }
       if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
 
-      /* V21.69: keep the established visible-height multiplier intact through
-         reference DPR 2.81. Above 2.81, apply the 40/60 accessibility blend so
-         higher Android display/font zoom is no longer almost fully cancelled by
-         the corresponding reduction in CSS viewport height. */
-      const viewportMultiplierV2169 = visualHeight / V189_S25_VISUAL_VIEWPORT_H;
-      const multiplier = Math.max(
-        0.70,
-        Math.min(
-          1.30,
-          applyDprAccessibilityScaleV2169(viewportMultiplierV2169, dpr)
-        )
-      );
+      /* V22.0 — global VPH × DPR scale. Shortened browser height remains real
+         layout capacity, while Android system zoom no longer masquerades as a
+         physically smaller device. */
+      const effectiveHeightV220 = visualHeight * dpr;
+      const multiplier = globalViewportDprScaleV220(visualHeight, dpr);
 
       return {
         innerWidth,
@@ -21208,6 +21220,8 @@ let scoreTimingDetail =
         physicalLong,
         isS25,
         s25ScreenLong,
+        effectiveHeight: effectiveHeightV220,
+        effectiveRatio: effectiveHeightV220 / V220_EFFECTIVE_HEIGHT_BASELINE,
         multiplier
       };
     }
@@ -21215,8 +21229,8 @@ let scoreTimingDetail =
     /* SSHCP V20.77 — Quick Guide TEXT only.
        Preserve the V20.74 device multiplier at the low end, but progressively
        add more typography scale as the display grows so a modest 1.08 device
-       multiplier remains near 1.09 while the established 1.30 tablet cap still
-       reaches the accepted 1.45 Quick Guide text target. Geometry is untouched.
+       multiplier remains near 1.09 while the larger display multipliers can continue growing naturally; Quick Guide
+       retains its existing nonlinear text treatment above 1.00. Geometry is untouched.
        Formula above 1.00:
        deviceMultiplier + 0.5 * (((deviceMultiplier - 1) ** 2) / 0.30).
        Multipliers at or below 1.00 retain V20.74 behavior unchanged. */
@@ -21244,7 +21258,12 @@ let scoreTimingDetail =
         skinsFont: scaled(19),
         skinsMark: scaled(25.84),
         mainButton: scaled(50),
+        tableFooterGap: Math.max(1, 12 * metrics.multiplier),
       };
+      /* V22.0 — GAME MODE data rows are exactly 110% of the rendered table
+         header height. This preserves row readability and lets a short viewport
+         reveal fewer rows instead of crushing them. */
+      values.gameRow = Math.max(1, values.skinsHeader * 1.10);
       const root = document.documentElement.style;
       root.setProperty('--v187-table-header-h', values.tableHeader + 'px');
       root.setProperty('--v188-skins-header-h', values.skinsHeader + 'px');
@@ -21253,13 +21272,15 @@ let scoreTimingDetail =
       root.setProperty('--v187-skins-font-h', values.skinsFont + 'px');
       root.setProperty('--v187-skins-mark-h', values.skinsMark + 'px');
       root.setProperty('--v187-main-button-h', values.mainButton + 'px');
+      root.setProperty('--v220-game-row-h', values.gameRow.toFixed(3) + 'px');
+      root.setProperty('--v220-table-footer-gap', values.tableFooterGap.toFixed(3) + 'px');
       root.setProperty('--v1810-popup-top-inset', scaled(12) + 'px');
       root.setProperty('--v1852-home-event-font', (15.5 * metrics.multiplier).toFixed(3) + 'px');
       root.setProperty('--v1852-home-version-font', (14.5 * metrics.multiplier).toFixed(3) + 'px');
 
       /* V20.74 — HOME utility / Quick Guide responsive scale.
          Reuse the exact established S25 vertical device multiplier (724 CSS px
-         visible-height baseline, clamped 0.70..1.30). S25 therefore preserves
+         global VPH×DPR multiplier with a 0.70 floor). S25 therefore preserves
          the approved 1.000 geometry while taller tablet viewports can grow the
          hamburger, content-driven HOME drawer, and complete Quick Guide as one
          coherent system. Anchors/navigation behavior are unchanged. */
@@ -21339,7 +21360,7 @@ let scoreTimingDetail =
       setV2074Px('--v2074-qg-button-radius', 9);
 
       /* V19.7 HOME: S25 Chrome 384x724 is the 1.000 baseline. Vertical
-         constants use the established viewport multiplier (0.70..1.30).
+         constants use the global VPH×DPR multiplier (0.70 floor; no upper cap).
          Horizontal constants scale from 384 CSS px and stop growing at 1.50x. */
       const homeV = metrics.multiplier;
       const homeH = Math.max(0.70, Math.min(1.50, metrics.visualWidth / 384));
@@ -21413,6 +21434,91 @@ let scoreTimingDetail =
       );
     }
 
+    /* V22.0 — whole-pixel table geometry. Start from the preferred 12px×M
+       table-to-button gap. Scorecard may grow to the next clean 9-row multiple
+       only while at least half the target gap survives; otherwise it drops one
+       row-size step. Leaderboard then aims within ±2px of the Scorecard's actual
+       gap while preserving its own whole-row geometry. */
+    function chooseEqualRowGeometryV220(availableDataPixels, rowCount, targetGap) {
+      const count = Math.max(1, Math.floor(Number(rowCount) || 1));
+      const available = Math.max(count, Math.round(Number(availableDataPixels) || count));
+      const target = Math.max(0, Number(targetGap) || 0);
+      const minimumGap = target * 0.50;
+      const upRowsHeight = Math.ceil(available / count) * count;
+      const upGap = target + available - upRowsHeight;
+      let rowsHeight;
+      if (upGap + 0.001 >= minimumGap) {
+        rowsHeight = upRowsHeight;
+      } else {
+        rowsHeight = Math.max(count, Math.floor(available / count) * count);
+      }
+      const gap = Math.max(0, target + available - rowsHeight);
+      return {
+        rowHeight: Math.max(1, rowsHeight / count),
+        rowsHeight,
+        gap,
+        targetGap: target,
+        minimumGap
+      };
+    }
+
+    function chooseLeaderboardRowGeometryV220(availableDataPixels, rowCount, targetGap, scoreGap) {
+      const count = Math.max(1, Math.floor(Number(rowCount) || 1));
+      const available = Math.max(count, Math.round(Number(availableDataPixels) || count));
+      const target = Math.max(0, Number(targetGap) || 0);
+      const anchor = Number.isFinite(Number(scoreGap)) ? Math.max(0, Number(scoreGap)) : target;
+      const minimumGap = target * 0.50;
+      const totalBudget = available + target;
+      const ideal = (totalBudget - anchor) / count;
+      const seeds = new Set();
+      const baseFloor = Math.floor(ideal);
+      const baseCeil = Math.ceil(ideal);
+      for (let delta = -3; delta <= 3; delta++) {
+        seeds.add(Math.max(1, baseFloor + delta));
+        seeds.add(Math.max(1, baseCeil + delta));
+      }
+      const candidates = [...seeds].map(rowHeight => {
+        const rowsHeight = rowHeight * count;
+        const gap = totalBudget - rowsHeight;
+        return {
+          rowHeight,
+          rowsHeight,
+          gap,
+          inBand: gap >= (anchor - 2) - 0.001 && gap <= (anchor + 2) + 0.001,
+          distance: Math.abs(gap - anchor)
+        };
+      }).filter(item => item.gap + 0.001 >= minimumGap);
+
+      if (!candidates.length) {
+        return chooseEqualRowGeometryV220(available, count, target);
+      }
+      candidates.sort((a, b) =>
+        (Number(b.inBand) - Number(a.inBand)) ||
+        (a.distance - b.distance) ||
+        (b.rowHeight - a.rowHeight)
+      );
+      return {
+        ...candidates[0],
+        targetGap: target,
+        minimumGap,
+        anchorGap: anchor
+      };
+    }
+
+    function geekViewportUnitsV220(metricsValue) {
+      const metrics = metricsValue || getVerticalMetricsV188();
+      const effectiveHeight = Math.max(
+        0,
+        Number(metrics.effectiveHeight) || ((Number(metrics.visualHeight) || 0) * (Number(metrics.dpr) || 1))
+      );
+      const ratio = effectiveHeight / V220_EFFECTIVE_HEIGHT_BASELINE;
+      if (ratio < 0.80) return 14;
+      if (ratio < 0.85) return 16;
+      if (ratio < 0.90) return 18;
+      if (ratio < 0.95) return 20;
+      return 22;
+    }
+
     function distributeWeightedPixelsV188(totalPixels, weights) {
       const safeWeights = (Array.isArray(weights) ? weights : [])
         .map(value => Math.max(0, Number(value) || 0));
@@ -21460,16 +21566,7 @@ let scoreTimingDetail =
       const sx = Math.max(0.38, Math.min(1.00, width / 756));
       const metricsV188 = getVerticalMetricsV188();
       const sy = stableStandaloneHeightV2066 > 0
-        ? Math.max(
-            0.70,
-            Math.min(
-              1.30,
-              applyDprAccessibilityScaleV2169(
-                stableStandaloneHeightV2066 / V189_S25_VISUAL_VIEWPORT_H,
-                metricsV188.dpr
-              )
-            )
-          )
+        ? globalViewportDprScaleV220(stableStandaloneHeightV2066, metricsV188.dpr)
         : metricsV188.multiplier;
 
       const px = value => Math.max(1, value * sx);
@@ -21493,8 +21590,8 @@ let scoreTimingDetail =
         '--v16-nav-context-gap': py(8.16),
         '--v16-context-h': py(40),
         '--v16-context-table-gap': py(8.16),
-        '--v16-score-table-footer-gap': py(12.24),
-        '--v16-leader-table-footer-gap': py(12.24),
+        '--v16-score-table-footer-gap': py(12),
+        '--v16-leader-table-footer-gap': py(12),
         '--v16-footer-h': py(50),
         '--v16-bottom-gap': py(12.24),
         '--v16-internal-gap': px(28)
@@ -21616,11 +21713,11 @@ let scoreTimingDetail =
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
 
-      /* SSHCP V21.03 — Scorecard keeps exactly nine equal whole-pixel rows,
-         but no longer always floors them. The <=8-team Leaderboard owns the
-         visual table-to-button gap target. Scorecard picks the whole-pixel row
-         height that lands closest to that target; before Leaderboard has been
-         measured, its normal shell gap is the target. Buttons stay fixed. */
+      /* SSHCP V22.0 — Scorecard is the visual spacing anchor. Begin with the
+         preferred 12px×global-multiplier footer gap, then let the nine-row table
+         consume only enough of that buffer to reach the next clean whole-pixel
+         row size. If that would leave less than half the target gap, drop one
+         row-size step instead. Exactly nine equal rows remain visible. */
       const scoreViewportHeightV2094 = Math.max(
         9,
         Math.round(els.scoreScroll.clientHeight || 0)
@@ -21629,23 +21726,15 @@ let scoreTimingDetail =
         0,
         Number(geometry.vars && geometry.vars['--v16-score-table-footer-gap']) || 0
       );
-      const nominalLeaderGapV2103 = Math.max(
-        0,
-        Number(geometry.vars && geometry.vars['--v16-leader-table-footer-gap']) || baseFooterGapV2094
+      const scoreGeometryV220 = chooseEqualRowGeometryV220(
+        scoreViewportHeightV2094,
+        9,
+        baseFooterGapV2094
       );
-      const measuredLeaderGapV2103 = Number(window.SSHCP_LEADER_FOOTER_TARGET_GAP_V2103);
-      const targetFooterGapV2103 = Number.isFinite(measuredLeaderGapV2103)
-        ? Math.max(0, measuredLeaderGapV2103)
-        : nominalLeaderGapV2103;
-      const idealScoreRowHeightV2103 = (
-        scoreViewportHeightV2094 + baseFooterGapV2094 - targetFooterGapV2103
-      ) / 9;
-      const rowHeight = Math.max(1, Math.round(idealScoreRowHeightV2103));
-      const rowsHeightV2094 = rowHeight * 9;
-      const scoreFooterGapV2103 = Math.max(
-        0,
-        baseFooterGapV2094 + scoreViewportHeightV2094 - rowsHeightV2094
-      );
+      const rowHeight = scoreGeometryV220.rowHeight;
+      const rowsHeightV2094 = scoreGeometryV220.rowsHeight;
+      const scoreFooterGapV2103 = scoreGeometryV220.gap;
+      window.SSHCP_SCORE_FOOTER_GAP_V220 = scoreFooterGapV2103;
       const scoreScrollChromeV2094 = Math.max(
         0,
         Math.round(els.scoreScroll.getBoundingClientRect().height - els.scoreScroll.clientHeight)
@@ -21723,9 +21812,10 @@ let scoreTimingDetail =
 
       Array.from(header.children).forEach((cell, index) => {
         if (index < 3) {
-          fitTextToBoxV5(cell, cell, headerHeight * 0.375, 12, {
+          fitTextToBoxV5(cell, cell, headerHeight * 0.375, 0.001, {
             horizontalPad: 8,
-            verticalPad: 4
+            verticalPad: 4,
+            noMin: true
           });
         }
       });
@@ -21739,9 +21829,10 @@ let scoreTimingDetail =
         const parts = Array.from(running.children);
 
         if (parts[1]) {
-          fitTextToBoxV5(parts[1], parts[1], headerHeight * 0.375, 9, {
+          fitTextToBoxV5(parts[1], parts[1], headerHeight * 0.375, 0.001, {
             horizontalPad: 10,
-            verticalPad: 4
+            verticalPad: 4,
+            noMin: true
           });
         }
 
@@ -21767,8 +21858,8 @@ let scoreTimingDetail =
         els.scorecardView.style.setProperty('--v1855-running-box-h', boxHeight + 'px');
         els.scorecardView.style.setProperty('--v1855-running-box-radius', boxRadius + 'px');
 
-        const fontMax = Math.max(10, boxHeight * 0.60);
-        const fontMin = 7;
+        const fontMax = Math.max(0.001, boxHeight * 0.60);
+        const fontMin = 0.001;
         const sharedSamples = ['-10', '+10'];
         if (parts[0] && String(parts[0].textContent || '').trim()) sharedSamples.push(String(parts[0].textContent || '').trim());
         if (parts[2] && String(parts[2].textContent || '').trim()) sharedSamples.push(String(parts[2].textContent || '').trim());
@@ -21782,7 +21873,8 @@ let scoreTimingDetail =
               measureTextFitFontSizeV1856(target, sample, fontMax, fontMin, {
                 horizontalPad: Math.max(5, target.clientWidth * 0.12),
                 verticalPad: Math.max(3, target.clientHeight * 0.14),
-                lineHeight: 1
+                lineHeight: 1,
+                noMin: true
               })
             );
           });
@@ -21807,10 +21899,10 @@ let scoreTimingDetail =
         const yards = row.querySelector('.yardage-cell');
         const button = row.querySelector('.score-button');
 
-        if (holeCell && hole) fitTextToBoxV5(holeCell, hole, rowHeight * 0.50, 13, {horizontalPad:8,verticalPad:6});
-        if (par) fitTextToBoxV5(par, par, rowHeight * 0.40, 12, {horizontalPad:8,verticalPad:6});
-        if (yards) fitTextToBoxV5(yards, yards, rowHeight * 0.40, 11, {horizontalPad:8,verticalPad:6});
-        if (button) fitTextToBoxV5(button, button, scoreBox * 0.68, 13, {horizontalPad:4,verticalPad:4});
+        if (holeCell && hole) fitTextToBoxV5(holeCell, hole, rowHeight * 0.50, 0.001, {horizontalPad:8,verticalPad:6,noMin:true});
+        if (par) fitTextToBoxV5(par, par, rowHeight * 0.40, 0.001, {horizontalPad:8,verticalPad:6,noMin:true});
+        if (yards) fitTextToBoxV5(yards, yards, rowHeight * 0.40, 0.001, {horizontalPad:8,verticalPad:6,noMin:true});
+        if (button) fitTextToBoxV5(button, button, scoreBox * 0.68, 0.001, {horizontalPad:4,verticalPad:4,noMin:true});
       });
 
       const footerButton = els.scorecardView.querySelector('.score-bottom-actions .leaderboard-button');
@@ -24509,11 +24601,12 @@ let scoreTimingDetail =
         /* V20.0 — Summary header is one line across all four columns. NET is
            intentionally score-only, so it uses the same shared header fitter. */
         Array.from(header.children).forEach(cell => {
-          fitTextToBoxV5(cell, cell, cell.clientHeight * 0.38, 10, {
+          fitTextToBoxV5(cell, cell, cell.clientHeight * 0.38, 0.001, {
             horizontalPad: 6,
             verticalPad: 4,
             wrap: false,
-            lineHeight: 1
+            lineHeight: 1,
+            noMin: true
           });
         });
       }
@@ -24552,8 +24645,8 @@ let scoreTimingDetail =
             net,
             net,
             row.clientHeight * podiumNetRatiosV1998[index],
-            12,
-            { horizontalPad: 6, verticalPad: 5 }
+            0.001,
+            { horizontalPad: 6, verticalPad: 5, noMin: true }
           );
         }
 
@@ -24570,7 +24663,8 @@ let scoreTimingDetail =
               horizontalPad: 4,
               verticalPad: 5,
               wrap: false,
-              lineHeight: 1
+              lineHeight: 1,
+              noMin: true
             }
           );
         }
@@ -24583,9 +24677,10 @@ let scoreTimingDetail =
       const fitUniform = (cells, ratio, minimum, pad=6) => {
         let chosen = Infinity;
         cells.forEach(cell => {
-          chosen = Math.min(chosen, fitTextToBoxV5(cell, cell, cell.clientHeight * ratio, minimum, {
+          chosen = Math.min(chosen, fitTextToBoxV5(cell, cell, cell.clientHeight * ratio, 0.001, {
             horizontalPad: pad,
-            verticalPad: 5
+            verticalPad: 5,
+            noMin: true
           }));
         });
         if (Number.isFinite(chosen)) {
@@ -24627,7 +24722,8 @@ let scoreTimingDetail =
             horizontalPad: 4,
             verticalPad: 5,
             wrap: false,
-            lineHeight: 1
+            lineHeight: 1,
+            noMin: true
           }
         );
       });
@@ -25909,26 +26005,28 @@ let scoreTimingDetail =
             statLabel,
             h,
             h * 0.40,
-            8,
+            0.001,
             38
           );
           statCell.style.setProperty('text-align', 'left', 'important');
           statLabel.style.setProperty('text-align', 'left', 'important');
         }
         if (us) {
-          fitTextToBoxV5(us, us, h * 0.45, 8, {
+          fitTextToBoxV5(us, us, h * 0.45, 0.001, {
             horizontalPad: 8,
             verticalPad: 4,
             wrap: false,
-            lineHeight: 1
+            lineHeight: 1,
+            noMin: true
           });
         }
         if (all) {
-          fitTextToBoxV5(all, all, h * 0.45, 8, {
+          fitTextToBoxV5(all, all, h * 0.45, 0.001, {
             horizontalPad: 8,
             verticalPad: 4,
             wrap: false,
-            lineHeight: 1
+            lineHeight: 1,
+            noMin: true
           });
         }
         if (team) {
@@ -25960,11 +26058,12 @@ let scoreTimingDetail =
         const h = row ? (row.getBoundingClientRect().height || rowHeight) : rowHeight;
         /* V19.0: category labels are intentionally bold and target 80% of the
            compact 1X category row, shrinking only when width requires it. */
-        fitTextToBoxV5(cell, cell, h * 0.80, 8, {
+        fitTextToBoxV5(cell, cell, h * 0.80, 0.001, {
           horizontalPad: 12,
           verticalPad: 2,
           wrap: false,
-          lineHeight: 1
+          lineHeight: 1,
+          noMin: true
         });
       });
 
@@ -25977,11 +26076,12 @@ let scoreTimingDetail =
          essentially the same visual size, shrinking together only if needed. */
       let sharedHeaderSize = headerH * 0.50;
       headerCells.forEach(cell => {
-        const fitted = fitTextToBoxV5(cell, cell, headerH * 0.50, 8, {
+        const fitted = fitTextToBoxV5(cell, cell, headerH * 0.50, 0.001, {
           horizontalPad: 10,
           verticalPad: 4,
           wrap: false,
-          lineHeight: 1
+          lineHeight: 1,
+          noMin: true
         });
         sharedHeaderSize = Math.min(sharedHeaderSize, fitted);
       });
@@ -26024,28 +26124,40 @@ let scoreTimingDetail =
         ? scrollViewport.getBoundingClientRect().height
         : 0;
 
-      /* SSHCP V21.70 — preserve the established 22-unit GEEK viewport and
-         whole-pixel X unit, but keep the table shell at the full available height.
-         Older V20.97 logic moved the 22-unit rounding remainder outside the table,
-         creating a variable extra gap above BACK / FILTERS. The fixed action margin
-         now owns that visual gap, matching the Scorecard / Leaderboard rhythm more
-         closely while row sizing and scrolling remain unchanged. */
+      /* SSHCP V22.0 — GEEK viewport capacity is quantized by effective-display
+         size, not by squeezing the rows. 2034 effective px is the 22X reference.
+         Every additional 5% drop removes 2X, capped at 22X and floored at 14X:
+         22X / 20X / 18X / 16X / 14X. X remains a whole CSS pixel. Start from
+         the same 12px×M gap target and let the table consume that gap only down
+         to half-target; otherwise use the next smaller X. Leftover pixels stay
+         OUTSIDE the table, so a partial next stat row can never appear. */
       const geekMainV2097 = shell.closest('.geek-main-v180');
       const availableShellHeightV2097 = geekMainV2097
         ? geekMainV2097.getBoundingClientRect().height
         : height;
       const shellDeltaV2097 = availableShellHeightV2097 - height;
+      const targetUnitsV220 = geekViewportUnitsV220(sharedV187.metrics);
+      const targetGapV220 = Math.max(1, 12 * sharedV187.multiplier);
       const availableDataPixelsV2097 = Math.max(
-        22 * 9,
+        targetUnitsV220,
         measuredViewportHeight > 0
           ? (measuredViewportHeight + shellDeltaV2097)
           : (availableShellHeightV2097 - headerHeight)
       );
-      const xUnit = Math.max(1, Math.floor(availableDataPixelsV2097 / 22));
+      const xFloorV220 = Math.max(1, Math.floor(availableDataPixelsV2097 / targetUnitsV220));
+      const xCeilV220 = Math.max(1, Math.ceil(availableDataPixelsV2097 / targetUnitsV220));
+      const ceilExtraV220 = (xCeilV220 * targetUnitsV220) - availableDataPixelsV2097;
+      const xUnit = (targetGapV220 - ceilExtraV220) + 0.001 >= (targetGapV220 * 0.50)
+        ? xCeilV220
+        : xFloorV220;
       const categoryHeight = xUnit;
       const statHeight = xUnit * 2;
-      const exactShellHeightV2097 = Math.max(1, availableShellHeightV2097);
+      const usedDataPixelsV2097 = xUnit * targetUnitsV220;
+      const actualGapV220 = Math.max(0, targetGapV220 + availableDataPixelsV2097 - usedDataPixelsV2097);
+      const exactShellHeightV2097 = Math.max(1, headerHeight + usedDataPixelsV2097);
       const exactShellValueV2097 = exactShellHeightV2097 + 'px';
+      shell.style.setProperty('--geek-visible-units-v220', String(targetUnitsV220));
+      els.modalActions.style.setProperty('margin-top', actualGapV220.toFixed(3) + 'px', 'important');
 
       shell.style.setProperty('flex', '0 0 ' + exactShellValueV2097, 'important');
       shell.style.setProperty('height', exactShellValueV2097, 'important');
@@ -26991,7 +27103,7 @@ let scoreTimingDetail =
 
       const rows = els.modalBody.querySelectorAll('.skins-row-v1627:not(.header)');
       rows.forEach(row => {
-        const rowH = row.getBoundingClientRect().height || sharedV187.skinsRow;
+        const rowH = row.getBoundingClientRect().height || sharedV187.gameRow;
         const teamCell = row.querySelector('.skins-team-v1627');
         const holeCell = row.querySelector('.skins-hole-v1627');
         const emptyCell = row.querySelector('.skins-no-skins-cell-v187');
@@ -27210,14 +27322,14 @@ let scoreTimingDetail =
           const target = cell.classList.contains('game-mode-group-label-v2036')
             ? rowH * 0.50
             : rowH * 0.38;
-          fitTextToBoxV5(cell, cell, target, 8, {
-            horizontalPad:8, verticalPad:4, wrap:false, lineHeight:1
+          fitTextToBoxV5(cell, cell, target, 0.001, {
+            horizontalPad:8, verticalPad:4, wrap:false, lineHeight:1, noMin:true
           });
         });
       });
 
       els.modalBody.querySelectorAll('.game-mode-row-v2026.skins:not(.header)').forEach(row => {
-        const rowH = row.getBoundingClientRect().height || sharedV187.skinsRow;
+        const rowH = row.getBoundingClientRect().height || sharedV187.gameRow;
         const team = row.querySelector('.game-mode-skins-team-v2027');
         const cells = row.querySelectorAll('.game-mode-cell-v2026');
         const hole = cells.length > 1 ? cells[1] : null;
@@ -27240,6 +27352,14 @@ let scoreTimingDetail =
             fitIntactSingleLineV2027(winner, winner, rowH * 0.40, 10, 1);
           }
         }
+      });
+
+      els.modalBody.querySelectorAll('.game-mode-empty-v2026').forEach(cell => {
+        const row = cell.closest('.game-mode-row-v2026') || cell;
+        const rowH = row.getBoundingClientRect().height || sharedV187.gameRow;
+        fitTextToBoxV5(cell, cell, rowH * 0.42, 0.001, {
+          horizontalPad:10, verticalPad:5, wrap:false, lineHeight:1, noMin:true
+        });
       });
 
       const back = els.modalActions.querySelector('.modal-btn');
@@ -28162,7 +28282,7 @@ let scoreTimingDetail =
       const availableWidth = Math.max(1, container.clientWidth - horizontalPad);
       const availableHeight = Math.max(1, container.clientHeight - verticalPad);
       const lineHeight = Number(options.lineHeight || 1);
-      const minimum = Math.max(5, Number(minSize) || 8);
+      const minimum = Math.max(0.001, Number(minSize) || 0.001);
       const target = Math.max(minimum, Number(targetSize) || minimum);
 
       let size = fitTextToBoxV5(
@@ -28392,12 +28512,11 @@ let scoreTimingDetail =
         }
       }
 
-      /* Absolute safety fallback: preserve the complete word(s), never a
-         character prefix. If the normal 8px minimum is still too wide, reduce
-         only as far as necessary (floor 5px) to keep the label intact. */
+      /* V22.0 — no absolute font floor in GEEK table content. Preserve the
+         complete label and reduce only as far as geometry requires. */
       const minWidth = measureTeamLineWidthV58(textEl, original, minimum);
       const emergencySize = minWidth > availableWidth && minWidth > 0
-        ? Math.max(5, minimum * (availableWidth / minWidth) * 0.985)
+        ? Math.max(Number.EPSILON, minimum * (availableWidth / minWidth) * 0.985)
         : minimum;
       applyLines([original], emergencySize);
       return { size:emergencySize, truncated:false, lines:1 };
@@ -28563,7 +28682,7 @@ let scoreTimingDetail =
           target,
           headerHeight * 0.38,
           8,
-          { horizontalPad: 6, verticalPad: 4 }
+          { horizontalPad: 6, verticalPad: 4, noMin: true }
         );
       });
 
@@ -28579,28 +28698,31 @@ let scoreTimingDetail =
         const total = row.querySelector('.leader-total');
 
         /* Every row-driven label starts from its approved row-height target.
-           Minimums are only the final safeguard on extreme compression. */
+           V22.0 removes absolute font floors: row geometry always wins. */
         if (place) {
           const placeNumber = place.querySelector('.leader-place-number');
-          fitTextToBoxV5(place, placeNumber || place, rowHeight * 0.34, 8, {
+          fitTextToBoxV5(place, placeNumber || place, rowHeight * 0.34, 0.001, {
             horizontalPad: 6,
-            verticalPad: 5
+            verticalPad: 5,
+            noMin: true
           });
         }
 
         if (hcp) {
-          fitTextToBoxV5(hcp, hcp, rowHeight * 0.24, 8, {
+          fitTextToBoxV5(hcp, hcp, rowHeight * 0.24, 0.001, {
             horizontalPad: 4,
-            verticalPad: 5
+            verticalPad: 5,
+            noMin: true
           });
         }
 
         fitLeaderboardTeamV55(teamCell, teamAnchor, team, rowHeight);
 
         if (total) {
-          fitTextToBoxV5(total, total, rowHeight * 0.70, 11, {
+          fitTextToBoxV5(total, total, rowHeight * 0.70, 0.001, {
             horizontalPad: 6,
-            verticalPad: 4
+            verticalPad: 4,
+            noMin: true
           });
         }
 
@@ -28708,12 +28830,16 @@ let scoreTimingDetail =
         );
 
         if (shortLeaderboardV2093) {
-          rowHeight = Math.max(1, Math.round(actualViewportHeight / rowCount));
-          const rowsHeightV2093 = rowHeight * rowCount;
-          const leaderFooterGapV2103 = Math.max(
-            0,
-            baseFooterGapV2093 + actualViewportHeight - rowsHeightV2093
+          const scoreGapV220 = Number(window.SSHCP_SCORE_FOOTER_GAP_V220);
+          const leaderGeometryV220 = chooseLeaderboardRowGeometryV220(
+            actualViewportHeight,
+            rowCount,
+            baseFooterGapV2093,
+            scoreGapV220
           );
+          rowHeight = leaderGeometryV220.rowHeight;
+          const rowsHeightV2093 = leaderGeometryV220.rowsHeight;
+          const leaderFooterGapV2103 = leaderGeometryV220.gap;
           const contentChromeV2093 = Math.max(
             0,
             Math.round(els.leaderContent.getBoundingClientRect().height - els.leaderContent.clientHeight)
@@ -28722,11 +28848,11 @@ let scoreTimingDetail =
 
           leaderRowPixelsV188 = Array(rowCount).fill(rowHeight);
           window.SSHCP_LEADER_FOOTER_TARGET_GAP_V2103 = leaderFooterGapV2103;
+          window.SSHCP_LEADER_FOOTER_GAP_V220 = leaderFooterGapV2103;
 
-          /* V21.03: nearest-integer rows may make the table a few pixels shorter
-             OR taller than the flexible viewport. The footer gap absorbs the
-             opposite delta so the fixed buttons never move. The resulting
-             Leaderboard gap is the target used by the nine-row Scorecard. */
+          /* V22.0: Scorecard and Leaderboard are adjacent screens, so the <=8
+             team table chooses the clean whole-row geometry closest to the
+             Scorecard's actual gap (±2px when the row multiple permits). */
           els.leaderContent.style.setProperty('flex', '0 0 ' + contentOuterHeightV2093 + 'px', 'important');
           els.leaderContent.style.setProperty('height', contentOuterHeightV2093 + 'px', 'important');
           els.leaderContent.style.setProperty('min-height', contentOuterHeightV2093 + 'px', 'important');
