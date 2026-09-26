@@ -1,11 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.69-J6V3QK | BUILD KEY: 22.0-R8K4VX -->
-<!-- SSHCP V22.0 GLOBAL EFFECTIVE-HEIGHT GEOMETRY - exact V21.69 donor.
-     Replaces the experimental 40/60 DPR blend with one global VPH×DPR / 2034 multiplier (0.70 floor, no cap),
-     adds clean Scorecard/Leaderboard footer-gap row math, stepped GEEK 22X→14X viewport units, GAME rows at
-     110% of table-header height, and removes table-content font floors on the major data views. Preserves scoring,
-     authorization, audit, Worker/API, CC/SM, Tips & Tricks, Quick Guide, result math, and presentation timing.
-     Scorecard remains nine visible hole rows; Leaderboard remains up to eight visible team rows. GEEK and GAME
-     preserve row readability by reducing visible capacity instead of compressing their data rows. -->
+<!-- SSHCP | BASE KEY: 22.0-R8K4VX | BUILD KEY: 22.1-K5N8QW -->
+<!-- SSHCP V22.1 GLOBAL TEXT / POPUP CONSISTENCY - exact V22.0 donor.
+     Keeps V22.0 scoring, authorization, audit, Worker/API, CC/SM, row math and result logic unchanged.
+     Tightens GEEK capacity sooner below the 2034 effective-height reference, makes Quick Guide text use the exact
+     global VPH×DPR multiplier, gives the score-entry popup multiplier-based typography/geometry instead of dVH
+     compression, scales major non-table after-play header text from the same multiplier, and adds a small vertical
+     safety margin to GAME Mode team-name fitting. Table-content fonts remain row-height driven with no hard floor. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -305,6 +304,7 @@
              There is intentionally no upper cap. */
           var v220BootEffectiveHeight = v189BootVisualH * v188Dpr;
           var v188BootMultiplier = Math.max(0.70, v220BootEffectiveHeight / 2034);
+          document.documentElement.style.setProperty('--v221-global-scale', v188BootMultiplier.toFixed(5));
           var v188RoundY = function (value) {
             return Math.max(1, Math.round(value * v188BootMultiplier));
           };
@@ -12260,6 +12260,111 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   margin-top:var(--v220-table-footer-gap,12px)!important;
 }
 </style>
+
+<style id="sshcp-v221-global-text-popup-scale">
+/* V22.1 — non-table presentation typography follows the same global
+   VPH×DPR multiplier used by the shell. Result/table cell typography remains
+   row-height driven and is intentionally excluded from this block. */
+:root{--v221-global-scale:1;}
+
+/* Score-entry popup: replace dVH-dependent compression with one multiplier
+   family. At S25 724×2.81 and 631×3.19 the scale is ~1.00 in both cases, so
+   the card and controls remain visually the same size while the shorter shell
+   simply provides less surrounding viewport. */
+.score-entry-box{
+  width:min(calc(420px * var(--v221-global-scale,1)),calc(100% - 4px))!important;
+  padding:calc(28px * var(--v221-global-scale,1)) calc(24px * var(--v221-global-scale,1)) calc(22px * var(--v221-global-scale,1))!important;
+  border-radius:calc(18px * var(--v221-global-scale,1))!important;
+}
+.score-entry-cancel{
+  top:calc(8px * var(--v221-global-scale,1))!important;
+  right:calc(10px * var(--v221-global-scale,1))!important;
+  width:calc(34px * var(--v221-global-scale,1))!important;
+  height:calc(34px * var(--v221-global-scale,1))!important;
+  font-size:calc(27px * var(--v221-global-scale,1))!important;
+  line-height:calc(34px * var(--v221-global-scale,1))!important;
+}
+.score-entry-hole{font-size:calc(28px * var(--v221-global-scale,1))!important;}
+.score-entry-par{
+  margin-top:calc(2px * var(--v221-global-scale,1))!important;
+  font-size:calc(20px * var(--v221-global-scale,1))!important;
+}
+.score-entry-input{
+  width:min(calc(158px * var(--v221-global-scale,1)),48%)!important;
+  height:calc(78px * var(--v221-global-scale,1))!important;
+  margin:calc(14px * var(--v221-global-scale,1)) auto 0!important;
+  border-radius:calc(14px * var(--v221-global-scale,1))!important;
+  font-size:calc(44px * var(--v221-global-scale,1))!important;
+}
+.score-entry-preview-wrap{
+  width:calc(108px * var(--v221-global-scale,1))!important;
+  height:calc(94px * var(--v221-global-scale,1))!important;
+  margin:calc(10px * var(--v221-global-scale,1)) auto 0!important;
+}
+.score-entry-preview{
+  border-radius:calc(14px * var(--v221-global-scale,1))!important;
+  font-size:calc(50px * var(--v221-global-scale,1))!important;
+}
+.score-entry-control{
+  width:min(calc(330px * var(--v221-global-scale,1)),92%)!important;
+  margin:calc(18px * var(--v221-global-scale,1)) auto 0!important;
+  gap:calc(12px * var(--v221-global-scale,1))!important;
+}
+.score-entry-control > .score-step-button,
+.score-entry-control > .score-entry-clear{
+  height:calc(82px * var(--v221-global-scale,1))!important;
+  min-height:0!important;
+  border-radius:calc(14px * var(--v221-global-scale,1))!important;
+}
+.score-step-button{font-size:calc(50px * var(--v221-global-scale,1))!important;}
+.score-entry-clear{font-size:calc(20px * var(--v221-global-scale,1))!important;}
+.score-entry-actions{
+  width:min(calc(330px * var(--v221-global-scale,1)),92%)!important;
+  margin:calc(14px * var(--v221-global-scale,1)) auto 0!important;
+}
+.score-entry-enter{
+  height:calc(66px * var(--v221-global-scale,1))!important;
+  min-height:0!important;
+  border-radius:calc(11px * var(--v221-global-scale,1))!important;
+  font-size:calc(33px * var(--v221-global-scale,1))!important;
+}
+
+/* Quick Guide / Tips text scale uses the exact global multiplier through
+   --v2076-qg-text-scale and --v2074-utility-scale. Keep the toggle explicit. */
+.quick-guide-tips-toggle-v2161{
+  font-size:calc(14px * var(--v221-global-scale,1))!important;
+}
+
+/* Major non-table screen/popup headings. Data-table cells are untouched. */
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title{
+  font-size:calc(27px * var(--v221-global-scale,1))!important;
+}
+.modal-overlay.geek-mode-v180 .modal-title{
+  font-size:calc(30px * var(--v221-global-scale,1))!important;
+}
+.geek-helper-v1919{
+  font-size:calc(10px * var(--v221-global-scale,1))!important;
+}
+.modal-overlay.game-mode-results-v2026 .modal-title{
+  margin-bottom:calc(9px * var(--v221-global-scale,1))!important;
+  font-size:calc(35px * var(--v221-global-scale,1))!important;
+}
+.modal-overlay.skins-results-v1627 .modal-title{
+  margin-bottom:calc(12px * var(--v221-global-scale,1))!important;
+  font-size:calc(30px * var(--v221-global-scale,1))!important;
+}
+.modal-overlay.geek-detail-v180 .modal-title{
+  margin-bottom:calc(12px * var(--v221-global-scale,1))!important;
+  font-size:calc(36px * var(--v221-global-scale,1))!important;
+}
+.modal-overlay.geek-detail-v180 .modal-text,
+.geek-detail-section-v180,
+.geek-detail-teams-v180,
+.modal-overlay.geek-detail-v180 .modal-actions .modal-btn{
+  font-size:calc(22px * var(--v221-global-scale,1))!important;
+}
+</style>
+
 </head>
 
 
@@ -12394,7 +12499,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.0</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.1</span></span>
         </button>
 
       </div>
@@ -21234,14 +21339,14 @@ let scoreTimingDetail =
        Formula above 1.00:
        deviceMultiplier + 0.5 * (((deviceMultiplier - 1) ** 2) / 0.30).
        Multipliers at or below 1.00 retain V20.74 behavior unchanged. */
+    /* SSHCP V22.1 — Quick Guide typography now follows the exact global
+       VPH×DPR multiplier. Geometry already used that same multiplier, so text
+       and shell now stay in one scale family on S25 Web/PWA and larger tablets. */
     function quickGuideTextScaleV2077(multiplierValue) {
       const raw = Number(multiplierValue);
-      const deviceMultiplier = Number.isFinite(raw) && raw > 0
+      return Number.isFinite(raw) && raw > 0
         ? raw
         : getVerticalMetricsV188().multiplier;
-      if (deviceMultiplier <= 1) return deviceMultiplier;
-      const extra = deviceMultiplier - 1;
-      return deviceMultiplier + (0.5 * ((extra * extra) / 0.30));
     }
 
     function syncSharedGeometryV187() {
@@ -21265,6 +21370,7 @@ let scoreTimingDetail =
          reveal fewer rows instead of crushing them. */
       values.gameRow = Math.max(1, values.skinsHeader * 1.10);
       const root = document.documentElement.style;
+      root.setProperty('--v221-global-scale', metrics.multiplier.toFixed(5));
       root.setProperty('--v187-table-header-h', values.tableHeader + 'px');
       root.setProperty('--v188-skins-header-h', values.skinsHeader + 'px');
       root.setProperty('--v187-post-button-h', values.postButton + 'px');
@@ -21513,9 +21619,9 @@ let scoreTimingDetail =
       );
       const ratio = effectiveHeight / V220_EFFECTIVE_HEIGHT_BASELINE;
       if (ratio < 0.80) return 14;
-      if (ratio < 0.85) return 16;
-      if (ratio < 0.90) return 18;
-      if (ratio < 0.95) return 20;
+      if (ratio < 0.90) return 16;
+      if (ratio < 0.95) return 18;
+      if (ratio < 1.00) return 20;
       return 22;
     }
 
@@ -21639,11 +21745,12 @@ let scoreTimingDetail =
 
       const navButtons = view.querySelectorAll('.nav-button');
       navButtons.forEach(button => {
-        fitTextToBoxV5(button, button, vars['--v16-nav-h'] * 0.52, 12, {
+        fitTextToBoxV5(button, button, vars['--v16-nav-h'] * 0.52, 0.001, {
           horizontalPad: 8,
           verticalPad: 4,
           wrap: false,
-          lineHeight: 1
+          lineHeight: 1,
+          noMin: true
         });
       });
 
@@ -21652,11 +21759,12 @@ let scoreTimingDetail =
         /* V19.6: center header uses the same 80% HOME/INFO-height fitting rule.
            Scorecard content is authorization identity; Leaderboard/Final content
            is fixed event branding (ROTB 2026). Keep one line and shrink only if needed. */
-        fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.80, 8, {
+        fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.80, 0.001, {
           horizontalPad: 4,
           verticalPad: 2,
           wrap: false,
-          lineHeight: 1
+          lineHeight: 1,
+          noMin: true
         });
       }
 
@@ -24004,27 +24112,26 @@ let scoreTimingDetail =
       if (!els.modalOverlay) return null;
       const metrics = getVerticalMetricsV188();
       const m = metrics.multiplier;
-      const setPx = (name, base, min, max) => {
-        const raw = base * m;
-        const value = Math.max(min, Math.min(max, raw));
+      const setPx = (name, base) => {
+        const value = base * m;
         els.modalOverlay.style.setProperty(name, value.toFixed(2) + 'px');
       };
 
-      setPx('--v1850-tie-overlay-y', 18, 12, 24);
-      setPx('--v1850-tie-overlay-x', 16, 12, 22);
-      setPx('--v1850-tie-box-y', 20, 15, 27);
-      setPx('--v1850-tie-box-x', 22, 16, 29);
-      setPx('--v1850-tie-radius', 18, 15, 23);
-      setPx('--v1850-tie-title-gap', 14, 10, 19);
-      setPx('--v1850-tie-title-font', 30, 24, 39);
-      setPx('--v1850-tie-winner-gap', 14, 10, 19);
-      setPx('--v1850-tie-winner-font', 36, 28, 47);
-      setPx('--v1851-tie-text-gutter', 28, 20, 38);
-      setPx('--v1850-tie-body-font', 21, 17, 27);
-      setPx('--v1850-tie-actions-gap', 18, 13, 24);
-      setPx('--v1850-tie-button-gap', 10, 7, 13);
-      setPx('--v1850-tie-button-h', 58, 48, 72);
-      setPx('--v1850-tie-button-font', 20, 16, 25);
+      setPx('--v1850-tie-overlay-y', 18);
+      setPx('--v1850-tie-overlay-x', 16);
+      setPx('--v1850-tie-box-y', 20);
+      setPx('--v1850-tie-box-x', 22);
+      setPx('--v1850-tie-radius', 18);
+      setPx('--v1850-tie-title-gap', 14);
+      setPx('--v1850-tie-title-font', 30);
+      setPx('--v1850-tie-winner-gap', 14);
+      setPx('--v1850-tie-winner-font', 36);
+      setPx('--v1851-tie-text-gutter', 28);
+      setPx('--v1850-tie-body-font', 21);
+      setPx('--v1850-tie-actions-gap', 18);
+      setPx('--v1850-tie-button-gap', 10);
+      setPx('--v1850-tie-button-h', 58);
+      setPx('--v1850-tie-button-font', 20);
       return { metrics, multiplier:m };
     }
 
@@ -24581,12 +24688,14 @@ let scoreTimingDetail =
       /* V18.48: Summary keeps the established title, but no longer carries a
          RESULTS/TOP 10 subtitle. The standings grid begins immediately at the
          body top, reclaiming the former top-navigation band. */
-      fitTextToBoxV5(els.modalTitle, els.modalTitle, Math.min(52, els.modalBox.clientWidth * 0.115) * 0.80, 16, {
+      const summaryTitleTargetV221 = 34.5 * getVerticalMetricsV188().multiplier;
+      fitTextToBoxV5(els.modalTitle, els.modalTitle, summaryTitleTargetV221, 0.001, {
         horizontalPad: 12,
         verticalPad: 0,
         wrap: true,
         lineHeight: 0.92,
-        ignoreHeight: true
+        ignoreHeight: true,
+        noMin: true
       });
 
       /* V18.10 popup top inset remains unchanged. */
@@ -26126,8 +26235,9 @@ let scoreTimingDetail =
 
       /* SSHCP V22.0 — GEEK viewport capacity is quantized by effective-display
          size, not by squeezing the rows. 2034 effective px is the 22X reference.
-         Every additional 5% drop removes 2X, capped at 22X and floored at 14X:
-         22X / 20X / 18X / 16X / 14X. X remains a whole CSS pixel. Start from
+         V22.1 steps sooner near the reference: 22X at baseline-or-larger, 20X
+         below 100%, 18X below 95%, 16X below 90%, and 14X below 80%. X remains
+         a whole CSS pixel. Start from
          the same 12px×M gap target and let the table consume that gap only down
          to half-target; otherwise use the next smaller X. Leftover pixels stay
          OUTSIDE the table, so a partial next stat row can never appear. */
@@ -27333,7 +27443,7 @@ let scoreTimingDetail =
         const team = row.querySelector('.game-mode-skins-team-v2027');
         const cells = row.querySelectorAll('.game-mode-cell-v2026');
         const hole = cells.length > 1 ? cells[1] : null;
-        if (team) fitIntactSingleLineV2027(team, team, rowH * 0.50, 10, 1);
+        if (team) fitIntactSingleLineV2027(team, team, rowH * 0.47, 10, 0.94);
         if (hole) fitIntactSingleLineV2027(hole, hole, rowH * 0.50, 8, 1);
       });
 
