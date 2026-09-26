@@ -1,10 +1,10 @@
-<!-- SSHCP | BASE KEY: 22.1-K5N8QW | BUILD KEY: 22.2-F7G8WN -->
-<!-- SSHCP V22.2 INFORMATIONAL TYPOGRAPHY PASS - exact V22.1 GOLDEN donor.
-     Keeps V22.1 scoring, authorization, audit, Worker/API, CC/SM, table geometry, GEEK stepping, GAME row math,
-     result logic and global VPH×DPR scaling unchanged. Raises normal Quick Guide / Tips & Tricks reading copy to
-     21px×global multiplier, strengthens title/section hierarchy, gives HOLE/PAR more of the score-popup space, and
-     scales ordinary non-table informational modal copy/headings from the same global multiplier. Table content and
-     Control Center typography remain untouched; no hard font floor is introduced anywhere in table/data screens. -->
+<!-- SSHCP | BASE KEY: 22.2-F7G8WN | BUILD KEY: 22.3-R6T9KV -->
+<!-- SSHCP V22.3 SCORE POPUP THUMB-REACH PLACEMENT - exact V22.2 donor.
+     Keeps V22.2 typography, scoring, authorization, audit, Worker/API, CC/SM, table geometry, GEEK stepping, GAME
+     row math, result logic and global VPH×DPR scaling unchanged. Moves only the score-entry card 5dvh lower by
+     reducing its established bottom lift from 33dvh to 28dvh; all score-popup sizing and typography remain tied
+     to the global multiplier. HOME remains the longest Tips & Tricks card and is the future non-scroll ceiling:
+     if copy grows, shrink the visual-cue section before allowing an internal scrollbar. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12414,6 +12414,19 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 </style>
 
+<style id="sshcp-v223-score-popup-placement">
+/* V22.3 — thumb-reach only. Lower the entire score-entry card by exactly 5%
+   of the CSS viewport height. Size/typography stay on the global multiplier. */
+.score-entry-overlay{
+  padding-bottom:max(
+    calc(env(safe-area-inset-bottom) + 20px),
+    calc(28dvh - 77px)
+  )!important;
+}
+/* Future Tips rule: HOME is the longest card and remains non-scrollable.
+   If content grows, compress the visual-cue section before enabling scroll. */
+</style>
+
 </head>
 
 
@@ -12548,7 +12561,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.2</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.3</span></span>
         </button>
 
       </div>
