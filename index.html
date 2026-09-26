@@ -1,4 +1,4 @@
-<!-- SSHCP | BASE KEY: 21.65-L6Q8RN | BUILD KEY: 21.66-P5R8QK -->
+<!-- SSHCP | BASE KEY: 21.66-P5R8QK | BUILD KEY: 21.67-H8M4QV -->
 <!-- SSHCP V21.66 TIPS POPUP BALANCE + 19PX COPY - exact V21.65 donor.
      Preserves V21.65 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
      GEEK/GAME behavior, Quick Guide content, shared Tips preference, and 0.10s Tips open/close fade.
@@ -9035,6 +9035,15 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   margin-left:-18px!important;
   margin-right:-18px!important;
 }
+/* V21.67 — in-app Quick Guide footer is intentionally simple: one centered BACK action. */
+.modal-overlay.quick-guide .quick-guide-actions-v172.quick-guide-back-only-v2167{
+  grid-template-columns:1fr 2fr 1fr!important;
+}
+.modal-overlay.quick-guide .quick-guide-actions-v172.quick-guide-back-only-v2167 .quick-guide-back-v173{
+  grid-column:2!important;
+  width:100%!important;
+  min-width:0!important;
+}
 
 #scorecardView .score-row{
   }
@@ -12026,6 +12035,11 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-card-v2154{
   top:58%!important;
 }
+/* V21.67 — HOME is the exception to the general low bias: center the complete HOME card
+   vertically. All smaller contextual cards retain V21.66 geometry and placement. */
+.tips-overlay-v2154.tips-home-v2165 .tips-card-v2154{
+  top:50%!important;
+}
 .tips-overlay-v2154.tips-short-v2163 .tips-card-v2154{
   min-height:0!important;
 }
@@ -12097,13 +12111,13 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   box-shadow:none!important;
 }
 
-/* V21.61 — one player-facing Tips & Tricks preference shared by Welcome,
-   Quick Guide and every contextual popup. Gray 8 marks the optional setting. */
+/* V21.67 — one shared player-facing Tips & Tricks preference. Label text uses
+   established Gray 7; checkbox outline remains the existing Gray 8 and checked fill remains Blue. */
 .qr-welcome-tips-toggle-v2154,
 .tips-card-toggle-v2161,
 .quick-guide-tips-toggle-v2161{
-  color:var(--sshcp-gray-8-v2102,#2C2C2C)!important;
-  -webkit-text-fill-color:var(--sshcp-gray-8-v2102,#2C2C2C)!important;
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
   -webkit-tap-highlight-color:transparent!important;
 }
 .qr-welcome-tips-toggle-v2154 .tips-check-box-v2154,
@@ -12351,7 +12365,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.66</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.67</span></span>
         </button>
 
       </div>
@@ -30022,21 +30036,6 @@ let scoreTimingDetail =
 
       syncQuickGuideFooterRowHeightV1972();
 
-      const leaderboard =
-        makeModalButton(
-          'LEADERBOARD',
-          '',
-          async () => {
-            closeModal();
-            if (window.__sshcpIncomingQrWelcomeV170) {
-              dismissQrWelcomeV170();
-            }
-            await showLeaderboard();
-          }
-        );
-
-      leaderboard.classList.add('quick-guide-destination-v173');
-
       const back =
         makeModalButton(
           'BACK',
@@ -30056,29 +30055,10 @@ let scoreTimingDetail =
         );
       back.classList.add('quick-guide-back-v173');
 
-      const scorecard =
-        makeModalButton(
-          'SCORECARD',
-          '',
-          async () => {
-            closeModal();
-            if (window.__sshcpIncomingQrWelcomeV170) {
-              dismissQrWelcomeV170();
-            }
-            await homeScorecardAccess();
-          }
-        );
-
       els.modalActions.className =
-        'modal-actions quick-guide-actions-v172';
+        'modal-actions quick-guide-actions-v172 quick-guide-back-only-v2167';
 
-      scorecard.classList.add('quick-guide-destination-v173');
-
-      els.modalActions.replaceChildren(
-        leaderboard,
-        back,
-        scorecard
-      );
+      els.modalActions.replaceChildren(back);
 
       els.modalOverlay
         .classList
@@ -30088,7 +30068,19 @@ let scoreTimingDetail =
 
       wireQuickGuideProgressV2050();
       scheduleQuickGuideVisualCueFitV2079();
-      scheduleQuickGuideFooterFitV1971(leaderboard, back, scorecard);
+      requestAnimationFrame(() => {
+        const metricsV2077 = getVerticalMetricsV188();
+        const qgTextRatioV2077 =
+          quickGuideTextScaleV2077(metricsV2077.multiplier) /
+          Math.max(0.0001, metricsV2077.multiplier);
+        const backRect = back.getBoundingClientRect();
+        if (backRect.height > 0) {
+          fitQuickGuideButtonTextV1971(
+            back,
+            backRect.height * 0.50 * qgTextRatioV2077
+          );
+        }
+      });
       revealQuickGuideCurtainV2089('quick-guide-v2089', quickGuideCurtainV2089, 3);
 
     }
