@@ -1,9 +1,9 @@
-<!-- SSHCP | BASE KEY: 22.4-C8M2QH | BUILD KEY: 22.5-N4V7QK -->
-<!-- SSHCP V22.5 TIPS / QUICK GUIDE SURFACE TONE - exact V22.4 donor.
-     Keeps V22.4 copy, V22.3 score-popup placement, V22.2 typography, scoring, authorization, audit, Worker/API, CC/SM,
-     table geometry, GEEK stepping, GAME row math, result logic and global VPH×DPR scaling unchanged. Changes only the
-     visual treatment of Quick Guide and all Tips & Tricks popups: remove the distracting blurred/desaturated backdrop,
-     use Gray-3 card surfaces, and add a subtle drop shadow. No logic or geometry changes. -->
+<!-- SSHCP | BASE KEY: 22.5-N4V7QK | BUILD KEY: 22.6-L3R8PD -->
+<!-- SSHCP V22.6 TIPS / QUICK GUIDE SURFACE CORRECTION - exact V22.5 donor.
+     Keeps V22.5 visual simplification intent, V22.4 copy, V22.3 score-popup placement, V22.2 typography, scoring,
+     authorization, audit, Worker/API, CC/SM, table geometry, GEEK stepping, GAME row math, result logic and global
+     VPH×DPR scaling unchanged. Corrects the V22.5 surface interpretation: the surrounding backdrop is Gray-3, while
+     the actual Quick Guide and Tips & Tricks popup card remains white with a subtle drop shadow. No logic or geometry changes. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12427,25 +12427,25 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 </style>
 
 
-<style id="sshcp-v2250-guide-surface">
-/* SSHCP V22.5 — Quick Guide and Tips & Tricks no longer use the distracting blurred/desaturated backdrop.
-   They now use Gray-3 card surfaces with a subtle drop shadow while preserving all existing scaling and layout logic. */
+<style id="sshcp-v2260-guide-surface">
+/* SSHCP V22.6 — Correct V22.5 interpretation: the full-screen backdrop is Gray-3,
+   while the Quick Guide and Tips & Tricks popup card itself stays white. Blur/desaturation remain removed. */
 .modal-overlay.quick-guide{
-  background:rgba(0,0,0,.10)!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
 }
 .modal-overlay.quick-guide .modal-box{
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  background:#ffffff!important;
   box-shadow:0 calc(4px * var(--v2074-utility-scale,1)) calc(14px * var(--v2074-utility-scale,1)) rgba(0,0,0,.14)!important;
 }
 .tips-overlay-v2154{
-  background:rgba(0,0,0,.10)!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
 }
 .tips-card-v2154{
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  background:#ffffff!important;
   box-shadow:0 calc(4px * var(--v2074-utility-scale,1)) calc(14px * var(--v2074-utility-scale,1)) rgba(0,0,0,.14)!important;
 }
 </style>
@@ -12583,7 +12583,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.5</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.6</span></span>
         </button>
 
       </div>
