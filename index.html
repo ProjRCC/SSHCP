@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 21.67-H8M4QV | BUILD KEY: 21.68-T6Q9MX -->
-<!-- SSHCP V21.68 DPR ACCESSIBILITY SCALE TEST - exact V21.67 GOLDEN donor.
-     Preserves V21.67 GOLDEN scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary,
-     skins, GEEK/GAME behavior, Tips & Tricks, Quick Guide, geometry rules, and presentation timing.
-     Only the established vertical/device multiplier is changed: DPR values at or below the SSHCP
-     reference DPR 2.81 retain exact prior behavior; DPR values above 2.81 receive a 40% DPR correction
-     blended with 60% of the existing viewport response so Android accessibility zoom can enlarge the
-     interface without fully cancelling responsive protection for the reduced CSS viewport. -->
+<!-- SSHCP | BASE KEY: 21.68-T6Q9MX | BUILD KEY: 21.69-J6V3QK -->
+<!-- SSHCP V21.69 DPR ACCESSIBILITY 40/60 TEST - exact V21.68 donor.
+     Preserves V21.68 scoring, authorization, audit, Worker/API, CC/SM, leaderboard, summary, skins,
+     GEEK/GAME behavior, Tips & Tricks, Quick Guide, geometry rules, and presentation timing.
+     Only the accessibility blend changes: DPR values at or below the SSHCP reference DPR 2.81 retain
+     exact prior behavior; DPR values above 2.81 now use 40% of the existing viewport response and 60%
+     of the full DPR correction so Android accessibility zoom can enlarge the interface while retaining
+     responsive protection for the reduced CSS viewport. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12365,7 +12365,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.68</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.69</span></span>
         </button>
 
       </div>
@@ -15748,7 +15748,7 @@ let scoreTimingDetail =
             0.70,
             Math.min(
               1.30,
-              applyDprAccessibilityScaleV2168(
+              applyDprAccessibilityScaleV2169(
                 stableSvh / V189_S25_VISUAL_VIEWPORT_H,
                 metrics.dpr
               )
@@ -21098,23 +21098,23 @@ let scoreTimingDetail =
     const V188_S25_SCREEN_CSS_FALLBACK_H = 832;
     const V189_S25_VISUAL_VIEWPORT_H = 724;
 
-    /* V21.68 — accessibility-aware DPR correction. The app was authored and
+    /* V21.69 — accessibility-aware DPR correction. The app was authored and
        validated at reference DPR 2.81. Preserve every existing multiplier at
-       or below that reference. Above it, blend 60% of the existing viewport
-       response with 40% of the full DPR correction. */
-    const V2168_REFERENCE_DPR = 2.81;
-    const V2168_DPR_WEIGHT = 0.40;
+       or below that reference. Above it, blend 40% of the existing viewport
+       response with 60% of the full DPR correction. */
+    const V2169_REFERENCE_DPR = 2.81;
+    const V2169_DPR_WEIGHT = 0.60;
 
-    function dprAccessibilityBoostV2168(dprValue) {
+    function dprAccessibilityBoostV2169(dprValue) {
       const dpr = Math.max(0.1, Number(dprValue) || 1);
-      if (dpr <= V2168_REFERENCE_DPR) return 1;
-      return (1 - V2168_DPR_WEIGHT) +
-        (V2168_DPR_WEIGHT * (dpr / V2168_REFERENCE_DPR));
+      if (dpr <= V2169_REFERENCE_DPR) return 1;
+      return (1 - V2169_DPR_WEIGHT) +
+        (V2169_DPR_WEIGHT * (dpr / V2169_REFERENCE_DPR));
     }
 
-    function applyDprAccessibilityScaleV2168(baseScale, dprValue) {
+    function applyDprAccessibilityScaleV2169(baseScale, dprValue) {
       const base = Number(baseScale) || 1;
-      return base * dprAccessibilityBoostV2168(dprValue);
+      return base * dprAccessibilityBoostV2169(dprValue);
     }
 
     /* SSHCP V20.66 — JS companion to the standalone 100svh CSS above.
@@ -21182,16 +21182,16 @@ let scoreTimingDetail =
       }
       if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
 
-      /* V21.68: keep the established visible-height multiplier intact through
-         reference DPR 2.81. Above 2.81, apply the 60/40 accessibility blend so
+      /* V21.69: keep the established visible-height multiplier intact through
+         reference DPR 2.81. Above 2.81, apply the 40/60 accessibility blend so
          higher Android display/font zoom is no longer almost fully cancelled by
          the corresponding reduction in CSS viewport height. */
-      const viewportMultiplierV2168 = visualHeight / V189_S25_VISUAL_VIEWPORT_H;
+      const viewportMultiplierV2169 = visualHeight / V189_S25_VISUAL_VIEWPORT_H;
       const multiplier = Math.max(
         0.70,
         Math.min(
           1.30,
-          applyDprAccessibilityScaleV2168(viewportMultiplierV2168, dpr)
+          applyDprAccessibilityScaleV2169(viewportMultiplierV2169, dpr)
         )
       );
 
@@ -21464,7 +21464,7 @@ let scoreTimingDetail =
             0.70,
             Math.min(
               1.30,
-              applyDprAccessibilityScaleV2168(
+              applyDprAccessibilityScaleV2169(
                 stableStandaloneHeightV2066 / V189_S25_VISUAL_VIEWPORT_H,
                 metricsV188.dpr
               )
