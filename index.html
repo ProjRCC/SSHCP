@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 21.58-H5M9RK | BUILD KEY: 21.59-K8R5QM -->
-<!-- SSHCP V21.59 TIPS OK PRESS-STATE FIX - exact V21.58 donor.
+<!-- SSHCP | BASE KEY: 21.59-K8R5QM | BUILD KEY: 21.60-N4V7QX -->
+<!-- SSHCP V21.60 TIPS TOGGLE TAP-HIGHLIGHT FIX - exact V21.59 donor.
      Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
      summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
      (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
@@ -11911,6 +11911,24 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   margin:calc(2px * var(--cc-mult-v1824,1)) 0!important;
   font-size:calc(12px * var(--cc-mult-v1824,1))!important;
 }
+/* V21.60 — isolate both Tips & Tricks toggle labels from Android/WebView tap-highlight
+   and active/focus row coloring. Checkbox state/behavior and haptics are unchanged. */
+.qr-welcome-tips-toggle-v2154,
+#testLogView .control-center-tips-toggle-v2154,
+.qr-welcome-tips-toggle-v2154 *,
+#testLogView .control-center-tips-toggle-v2154 *{
+  -webkit-tap-highlight-color:transparent!important;
+}
+.qr-welcome-tips-toggle-v2154:active,
+.qr-welcome-tips-toggle-v2154:focus,
+.qr-welcome-tips-toggle-v2154:focus-visible,
+#testLogView .control-center-tips-toggle-v2154:active,
+#testLogView .control-center-tips-toggle-v2154:focus,
+#testLogView .control-center-tips-toggle-v2154:focus-visible{
+  background:transparent!important;
+  outline:none!important;
+  box-shadow:none!important;
+}
 .qr-welcome-tips-toggle-v2154 input,
 #testLogView .control-center-tips-toggle-v2154 input{
   position:absolute!important;
@@ -12172,7 +12190,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.59</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.60</span></span>
         </button>
 
       </div>
