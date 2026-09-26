@@ -1,10 +1,10 @@
-<!-- SSHCP | BASE KEY: 22.0-R8K4VX | BUILD KEY: 22.1-K5N8QW -->
-<!-- SSHCP V22.1 GLOBAL TEXT / POPUP CONSISTENCY - exact V22.0 donor.
-     Keeps V22.0 scoring, authorization, audit, Worker/API, CC/SM, row math and result logic unchanged.
-     Tightens GEEK capacity sooner below the 2034 effective-height reference, makes Quick Guide text use the exact
-     global VPH×DPR multiplier, gives the score-entry popup multiplier-based typography/geometry instead of dVH
-     compression, scales major non-table after-play header text from the same multiplier, and adds a small vertical
-     safety margin to GAME Mode team-name fitting. Table-content fonts remain row-height driven with no hard floor. -->
+<!-- SSHCP | BASE KEY: 22.1-K5N8QW | BUILD KEY: 22.2-F7G8WN -->
+<!-- SSHCP V22.2 INFORMATIONAL TYPOGRAPHY PASS - exact V22.1 GOLDEN donor.
+     Keeps V22.1 scoring, authorization, audit, Worker/API, CC/SM, table geometry, GEEK stepping, GAME row math,
+     result logic and global VPH×DPR scaling unchanged. Raises normal Quick Guide / Tips & Tricks reading copy to
+     21px×global multiplier, strengthens title/section hierarchy, gives HOLE/PAR more of the score-popup space, and
+     scales ordinary non-table informational modal copy/headings from the same global multiplier. Table content and
+     Control Center typography remain untouched; no hard font floor is introduced anywhere in table/data screens. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12365,6 +12365,55 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 </style>
 
+<style id="sshcp-v222-informational-typography">
+/* V22.2 — readable non-table copy uses the approved 21px × global multiplier
+   baseline. Titles/section labels keep a stronger hierarchy. Data-table text,
+   table geometry, Control Center typography and game/result math are excluded. */
+
+/* QUICK GUIDE: 21px reading copy, clearly larger title and section headings. */
+.modal-overlay.quick-guide .modal-text{
+  font-size:calc(21px * var(--v221-global-scale,1))!important;
+}
+.modal-overlay.quick-guide .modal-title{
+  font-size:calc(31px * var(--v221-global-scale,1))!important;
+}
+.quick-guide-section-heading-v2161{
+  font-size:calc(24px * var(--v221-global-scale,1))!important;
+  line-height:1.05!important;
+}
+.quick-guide-tips-toggle-v2161{
+  font-size:calc(16px * var(--v221-global-scale,1))!important;
+}
+
+/* TIPS & TRICKS: body copy gets the 21px reading target; titles remain titles. */
+.tips-body-v2154{
+  font-size:calc(21px * var(--v221-global-scale,1))!important;
+}
+.tips-title-v2154{
+  font-size:calc(27px * var(--v221-global-scale,1))!important;
+}
+.tips-card-toggle-v2161{
+  font-size:calc(16px * var(--v221-global-scale,1))!important;
+}
+
+/* SCORE ENTRY: HOLE/PAR are high-priority information, not body copy. */
+.score-entry-hole{
+  font-size:calc(32px * var(--v221-global-scale,1))!important;
+}
+.score-entry-par{
+  font-size:calc(28px * var(--v221-global-scale,1))!important;
+}
+
+/* Ordinary informational modals outside the protected table/result families.
+   Authorization-management forms keep their established typography. */
+.modal-overlay:not(.quick-guide):not(.tournament-summary):not(.tournament-result):not(.skins-results-v1627):not(.geek-mode-v180):not(.geek-detail-v180):not(.game-mode-results-v2026):not(.authorization):not(.reset-authorization):not(.switch-authorization):not(.end-scramble-confirm-v2136) .modal-text{
+  font-size:calc(21px * var(--v221-global-scale,1))!important;
+}
+.modal-overlay:not(.quick-guide):not(.tournament-summary):not(.tournament-result):not(.skins-results-v1627):not(.geek-mode-v180):not(.geek-detail-v180):not(.game-mode-results-v2026):not(.authorization):not(.reset-authorization):not(.switch-authorization):not(.end-scramble-confirm-v2136) .modal-title{
+  font-size:calc(30px * var(--v221-global-scale,1))!important;
+}
+</style>
+
 </head>
 
 
@@ -12499,7 +12548,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.1</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.2</span></span>
         </button>
 
       </div>
@@ -21433,7 +21482,7 @@ let scoreTimingDetail =
       setV2074Px('--v2074-qg-border', 2);
       setV2074Px('--v2074-qg-radius', 17);
       setV2074Px('--v2074-qg-title-gap', 18);
-      root.setProperty('--v2074-qg-title-font', (27 * qgTextScaleV2077).toFixed(3) + 'px');
+      root.setProperty('--v2074-qg-title-font', (31 * qgTextScaleV2077).toFixed(3) + 'px');
       setV2074Px('--v2074-qg-body-pr', 14);
       setV2074Px('--v2074-qg-scroll-pr', 4);
       setV2074Px('--v2074-qg-line-gap', 14);
@@ -29400,7 +29449,7 @@ let scoreTimingDetail =
 
     function syncQuickGuideBodyFontV1816() {
       const metrics = getVerticalMetricsV188();
-      const size = Math.max(1, 19 * quickGuideTextScaleV2077(metrics.multiplier));
+      const size = Math.max(1, 21 * quickGuideTextScaleV2077(metrics.multiplier));
       document.documentElement.style.setProperty(
         '--v1816-quick-guide-body-font',
         size.toFixed(2) + 'px'
