@@ -1,11 +1,10 @@
-<!-- SSHCP | BASE KEY: 21.48-V6M3QK | BUILD KEY: 21.49-Q7M4VX -->
-<!-- SSHCP V21.49 AFTER-PLAY GRAY 3 BACKDROP / TIMING PANEL RESET - exact V21.48 donor.
-     Paired with unchanged CF V3.3. Preserves all validated V21.48 behavior. Changes only the full-screen
-     AFTER-PLAY backdrop behind Tie Break, Scramble Summary, GEEK, GEEK Detail, Game Mode, and Skins from
-     Gray 2 to exact Gray 3 (#e8e8e8), while keeping the reveal curtain white. Restores the timing panel
-     exactly to the requested values: 1A .25 / 2 .30 / 3 .30 / 4 .80 / 5A .25 / 5B .50 / CLEAR .10.
-     No scoring, audit, authorization, Worker, CC/SM, leaderboard math, summary math, skins math,
-     GEEK/GAME content, or popup geometry is changed. -->
+<!-- SSHCP | BASE KEY: 21.49-Q7M4VX | BUILD KEY: 21.51-N5Q8RV -->
+<!-- SSHCP V21.51 GRAY 3 CARD DEPTH / QUICK GUIDE MATCH - exact V21.49 donor.
+     Preserves V21.49 timing, scoring, authorization, audit, Worker/API, CC/SM behavior, leaderboard,
+     summary, skins, GEEK/GAME content, and popup geometry. Keeps the after-play backdrop exact Gray 3
+     (#e8e8e8) and adds only an extremely faint card shadow (0 2px 10px rgba(0,0,0,.05)) to the
+     after-play white popup/card family. QUICK GUIDE now uses the same Gray 3 backdrop and same faint
+     white-card shadow. No borders and no other visual or functional changes. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11848,6 +11847,31 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 </style>
 
+
+<style id="sshcp-v2151-gray3-card-depth">
+/* V21.51 — retain V21.49's light Gray 3 after-play field, but give the
+   white card the faintest deliberate edge. QUICK GUIDE uses the same treatment. */
+.modal-overlay.tournament-summary,
+.modal-overlay.tournament-result,
+.modal-overlay.geek-mode-v180,
+.modal-overlay.geek-detail-v180,
+.modal-overlay.game-mode-results-v2026,
+.modal-overlay.skins-results-v1627,
+.modal-overlay.quick-guide{
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+.modal-overlay.tournament-summary .modal-box,
+.modal-overlay.tournament-result .modal-box,
+.modal-overlay.geek-mode-v180 .modal-box,
+.modal-overlay.geek-detail-v180 .modal-box,
+.modal-overlay.game-mode-results-v2026 .modal-box,
+.modal-overlay.skins-results-v1627 .modal-box,
+.modal-overlay.quick-guide .modal-box{
+  box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
+}
+</style>
 </head>
 
 
@@ -11977,7 +12001,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.49</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V21.51</span></span>
         </button>
 
       </div>
