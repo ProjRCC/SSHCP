@@ -1,10 +1,10 @@
-<!-- SSHCP | BASE KEY: 22.30-P7M4QX | BUILD KEY: 22.31-H6Q8NV -->
-<!-- SSHCP V22.31 GEEK BUFFER BALANCE + ALL TEAMS CENTERED ACTIONS - exact V22.30 donor.
-     Keeps V22.30 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, direct portrait/landscape GEEK ownership,
-     1.00s destination reveal timing, 98vw x 98dvh ALL TEAMS geometry, STAT/CAT hard-fit behavior and normal-GEEK whole-pixel 1X/2X sizing.
-     Normal GEEK now splits the positive whole-row quantization remainder 50/50 above and below the table instead of placing all of it above;
-     the existing 16px instruction remains unchanged in size, is explicitly Gray 7, and is visually centered across the complete table-to-actions
-     buffer. ALL TEAMS keeps the same button height/gap but centers a narrower two-button action group. HOME version display advances to V22.31.
+<!-- SSHCP | BASE KEY: 22.31-H6Q8NV | BUILD KEY: 22.32-T4M8QZ -->
+<!-- SSHCP V22.32 ALL TEAMS HORIZONTAL-SCROLL TEST - exact V22.31 donor.
+     Keeps V22.31 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, direct portrait/landscape GEEK ownership,
+     1.00s destination reveal timing, 98vw x 98dvh ALL TEAMS geometry and normal-GEEK whole-pixel 1X/2X sizing. ALL TEAMS removes BACK,
+     centers a single FILTERS action at 33vw, sizes team columns for five visible teams so six-plus teams exercise horizontal scrolling, widens CAT
+     slightly without stealing the prior STAT allowance, adds a dedicated bottom horizontal scroll rail, and shaves only the ALL TEAMS header-row
+     fraction needed to fund that rail while preserving the established four visible data rows. HOME version display advances to V22.32.
      No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
@@ -12755,8 +12755,8 @@ html.sshcp-pre-geek-transition-v2220 body::after{
 }
 .geek-all-teams-cell-v2216:last-child{border-right:0!important;}
 
-/* The old single STAT footprint stays the same overall width. STAT gets 70%
-   and CAT 30%, so six team columns remain visible on a six-team event. */
+/* Historical STAT/CAT split shell. Runtime V22.32 now measures CAT directly
+   and sizes the team tracks for five visible teams to exercise horizontal scroll. */
 .geek-all-teams-stat-v2216{
   position:sticky!important;
   left:0!important;
@@ -12865,9 +12865,10 @@ html.sshcp-pre-geek-transition-v2220 body::after{
 
 .geek-all-teams-actions-v2216{
   flex:0 0 auto!important;
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-  gap:8px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
   width:100%!important;
   height:38px!important;
   min-height:38px!important;
@@ -12888,11 +12889,6 @@ html.sshcp-pre-geek-transition-v2220 body::after{
   box-shadow:none!important;
   -webkit-appearance:none!important;
   appearance:none!important;
-}
-.geek-all-teams-back-v2216{
-  background:var(--accent)!important;
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
 }
 .geek-all-teams-filter-button-v2216{
   background:var(--sshcp-control-gray-v1840,#666)!important;
@@ -13182,12 +13178,49 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
   transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,1s) ease-out!important;
 }
 
-/* V22.31 — keep the accepted ALL TEAMS action height/gap, but center the
-   BACK/FILTERS pair as a deliberately narrower control group in landscape. */
+/* V22.32 — ALL TEAMS is orientation-owned, so no BACK action is needed.
+   Center the single FILTERS control at exactly 33% of the screen width. */
 .geek-all-teams-actions-v2216{
-  width:min(900px,72%)!important;
-  align-self:center!important;
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
   margin:7px auto 0!important;
+}
+.geek-all-teams-actions-v2216 .geek-all-teams-filter-button-v2216{
+  flex:0 0 33vw!important;
+  width:33vw!important;
+  max-width:33vw!important;
+}
+
+/* V22.32 — dedicated horizontal position rail for the five-visible-team test.
+   Its 4px track + 2px top spacing consume exactly the 6px shaved from the
+   ALL TEAMS table header by syncGeekAllTeamsColumnGeometryV2216(). */
+.geek-all-teams-hprogress-v2232{
+  position:relative!important;
+  flex:0 0 4px!important;
+  width:100%!important;
+  height:4px!important;
+  min-height:4px!important;
+  margin-top:2px!important;
+  border-radius:999px!important;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+  opacity:1!important;
+}
+.geek-all-teams-hprogress-thumb-v2232{
+  position:absolute!important;
+  top:0!important;
+  left:var(--gat-hprogress-thumb-left-v2232,0%)!important;
+  width:var(--gat-hprogress-thumb-size-v2232,100%)!important;
+  height:100%!important;
+  min-width:18px!important;
+  max-width:100%!important;
+  border-radius:999px!important;
+  background:var(--accent)!important;
+  transition:left .06s linear,width .08s linear,opacity .15s ease!important;
+  opacity:.92!important;
 }
 
 /* V22.31 — explicit normal-GEEK instruction color lock. */
@@ -13331,7 +13364,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.31</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.32</span></span>
         </button>
 
       </div>
@@ -27668,8 +27701,10 @@ let scoreTimingDetail =
             '<div id="geekAllTeamsProgressV2218" class="geek-all-teams-progress-v2218" aria-hidden="true">' +
               '<div class="geek-all-teams-progress-thumb-v2218"></div>' +
             '</div>' +
+            '<div id="geekAllTeamsHProgressV2232" class="geek-all-teams-hprogress-v2232" aria-hidden="true">' +
+              '<div class="geek-all-teams-hprogress-thumb-v2232"></div>' +
+            '</div>' +
             '<div class="geek-all-teams-actions-v2216">' +
-              '<button id="geekAllTeamsBackV2216" class="geek-all-teams-action-v2216 geek-all-teams-back-v2216" type="button">BACK</button>' +
               '<button id="geekAllTeamsFiltersV2216" class="geek-all-teams-action-v2216 geek-all-teams-filter-button-v2216" type="button">FILTERS</button>' +
             '</div>' +
             '<div id="geekAllTeamsFilterShadeV2216" class="geek-all-teams-filter-shade-v2216" aria-hidden="true">' +
@@ -27678,11 +27713,9 @@ let scoreTimingDetail =
           '</div>';
         document.body.appendChild(view);
 
-        const back = view.querySelector('#geekAllTeamsBackV2216');
         const filters = view.querySelector('#geekAllTeamsFiltersV2216');
         const shade = view.querySelector('#geekAllTeamsFilterShadeV2216');
         const scroll = view.querySelector('#geekAllTeamsScrollV2216');
-        if (back) back.addEventListener('click', exitGeekAllTeamsV2230);
         if (filters) filters.addEventListener('click', openGeekAllTeamsFilterV2216);
         if (shade) shade.addEventListener('click', event => {
           if (event.target === shade) closeGeekAllTeamsFilterV2216();
@@ -27944,6 +27977,8 @@ let scoreTimingDetail =
       const table = document.getElementById('geekAllTeamsTableV2216');
       const rail = document.getElementById('geekAllTeamsProgressV2218');
       const thumb = rail ? rail.querySelector('.geek-all-teams-progress-thumb-v2218') : null;
+      const hRail = document.getElementById('geekAllTeamsHProgressV2232');
+      const hThumb = hRail ? hRail.querySelector('.geek-all-teams-hprogress-thumb-v2232') : null;
       if (!view || !scroll || !table || !rail || !thumb) return;
 
       const popup = view.querySelector('.geek-all-teams-popup-v2220') || view;
@@ -27974,6 +28009,25 @@ let scoreTimingDetail =
       rail.style.setProperty('--gat-progress-thumb-size-v2218', sizePct.toFixed(2) + '%');
       rail.style.setProperty('--gat-progress-thumb-top-v2218', (travelPct * ratio).toFixed(2) + '%');
       rail.style.opacity = max > 1 ? '1' : '.28';
+
+      /* V22.32 — mirror horizontal scroll position on a dedicated bottom rail.
+         This is presentation only; the native overflow surface remains the
+         actual touch/drag owner. */
+      if (hRail && hThumb) {
+        const clientW = scroll.clientWidth;
+        const totalW = scroll.scrollWidth;
+        const maxX = Math.max(0, totalW - clientW);
+        const sizeXPct = (clientW > 0 && totalW > 0)
+          ? Math.max(0, Math.min(100, (clientW / totalW) * 100))
+          : 100;
+        const travelXPct = 100 - sizeXPct;
+        const ratioX = maxX > 1
+          ? Math.max(0, Math.min(1, scroll.scrollLeft / maxX))
+          : 0;
+        hRail.style.setProperty('--gat-hprogress-thumb-size-v2232', sizeXPct.toFixed(2) + '%');
+        hRail.style.setProperty('--gat-hprogress-thumb-left-v2232', (travelXPct * ratioX).toFixed(2) + '%');
+        hRail.style.opacity = maxX > 1 ? '1' : '.28';
+      }
     }
 
     function syncGeekAllTeamsColumnGeometryV2216() {
@@ -27983,21 +28037,23 @@ let scoreTimingDetail =
       const teamCount = Math.max(1, Number(table.dataset.teamCount) || 1);
       const width = Math.max(1, scroll.clientWidth || window.innerWidth || 1);
 
-      /* V22.18 target: header + exactly four data rows fill the scroll viewport.
-         Header is intentionally a little shorter than a stat row. */
+      /* V22.32 — keep the established four visible data rows. The new bottom
+         horizontal rail consumes 6px (4px track + 2px spacing), so recover the
+         pre-rail row budget and shave that 6px only from the header fraction. */
       const availableHeight = Math.max(1, scroll.clientHeight || 1);
-      let dataRowHeight = Math.max(44, availableHeight / 4.82);
-      let headerRowHeight = dataRowHeight * 0.82;
+      const horizontalRailSpaceV2232 = 6;
+      const preRailHeightV2232 = availableHeight + horizontalRailSpaceV2232;
+      let dataRowHeight = Math.max(44, preRailHeightV2232 / 4.82);
+      let headerRowHeight = Math.max(30, (dataRowHeight * 0.82) - horizontalRailSpaceV2232);
       if ((headerRowHeight + (dataRowHeight * 4)) > availableHeight) {
-        dataRowHeight = availableHeight / 4.82;
-        headerRowHeight = dataRowHeight * 0.82;
+        dataRowHeight = (availableHeight + horizontalRailSpaceV2232) / 4.82;
+        headerRowHeight = Math.max(30, (dataRowHeight * 0.82) - horizontalRailSpaceV2232);
       }
 
-      /* V22.21 — CAT is contextual, so keep its font intentionally tiny; size
-         the COLUMN from the longest real rendered category instead of guessing
-         a percentage and then clipping STEADY/SCORES. STAT receives the rest of
-         the compact left-side allocation and the six teams keep all remaining
-         width. */
+      /* V22.32 — preserve the prior STAT allowance, give CAT roughly 8px more
+         breathing room, and size team columns from FIVE visible teams. All real
+         teams are still rendered, so six-plus-team events now intentionally
+         overflow horizontally for swipe/rail testing. */
       const catFontSize = Math.max(6, dataRowHeight * 0.15);
       let catTextWidth = 0;
       table.querySelectorAll('.geek-all-teams-cat-label-v2217').forEach(label => {
@@ -28005,12 +28061,12 @@ let scoreTimingDetail =
         if (!value) return;
         catTextWidth = Math.max(catTextWidth, measureTeamLineWidthV58(label, value, catFontSize));
       });
-      const catWidth = Math.max(28, Math.ceil(catTextWidth + 8));
-      const desiredMetaWidth = Math.max(136, Math.round(width * 0.20));
+      const catWidth = Math.max(36, Math.ceil(catTextWidth + 16));
+      const desiredMetaWidth = Math.max(144, Math.round(width * 0.20) + 8);
       const statFloor = Math.max(92, Math.round(width * 0.12));
       const metaWidth = Math.max(desiredMetaWidth, catWidth + statFloor);
       const statWidth = metaWidth - catWidth;
-      const teamWidth = Math.max(82, (width - metaWidth) / 6);
+      const teamWidth = Math.max(82, (width - metaWidth) / 5);
 
       table.style.setProperty('--gat-stat-w-v2217', statWidth.toFixed(2) + 'px');
       table.style.setProperty('--gat-cat-w-v2217', catWidth.toFixed(2) + 'px');
@@ -28109,12 +28165,6 @@ let scoreTimingDetail =
       const rotate = document.getElementById('geekAllTeamsRotateV2216');
       if (view) view.setAttribute('aria-hidden', 'true');
       if (rotate) rotate.setAttribute('aria-hidden', 'true');
-    }
-
-    function exitGeekAllTeamsV2230() {
-      if (!geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
-      closeGeekAllTeamsV2216();
-      returnFromPostPlayV2054();
     }
 
     function geekAllTeamsFilterChoiceHtmlV2216(key, label, master) {
