@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 22.22-ZMPF8U | BUILD KEY: 22.23-C8R5QX -->
-<!-- SSHCP V22.23 ORIENTATION TIMING TEST + NORMAL GEEK X/2X RESTORE - exact V22.22 donor.
-     Keeps V22.22 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, four-layer orientation
-     architecture, ALL TEAMS data/STAT/CAT hard-fit behavior and 98vw x 98dvh popup unchanged. Adds two explicit
-     orientation controls to the top timing panel: warning-card fade IN = 2.00s and destination white-curtain fade OUT =
-     2.00s for both accidental and required rotations. Required rotations still hold white through refresh/rebuild before
-     starting the reveal. Reverts ONLY the V22.22 normal-GEEK buffer compensation so the established whole-pixel 1X category /
-     2X stat calculation and V22.21 leftover-space behavior are restored exactly. ALL TEAMS retains its separate +2px
-     table-to-actions buffer (5px -> 7px). No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.23-C8R5QX | BUILD KEY: 22.24-R7M5QK -->
+<!-- SSHCP V22.24 ORIENTATION LAYER CLEANUP + TRUE WARNING-CARD FADE - exact V22.23 donor.
+     Keeps V22.23 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, 98vw x 98dvh ALL TEAMS
+     geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing and ALL TEAMS +2px action buffer unchanged.
+     Deletes superseded orientation CSS/override paths from the older generic, V22.18, V22.21 and V22.22/23 stacks and
+     replaces them with one current orientation presentation system. The white warning background is immediate and independent;
+     only the Gray 3 warning card is animated, started by JS after the warning surface is established. Timing-panel 6A remains
+     2.00s warning-card fade IN and 6B remains 2.00s destination-curtain fade OUT. Accidental rotations preserve state; required
+     GEEK <-> ALL TEAMS rotations hold the separate white curtain through refresh/rebuild before reveal. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -1640,10 +1640,7 @@
 .top-loading.done{animation:none;width:100%;opacity:1;}
 @keyframes loadingPulseCurrent{0%{width:0;}80%{width:100%;}100%{width:0;}}
 
-.rotate-portrait-overlay{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(255,255,255,.28);backdrop-filter:blur(13px) brightness(.45);-webkit-backdrop-filter:blur(13px) brightness(.45);pointer-events:none;}
-.rotate-portrait-box{width:min(420px,calc(100% - 36px));padding:24px 28px;border:2px solid var(--gold);border-radius:14px;background:rgba(255,255,255,.90);color:var(--gold);text-align:center;font-size:28px;font-weight:700;line-height:1.08;letter-spacing:.45px;}
 @media(max-width:420px){.test-timing,.leader-test-timing{font-size:17px;}.leader-bottom .leader-refresh-button{font-size:15px;}}
-@media(orientation:landscape){.rotate-portrait-overlay{display:flex;pointer-events:auto;}}
 
 .home-shell{position:relative;}
 .test-log-hotspot{position:absolute;top:calc(min(65dvh, 100dvh - 300px) - 22px);left:50%;transform:translateX(-50%);width:44px;height:44px;padding:0;border:0;background:transparent;z-index:20;}
@@ -12613,15 +12610,8 @@ html.sshcp-pre-geek-transition-v2220 body::after{
 </style>
 
 <style id="sshcp-v2218-geek-all-teams-landscape">
-/* SSHCP V22.18 — ALL TEAMS landscape typography, custom vertical rail and portrait BACK refinement.
-   Normal SSHCP remains portrait-only. The established landscape exception is
-   active only while explicit GEEK ALL TEAMS mode is open. */
-html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
-  display:none!important;
-  pointer-events:none!important;
-}
-
-.geek-all-teams-rotate-v2216,
+/* SSHCP V22.18 — retained ALL TEAMS landscape table/view geometry only.
+   Superseded orientation-warning presentation rules were deleted in V22.24. */
 .geek-all-teams-view-v2216{
   position:fixed!important;
   inset:0!important;
@@ -12630,58 +12620,14 @@ html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
   box-sizing:border-box!important;
   font-family:"Oswald",Arial,sans-serif!important;
 }
-
-html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  padding:24px!important;
-  background:rgba(199,199,199,.90)!important;
-  -webkit-backdrop-filter:blur(6px)!important;
-  backdrop-filter:blur(6px)!important;
-}
-.geek-all-teams-rotate-card-v2216{
-  width:min(520px,calc(100% - 36px))!important;
-  padding:calc(24px * var(--v221-global-scale,1)) 24px!important;
-  border:2px solid var(--accent)!important;
-  border-radius:14px!important;
-  background:#fff!important;
-  color:#000!important;
-  text-align:center!important;
-  box-shadow:0 4px 14px rgba(0,0,0,.14)!important;
+@media (orientation:landscape){
+  html.sshcp-geek-all-teams-v2216 .geek-all-teams-view-v2216{display:flex!important;}
 }
 .geek-all-teams-rotate-message-v2218{
   color:#000!important;
   font-size:calc(27px * var(--v221-global-scale,1))!important;
   font-weight:800!important;
   line-height:1.05!important;
-}
-.geek-all-teams-rotate-back-v2218{
-  width:100%!important;
-  height:calc(48px * var(--v221-global-scale,1))!important;
-  min-height:42px!important;
-  margin-top:calc(18px * var(--v221-global-scale,1))!important;
-  padding:0 12px!important;
-  border:0!important;
-  border-radius:9px!important;
-  background:var(--accent)!important;
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
-  font-family:"Oswald",Arial,sans-serif!important;
-  font-size:calc(20px * var(--v221-global-scale,1))!important;
-  font-weight:900!important;
-  line-height:1!important;
-  -webkit-appearance:none!important;
-  appearance:none!important;
-}
-
-@media (orientation:landscape){
-  html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
-    display:none!important;
-  }
-  html.sshcp-geek-all-teams-v2216 .geek-all-teams-view-v2216{
-    display:flex!important;
-  }
 }
 
 .geek-all-teams-view-v2216{
@@ -13045,155 +12991,9 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
 }
 </style>
 
-<style id="sshcp-v2221-orientation-and-allteams-refinement">
-/* V22.21 — orientation presentation is one continuous WHITE visual surface.
-   The warning itself is Gray 3 and fades IN for .50s. When rotation starts the
-   warning clears immediately; only the white surface remains. Returning to a
-   settled valid orientation fades that white away in .25s. */
-@keyframes sshcp-orientation-warning-in-v2221{
-  from{opacity:0;}
-  to{opacity:1;}
-}
-
-/* Universal portrait-only warning used by the rest of SSHCP. The overlay is
-   the visual curtain: white appears immediately when landscape becomes invalid,
-   while only the Gray 3 card animates. On return to portrait the card is gone
-   immediately and white reveals the preserved page over .25s. */
-.rotate-portrait-overlay{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  background:#fff!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  transition:opacity .25s ease-out,visibility 0s linear .25s!important;
-}
-.rotate-portrait-box{
-  border:0!important;
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
-  color:#000!important;
-  box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
-  opacity:0!important;
-  animation:none!important;
-}
-@media(orientation:landscape){
-  .rotate-portrait-overlay{
-    opacity:1!important;
-    visibility:visible!important;
-    pointer-events:auto!important;
-    transition:none!important;
-  }
-  .rotate-portrait-box{
-    opacity:1!important;
-    animation:sshcp-orientation-warning-in-v2221 .50s ease-out both!important;
-  }
-}
-
-/* ALL TEAMS owns its own orientation warning; suppress the site's generic one. */
-html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  transition:none!important;
-}
-
-/* ALL TEAMS warning: full-screen WHITE is already present beneath the Gray 3
-   warning. No BACK button exists inside any orientation warning. */
-html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  padding:24px!important;
-  background:#fff!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
-  opacity:1!important;
-  visibility:visible!important;
-  pointer-events:auto!important;
-  transition:opacity .25s ease-out,visibility 0s linear 0s!important;
-  z-index:6250!important;
-}
-.geek-all-teams-rotate-card-v2216{
-  border:0!important;
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
-  color:#000!important;
-  box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
-  opacity:1!important;
-  animation:sshcp-orientation-warning-in-v2221 .50s ease-out both!important;
-}
-.geek-all-teams-rotate-back-v2218{display:none!important;}
-
-/* Accidental ALL TEAMS portrait mismatch: portrait shows the warning over white.
-   Rotating back to valid landscape clears the warning at 0s, leaves white in
-   place, then fades the white away over .25s to the exact saved table state. */
-@media(orientation:landscape){
-  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-enter-pending-v2220):not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-v2216{
-    opacity:0!important;
-    visibility:hidden!important;
-    pointer-events:none!important;
-    transition:opacity .25s ease-out,visibility 0s linear .25s!important;
-  }
-  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-enter-pending-v2220):not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-card-v2216{
-    opacity:0!important;
-    animation:none!important;
-  }
-  html.sshcp-geek-all-teams-v2216 .geek-all-teams-view-v2216{
-    display:flex!important;
-  }
-
-  /* Required ENTER: landscape is the destination, so keep white opaque while
-     the refresh starts but clear the warning card immediately. */
-  html.sshcp-geek-enter-pending-v2220 .geek-all-teams-rotate-v2216{
-    opacity:1!important;
-    visibility:visible!important;
-    pointer-events:auto!important;
-    transition:none!important;
-  }
-  html.sshcp-geek-enter-pending-v2220 .geek-all-teams-rotate-card-v2216{
-    opacity:0!important;
-    animation:none!important;
-  }
-
-  /* Required EXIT begins while still landscape, so this is where the
-     ROTATE PHONE TO PORTRAIT card intentionally fades in. */
-  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-v2216{
-    opacity:1!important;
-    visibility:visible!important;
-    pointer-events:auto!important;
-    transition:none!important;
-  }
-  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-card-v2216{
-    opacity:1!important;
-    animation:sshcp-orientation-warning-in-v2221 .50s ease-out both!important;
-  }
-}
-
-@media(orientation:portrait){
-  /* Required EXIT: portrait is the destination. The instant the rotation is
-     recognized the card is gone, but the same white stays for the rebuild. */
-  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-card-v2216{
-    opacity:0!important;
-    animation:none!important;
-  }
-}
-
-/* JS adds this at the required-rotation handoff as an extra guard so the card
-   can never survive into a browser orientation snap, regardless of event order. */
-html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
-  opacity:0!important;
-  animation:none!important;
-  transition:none!important;
-}
-
-/* Orientation rebuilds reuse the existing full-screen after-play curtain DOM;
-   only this transition's reveal duration is .25s. */
-.sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086.sshcp-geek-orientation-curtain-v2221{
-  transition:opacity .25s ease-out!important;
-}
-
+<style id="sshcp-v2221-allteams-layout-refinement">
+/* V22.21 — retained ALL TEAMS popup geometry + STAT/CAT hard-fit rules.
+   Superseded orientation-warning rules were deleted in V22.24. */
 /* Landscape ALL TEAMS remains the V22.20 98vw x 98dvh after-play-style popup. */
 .geek-all-teams-view-v2216{
   align-items:center!important;
@@ -13264,14 +13064,14 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
 </style>
 
 
-<style id="sshcp-v2222-four-layer-orientation-buffer-refinement">
-/* V22.23 — four independent visual layers during orientation handling:
-   1) Gray 3 warning card; 2) immediate white warning background;
-   3) separate white transition curtain already underneath; 4) app screen.
-   The warning card fades IN from timing-panel 6A. At the requested rotation the whole warning
-   layer clears at 0s; the independent curtain stays white, then reveals the
-   settled destination using timing-panel 6B. Required rotations wait for refresh/rebuild. */
-.sshcp-orientation-transition-curtain-v2222{
+<style id="sshcp-v2224-orientation-system">
+/* SSHCP V22.24 — ONE authoritative orientation presentation system.
+   Layer order: Gray 3 warning card > immediate white warning surface >
+   separate white transition curtain > preserved/rebuilt app screen.
+   IMPORTANT: orientation/media rules control ONLY the white warning surface.
+   JS alone starts the Gray 3 card fade after that surface has been established. */
+
+.sshcp-orientation-transition-curtain{
   position:fixed!important;
   inset:0!important;
   z-index:6240!important;
@@ -13285,146 +13085,139 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
   transition:none!important;
   will-change:opacity;
 }
-.sshcp-orientation-transition-curtain-v2222.active-v2222{
+.sshcp-orientation-transition-curtain.active{
   opacity:1!important;
   visibility:visible!important;
   pointer-events:auto!important;
   transition:none!important;
 }
-.sshcp-orientation-transition-curtain-v2222.active-v2222.reveal-v2222{
+.sshcp-orientation-transition-curtain.active.reveal{
   opacity:0!important;
   visibility:visible!important;
   pointer-events:auto!important;
   transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,2s) ease-out!important;
 }
 
-@keyframes sshcp-orientation-warning-in-v2222{
+@keyframes sshcp-orientation-warning-card-in{
   from{opacity:0;}
   to{opacity:1;}
 }
 
-/* Normal portrait-only SSHCP: warning background appears at 0s. It never
-   fades out; portrait media recognition removes it immediately so the already
-   mounted curtain underneath owns the .50s reveal. */
+/* Normal SSHCP is portrait-only. The WHITE warning surface is controlled by
+   orientation CSS so it appears immediately. The card never auto-animates here. */
 .rotate-portrait-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:6250!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  box-sizing:border-box!important;
   background:#fff!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
   transition:none!important;
 }
 .rotate-portrait-box{
+  width:min(420px,calc(100% - 36px))!important;
+  padding:24px 28px!important;
+  border:0!important;
+  border-radius:14px!important;
   background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:#000!important;
+  text-align:center!important;
+  font-size:28px!important;
+  font-weight:700!important;
+  line-height:1.08!important;
+  letter-spacing:.45px!important;
+  box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
   opacity:0!important;
   animation:none!important;
+  transition:none!important;
 }
 @media(orientation:landscape){
   html:not(.sshcp-geek-all-teams-v2216) .rotate-portrait-overlay{
     opacity:1!important;
     visibility:visible!important;
     pointer-events:auto!important;
-    transition:none!important;
-  }
-  html:not(.sshcp-geek-all-teams-v2216) .rotate-portrait-box{
-    opacity:1!important;
-    animation:sshcp-orientation-warning-in-v2222 var(--sshcp-fade-6a-orientation-warning-in,2s) ease-out both!important;
   }
 }
-@media(orientation:portrait){
-  .rotate-portrait-overlay{
-    opacity:0!important;
-    visibility:hidden!important;
-    pointer-events:none!important;
-    transition:none!important;
-  }
-  .rotate-portrait-box{
-    opacity:0!important;
-    animation:none!important;
-  }
+html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
 }
 
-/* ALL TEAMS warning layer is above the dedicated z6240 curtain. Wrong/required
-   orientation shows immediate white + the timing-panel 6A Gray 3 fade. Correct orientation
-   removes the ENTIRE warning layer at 0s; it does not become the curtain. */
-html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
+/* ALL TEAMS warning surface. It is separate from the table/view and separate
+   from the transition curtain. Portrait is wrong/required-entry; landscape is
+   warning-only while required EXIT is pending. */
+.geek-all-teams-rotate-v2216{
+  position:fixed!important;
+  inset:0!important;
   z-index:6250!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  box-sizing:border-box!important;
+  font-family:"Oswald",Arial,sans-serif!important;
   background:#fff!important;
-  transition:none!important;
-}
-html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-card-v2216{
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
-  opacity:1!important;
-  animation:sshcp-orientation-warning-in-v2222 var(--sshcp-fade-6a-orientation-warning-in,2s) ease-out both!important;
-}
-@media(orientation:landscape){
-  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-enter-pending-v2220):not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-v2216{
-    opacity:0!important;
-    visibility:hidden!important;
-    pointer-events:none!important;
-    transition:none!important;
-  }
-  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-enter-pending-v2220):not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-card-v2216{
-    opacity:0!important;
-    animation:none!important;
-    transition:none!important;
-  }
-  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-v2216{
-    opacity:0!important;
-    visibility:hidden!important;
-    pointer-events:none!important;
-    transition:none!important;
-  }
-  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-card-v2216{
-    opacity:0!important;
-    animation:none!important;
-  }
-  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-v2216{
-    opacity:1!important;
-    visibility:visible!important;
-    pointer-events:auto!important;
-  }
-  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-card-v2216{
-    opacity:1!important;
-    animation:sshcp-orientation-warning-in-v2222 var(--sshcp-fade-6a-orientation-warning-in,2s) ease-out both!important;
-  }
-}
-@media(orientation:portrait){
-  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-v2216,
-  html.sshcp-geek-enter-pending-v2220 .geek-all-teams-rotate-v2216{
-    opacity:1!important;
-    visibility:visible!important;
-    pointer-events:auto!important;
-  }
-  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-v2216{
-    opacity:0!important;
-    visibility:hidden!important;
-    pointer-events:none!important;
-    transition:none!important;
-  }
-  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-card-v2216{
-    opacity:0!important;
-    animation:none!important;
-  }
-}
-html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-v2216{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
   opacity:0!important;
   visibility:hidden!important;
   pointer-events:none!important;
   transition:none!important;
 }
-html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
+.geek-all-teams-rotate-card-v2216{
+  width:min(520px,calc(100% - 36px))!important;
+  padding:calc(24px * var(--v221-global-scale,1)) 24px!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:#000!important;
+  text-align:center!important;
+  box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
   opacity:0!important;
   animation:none!important;
   transition:none!important;
 }
+.geek-all-teams-rotate-back-v2218{display:none!important;}
 
-/* Required rebuild reveal uses timing-panel 6B, but only
-   after the refreshed destination has completed its layout/paint wait. */
+@media(orientation:portrait){
+  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-v2216{
+    opacity:1!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+}
+@media(orientation:landscape){
+  html.sshcp-geek-all-teams-v2216.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-v2216{
+    opacity:1!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+}
+
+/* ONLY this runtime class animates a warning card. No media query sets card
+   opacity to 1, so the 6A fade cannot be defeated by an !important final state. */
+.rotate-portrait-box.sshcp-orientation-warning-card-in,
+.geek-all-teams-rotate-card-v2216.sshcp-orientation-warning-card-in{
+  animation:sshcp-orientation-warning-card-in var(--sshcp-fade-6a-orientation-warning-in,2s) ease-out both!important;
+}
+
+/* Required rebuild reveal still uses the existing after-play curtain DOM, but
+   this transition gets timing-panel 6B after destination layout/paint settles. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086.sshcp-geek-orientation-curtain-v2221{
   transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,2s) ease-out!important;
 }
 
-/* ALL TEAMS gets exactly +2px more table-to-actions breathing room. */
-.geek-all-teams-actions-v2216{
-  margin-top:7px!important;
-}
+/* V22.22-approved ALL TEAMS-only breathing room. Normal GEEK X/2X math is untouched. */
+.geek-all-teams-actions-v2216{margin-top:7px!important;}
 </style>
 
 </head>
@@ -13561,7 +13354,7 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.23</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.24</span></span>
         </button>
 
       </div>
@@ -27462,7 +27255,7 @@ let scoreTimingDetail =
       const categoryHeight = xUnit;
       const statHeight = xUnit * 2;
       const usedDataPixelsV2097 = xUnit * targetUnitsV220;
-      /* V22.23 — restore the exact V22.21 whole-X contract. Leftover quantization
+      /* V22.24 — preserve the exact V22.21 whole-X contract. Leftover quantization
          space stays OUTSIDE the table and adds to the external actions gap; it
          never feeds back into X/2X sizing or gets compensated away. */
       const actualGapV220 = Math.max(0, targetGapV220 + availableDataPixelsV2097 - usedDataPixelsV2097);
@@ -27846,7 +27639,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.23 — GEEK <-> ALL TEAMS FOUR-LAYER ORIENTATION STATE
+       SSHCP V22.24 — GEEK <-> ALL TEAMS ORIENTATION STATE
        Only entering ALL TEAMS or pressing its BACK requires a fresh rebuild.
        Accidental orientation mismatches preserve the existing ALL TEAMS DOM,
        scroll position and filters. The warning and transition curtain are separate
@@ -28327,16 +28120,16 @@ let scoreTimingDetail =
       if (rotate) rotate.setAttribute('aria-hidden', 'false');
       if (view) view.setAttribute('aria-hidden', 'false');
 
-      /* Ensure the first portrait warning has a real 0.10s fade instead of
-         being created already at its final opacity in the same paint. */
-      if (rotate) void rotate.offsetWidth;
+      if (options.requiredEnter === true) {
+        geekRequiredRotationV2220 = 'enter';
+        holdOrientationCurtainV2224();
+        document.documentElement.classList.add('sshcp-geek-enter-pending-v2220');
+      }
       document.documentElement.classList.add('sshcp-geek-all-teams-v2216');
       renderGeekAllTeamsV2216();
 
       if (options.requiredEnter === true) {
-        geekRequiredRotationV2220 = 'enter';
-        holdOrientationCurtainV2222();
-        document.documentElement.classList.add('sshcp-geek-enter-pending-v2220');
+        startAllTeamsOrientationWarningV2224();
       }
     }
 
@@ -28347,9 +28140,7 @@ let scoreTimingDetail =
       document.documentElement.classList.remove(
         'sshcp-geek-all-teams-v2216',
         'sshcp-geek-enter-pending-v2220',
-        'sshcp-geek-exit-pending-v2220',
-        'sshcp-geek-required-white-v2220',
-        'sshcp-geek-rotation-start-v2221'
+        'sshcp-geek-exit-pending-v2220'
       );
       const view = document.getElementById('geekAllTeamsViewV2216');
       const rotate = document.getElementById('geekAllTeamsRotateV2216');
@@ -28443,10 +28234,11 @@ let scoreTimingDetail =
       if (!geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
       closeGeekAllTeamsFilterV2216();
       geekRequiredRotationV2220 = 'exit';
-      holdOrientationCurtainV2222();
+      holdOrientationCurtainV2224();
       setGeekAllTeamsWarningMessageV2220('ROTATE PHONE TO PORTRAIT');
       document.documentElement.classList.remove('sshcp-geek-enter-pending-v2220');
       document.documentElement.classList.add('sshcp-geek-exit-pending-v2220');
+      startAllTeamsOrientationWarningV2224();
     }
 
     function persistGeekRequiredRotationStateV2220(target) {
@@ -28475,58 +28267,60 @@ let scoreTimingDetail =
       return (window.innerWidth || 0) > (window.innerHeight || 0);
     }
 
-    /* V22.23 — dedicated transition curtain. This is deliberately NOT the
-       warning's white background. During a mismatch the two white layers stack
-       invisibly; when the warning layer clears at rotation, this curtain is
-       already underneath and owns the timing-panel 6B reveal of the settled destination. */
-    let sshcpOrientationCurtainTimerV2222 = 0;
-    let sshcpNormalLastLandscapeV2222 = currentGeekLandscapeV2220();
+    /* V22.24 — one current orientation subsystem. Old orientation CSS/JS
+       presentation paths were removed instead of overridden again.
+       WHITE warning surfaces are established independently of the Gray 3 card;
+       JS starts only the card fade after two paints. */
+    let sshcpOrientationCurtainTimerV2224 = 0;
+    let sshcpNormalLastLandscapeV2224 = currentGeekLandscapeV2220();
+    let sshcpNormalWarningRunningV2224 = false;
+    let sshcpAllTeamsWarningRunningV2224 = false;
 
-    function orientationTimingMsV2223(key, fallbackSeconds) {
+    function orientationTimingMsV2224(key, fallbackSeconds) {
       const timing = window.SSHCP_FADE_TIMING_V2092 || {};
       const seconds = Number(timing[key]);
       return 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : fallbackSeconds);
     }
 
-    function ensureOrientationCurtainV2222() {
-      let curtain = document.getElementById('sshcpOrientationCurtainV2222');
+    function ensureOrientationCurtainV2224() {
+      let curtain = document.getElementById('sshcpOrientationCurtain');
       if (!curtain) {
         curtain = document.createElement('div');
-        curtain.id = 'sshcpOrientationCurtainV2222';
-        curtain.className = 'sshcp-orientation-transition-curtain-v2222';
+        curtain.id = 'sshcpOrientationCurtain';
+        curtain.className = 'sshcp-orientation-transition-curtain';
         curtain.setAttribute('aria-hidden', 'true');
         document.body.appendChild(curtain);
       }
       return curtain;
     }
 
-    function holdOrientationCurtainV2222() {
-      const curtain = ensureOrientationCurtainV2222();
-      if (sshcpOrientationCurtainTimerV2222) {
-        clearTimeout(sshcpOrientationCurtainTimerV2222);
-        sshcpOrientationCurtainTimerV2222 = 0;
+    function holdOrientationCurtainV2224() {
+      const curtain = ensureOrientationCurtainV2224();
+      if (sshcpOrientationCurtainTimerV2224) {
+        clearTimeout(sshcpOrientationCurtainTimerV2224);
+        sshcpOrientationCurtainTimerV2224 = 0;
       }
-      curtain.classList.remove('reveal-v2222');
-      curtain.classList.add('active-v2222');
+      curtain.classList.remove('reveal');
+      curtain.classList.add('active');
       curtain.setAttribute('aria-hidden', 'false');
       return curtain;
     }
 
-    function hideOrientationCurtainV2222Instant() {
-      const curtain = document.getElementById('sshcpOrientationCurtainV2222');
-      if (sshcpOrientationCurtainTimerV2222) {
-        clearTimeout(sshcpOrientationCurtainTimerV2222);
-        sshcpOrientationCurtainTimerV2222 = 0;
+    function hideOrientationCurtainV2224Instant() {
+      const curtain = document.getElementById('sshcpOrientationCurtain');
+      if (sshcpOrientationCurtainTimerV2224) {
+        clearTimeout(sshcpOrientationCurtainTimerV2224);
+        sshcpOrientationCurtainTimerV2224 = 0;
       }
       if (!curtain) return;
-      curtain.classList.remove('active-v2222', 'reveal-v2222');
+      curtain.classList.remove('active', 'reveal');
       curtain.setAttribute('aria-hidden', 'true');
     }
 
-    function revealOrientationCurtainV2222(frames = 2) {
-      const curtain = document.getElementById('sshcpOrientationCurtainV2222');
-      if (!curtain || !curtain.classList.contains('active-v2222')) return;
-      if (sshcpOrientationCurtainTimerV2222) clearTimeout(sshcpOrientationCurtainTimerV2222);
+    function revealOrientationCurtainV2224(frames = 2) {
+      const curtain = document.getElementById('sshcpOrientationCurtain');
+      if (!curtain || !curtain.classList.contains('active')) return;
+      if (sshcpOrientationCurtainTimerV2224) clearTimeout(sshcpOrientationCurtainTimerV2224);
       let remaining = Math.max(0, Number(frames) || 0);
       const start = () => {
         if (remaining > 0) {
@@ -28534,61 +28328,112 @@ let scoreTimingDetail =
           requestAnimationFrame(start);
           return;
         }
-        curtain.classList.add('reveal-v2222');
-        sshcpOrientationCurtainTimerV2222 = window.setTimeout(() => {
-          sshcpOrientationCurtainTimerV2222 = 0;
-          if (!curtain.classList.contains('reveal-v2222')) return;
-          curtain.classList.remove('active-v2222', 'reveal-v2222');
+        curtain.classList.add('reveal');
+        sshcpOrientationCurtainTimerV2224 = window.setTimeout(() => {
+          sshcpOrientationCurtainTimerV2224 = 0;
+          if (!curtain.classList.contains('reveal')) return;
+          curtain.classList.remove('active', 'reveal');
           curtain.setAttribute('aria-hidden', 'true');
-        }, Math.ceil(orientationTimingMsV2223('FADE_6B_ORIENTATION_CURTAIN_OUT', 2.00) + 60));
+        }, Math.ceil(orientationTimingMsV2224('FADE_6B_ORIENTATION_CURTAIN_OUT', 2.00) + 60));
       };
       requestAnimationFrame(start);
     }
 
-    function syncGeekAllTeamsAccidentalCurtainV2222(landscapeNow) {
+    function clearOrientationWarningCardV2224(card) {
+      if (!card) return;
+      card.classList.remove('sshcp-orientation-warning-card-in');
+    }
+
+    function startOrientationWarningCardV2224(card, kind) {
+      if (!card) return;
+      clearOrientationWarningCardV2224(card);
+      void card.offsetWidth;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (kind === 'normal') {
+            if (!currentGeekLandscapeV2220() || geekAllTeamsOpenV2216) return;
+          } else if (kind === 'allteams') {
+            if (!geekAllTeamsOpenV2216) return;
+            const landscapeNow = currentGeekLandscapeV2220();
+            const shouldWarn = (!landscapeNow && geekRequiredRotationV2220 !== 'exit') ||
+              (landscapeNow && geekRequiredRotationV2220 === 'exit');
+            if (!shouldWarn) return;
+          }
+          card.classList.add('sshcp-orientation-warning-card-in');
+        });
+      });
+    }
+
+    function startNormalOrientationWarningV2224() {
+      if (sshcpNormalWarningRunningV2224) return;
+      sshcpNormalWarningRunningV2224 = true;
+      holdOrientationCurtainV2224();
+      startOrientationWarningCardV2224(document.querySelector('.rotate-portrait-box'), 'normal');
+    }
+
+    function clearNormalOrientationWarningV2224() {
+      sshcpNormalWarningRunningV2224 = false;
+      clearOrientationWarningCardV2224(document.querySelector('.rotate-portrait-box'));
+    }
+
+    function startAllTeamsOrientationWarningV2224() {
+      if (sshcpAllTeamsWarningRunningV2224) return;
+      sshcpAllTeamsWarningRunningV2224 = true;
+      holdOrientationCurtainV2224();
+      startOrientationWarningCardV2224(
+        document.querySelector('.geek-all-teams-rotate-card-v2216'),
+        'allteams'
+      );
+    }
+
+    function clearAllTeamsOrientationWarningV2224() {
+      sshcpAllTeamsWarningRunningV2224 = false;
+      clearOrientationWarningCardV2224(document.querySelector('.geek-all-teams-rotate-card-v2216'));
+    }
+
+    function syncGeekAllTeamsAccidentalCurtainV2224(landscapeNow) {
       if (geekRequiredRotationV2220) {
-        holdOrientationCurtainV2222();
+        holdOrientationCurtainV2224();
         geekAllTeamsLastLandscapeV2220 = landscapeNow;
         return;
       }
       const previousLandscape = geekAllTeamsLastLandscapeV2220;
       if (!landscapeNow) {
-        /* ALL TEAMS is landscape-only: portrait is an accidental mismatch. */
-        holdOrientationCurtainV2222();
+        holdOrientationCurtainV2224();
+        startAllTeamsOrientationWarningV2224();
       } else if (previousLandscape === false) {
-        /* Warning layer disappears at 0s; the separate curtain now reveals. */
-        revealOrientationCurtainV2222(2);
+        clearAllTeamsOrientationWarningV2224();
+        revealOrientationCurtainV2224(2);
       }
       geekAllTeamsLastLandscapeV2220 = landscapeNow;
     }
 
-    function handleNormalOrientationCurtainV2222() {
-      if (geekAllTeamsOpenV2216) return;
+    function handleNormalOrientationV2224() {
+      if (geekAllTeamsOpenV2216) {
+        clearNormalOrientationWarningV2224();
+        return;
+      }
       if (window.__sshcpGeekRequiredRotationRestoreV2220 === 'allteams' ||
           window.__sshcpGeekRequiredRotationRestoreV2220 === 'geek') return;
       const landscapeNow = currentGeekLandscapeV2220();
-      const previousLandscape = sshcpNormalLastLandscapeV2222;
+      const previousLandscape = sshcpNormalLastLandscapeV2224;
       if (landscapeNow) {
-        /* Normal SSHCP is portrait-only. White warning background appears
-           immediately; pre-mount the independent curtain underneath it. */
-        holdOrientationCurtainV2222();
+        startNormalOrientationWarningV2224();
       } else if (previousLandscape === true) {
-        revealOrientationCurtainV2222(2);
+        clearNormalOrientationWarningV2224();
+        revealOrientationCurtainV2224(2);
+      } else {
+        clearNormalOrientationWarningV2224();
       }
-      sshcpNormalLastLandscapeV2222 = landscapeNow;
+      sshcpNormalLastLandscapeV2224 = landscapeNow;
     }
 
-    function beginGeekRequiredRotationRefreshV2220(target) {
+    function beginGeekRequiredRotationRefreshV2224(target) {
       if (!geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
       geekRequiredRotationReloadingV2220 = true;
       persistGeekRequiredRotationStateV2220(target);
-
-      /* V22.23 REQUIRED rotation: keep the dedicated white transition curtain
-         already mounted UNDER the warning layer. The entire warning layer clears
-         at 0s when the requested orientation arrives; white remains unchanged
-         because this curtain is underneath. Hold it through the real refresh. */
-      holdOrientationCurtainV2222();
-      document.documentElement.classList.add('sshcp-geek-rotation-start-v2221');
+      clearAllTeamsOrientationWarningV2224();
+      holdOrientationCurtainV2224();
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           window.location.reload();
@@ -28596,60 +28441,45 @@ let scoreTimingDetail =
       });
     }
 
-    function handleGeekRequiredOrientationV2220() {
+    function handleGeekAllTeamsOrientationV2224() {
       if (!geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
       const landscapeNow = currentGeekLandscapeV2220();
 
       if (geekRequiredRotationV2220 === 'enter' && landscapeNow) {
-        beginGeekRequiredRotationRefreshV2220('allteams');
+        beginGeekRequiredRotationRefreshV2224('allteams');
         return;
       }
       if (geekRequiredRotationV2220 === 'exit' && !landscapeNow) {
-        beginGeekRequiredRotationRefreshV2220('geek');
+        beginGeekRequiredRotationRefreshV2224('geek');
         return;
       }
-
-      /* No required transition: this is an accidental orientation mismatch.
-         Do not rerender/refetch/resize. The warning's white background sits over
-         a separate already-opaque white curtain; on return to landscape the
-         warning layer clears instantly and the curtain reveals using timing-panel 6B. */
-      syncGeekAllTeamsAccidentalCurtainV2222(landscapeNow);
-    }
-
-    function handleGeekAllTeamsResizeV2220() {
-      if (!geekAllTeamsOpenV2216) return;
-      const landscapeNow = currentGeekLandscapeV2220();
 
       if (geekRequiredRotationV2220) {
-        handleGeekRequiredOrientationV2220();
+        holdOrientationCurtainV2224();
+        startAllTeamsOrientationWarningV2224();
+        geekAllTeamsLastLandscapeV2220 = landscapeNow;
         return;
       }
 
-      /* Accidental orientation changes are presentation-only. Preserve the
-         exact existing ALL TEAMS DOM/scroll/geometry; only the stacked warning
-         background + separate transition curtain change presentation. */
-      syncGeekAllTeamsAccidentalCurtainV2222(landscapeNow);
+      syncGeekAllTeamsAccidentalCurtainV2224(landscapeNow);
     }
 
-    window.addEventListener('resize', handleGeekAllTeamsResizeV2220, { passive:true });
-    window.addEventListener('resize', handleNormalOrientationCurtainV2222, { passive:true });
-    window.addEventListener('orientationchange', handleGeekRequiredOrientationV2220, { passive:true });
-    window.addEventListener('orientationchange', handleGeekAllTeamsResizeV2220, { passive:true });
-    window.addEventListener('orientationchange', handleNormalOrientationCurtainV2222, { passive:true });
+    window.addEventListener('resize', handleGeekAllTeamsOrientationV2224, { passive:true });
+    window.addEventListener('resize', handleNormalOrientationV2224, { passive:true });
+    window.addEventListener('orientationchange', handleGeekAllTeamsOrientationV2224, { passive:true });
+    window.addEventListener('orientationchange', handleNormalOrientationV2224, { passive:true });
     if (window.screen && window.screen.orientation && window.screen.orientation.addEventListener) {
-      window.screen.orientation.addEventListener('change', handleGeekRequiredOrientationV2220);
-      window.screen.orientation.addEventListener('change', handleGeekAllTeamsResizeV2220);
-      window.screen.orientation.addEventListener('change', handleNormalOrientationCurtainV2222);
+      window.screen.orientation.addEventListener('change', handleGeekAllTeamsOrientationV2224);
+      window.screen.orientation.addEventListener('change', handleNormalOrientationV2224);
     }
     if (window.matchMedia) {
-      const geekAllTeamsOrientationMediaV2220 = window.matchMedia('(orientation: landscape)');
-      if (geekAllTeamsOrientationMediaV2220 && geekAllTeamsOrientationMediaV2220.addEventListener) {
-        geekAllTeamsOrientationMediaV2220.addEventListener('change', handleGeekRequiredOrientationV2220);
-        geekAllTeamsOrientationMediaV2220.addEventListener('change', handleGeekAllTeamsResizeV2220);
-        geekAllTeamsOrientationMediaV2220.addEventListener('change', handleNormalOrientationCurtainV2222);
+      const geekAllTeamsOrientationMediaV2224 = window.matchMedia('(orientation: landscape)');
+      if (geekAllTeamsOrientationMediaV2224 && geekAllTeamsOrientationMediaV2224.addEventListener) {
+        geekAllTeamsOrientationMediaV2224.addEventListener('change', handleGeekAllTeamsOrientationV2224);
+        geekAllTeamsOrientationMediaV2224.addEventListener('change', handleNormalOrientationV2224);
       }
     }
-    requestAnimationFrame(handleNormalOrientationCurtainV2222);
+    requestAnimationFrame(handleNormalOrientationV2224);
 
     async function restoreGeekAfterRequiredRotationV2220(target) {
       let savedFilters = null;
@@ -28712,17 +28542,14 @@ let scoreTimingDetail =
         sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_RESTORE_KEY_V2220);
         sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220);
         sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220);
-        sessionStorage.removeItem('sshcpGeekAllTeamsOrientationRestoreV2219');
-        sessionStorage.removeItem('sshcpGeekAllTeamsOrientationFiltersV2219');
-        sessionStorage.removeItem('sshcpGeekAllTeamsOrientationReturnV2219');
       } catch (_) {}
 
       /* The final after-play curtain is now fully opaque above the destination,
          so the dedicated orientation curtain underneath can be removed with no
          visual change before the timing-panel 6B final reveal begins. */
-      hideOrientationCurtainV2222Instant();
+      hideOrientationCurtainV2224Instant();
       window.__sshcpGeekRequiredRotationRestoreV2220 = '';
-      document.documentElement.classList.remove('sshcp-pre-geek-transition-v2220', 'sshcp-geek-rotation-start-v2221');
+      document.documentElement.classList.remove('sshcp-pre-geek-transition-v2220');
       await revealAfterPlayCurtainV2086(
         'after-play-geek-required-v2220',
         finalCurtain,
