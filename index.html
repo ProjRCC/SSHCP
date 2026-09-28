@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.29-V7K4QM | BUILD KEY: 22.30-P7M4QX -->
-<!-- SSHCP V22.30 DIRECT GEEK ORIENTATION + TABLE/HINT REBALANCE - exact V22.29 donor.
-     Keeps V22.29 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, 1.00s destination reveal timing,
-     98vw x 98dvh ALL TEAMS geometry, STAT/CAT hard-fit behavior and normal-GEEK whole-pixel 1X/2X sizing. Inside GEEK there are
-     no orientation warning cards: portrait is regular GEEK and landscape is ALL TEAMS. Either physical rotation immediately white-covers,
-     refreshes/rebuilds the orientation-owned destination underneath, then reveals it over 1.00s. ALL TEAMS BACK now exits GEEK normally
-     rather than arming an orientation instruction. Normal GEEK moves its positive whole-row quantization remainder from below the table
-     to above it, leaving the existing 16px instruction centered directly between the table and BACK/FILTERS. No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.30-P7M4QX | BUILD KEY: 22.31-H6Q8NV -->
+<!-- SSHCP V22.31 GEEK BUFFER BALANCE + ALL TEAMS CENTERED ACTIONS - exact V22.30 donor.
+     Keeps V22.30 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, direct portrait/landscape GEEK ownership,
+     1.00s destination reveal timing, 98vw x 98dvh ALL TEAMS geometry, STAT/CAT hard-fit behavior and normal-GEEK whole-pixel 1X/2X sizing.
+     Normal GEEK now splits the positive whole-row quantization remainder 50/50 above and below the table instead of placing all of it above;
+     the existing 16px instruction remains unchanged in size, is explicitly Gray 7, and is visually centered across the complete table-to-actions
+     buffer. ALL TEAMS keeps the same button height/gap but centers a narrower two-button action group. HOME version display advances to V22.31.
+     No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -13182,8 +13182,19 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
   transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,1s) ease-out!important;
 }
 
-/* V22.22-approved ALL TEAMS-only breathing room remains unchanged. */
-.geek-all-teams-actions-v2216{margin-top:7px!important;}
+/* V22.31 — keep the accepted ALL TEAMS action height/gap, but center the
+   BACK/FILTERS pair as a deliberately narrower control group in landscape. */
+.geek-all-teams-actions-v2216{
+  width:min(900px,72%)!important;
+  align-self:center!important;
+  margin:7px auto 0!important;
+}
+
+/* V22.31 — explicit normal-GEEK instruction color lock. */
+.geek-bottom-helper-v2229{
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
+}
 </style>
 
 </head>
@@ -13320,7 +13331,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.29</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.31</span></span>
         </button>
 
       </div>
@@ -27220,18 +27231,29 @@ let scoreTimingDetail =
       const categoryHeight = xUnit;
       const statHeight = xUnit * 2;
       const usedDataPixelsV2097 = xUnit * targetUnitsV220;
-      /* V22.30 — preserve the exact whole-pixel 1X/2X contract, but move any
-         positive quantization remainder from BELOW the table to ABOVE it. This
-         creates the requested title/table breathing room without changing X,
-         while the existing instruction band becomes the entire table/button gap. */
+      /* V22.31 — preserve the exact whole-pixel 1X/2X contract and the table
+         height from V22.30, but split the positive quantization remainder 50/50
+         above and below the table. The helper text keeps its existing 16px target
+         and is shifted only enough to sit at the visual midpoint of the complete
+         table-to-actions buffer. X/2X is never altered to manufacture spacing. */
       const exactShellHeightV2097 = Math.max(1, headerHeight + usedDataPixelsV2097);
       const exactShellValueV2097 = exactShellHeightV2097 + 'px';
-      const topRemainderV2230 = Math.max(0, availableShellHeightV2097 - exactShellHeightV2097);
+      const totalRemainderV2231 = Math.max(0, availableShellHeightV2097 - exactShellHeightV2097);
+      const topRemainderV2231 = totalRemainderV2231 * 0.50;
+      const bottomRemainderV2231 = totalRemainderV2231 - topRemainderV2231;
       shell.style.setProperty('--geek-visible-units-v220', String(targetUnitsV220));
       els.modalActions.style.setProperty('margin-top', '0px', 'important');
 
-      shell.style.setProperty('margin-top', topRemainderV2230.toFixed(2) + 'px', 'important');
-      shell.style.setProperty('margin-bottom', '0px', 'important');
+      shell.style.setProperty('margin-top', topRemainderV2231.toFixed(2) + 'px', 'important');
+      shell.style.setProperty('margin-bottom', bottomRemainderV2231.toFixed(2) + 'px', 'important');
+      const bottomHelperV2231 = els.modalBody.querySelector('.geek-bottom-helper-v2229');
+      if (bottomHelperV2231) {
+        bottomHelperV2231.style.setProperty(
+          'transform',
+          'translateY(' + (-bottomRemainderV2231 * 0.50).toFixed(2) + 'px)',
+          'important'
+        );
+      }
       shell.style.setProperty('flex', '0 0 ' + exactShellValueV2097, 'important');
       shell.style.setProperty('height', exactShellValueV2097, 'important');
       shell.style.setProperty('min-height', exactShellValueV2097, 'important');
