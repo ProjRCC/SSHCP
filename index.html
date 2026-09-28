@@ -1,10 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.27-K8R4MN | BUILD KEY: 22.28-M6R9QK -->
-<!-- SSHCP V22.28 ALL TEAMS FILTER EXIT PARITY - exact V22.27 donor.
-     Keeps V22.27 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, 1.00s orientation timings, orientation
-     architecture, 98vw x 98dvh ALL TEAMS geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing,
-     ALL TEAMS +2px action buffer and the repaired live FILTERS draft behavior unchanged. Changes only the ALL TEAMS filter
-     exit: unchecking ALL TEAMS and pressing APPLY now uses the exact same required ROTATE PHONE TO PORTRAIT warning/curtain/
-     refresh path as the ALL TEAMS BACK button instead of closing the landscape view immediately. No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.28-M6R9QK | BUILD KEY: 22.29-V7K4QM -->
+<!-- SSHCP V22.29 ROTATE-TO-ALL-TEAMS + GEEK INSTRUCTION BUFFER - exact V22.28 donor.
+     Keeps V22.28 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, 1.00s orientation timings, four-layer
+     orientation handoff, 98vw x 98dvh ALL TEAMS geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing,
+     ALL TEAMS +2px action buffer and repaired live FILTERS behavior. Removes ALL TEAMS as a filter/state sentinel. Regular GEEK
+     now enters ALL TEAMS by rotating to landscape: immediate white cover, refresh/rebuild under white, then 1.00s reveal. The
+     old top TAP TO SEE DETAILS helper is removed; a fixed >=20px bottom instruction band reads Tap stat for details - rotate for
+     all teams in 16px baseline type. Normal and ALL TEAMS FILTERS now contain only actual stat/tone/category filters. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -7517,6 +7518,24 @@ button.sshcp-button-pressed-v172{
   white-space:nowrap!important;
   overflow:hidden!important;
 }
+.geek-bottom-helper-v2229{
+  flex:0 0 max(24px,calc(24px * var(--v221-global-scale,1)))!important;
+  min-height:20px!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
+  font-size:calc(16px * var(--v221-global-scale,1))!important;
+  font-weight:400!important;
+  line-height:1!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
 .geek-main-v180{
   position:relative!important;
   flex:1 1 auto!important;
@@ -12968,25 +12987,6 @@ html.sshcp-pre-geek-transition-v2220 body::after{
   line-height:1!important;
 }
 
-/* ALL TEAMS stays a full-width row in the existing portrait GEEK filter. */
-.geek-filter-choice-v186.geek-filter-all-teams-v2216{
-  grid-column:1 / -1!important;
-  height:44px!important;
-  justify-content:center!important;
-  font-weight:800!important;
-}
-.modal-overlay.geek-mode-v180 .geek-filter-grid-v186{
-  grid-template-rows:
-    50px
-    44px
-    12px
-    44px
-    14px
-    44px
-    44px
-    44px
-    var(--v187-post-button-h,50px)!important;
-}
 </style>
 
 <style id="sshcp-v2221-allteams-layout-refinement">
@@ -13358,7 +13358,7 @@ html.sshcp-geek-exit-rotation-started .geek-all-teams-rotate-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.28</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.29</span></span>
         </button>
 
       </div>
@@ -26036,7 +26036,6 @@ let scoreTimingDetail =
       ...GEEK_CATEGORY_FILTER_ORDER_V1830
     ];
 
-    const GEEK_ALL_TEAMS_FILTER_V2216 = 'ALL_TEAMS';
 
     function geekFullFilterSetV1830() {
       return new Set(['ALL', ...GEEK_FILTER_ORDER_V186]);
@@ -27259,14 +27258,13 @@ let scoreTimingDetail =
       const categoryHeight = xUnit;
       const statHeight = xUnit * 2;
       const usedDataPixelsV2097 = xUnit * targetUnitsV220;
-      /* V22.24 — preserve the exact V22.21 whole-X contract. Leftover quantization
-         space stays OUTSIDE the table and adds to the external actions gap; it
-         never feeds back into X/2X sizing or gets compensated away. */
-      const actualGapV220 = Math.max(0, targetGapV220 + availableDataPixelsV2097 - usedDataPixelsV2097);
+      /* V22.29 — preserve the exact V22.21 whole-X contract. Leftover quantization
+         space stays OUTSIDE the table; the fixed instruction band below GEEK owns
+         the minimum buffer. Nothing feeds back into X/2X sizing. */
       const exactShellHeightV2097 = Math.max(1, headerHeight + usedDataPixelsV2097);
       const exactShellValueV2097 = exactShellHeightV2097 + 'px';
       shell.style.setProperty('--geek-visible-units-v220', String(targetUnitsV220));
-      els.modalActions.style.setProperty('margin-top', actualGapV220.toFixed(3) + 'px', 'important');
+      els.modalActions.style.setProperty('margin-top', '0px', 'important');
 
       shell.style.setProperty('flex', '0 0 ' + exactShellValueV2097, 'important');
       shell.style.setProperty('height', exactShellValueV2097, 'important');
@@ -27564,12 +27562,6 @@ let scoreTimingDetail =
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) scroll.scrollTop = 0;
 
-      if (geekSelectedCategoriesV180.has(GEEK_ALL_TEAMS_FILTER_V2216)) {
-        requestGeekAllTeamsEnterV2220();
-      } else {
-        closeGeekAllTeamsV2216(false);
-      }
-
       requestAnimationFrame(() => {
         fitGeekRowsV180();
         revealGeekFilterCoverV1812();
@@ -27586,10 +27578,6 @@ let scoreTimingDetail =
           '<label class="geek-filter-choice-v186 geek-filter-all-v186">' +
             '<input type="checkbox" data-geek-filter="ALL">' +
             '<span class="geek-filter-text-v186">ALL</span>' +
-          '</label>' +
-          '<label class="geek-filter-choice-v186 geek-filter-all-teams-v2216">' +
-            '<input type="checkbox" data-geek-filter="' + GEEK_ALL_TEAMS_FILTER_V2216 + '">' +
-            '<span class="geek-filter-text-v186">ALL TEAMS</span>' +
           '</label>' +
           '<div class="geek-filter-separator-v1830" aria-hidden="true"></div>' +
           '<label class="geek-filter-choice-v186 geek-filter-tone-v1830">' +
@@ -27643,8 +27631,8 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.27 — GEEK <-> ALL TEAMS ORIENTATION STATE
-       Only entering ALL TEAMS or pressing its BACK requires a fresh rebuild.
+       SSHCP V22.29 — GEEK <-> ALL TEAMS ORIENTATION STATE
+       Regular GEEK landscape entry and ALL TEAMS BACK require a fresh rebuild.
        Accidental orientation mismatches preserve the existing ALL TEAMS DOM,
        scroll position and filters. The warning and transition curtain are separate
        white-backed layers: warning uses timing-panel 6A, clears at 0s on rotation, then
@@ -28125,7 +28113,7 @@ let scoreTimingDetail =
       if (node) node.textContent = String(message || '');
     }
 
-    function openGeekAllTeamsV2216(options = {}) {
+    function openGeekAllTeamsV2216() {
       if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return;
       ensureGeekAllTeamsShellV2216();
       geekAllTeamsOpenV2216 = true;
@@ -28136,20 +28124,11 @@ let scoreTimingDetail =
       if (rotate) rotate.setAttribute('aria-hidden', 'false');
       if (view) view.setAttribute('aria-hidden', 'false');
 
-      if (options.requiredEnter === true) {
-        geekRequiredRotationV2220 = 'enter';
-        holdOrientationCurtainV2225();
-        document.documentElement.classList.add('sshcp-geek-enter-pending-v2220');
-      }
       document.documentElement.classList.add('sshcp-geek-all-teams-v2216');
       renderGeekAllTeamsV2216();
-
-      if (options.requiredEnter === true) {
-        startAllTeamsOrientationWarningV2225();
-      }
     }
 
-    function closeGeekAllTeamsV2216(cancelCheck) {
+    function closeGeekAllTeamsV2216() {
       geekAllTeamsOpenV2216 = false;
       geekRequiredRotationV2220 = '';
       sshcpGeekExitRotationStarted = false;
@@ -28158,7 +28137,6 @@ let scoreTimingDetail =
       closeGeekAllTeamsFilterV2216();
       document.documentElement.classList.remove(
         'sshcp-geek-all-teams-v2216',
-        'sshcp-geek-enter-pending-v2220',
         'sshcp-geek-exit-pending-v2220'
       );
       const view = document.getElementById('geekAllTeamsViewV2216');
@@ -28166,13 +28144,6 @@ let scoreTimingDetail =
       if (view) view.setAttribute('aria-hidden', 'true');
       if (rotate) rotate.setAttribute('aria-hidden', 'true');
 
-      if (cancelCheck) {
-        geekSelectedCategoriesV180.delete(GEEK_ALL_TEAMS_FILTER_V2216);
-        geekPendingFiltersV186.delete(GEEK_ALL_TEAMS_FILTER_V2216);
-        const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
-        if (panel) syncGeekFilterChecksV180(panel);
-        renderGeekTableV180();
-      }
     }
 
     function geekAllTeamsFilterChoiceHtmlV2216(key, label, master) {
@@ -28207,7 +28178,6 @@ let scoreTimingDetail =
       geekAllTeamsFilterDraftV2216 = new Set(geekSelectedCategoriesV180);
       let html = '<div class="geek-all-teams-filter-grid-v2216">' +
         geekAllTeamsFilterChoiceHtmlV2216('ALL', 'ALL', true) +
-        geekAllTeamsFilterChoiceHtmlV2216(GEEK_ALL_TEAMS_FILTER_V2216, 'ALL TEAMS', true) +
         geekAllTeamsFilterChoiceHtmlV2216('GOOD', 'GOOD', false) +
         geekAllTeamsFilterChoiceHtmlV2216('BAD', 'BAD', false);
       GEEK_CATEGORY_FILTER_ORDER_V1830.forEach(label => {
@@ -28224,9 +28194,7 @@ let scoreTimingDetail =
             geekAllTeamsFilterDraftV2216 = new Set(geekSelectedCategoriesV180);
           }
           if (key === 'ALL') {
-            const keepAllTeams = geekAllTeamsFilterDraftV2216.has(GEEK_ALL_TEAMS_FILTER_V2216);
             geekAllTeamsFilterDraftV2216 = input.checked ? geekFullFilterSetV1830() : new Set();
-            if (keepAllTeams) geekAllTeamsFilterDraftV2216.add(GEEK_ALL_TEAMS_FILTER_V2216);
           } else {
             if (input.checked) geekAllTeamsFilterDraftV2216.add(key);
             else geekAllTeamsFilterDraftV2216.delete(key);
@@ -28243,19 +28211,9 @@ let scoreTimingDetail =
         geekSelectedCategoriesV180 = new Set(geekAllTeamsFilterDraftV2216 || []);
         geekSyncAllFlagV1830(geekSelectedCategoriesV180);
         geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
-        const keepAllTeams = geekSelectedCategoriesV180.has(GEEK_ALL_TEAMS_FILTER_V2216);
         closeGeekAllTeamsFilterV2216();
         renderGeekTableV180();
-        if (keepAllTeams) {
-          renderGeekAllTeamsV2216();
-        } else {
-          /* V22.28 — leaving ALL TEAMS from FILTERS is an intentional mode
-             change, so it owns the same required portrait-rotation path as
-             the ALL TEAMS BACK button. Keep the landscape view in place
-             behind the warning/curtain until portrait is reached and the
-             normal GEEK refresh/rebuild completes. */
-          requestGeekAllTeamsExitV2220();
-        }
+        renderGeekAllTeamsV2216();
       });
 
       shade.classList.add('open-v2216');
@@ -28268,10 +28226,6 @@ let scoreTimingDetail =
       shade.classList.remove('open-v2216');
       shade.setAttribute('aria-hidden', 'true');
       geekAllTeamsFilterDraftV2216 = null;
-    }
-
-    function requestGeekAllTeamsEnterV2220() {
-      openGeekAllTeamsV2216({ requiredEnter:true });
     }
 
     function requestGeekAllTeamsExitV2220() {
@@ -28287,7 +28241,6 @@ let scoreTimingDetail =
       document.documentElement.classList.remove('sshcp-geek-exit-rotation-started');
       holdOrientationCurtainV2225();
       setGeekAllTeamsWarningMessageV2220('ROTATE PHONE TO PORTRAIT');
-      document.documentElement.classList.remove('sshcp-geek-enter-pending-v2220');
       document.documentElement.classList.add('sshcp-geek-exit-pending-v2220');
       startAllTeamsOrientationWarningV2225();
     }
@@ -28448,6 +28401,28 @@ let scoreTimingDetail =
       geekAllTeamsLastLandscapeV2220 = landscapeNow;
     }
 
+    function isRegularGeekModeOpenV2229() {
+      return !!(
+        els.modalOverlay &&
+        els.modalOverlay.classList.contains('open') &&
+        els.modalOverlay.classList.contains('geek-mode-v180') &&
+        !geekAllTeamsOpenV2216
+      );
+    }
+
+    function beginGeekAllTeamsEnterFromRotationV2229() {
+      if (geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
+      geekRequiredRotationReloadingV2220 = true;
+      clearNormalOrientationWarningV2225();
+      holdOrientationCurtainV2225();
+      persistGeekRequiredRotationStateV2220('allteams');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.location.reload();
+        });
+      });
+    }
+
     function handleNormalOrientationV2225() {
       if (geekAllTeamsOpenV2216) {
         clearNormalOrientationWarningV2225();
@@ -28457,6 +28432,18 @@ let scoreTimingDetail =
           window.__sshcpGeekRequiredRotationRestoreV2220 === 'geek') return;
       const landscapeNow = isLandscapeOrientationV2225();
       const previousLandscape = sshcpNormalLastLandscapeV2225;
+
+      /* V22.29 — regular GEEK owns landscape as the ALL TEAMS command. The
+         portrait-only CSS overlay supplies immediate pure white, but the Gray
+         warning card never starts. Rebuild ALL TEAMS under white, then timing
+         6B reveals the settled landscape destination over 1.00 second. */
+      if (isRegularGeekModeOpenV2229()) {
+        clearNormalOrientationWarningV2225();
+        if (landscapeNow) beginGeekAllTeamsEnterFromRotationV2229();
+        sshcpNormalLastLandscapeV2225 = landscapeNow;
+        return;
+      }
+
       if (landscapeNow) {
         startNormalOrientationWarningV2225();
       } else if (previousLandscape === true) {
@@ -28485,10 +28472,6 @@ let scoreTimingDetail =
       if (!geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
       const landscapeNow = isLandscapeOrientationV2225();
 
-      if (geekRequiredRotationV2220 === 'enter' && landscapeNow) {
-        beginGeekRequiredRotationRefreshV2225('allteams');
-        return;
-      }
       if (geekRequiredRotationV2220 === 'exit' && !landscapeNow) {
         beginGeekRequiredRotationRefreshV2225('geek');
         return;
@@ -28562,11 +28545,6 @@ let scoreTimingDetail =
         geekSelectedCategoriesV180 = new Set(savedFilters.map(value => String(value || '').trim()).filter(Boolean));
       }
 
-      if (target === 'allteams') {
-        geekSelectedCategoriesV180.add(GEEK_ALL_TEAMS_FILTER_V2216);
-      } else {
-        geekSelectedCategoriesV180.delete(GEEK_ALL_TEAMS_FILTER_V2216);
-      }
       geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
 
       try {
@@ -28587,7 +28565,7 @@ let scoreTimingDetail =
       if (target === 'allteams' && geekDataV180 && Array.isArray(geekDataV180.categories)) {
         openGeekAllTeamsV2216();
       } else {
-        closeGeekAllTeamsV2216(false);
+        closeGeekAllTeamsV2216();
       }
 
       const finalCurtain = beginAfterPlayCurtainV2086('after-play-geek-required-v2220');
@@ -28676,9 +28654,9 @@ let scoreTimingDetail =
       els.modalInput.style.display = 'none';
 
       els.modalBody.innerHTML =
-        '<div class="geek-helper-v1919">' +
-          (geekEarlyAccessV2068 ? 'YOUR STATS • FIELD TBD' : 'TAP TO SEE DETAILS') +
-        '</div>' +
+        (geekEarlyAccessV2068
+          ? '<div class="geek-helper-v1919">YOUR STATS • FIELD TBD</div>'
+          : '') +
         '<div class="geek-main-v180">' +
           '<div class="geek-table-shell-v180">' +
             '<div class="geek-row-v180 header">' +
@@ -28692,7 +28670,8 @@ let scoreTimingDetail =
           '<div class="geek-load-shield-v180">' +
             '<div class="geek-load-label-v180">LOADING GEEK MODE</div>' +
           '</div>' +
-        '</div>';
+        '</div>' +
+        '<div class="geek-bottom-helper-v2229">Tap stat for details - rotate for all teams</div>';
 
       const back = makeModalButton('BACK', 'geek-back-v180', returnFromPostPlayV2054);
       const filterButton = makeModalButton('FILTERS', 'geek-filter-button-v186', toggleGeekFilterPanelV186);
