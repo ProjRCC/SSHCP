@@ -1,11 +1,12 @@
-<!-- SSHCP | BASE KEY: 22.17-T4M8QK | BUILD KEY: 22.18-R5N7QK -->
-<!-- SSHCP V22.18 ALL-TEAMS LANDSCAPE TYPOGRAPHY + SCROLL RAIL - exact V22.17 donor.
-     Keeps V22.17 complete ALL TEAMS stat set, STAT/CAT + six-team landscape geometry, filters, calculations,
-     scoring, authorization, Worker/API and all normal GEEK behavior unchanged. Refines only ALL TEAMS: leader
-     values stay bold while non-leader values are regular weight; STAT labels target 40% of row height and may
-     use up to two legal lines; CAT is smaller and regular weight; the table gets the established custom Blue
-     vertical progress rail in a 16px right gutter; and the portrait ROTATE PHONE card now includes a Blue BACK
-     action that cancels ALL TEAMS. No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.18-R5N7QK | BUILD KEY: 22.19-P6V8RM -->
+<!-- SSHCP V22.19 ALL-TEAMS ROTATION REFRESH + HEADER/FIT REFINEMENT - exact V22.18 donor.
+     Keeps V22.18 complete ALL TEAMS stat set, six-team landscape geometry, filters, calculations, custom Blue
+     scroll rail, portrait BACK, scoring, authorization, Worker/API and normal GEEK behavior unchanged. ALL TEAMS
+     rotation now uses the established AFTER-PLAY white curtain: orientation change is covered immediately, the
+     page performs a real refresh/rebuild for the new viewport, then the existing .30s after-play fade reveals the
+     finished portrait rotate card or landscape table. STAT and CAT remain separate body columns; only their header
+     is merged as STAT. CAT is narrower, reclaimed width goes to the six team columns, and two-line STAT labels are
+     constrained to the full 80% row-height allowance. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -72,6 +73,16 @@
   <script>
     (function () {
       try {
+        /* V22.19 — orientation-driven ALL TEAMS refresh must start white on
+           first paint. Runtime later hands this boot-only cover to the existing
+           AFTER-PLAY reveal curtain; this class itself adds no new fade. */
+        var geekAllTeamsOrientationRestoreV2219 =
+          sessionStorage.getItem('sshcpGeekAllTeamsOrientationRestoreV2219') === '1';
+        window.__sshcpGeekAllTeamsOrientationRestoreV2219 = geekAllTeamsOrientationRestoreV2219;
+        if (geekAllTeamsOrientationRestoreV2219) {
+          document.documentElement.classList.add('sshcp-pre-geek-allteams-v2219');
+        }
+
         /* SSHCP V19.38 — built directly from V19.37 GOLDEN (BUILD 19.37-K5Q8NV).
            V19.37 is the declared frontend GOLDEN rollback. V19.38 preserves all V19.37
            scoring, NESR/CLEAR timing, shotgun navigation, Worker/API/Sheet behavior,
@@ -12578,6 +12589,23 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 </style>
 
 
+<style id="sshcp-v2219-geek-all-teams-rotation-boot">
+/* First-paint hold used only across the real orientation refresh. Runtime
+   hands this solid cover to the established AFTER-PLAY curtain/fade. */
+html.sshcp-pre-geek-allteams-v2219 body::after{
+  content:""!important;
+  position:fixed!important;
+  inset:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:#fff!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  z-index:214500!important;
+}
+</style>
+
 <style id="sshcp-v2218-geek-all-teams-landscape">
 /* SSHCP V22.18 — ALL TEAMS landscape typography, custom vertical rail and portrait BACK refinement.
    Normal SSHCP remains portrait-only. The established landscape exception is
@@ -12591,7 +12619,7 @@ html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
 .geek-all-teams-view-v2216{
   position:fixed!important;
   inset:0!important;
-  z-index:12000!important;
+  z-index:6200!important;
   display:none!important;
   box-sizing:border-box!important;
   font-family:"Oswald",Arial,sans-serif!important;
@@ -12798,6 +12826,13 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   text-align:center!important;
   background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
 }
+/* V22.19 — body keeps distinct STAT + CAT columns. Only the header spans
+   those two tracks, so the left header simply reads STAT. */
+.header-v2216 .geek-all-teams-stat-v2216{
+  grid-column:1 / span 2!important;
+  left:0!important;
+}
+
 .header-v2216 .geek-all-teams-cell-v2216{
   font-weight:900!important;
   background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
@@ -12816,7 +12851,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
 .geek-all-teams-stat-label-v2217{
   max-height:80%!important;
   white-space:normal!important;
-  line-height:1.02!important;
+  line-height:1!important;
   font-weight:700!important;
 }
 .geek-all-teams-cat-label-v2217{
@@ -13138,7 +13173,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.18</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.19</span></span>
         </button>
 
       </div>
@@ -27416,14 +27451,21 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.18 — ALL TEAMS LANDSCAPE REFINEMENT
-       Keeps the complete stat set and four-row viewport, but makes non-leader
-       values regular weight, gives STAT a 40%-row two-line target, de-emphasizes
-       CAT, adds a custom Blue vertical rail in the shared 16px right gutter, and
-       adds portrait BACK to the rotate card. BACK always cancels ALL TEAMS.
+       SSHCP V22.19 — ALL TEAMS ROTATION + HEADER/FIT REFINEMENT
+       Keeps the V22.18 full table and controls. Orientation changes now trigger
+       a real page refresh under the existing AFTER-PLAY white curtain/fade. STAT
+       and CAT remain separate body columns while the header spans both as STAT;
+       CAT narrows, teams gain width, and two-line STAT text is hard-limited to
+       the complete 80%-of-row vertical allowance. BACK still cancels ALL TEAMS.
        ========================================================= */
     let geekAllTeamsOpenV2216 = false;
     let geekAllTeamsFilterDraftV2216 = null;
+    let geekAllTeamsOrientationReloadingV2219 = false;
+    let geekAllTeamsLastLandscapeV2219 = (window.innerWidth || 0) > (window.innerHeight || 0);
+
+    const GEEK_ALL_TEAMS_ORIENTATION_RESTORE_KEY_V2219 = 'sshcpGeekAllTeamsOrientationRestoreV2219';
+    const GEEK_ALL_TEAMS_ORIENTATION_FILTERS_KEY_V2219 = 'sshcpGeekAllTeamsOrientationFiltersV2219';
+    const GEEK_ALL_TEAMS_ORIENTATION_RETURN_KEY_V2219 = 'sshcpGeekAllTeamsOrientationReturnV2219';
 
     function ensureGeekAllTeamsShellV2216() {
       let rotate = document.getElementById('geekAllTeamsRotateV2216');
@@ -27576,28 +27618,48 @@ let scoreTimingDetail =
         });
       });
 
-      /* V22.18 — STAT targets 40% of the actual row height and may use at
-         most two legal lines. The colored tone dot remains outside the fit box. */
+      /* V22.19 — STAT starts at 40% of the actual row height. A legal
+         two-line form is allowed, but the COMPLETE two-line line-box is capped
+         at 80% of the row. Recheck width after rendering so neither line clips. */
       table.querySelectorAll('.geek-all-teams-stat-label-v2217').forEach(label => {
         const cell = label.closest('.geek-all-teams-cell-v2216');
         if (!cell) return;
         const dot = cell.querySelector('.geek-all-teams-tone-v2217');
         const dotWidth = dot ? (dot.getBoundingClientRect().width + 7) : 0;
+        const horizontalReserve = 10 + dotWidth;
         fitTwoLineTeamTextV58(
           cell, label, label, rowHeight,
-          rowHeight * 0.40, Math.max(8, rowHeight * 0.18), 12 + dotWidth, 0.80,
+          rowHeight * 0.40, Math.max(8, rowHeight * 0.18), horizontalReserve, 0.80,
           splitGeekStatTwoLinesV1821, rowHeight * 0.40
         );
+
+        label.style.setProperty('line-height', '1', 'important');
         label.style.setProperty('text-align', 'left', 'important');
+
+        const original = String(label.dataset.v58Name || label.textContent || '').trim();
+        const split = label.classList.contains('two-line')
+          ? splitGeekStatTwoLinesV1821(original)
+          : null;
+        const lines = Array.isArray(split) && split.length === 2 ? split : [original];
+        let size = Math.max(0.001, parseFloat(getComputedStyle(label).fontSize) || (rowHeight * 0.40));
+        const availableWidth = Math.max(0.001, cell.clientWidth - horizontalReserve);
+        const maxLineWidth = Math.max(...lines.map(line => measureTeamLineWidthV58(label, line, size)));
+        const maxByWidth = maxLineWidth > 0 ? size * (availableWidth / maxLineWidth) * 0.985 : size;
+        const maxByHeight = (rowHeight * 0.80) / Math.max(1, lines.length);
+        const finalSize = Math.max(Number.EPSILON, Math.min(size, maxByWidth, maxByHeight));
+        if (finalSize < size - 0.01) {
+          label.style.setProperty('font-size', finalSize + 'px', 'important');
+        }
       });
 
-      /* CAT is intentionally quieter than STAT and team values. */
+      /* CAT remains a distinct body column, but is intentionally smaller and
+         regular weight so its narrower V22.19 track gives width back to teams. */
       table.querySelectorAll('.geek-all-teams-cat-label-v2217').forEach(label => {
         const cell = label.closest('.geek-all-teams-cell-v2216');
         if (!cell) return;
-        fitTextToBoxV5(cell, label, rowHeight * 0.27, Math.max(8, rowHeight * 0.16), {
-          horizontalPad: 6,
-          verticalPad: rowHeight * 0.22,
+        fitTextToBoxV5(cell, label, rowHeight * 0.23, Math.max(7, rowHeight * 0.13), {
+          horizontalPad: 4,
+          verticalPad: rowHeight * 0.25,
           wrap: false,
           lineHeight: 1
         });
@@ -27660,10 +27722,10 @@ let scoreTimingDetail =
       const teamCount = Math.max(1, Number(table.dataset.teamCount) || 1);
       const width = Math.max(1, scroll.clientWidth || window.innerWidth || 1);
 
-      /* Preserve the V22.16 left-side footprint, but split it 70/30 between
-         STAT and CAT. Six team columns still occupy the remaining width. */
-      const metaWidth = Math.max(150, Math.round(width * 0.25));
-      const statWidth = Math.round(metaWidth * 0.70);
+      /* V22.19 — keep distinct STAT + CAT body tracks, but make CAT materially
+         narrower and return the reclaimed width to the six visible team columns. */
+      const metaWidth = Math.max(142, Math.round(width * 0.215));
+      const statWidth = Math.round(metaWidth * 0.78);
       const catWidth = metaWidth - statWidth;
       const teamWidth = Math.max(82, (width - metaWidth) / 6);
 
@@ -27702,8 +27764,7 @@ let scoreTimingDetail =
       table.dataset.teamCount = String(Math.max(1, teams.length));
 
       let html = '<div class="geek-all-teams-row-v2216 header-v2216">' +
-        '<div class="geek-all-teams-cell-v2216 geek-all-teams-stat-v2216"><span class="geek-all-teams-head-label-v2217">STAT</span></div>' +
-        '<div class="geek-all-teams-cell-v2216 geek-all-teams-cat-v2217"><span class="geek-all-teams-head-label-v2217">CAT</span></div>';
+        '<div class="geek-all-teams-cell-v2216 geek-all-teams-stat-v2216"><span class="geek-all-teams-head-label-v2217">STAT</span></div>';
       teams.forEach(team => {
         const ours = authorized && normalizeName(team) === authorized;
         html += '<div class="geek-all-teams-cell-v2216 geek-all-teams-team-head-v2217' + (ours ? ' authorized-v2217' : '') + '">' +
@@ -27753,6 +27814,7 @@ let scoreTimingDetail =
       if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return;
       ensureGeekAllTeamsShellV2216();
       geekAllTeamsOpenV2216 = true;
+      geekAllTeamsLastLandscapeV2219 = (window.innerWidth || 0) > (window.innerHeight || 0);
       document.documentElement.classList.add('sshcp-geek-all-teams-v2216');
       const view = document.getElementById('geekAllTeamsViewV2216');
       const rotate = document.getElementById('geekAllTeamsRotateV2216');
@@ -27849,10 +27911,114 @@ let scoreTimingDetail =
       geekAllTeamsFilterDraftV2216 = null;
     }
 
-    window.addEventListener('resize', () => {
+    function persistGeekAllTeamsOrientationStateV2219() {
+      try {
+        sessionStorage.setItem(GEEK_ALL_TEAMS_ORIENTATION_RESTORE_KEY_V2219, '1');
+        sessionStorage.setItem(
+          GEEK_ALL_TEAMS_ORIENTATION_FILTERS_KEY_V2219,
+          JSON.stringify(Array.from(geekSelectedCategoriesV180 || []))
+        );
+        sessionStorage.setItem(
+          GEEK_ALL_TEAMS_ORIENTATION_RETURN_KEY_V2219,
+          String(postPlayReturnDestinationV2054 || 'summary')
+        );
+      } catch (_) {}
+    }
+
+    function beginGeekAllTeamsOrientationRefreshV2219() {
+      if (!geekAllTeamsOpenV2216 || geekAllTeamsOrientationReloadingV2219) return;
+      geekAllTeamsOrientationReloadingV2219 = true;
+      persistGeekAllTeamsOrientationStateV2219();
+
+      /* Reuse the established AFTER-PLAY white curtain exactly. The ALL TEAMS
+         layer sits below its 6300 z-index, so the current portrait/landscape
+         presentation is covered before the real refresh begins. */
+      beginAfterPlayCurtainV2086('after-play-geek-allteams-orient-v2219');
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.location.reload();
+        });
+      });
+    }
+
+    function handleGeekAllTeamsResizeV2219() {
       if (!geekAllTeamsOpenV2216) return;
+      const landscapeNow = (window.innerWidth || 0) > (window.innerHeight || 0);
+      if (landscapeNow !== geekAllTeamsLastLandscapeV2219) {
+        beginGeekAllTeamsOrientationRefreshV2219();
+        return;
+      }
       requestAnimationFrame(syncGeekAllTeamsColumnGeometryV2216);
-    });
+    }
+
+    window.addEventListener('resize', handleGeekAllTeamsResizeV2219, { passive:true });
+    window.addEventListener('orientationchange', beginGeekAllTeamsOrientationRefreshV2219, { passive:true });
+    if (window.matchMedia) {
+      const geekAllTeamsOrientationMediaV2219 = window.matchMedia('(orientation: landscape)');
+      if (geekAllTeamsOrientationMediaV2219 && geekAllTeamsOrientationMediaV2219.addEventListener) {
+        geekAllTeamsOrientationMediaV2219.addEventListener('change', beginGeekAllTeamsOrientationRefreshV2219);
+      }
+    }
+
+    async function restoreGeekAllTeamsAfterOrientationV2219() {
+      let savedFilters = null;
+      try {
+        savedFilters = JSON.parse(
+          sessionStorage.getItem(GEEK_ALL_TEAMS_ORIENTATION_FILTERS_KEY_V2219) || 'null'
+        );
+      } catch (_) {}
+
+      if (Array.isArray(savedFilters)) {
+        geekSelectedCategoriesV180 = new Set(savedFilters.map(value => String(value || '').trim()).filter(Boolean));
+      }
+      geekSelectedCategoriesV180.add(GEEK_ALL_TEAMS_FILTER_V2216);
+      geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
+
+      try {
+        const savedReturn = String(
+          sessionStorage.getItem(GEEK_ALL_TEAMS_ORIENTATION_RETURN_KEY_V2219) || ''
+        ).trim();
+        if (savedReturn === 'home' || savedReturn === 'summary') {
+          postPlayReturnDestinationV2054 = savedReturn;
+        }
+      } catch (_) {}
+
+      /* Keep the boot-only white cover in place while the normal GEEK read
+         rebuilds everything for the new viewport. Its own entry curtain remains
+         hidden underneath and is removed before the final ALL TEAMS reveal. */
+      await openGeekModeV180();
+      removeDataRevealShieldV177('after-play-geek-v2086');
+
+      if (geekDataV180 && Array.isArray(geekDataV180.categories)) {
+        openGeekAllTeamsV2216();
+      }
+
+      const finalCurtain = beginAfterPlayCurtainV2086('after-play-geek-allteams-restore-v2219');
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch (_) {}
+      }
+
+      await new Promise(resolve => requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (geekAllTeamsOpenV2216) syncGeekAllTeamsColumnGeometryV2216();
+          requestAnimationFrame(resolve);
+        });
+      }));
+
+      try {
+        sessionStorage.removeItem(GEEK_ALL_TEAMS_ORIENTATION_RESTORE_KEY_V2219);
+        sessionStorage.removeItem(GEEK_ALL_TEAMS_ORIENTATION_FILTERS_KEY_V2219);
+        sessionStorage.removeItem(GEEK_ALL_TEAMS_ORIENTATION_RETURN_KEY_V2219);
+      } catch (_) {}
+
+      document.documentElement.classList.remove('sshcp-pre-geek-allteams-v2219');
+      await revealAfterPlayCurtainV2086(
+        'after-play-geek-allteams-restore-v2219',
+        finalCurtain,
+        2
+      );
+    }
 
     /* =========================================================
        SSHCP V20.54 — post-play popup return context.
@@ -32936,6 +33102,14 @@ let scoreTimingDetail =
         return;
       }
 
+      /* V22.19 — orientation refresh owns this boot. Rebuild GEEK + ALL TEAMS
+         under the white first-paint cover, then hand off to the exact existing
+         AFTER-PLAY fade used by normal post-round GEEK entry. */
+      if (window.__sshcpGeekAllTeamsOrientationRestoreV2219) {
+        await restoreGeekAllTeamsAfterOrientationV2219();
+        return;
+      }
+
       /* V17.1 — retained behavior: browser refresh while TEAMS is open returns directly to the
          TEAMS workspace (and restores its table scroll position) instead of
          falling through to HOME. */
@@ -33140,7 +33314,7 @@ let scoreTimingDetail =
            initialization fails before loadLeaderboard() can reveal it. */
         removeDataRevealShieldV177('scorecard');
         removeDataRevealShieldV177('leaderboard');
-        document.documentElement.classList.remove('sshcp-pre-main-full-v2069');
+        document.documentElement.classList.remove('sshcp-pre-main-full-v2069', 'sshcp-pre-geek-allteams-v2219');
         console.error('SSHCP initialization failed:', error);
       })
       .finally(() => {
