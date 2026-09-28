@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 22.12-F7M3QK | BUILD KEY: 22.13-C9R5MX -->
-<!-- SSHCP V22.13 GEEK BACK-9 RESULT WORDING + HARD ONE-LINE FIT - exact V22.12 donor.
-     Keeps V22.12 result-review prompt, Scramble Mode action order, Tips behavior, scoring, authorization,
+<!-- SSHCP | BASE KEY: 22.13-C9R5MX | BUILD KEY: 22.14-Q8M5TZ -->
+<!-- SSHCP V22.14 X-RESULTS PAYLOAD FIX - exact V22.13 donor.
+     Keeps V22.13 GEEK wording/fit, Scramble Mode action order, Tips behavior, scoring, authorization,
      result/tiebreak/skins/GEEK math, Worker/API, CC/SM behavior, table geometry, GEEK stepping, GAME row math
-     and global VPH×DPR scaling unchanged. Changes only: (1) BACK 9 COMEBACK result wording now says BETTER/WORSE
-     from the signed raw result instead of always saying IMPROVEMENT; (2) GEEK Detail RESULT one-line fitting now
-     measures the actual result text against the card's true 82%-max available width before shrinking.
-     V22.12 COPY LOG - X RESULTS AI verification instruction remains unchanged.
-     Prior V22.12 notes continue below for traceability. -->
+     and global VPH×DPR scaling unchanged. Changes only COPY LOG - X RESULTS: the copied payload now starts with
+     the AI final-result review instruction and contains the independent RESULT AUDIT only. The enormous Control
+     Center chronology is intentionally excluded; chronology/connectivity remains the separate SCRAMBLE MODE
+     COPY LOG workflow. This prevents a full tournament CC log from pushing the result audit/instruction past
+     chat paste limits. Prior V22.13/V22.12 notes continue below for traceability. -->
 <!-- V22.12 donor notes:
      (1) COPY LOG - X RESULTS appends an explicit AI final-results verification instruction that focuses
      on leaderboard/Scramble Summary/tiebreak/skins/GEEK correctness rather than scoring chronology; and (2) GEEK
@@ -12616,7 +12616,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.13</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.14</span></span>
         </button>
 
       </div>
@@ -17578,6 +17578,8 @@ let scoreTimingDetail =
         '',
         'Score-entry timing, connectivity behavior, delayed/bulk entries, clears/re-entries and chronological tournament activity are reviewed separately using the SCRAMBLE MODE COPY LOG.',
         '',
+        'This X RESULTS payload intentionally excludes the full Control Center chronology so a long tournament log cannot bury or truncate the result verification data.',
+        '',
         'For THIS report, focus on LEADERBOARD → SCRAMBLE SUMMARY / TIEBREAK → SKINS → GEEK MODE and whether the final calculations are internally consistent.'
       ].join('\n');
     }
@@ -17586,12 +17588,15 @@ let scoreTimingDetail =
       if (pendingResultAuditsV189.size) {
         await Promise.allSettled([...pendingResultAuditsV189]);
       }
+      /* V22.14 — COPY LOG - X RESULTS is intentionally a RESULTS payload,
+         not a duplicate of the full Control Center chronology. Put the AI
+         instruction first so the receiving chat sees the intended review mode
+         immediately, then include only the independent accumulated RESULT AUDIT.
+         SCRAMBLE MODE COPY LOG remains the chronology/connectivity audit path. */
       const report =
-        buildTestLogReport() +
+        buildAiResultReviewInstructionV2212() +
         '\n\n================ RESULT AUDIT ================\n\n' +
-        buildResultAuditReportV189() +
-        '\n\n' +
-        buildAiResultReviewInstructionV2212();
+        buildResultAuditReportV189();
       let copied = false;
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
