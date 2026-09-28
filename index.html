@@ -1,12 +1,13 @@
-<!-- SSHCP | BASE KEY: 22.13-C9R5MX | BUILD KEY: 22.14-Q8M5TZ -->
-<!-- SSHCP V22.14 X-RESULTS PAYLOAD FIX - exact V22.13 donor.
-     Keeps V22.13 GEEK wording/fit, Scramble Mode action order, Tips behavior, scoring, authorization,
-     result/tiebreak/skins/GEEK math, Worker/API, CC/SM behavior, table geometry, GEEK stepping, GAME row math
-     and global VPH×DPR scaling unchanged. Changes only COPY LOG - X RESULTS: the copied payload now starts with
-     the AI final-result review instruction and contains the independent RESULT AUDIT only. The enormous Control
-     Center chronology is intentionally excluded; chronology/connectivity remains the separate SCRAMBLE MODE
-     COPY LOG workflow. This prevents a full tournament CC log from pushing the result audit/instruction past
-     chat paste limits. Prior V22.13/V22.12 notes continue below for traceability. -->
+<!-- SSHCP | BASE KEY: 22.14-Q8M5TZ | BUILD KEY: 22.15-H6R9MP -->
+<!-- SSHCP V22.15 WELCOME TIPS DE-EMPHASIS + SCRAMBLE COMPLETE GUIDE - exact V22.14 donor.
+     Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
+     skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
+     presentation: (1) the Welcome TIPS & TRICKS opt-in is intentionally quiet when unchecked (Gray 4 label + very-light
+     box) and becomes black with a black checked box/white check when enabled; (2) the first completed-round Leaderboard
+     view in each completion cycle always shows a SCRAMBLE COMPLETE card using the established Tips & Tricks surface.
+     Its stacked SCRAMBLE SUMMARY (Antique Gold) and OK (Blue) actions use the completed-Leaderboard action geometry/
+     typography. The summary action reuses the existing final-action handler so tie privacy/tiebreak behavior is preserved.
+     Returning to Final Results does not repeat the card; any incomplete-round state re-arms it. No Worker change. -->
 <!-- V22.12 donor notes:
      (1) COPY LOG - X RESULTS appends an explicit AI final-results verification instruction that focuses
      on leaderboard/Scramble Summary/tiebreak/skins/GEEK correctness rather than scoring chronology; and (2) GEEK
@@ -12482,6 +12483,93 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   transition:opacity .30s ease, visibility 0s linear 0s!important;
 }
 </style>
+
+<style id="sshcp-v2215-welcome-complete-tip">
+/* SSHCP V22.15 — Welcome Tips opt-in is deliberately low-emphasis until selected.
+   This override is Welcome-only; the shared Quick Guide / contextual Tips controls are unchanged. */
+.qr-welcome-tips-toggle-v2154{
+  color:var(--sshcp-gray-4-v1852,#a6a6a6)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-4-v1852,#a6a6a6)!important;
+}
+.qr-welcome-tips-toggle-v2154 .tips-check-box-v2154{
+  border-color:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  background:#fff!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
+.qr-welcome-tips-toggle-v2154 input:checked + .tips-check-box-v2154{
+  background:#000!important;
+  border-color:#000!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+.qr-welcome-tips-toggle-v2154 input:checked ~ span:last-child{
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+
+/* SCRAMBLE COMPLETE reuses the established Tips card/backdrop. Only its footer
+   is specialized: two completed-Leaderboard-size actions stacked vertically. */
+.tips-summary-v2215{
+  display:none!important;
+}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-card-toggle-v2161{
+  display:none!important;
+}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-body-v2154 .tips-line-v2154::before{
+  display:none!important;
+  content:none!important;
+}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-body-v2154{
+  text-align:center!important;
+}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-summary-v2215,
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-ok-v2154{
+  width:66.666667%!important;
+  max-width:390px!important;
+  height:var(--v16-footer-h,50px)!important;
+  min-height:var(--v16-footer-h,50px)!important;
+  max-height:var(--v16-footer-h,50px)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding:0 5%!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:0!important;
+  border-radius:9px!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-summary-v2215{
+  margin-top:calc(18px * var(--v221-global-scale,1))!important;
+  background:var(--sshcp-after-play-primary-v2043,#8A6414)!important;
+  border-color:var(--sshcp-after-play-primary-v2043,#8A6414)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-ok-v2154{
+  margin-top:calc(8px * var(--v221-global-scale,1))!important;
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-summary-v2215:active,
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-summary-v2215.sshcp-button-pressed-v172{
+  background:var(--sshcp-after-play-primary-v2043,#8A6414)!important;
+  border-color:var(--sshcp-after-play-primary-v2043,#8A6414)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  filter:brightness(.92)!important;
+}
+</style>
+
 </head>
 
 
@@ -12616,7 +12704,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.14</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.15</span></span>
         </button>
 
       </div>
@@ -13141,6 +13229,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
         <span>TIPS &amp; TRICKS</span>
       </label>
       <div id="tipsBodyV2154" class="tips-body-v2154"></div>
+      <button id="tipsSummaryButtonV2215" class="tips-summary-v2215" type="button">SCRAMBLE SUMMARY</button>
       <button id="tipsOkButtonV2154" class="tips-ok-v2154" type="button">OK</button>
     </div>
   </div>
@@ -19511,6 +19600,7 @@ let scoreTimingDetail =
        ========================================================= */
     const SSHCP_TIPS_ENABLED_PREFIX_V2154 = 'sshcpTipsEnabledV2154|';
     const SSHCP_TIPS_SEEN_PREFIX_V2154 = 'sshcpTipsSeenV2154|';
+    const SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215 = 'sshcpScrambleCompleteSeenV2215';
     let activeTipsIdV2154 = '';
     let pendingAfterTipsActionV2155 = null;
     let tipsCloseTimerV2162 = null;
@@ -19637,12 +19727,88 @@ let scoreTimingDetail =
         ok.dataset.tipsWiredV2154 = '1';
         ok.addEventListener('click', closeTipsCardV2154);
       }
+      const summaryV2215 = document.getElementById('tipsSummaryButtonV2215');
+      if (summaryV2215 && !summaryV2215.dataset.completeTipWiredV2215) {
+        summaryV2215.dataset.completeTipWiredV2215 = '1';
+        summaryV2215.addEventListener('click', () => {
+          pendingAfterTipsActionV2155 = () => {
+            if (currentView === 'leaderboard' && tournamentIsComplete(lastLeaderboardRows)) {
+              handleLeaderboardFinalAction();
+            }
+          };
+          closeTipsCardV2154();
+        });
+      }
       syncTipsTogglesV2154();
     }
 
     function tipsWelcomeIsVisibleV2154() {
       const welcome = document.getElementById('qrWelcomeOverlayV170');
       return !!(welcome && welcome.getAttribute('aria-hidden') !== 'true');
+    }
+
+    function scrambleCompleteSeenV2215() {
+      try {
+        return localStorage.getItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215) === '1';
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function markScrambleCompleteSeenV2215() {
+      try {
+        localStorage.setItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215, '1');
+      } catch (_) {}
+    }
+
+    function resetScrambleCompleteSeenV2215() {
+      try {
+        localStorage.removeItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215);
+      } catch (_) {}
+    }
+
+    function fitScrambleCompleteButtonsV2215() {
+      ['tipsSummaryButtonV2215', 'tipsOkButtonV2154'].forEach(id => {
+        const button = document.getElementById(id);
+        if (!button) return;
+        const h = button.getBoundingClientRect().height || 50;
+        fitTextToBoxV5(button, button, h * 0.40, 11, {
+          horizontalPad:12,
+          verticalPad:5,
+          wrap:false,
+          lineHeight:1
+        });
+      });
+    }
+
+    function maybeShowScrambleCompleteV2215() {
+      if (currentView !== 'leaderboard' || !tournamentIsComplete(lastLeaderboardRows)) return false;
+      if (scrambleCompleteSeenV2215() || tipsWelcomeIsVisibleV2154()) return false;
+
+      const overlay = document.getElementById('tipsOverlayV2154');
+      const title = document.getElementById('tipsTitleV2154');
+      const body = document.getElementById('tipsBodyV2154');
+      if (!overlay || !title || !body || overlay.classList.contains('open-v2154')) return false;
+
+      markScrambleCompleteSeenV2215();
+      activeTipsIdV2154 = 'scramble-complete-v2215';
+      title.textContent = 'SCRAMBLE COMPLETE';
+      body.innerHTML = '<div class="tips-line-v2154">Check out Scramble Summary, Game, and Geek Results</div>';
+
+      if (tipsCloseTimerV2162) {
+        window.clearTimeout(tipsCloseTimerV2162);
+        tipsCloseTimerV2162 = null;
+      }
+      overlay.classList.add('tips-short-v2163', 'tips-scramble-complete-v2215', 'open-v2154');
+      overlay.classList.remove('tips-home-v2165');
+      overlay.setAttribute('aria-hidden', 'false');
+
+      requestAnimationFrame(() => {
+        fitScrambleCompleteButtonsV2215();
+        const summary = document.getElementById('tipsSummaryButtonV2215');
+        if (summary) summary.focus({ preventScroll:true });
+      });
+      return true;
     }
 
     function tipsContentV2154(tipId) {
@@ -19741,6 +19907,7 @@ let scoreTimingDetail =
         window.clearTimeout(tipsCloseTimerV2162);
         tipsCloseTimerV2162 = null;
       }
+      overlay.classList.remove('tips-scramble-complete-v2215');
       overlay.classList.toggle('tips-short-v2163', ['leaderboard-live','leaderboard-final','summary','geek'].includes(activeTipsIdV2154));
       overlay.classList.toggle('tips-home-v2165', activeTipsIdV2154 === 'home');
       overlay.classList.add('open-v2154');
@@ -19767,7 +19934,7 @@ let scoreTimingDetail =
       if (tipsCloseTimerV2162) window.clearTimeout(tipsCloseTimerV2162);
       tipsCloseTimerV2162 = window.setTimeout(() => {
         tipsCloseTimerV2162 = null;
-        if (overlay) overlay.classList.remove('tips-short-v2163', 'tips-home-v2165');
+        if (overlay) overlay.classList.remove('tips-short-v2163', 'tips-home-v2165', 'tips-scramble-complete-v2215');
         if (typeof afterCloseV2155 === 'function') afterCloseV2155();
       }, TIPS_POPUP_FADE_MS_V2162);
     }
@@ -23844,7 +24011,11 @@ let scoreTimingDetail =
            Authorized-team highlighting remains intact; the golfer controls scroll. */
         await leaderboardRevealDoneV179;
         await waitForLeaderboardSettledV2155();
-        showTipsAfterSettledV2155(tournamentIsComplete(rows) ? 'leaderboard-final' : 'leaderboard-live');
+        if (tournamentIsComplete(rows)) {
+          maybeShowScrambleCompleteV2215();
+        } else {
+          showTipsAfterSettledV2155('leaderboard-live');
+        }
 
 
       }
@@ -24227,6 +24398,7 @@ let scoreTimingDetail =
       }
 
       if (!complete) {
+        resetScrambleCompleteSeenV2215();
         resetTournamentTieBreakViewed();
         setLeaderboardFinalAction(null);
 
