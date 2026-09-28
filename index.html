@@ -1,8 +1,14 @@
-<!-- SSHCP | BASE KEY: 22.11-W5C8RX | BUILD KEY: 22.12-F7M3QK -->
-<!-- SSHCP V22.12 RESULT REVIEW PROMPT + GEEK RESULT FIT - exact V22.11 donor.
-     Keeps V22.11 Scramble Mode action order, Tips behavior, scoring, authorization, result/tiebreak/skins/GEEK math,
-     Worker/API, CC/SM behavior, table geometry, GEEK stepping, GAME row math and global VPH×DPR scaling unchanged.
-     Changes only: (1) COPY LOG - X RESULTS appends an explicit AI final-results verification instruction that focuses
+<!-- SSHCP | BASE KEY: 22.12-F7M3QK | BUILD KEY: 22.13-C9R5MX -->
+<!-- SSHCP V22.13 GEEK BACK-9 RESULT WORDING + HARD ONE-LINE FIT - exact V22.12 donor.
+     Keeps V22.12 result-review prompt, Scramble Mode action order, Tips behavior, scoring, authorization,
+     result/tiebreak/skins/GEEK math, Worker/API, CC/SM behavior, table geometry, GEEK stepping, GAME row math
+     and global VPH×DPR scaling unchanged. Changes only: (1) BACK 9 COMEBACK result wording now says BETTER/WORSE
+     from the signed raw result instead of always saying IMPROVEMENT; (2) GEEK Detail RESULT one-line fitting now
+     measures the actual result text against the card's true 82%-max available width before shrinking.
+     V22.12 COPY LOG - X RESULTS AI verification instruction remains unchanged.
+     Prior V22.12 notes continue below for traceability. -->
+<!-- V22.12 donor notes:
+     (1) COPY LOG - X RESULTS appends an explicit AI final-results verification instruction that focuses
      on leaderboard/Scramble Summary/tiebreak/skins/GEEK correctness rather than scoring chronology; and (2) GEEK
      Detail RESULT text is forced to one line and shrinks locally only when needed to fit the existing result card. -->
 <!DOCTYPE html>
@@ -12610,7 +12616,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.12</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.13</span></span>
         </button>
 
       </div>
@@ -25648,10 +25654,19 @@ let scoreTimingDetail =
         case 'worst hole vs field':
           return value + ' ' + geekResultUnitV1926(value, 'STROKE', 'STROKES');
         case 'back-9 comeback': {
+          /* V22.13 — preserve direction. Positive = second nine was better;
+             negative = second nine was worse. This matches the GEEK table and
+             avoids calling a negative result an "improvement." */
           const raw = Number(stat && stat.rawValue);
-          const count = Number.isFinite(raw) ? Math.abs(raw) : Math.abs(Number(value));
+          const parsedValue = Number(String(value == null ? '' : value).replace(/[^0-9.+-]/g, ''));
+          const signed = Number.isFinite(raw) ? raw : parsedValue;
+          const count = Number.isFinite(signed) ? Math.abs(signed) : Math.abs(parsedValue);
           const shown = Number.isFinite(count) ? String(count).replace(/\.0+$/, '') : value;
-          return shown + ' ' + geekResultUnitV1926(shown, 'STROKE', 'STROKES') + ' IMPROVEMENT';
+          if (Number.isFinite(signed) && signed < 0) {
+            return shown + ' ' + geekResultUnitV1926(shown, 'STROKE', 'STROKES') + ' WORSE';
+          }
+          if (Number.isFinite(signed) && signed === 0) return 'NO CHANGE';
+          return shown + ' ' + geekResultUnitV1926(shown, 'STROKE', 'STROKES') + ' BETTER';
         }
         case 'closing birdie streak':
         case 'longest birdie streak':
@@ -27033,14 +27048,15 @@ let scoreTimingDetail =
       const tieSummary = els.modalBody.querySelector('.geek-detail-tie-summary-v182');
       const back = els.modalActions.querySelector('.modal-btn');
 
-      /* V22.12 — RESULT is always exactly one line. Preserve the approved
-         TEAM-base × 120% target whenever it fits; if the string is wider than
-         the existing result card, shrink RESULT text only until the entire
-         value is visible. Card geometry and every other GEEK detail element
-         remain unchanged. */
-      const fitGeekResultOneLineV2212 = targetSize => {
+      /* V22.13 — RESULT is always exactly one line. V22.12 compared the
+         result element to its own clientWidth, but the auto-width table card can
+         let that element remain intrinsically wider than the card's 82% visual
+         ceiling. Measure the actual text span against the true maximum content
+         width of the card, then shrink RESULT text only until it fits. */
+      const fitGeekResultOneLineV2213 = targetSize => {
         if (!result) return;
         const card = result.closest('.geek-detail-result-card-v1928');
+        const main = result.querySelector('.geek-detail-result-main-v1918') || result;
         let size = Math.max(10, Number(targetSize) || 10);
         const minimum = 10;
 
@@ -27049,11 +27065,18 @@ let scoreTimingDetail =
         result.style.setProperty('white-space', 'nowrap', 'important');
         result.style.setProperty('overflow', 'hidden', 'important');
         result.style.setProperty('text-align', 'center', 'important');
+        main.style.setProperty('white-space', 'nowrap', 'important');
 
         if (!card) return;
 
+        const parent = card.parentElement || els.modalBody || els.modalBox;
+        const parentWidth = Math.max(1, Number(parent && parent.clientWidth) || Number(els.modalBox && els.modalBox.clientWidth) || 1);
+        const cardStyle = getComputedStyle(card);
+        const pad = (parseFloat(cardStyle.paddingLeft) || 0) + (parseFloat(cardStyle.paddingRight) || 0);
+        const available = Math.max(1, (parentWidth * 0.82) - pad - 2);
+
         let guard = 0;
-        while (size > minimum && result.scrollWidth > result.clientWidth + 0.5 && guard < 120) {
+        while (size > minimum && main.scrollWidth > available + 0.5 && guard < 160) {
           size -= 0.5;
           result.style.setProperty('font-size', size + 'px', 'important');
           guard += 1;
@@ -27116,11 +27139,11 @@ let scoreTimingDetail =
         const applyTeamSizeV1925 = baseSize => {
           teamContainer.style.setProperty('font-size', baseSize + 'px', 'important');
 
-          /* V22.12 — keep the established RESULT target at TEAM × 120%,
+          /* V22.13 — keep the established RESULT target at TEAM × 120%,
              then shrink RESULT only when that complete one-line string would
              exceed the existing 82%-max result card. */
           if (result) {
-            fitGeekResultOneLineV2212(baseSize * 1.20);
+            fitGeekResultOneLineV2213(baseSize * 1.20);
           }
 
           teamNodes.forEach(node => {
@@ -27181,7 +27204,7 @@ let scoreTimingDetail =
         /* V20.69 early detail has no teams by design. Preserve the established
            RESULT visual scale using the normal TEAM-base target × 120%. */
         const earlyResultSizeV2069 = (vh * 0.0375) * 1.20;
-        fitGeekResultOneLineV2212(earlyResultSizeV2069);
+        fitGeekResultOneLineV2213(earlyResultSizeV2069);
       }
 
       if (back) {
