@@ -1,9 +1,10 @@
-<!-- SSHCP | BASE KEY: 22.10-J8P3LV | BUILD KEY: 22.11-W5C8RX -->
-<!-- SSHCP V22.11 SCRAMBLE MODE ACTION ORDER - exact V22.10 donor.
-     Keeps V22.10 Tips fade/geometry fix, V22.9 wording, V22.8 Tips treatment, scoring, authorization, audit,
-     Worker/API, CC/SM behavior, table geometry, GEEK stepping, GAME row math, result logic and global VPH×DPR
-     scaling unchanged. Changes only the Scramble Mode top action row order to COPY LOG | START SCRAMBLE | CLEAR SM LOG.
-     Button sizes, colors, IDs, event handlers and behavior are unchanged. -->
+<!-- SSHCP | BASE KEY: 22.11-W5C8RX | BUILD KEY: 22.12-F7M3QK -->
+<!-- SSHCP V22.12 RESULT REVIEW PROMPT + GEEK RESULT FIT - exact V22.11 donor.
+     Keeps V22.11 Scramble Mode action order, Tips behavior, scoring, authorization, result/tiebreak/skins/GEEK math,
+     Worker/API, CC/SM behavior, table geometry, GEEK stepping, GAME row math and global VPH×DPR scaling unchanged.
+     Changes only: (1) COPY LOG - X RESULTS appends an explicit AI final-results verification instruction that focuses
+     on leaderboard/Scramble Summary/tiebreak/skins/GEEK correctness rather than scoring chronology; and (2) GEEK
+     Detail RESULT text is forced to one line and shrinks locally only when needed to fit the existing result card. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12609,7 +12610,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.11</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.12</span></span>
         </button>
 
       </div>
@@ -17545,6 +17546,36 @@ let scoreTimingDetail =
       return lines.join('\n');
     }
 
+    function buildAiResultReviewInstructionV2212() {
+      return [
+        '================ AI RESULT REVIEW INSTRUCTION ================',
+        '',
+        'Analyze this as a FINAL TOURNAMENT RESULTS VERIFICATION, not as a scoring-timeline audit.',
+        '',
+        'Answer these questions FIRST:',
+        '• Do the final results make sense?',
+        '• Is 1st place correct from the raw scores, handicap and net result?',
+        '• If a tied position required a tiebreak, does the configured tiebreak-hole sequence produce the displayed order?',
+        '• Do the Scramble Summary and Leaderboard agree with the independently calculated result?',
+        '• Do SKINS make sense under the configured skins rules, including the winning hole(s)?',
+        '• Do all GEEK MODE / GEEK DETAIL AUDIT statistics match the raw scores and supporting evidence?',
+        '',
+        'Start the answer with this fast check:',
+        'RESULTS ✓ / ✗',
+        'TIEBREAK ✓ / ✗',
+        'SKINS ✓ / ✗',
+        'GEEK ✓ / ✗',
+        '',
+        'Then briefly prove each conclusion and explain anything that does not match.',
+        '',
+        'DO NOT focus on scoring timing or scoring chronology in this review. The Control Center log contains a large amount of normal MASTER-key activity, authorization changes, navigation, testing, refreshes and other administrator-phone activity that is not relevant to final-result correctness.',
+        '',
+        'Score-entry timing, connectivity behavior, delayed/bulk entries, clears/re-entries and chronological tournament activity are reviewed separately using the SCRAMBLE MODE COPY LOG.',
+        '',
+        'For THIS report, focus on LEADERBOARD → SCRAMBLE SUMMARY / TIEBREAK → SKINS → GEEK MODE and whether the final calculations are internally consistent.'
+      ].join('\n');
+    }
+
     async function copyResultAuditLogV189() {
       if (pendingResultAuditsV189.size) {
         await Promise.allSettled([...pendingResultAuditsV189]);
@@ -17552,7 +17583,9 @@ let scoreTimingDetail =
       const report =
         buildTestLogReport() +
         '\n\n================ RESULT AUDIT ================\n\n' +
-        buildResultAuditReportV189();
+        buildResultAuditReportV189() +
+        '\n\n' +
+        buildAiResultReviewInstructionV2212();
       let copied = false;
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -27000,6 +27033,33 @@ let scoreTimingDetail =
       const tieSummary = els.modalBody.querySelector('.geek-detail-tie-summary-v182');
       const back = els.modalActions.querySelector('.modal-btn');
 
+      /* V22.12 — RESULT is always exactly one line. Preserve the approved
+         TEAM-base × 120% target whenever it fits; if the string is wider than
+         the existing result card, shrink RESULT text only until the entire
+         value is visible. Card geometry and every other GEEK detail element
+         remain unchanged. */
+      const fitGeekResultOneLineV2212 = targetSize => {
+        if (!result) return;
+        const card = result.closest('.geek-detail-result-card-v1928');
+        let size = Math.max(10, Number(targetSize) || 10);
+        const minimum = 10;
+
+        result.style.setProperty('font-size', size + 'px', 'important');
+        result.style.setProperty('line-height', '1', 'important');
+        result.style.setProperty('white-space', 'nowrap', 'important');
+        result.style.setProperty('overflow', 'hidden', 'important');
+        result.style.setProperty('text-align', 'center', 'important');
+
+        if (!card) return;
+
+        let guard = 0;
+        while (size > minimum && result.scrollWidth > result.clientWidth + 0.5 && guard < 120) {
+          size -= 0.5;
+          result.style.setProperty('font-size', size + 'px', 'important');
+          guard += 1;
+        }
+      };
+
       if (title) {
         fitTextToBoxV5(title, title, vh * 0.05, 12, {
           horizontalPad: 20,
@@ -27056,19 +27116,11 @@ let scoreTimingDetail =
         const applyTeamSizeV1925 = baseSize => {
           teamContainer.style.setProperty('font-size', baseSize + 'px', 'important');
 
-          /* V20.15 — set RESULT from the same finalized TEAM base size, but
-             render it at exactly 120% of that size. Do not run the RESULT text
-             through fitTextToBoxV5 using itself as the box: that self-measurement
-             was what made V20.14 render smaller than TEAM despite a 120% target.
-             Current GEEK result strings are short enough for the established
-             result card; the card remains auto-width with an 82% maximum. */
+          /* V22.12 — keep the established RESULT target at TEAM × 120%,
+             then shrink RESULT only when that complete one-line string would
+             exceed the existing 82%-max result card. */
           if (result) {
-            const resultSizeV2015 = baseSize * 1.20;
-            result.style.setProperty('font-size', resultSizeV2015 + 'px', 'important');
-            result.style.setProperty('line-height', '1', 'important');
-            result.style.setProperty('white-space', 'nowrap', 'important');
-            result.style.setProperty('overflow', 'visible', 'important');
-            result.style.setProperty('text-align', 'center', 'important');
+            fitGeekResultOneLineV2212(baseSize * 1.20);
           }
 
           teamNodes.forEach(node => {
@@ -27129,10 +27181,7 @@ let scoreTimingDetail =
         /* V20.69 early detail has no teams by design. Preserve the established
            RESULT visual scale using the normal TEAM-base target × 120%. */
         const earlyResultSizeV2069 = (vh * 0.0375) * 1.20;
-        result.style.setProperty('font-size', earlyResultSizeV2069 + 'px', 'important');
-        result.style.setProperty('line-height', '1', 'important');
-        result.style.setProperty('white-space', 'nowrap', 'important');
-        result.style.setProperty('text-align', 'center', 'important');
+        fitGeekResultOneLineV2212(earlyResultSizeV2069);
       }
 
       if (back) {
