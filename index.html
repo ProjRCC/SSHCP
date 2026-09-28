@@ -1,13 +1,14 @@
-<!-- SSHCP | BASE KEY: 22.19-P6V8RM | BUILD KEY: 22.20-F7K3QM -->
-<!-- SSHCP V22.20 GEEK/ALL-TEAMS REQUIRED-ROTATION FLOW + 98x98 POPUP + HARD TEXT FIT - exact V22.19 donor.
-     Keeps V22.19 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters and ALL TEAMS data
-     unchanged. Orientation warnings now use the shared Gray 3 + faint-shadow treatment with a 0.10s fade. Entering
-     ALL TEAMS and pressing BACK are the only REQUIRED rotations: the warning fades to solid white, a real refresh/
-     rebuild happens under white, and the finished destination is revealed with the existing AFTER-PLAY GEEK fade.
-     Accidental ALL TEAMS landscape/portrait rotation only shows/hides the warning and preserves the existing table
-     state. ALL TEAMS is a centered 98vw x 98dvh popup, STAT/CAT remain separate body columns under one merged STAT
-     header, CAT is narrower, and STAT text is measured against its real label box with a strict two-line/80% cap.
-     No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.20-F7K3QM | BUILD KEY: 22.21-N4Q7VX -->
+<!-- SSHCP V22.21 ORIENTATION WHITE-CURTAIN CONTINUITY + STAT/CAT HARD FIT - exact V22.20 donor.
+     Keeps V22.20 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, 98vw x 98dvh ALL
+     TEAMS popup and required-rotation state model unchanged. Every orientation warning now presents on an already-white
+     full-screen surface with a Gray 3 warning card that fades IN for 0.50s. As rotation begins the warning card clears
+     immediately (0s), leaving visually continuous white. Accidental rotations preserve state and fade white away in
+     0.25s when the requested orientation is restored; required GEEK <-> ALL TEAMS rotations refresh/rebuild underneath
+     the same white and then use the existing curtain machinery with an orientation-only 0.25s reveal. STAT/CAT remain
+     separate body columns under the merged STAT header. CAT is intentionally small but dynamically widened to fit the
+     longest category name completely; STAT has no practical minimum font floor and one/two-line text is measured against
+     its true box until width AND full glyph-safe height fit without clipping. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -13040,101 +13041,156 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
 }
 </style>
 
-<style id="sshcp-v2220-orientation-and-allteams-refinement">
-/* V22.20 — every orientation warning uses the established Gray 3 surround,
-   white card, faint after-play depth and a deliberate 0.10s fade. Ordinary
-   warnings never refresh anything. */
+<style id="sshcp-v2221-orientation-and-allteams-refinement">
+/* V22.21 — orientation presentation is one continuous WHITE visual surface.
+   The warning itself is Gray 3 and fades IN for .50s. When rotation starts the
+   warning clears immediately; only the white surface remains. Returning to a
+   settled valid orientation fades that white away in .25s. */
+@keyframes sshcp-orientation-warning-in-v2221{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
+/* Universal portrait-only warning used by the rest of SSHCP. The overlay is
+   the visual curtain: white appears immediately when landscape becomes invalid,
+   while only the Gray 3 card animates. On return to portrait the card is gone
+   immediately and white reveals the preserved page over .25s. */
 .rotate-portrait-overlay{
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  background:#fff!important;
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
   opacity:0!important;
   visibility:hidden!important;
   pointer-events:none!important;
-  transition:opacity .10s ease-out,visibility 0s linear .10s!important;
+  transition:opacity .25s ease-out,visibility 0s linear .25s!important;
 }
 .rotate-portrait-box{
   border:0!important;
-  background:#fff!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   color:#000!important;
   box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
+  opacity:0!important;
+  animation:none!important;
 }
 @media(orientation:landscape){
   .rotate-portrait-overlay{
     opacity:1!important;
     visibility:visible!important;
     pointer-events:auto!important;
-    transition:opacity .10s ease-out,visibility 0s linear 0s!important;
+    transition:none!important;
+  }
+  .rotate-portrait-box{
+    opacity:1!important;
+    animation:sshcp-orientation-warning-in-v2221 .50s ease-out both!important;
   }
 }
 
-/* ALL TEAMS owns its orientation presentation, so suppress the global portrait
-   warning while the ALL TEAMS state machine is active. */
+/* ALL TEAMS owns its own orientation warning; suppress the site's generic one. */
 html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
   opacity:0!important;
   visibility:hidden!important;
   pointer-events:none!important;
+  transition:none!important;
 }
 
-/* ALL TEAMS warning: same Gray 3 / white-card language. There is intentionally
-   no BACK button in an orientation warning. */
+/* ALL TEAMS warning: full-screen WHITE is already present beneath the Gray 3
+   warning. No BACK button exists inside any orientation warning. */
 html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   padding:24px!important;
-  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  background:#fff!important;
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
   opacity:1!important;
   visibility:visible!important;
   pointer-events:auto!important;
-  transition:opacity .10s ease-out,background-color .10s ease-out,visibility 0s linear 0s!important;
+  transition:opacity .25s ease-out,visibility 0s linear 0s!important;
   z-index:6250!important;
 }
 .geek-all-teams-rotate-card-v2216{
   border:0!important;
-  background:#fff!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   color:#000!important;
   box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
   opacity:1!important;
-  transition:opacity .10s ease-out!important;
+  animation:sshcp-orientation-warning-in-v2221 .50s ease-out both!important;
 }
 .geek-all-teams-rotate-back-v2218{display:none!important;}
 
-/* Landscape normally reveals the saved ALL TEAMS popup. An intentional ENTER
-   or EXIT keeps the warning above it until the required rotation has faded to
-   white and the page reload begins. */
+/* Accidental ALL TEAMS portrait mismatch: portrait shows the warning over white.
+   Rotating back to valid landscape clears the warning at 0s, leaves white in
+   place, then fades the white away over .25s to the exact saved table state. */
 @media(orientation:landscape){
   html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-enter-pending-v2220):not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-v2216{
     opacity:0!important;
     visibility:hidden!important;
     pointer-events:none!important;
-    transition:opacity .10s ease-out,background-color .10s ease-out,visibility 0s linear .10s!important;
+    transition:opacity .25s ease-out,visibility 0s linear .25s!important;
+  }
+  html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-enter-pending-v2220):not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-card-v2216{
+    opacity:0!important;
+    animation:none!important;
   }
   html.sshcp-geek-all-teams-v2216 .geek-all-teams-view-v2216{
     display:flex!important;
   }
-}
-html.sshcp-geek-enter-pending-v2220 .geek-all-teams-rotate-v2216,
-html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-v2216{
-  opacity:1!important;
-  visibility:visible!important;
-  pointer-events:auto!important;
-  transition:opacity .10s ease-out,background-color .10s ease-out,visibility 0s linear 0s!important;
-}
-html.sshcp-geek-required-white-v2220 .geek-all-teams-rotate-v2216{
-  background:#fff!important;
-}
-html.sshcp-geek-required-white-v2220 .geek-all-teams-rotate-card-v2216{
-  opacity:0!important;
+
+  /* Required ENTER: landscape is the destination, so keep white opaque while
+     the refresh starts but clear the warning card immediately. */
+  html.sshcp-geek-enter-pending-v2220 .geek-all-teams-rotate-v2216{
+    opacity:1!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+    transition:none!important;
+  }
+  html.sshcp-geek-enter-pending-v2220 .geek-all-teams-rotate-card-v2216{
+    opacity:0!important;
+    animation:none!important;
+  }
+
+  /* Required EXIT begins while still landscape, so this is where the
+     ROTATE PHONE TO PORTRAIT card intentionally fades in. */
+  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-v2216{
+    opacity:1!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+    transition:none!important;
+  }
+  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-card-v2216{
+    opacity:1!important;
+    animation:sshcp-orientation-warning-in-v2221 .50s ease-out both!important;
+  }
 }
 
-/* V22.20 — landscape ALL TEAMS now reads as another after-play popup: Gray 3
-   surround with a centered 98vw x 98dvh white card and the same faint depth. */
+@media(orientation:portrait){
+  /* Required EXIT: portrait is the destination. The instant the rotation is
+     recognized the card is gone, but the same white stays for the rebuild. */
+  html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-card-v2216{
+    opacity:0!important;
+    animation:none!important;
+  }
+}
+
+/* JS adds this at the required-rotation handoff as an extra guard so the card
+   can never survive into a browser orientation snap, regardless of event order. */
+html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
+  opacity:0!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+/* Orientation rebuilds reuse the existing full-screen after-play curtain DOM;
+   only this transition's reveal duration is .25s. */
+.sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086.sshcp-geek-orientation-curtain-v2221{
+  transition:opacity .25s ease-out!important;
+}
+
+/* Landscape ALL TEAMS remains the V22.20 98vw x 98dvh after-play-style popup. */
 .geek-all-teams-view-v2216{
   align-items:center!important;
   justify-content:center!important;
@@ -13159,18 +13215,19 @@ html.sshcp-geek-required-white-v2220 .geek-all-teams-rotate-card-v2216{
   overflow:hidden!important;
 }
 
-/* STAT text gets its own real measurement box. Each rendered line is explicitly
-   nowrap so the browser can never manufacture a third line or split a word. */
+/* V22.21 — STAT's measurement wrapper is intentionally taller than the 80%
+   target. The fitter itself enforces the 80% text block, so the wrapper can no
+   longer clip ascenders/descenders before measurement. */
 .geek-all-teams-stat-textbox-v2220{
   flex:1 1 auto!important;
   min-width:0!important;
   width:0!important;
-  height:80%!important;
-  max-height:80%!important;
+  height:100%!important;
+  max-height:none!important;
   display:flex!important;
   align-items:center!important;
   justify-content:flex-start!important;
-  overflow:hidden!important;
+  overflow:visible!important;
 }
 .geek-all-teams-stat-label-v2217{
   display:block!important;
@@ -13179,14 +13236,26 @@ html.sshcp-geek-required-white-v2220 .geek-all-teams-rotate-card-v2216{
   max-height:none!important;
   overflow:visible!important;
   white-space:nowrap!important;
-  line-height:.95!important;
+  line-height:1.08!important;
   text-align:left!important;
 }
 .geek-all-teams-stat-line-v2220{
   display:block!important;
   width:max-content!important;
   white-space:nowrap!important;
-  line-height:.95!important;
+  line-height:1.08!important;
+}
+
+/* CAT is intentionally quiet/contextual. Geometry gives it enough width for
+   the longest real category at this small target size, so nothing is ellipsized. */
+.geek-all-teams-cat-label-v2217{
+  width:max-content!important;
+  max-width:none!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+  font-size:var(--gat-cat-font-v2221,9px)!important;
+  font-weight:400!important;
+  line-height:1!important;
 }
 </style>
 
@@ -13325,7 +13394,7 @@ html.sshcp-geek-required-white-v2220 .geek-all-teams-rotate-card-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.20</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.21</span></span>
         </button>
 
       </div>
@@ -27603,10 +27672,10 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.20 — GEEK <-> ALL TEAMS REQUIRED-ROTATION STATE
+       SSHCP V22.21 — GEEK <-> ALL TEAMS REQUIRED-ROTATION STATE
        Only entering ALL TEAMS or pressing its BACK requires a fresh rebuild.
        Accidental orientation mismatches preserve the existing ALL TEAMS DOM,
-       scroll position and filters and use only the universal 0.10s warning fade.
+       scroll position and filters; warnings fade in .50s over white and clear at 0s on rotation.
        ========================================================= */
     let geekAllTeamsOpenV2216 = false;
     let geekAllTeamsFilterDraftV2216 = null;
@@ -27741,22 +27810,44 @@ let scoreTimingDetail =
       );
     }
 
-    function fitGeekAllTeamsStatLabelV2220(label, rowHeight) {
+    function geekAllTeamsBestStatSplitV2221(textValue, label, fontSize) {
+      const value = String(textValue || '').trim();
+      if (!value) return null;
+      const cuts = geekStatLegalCutsV1828(value);
+      if (!cuts.length) return null;
+
+      let best = null;
+      cuts.forEach(candidate => {
+        const left = value.slice(0, candidate.cut).trim();
+        const right = value.slice(candidate.cut + candidate.skip).trim();
+        if (!left || !right) return;
+        const leftWidth = measureTeamLineWidthV58(label, left, fontSize);
+        const rightWidth = measureTeamLineWidthV58(label, right, fontSize);
+        const maxWidth = Math.max(leftWidth, rightWidth);
+        const balance = Math.abs(leftWidth - rightWidth);
+        const score = (maxWidth * 1000) + balance;
+        if (!best || score < best.score) best = { score, lines:[left, right] };
+      });
+      return best ? best.lines : null;
+    }
+
+    function fitGeekAllTeamsStatLabelV2221(label, rowHeight) {
       if (!label) return;
       const box = label.closest('.geek-all-teams-stat-textbox-v2220');
       if (!box) return;
 
-      const original = String(label.dataset.v2220Stat || label.textContent || '').trim();
-      label.dataset.v2220Stat = original;
+      const original = String(label.dataset.v2221Stat || label.textContent || '').trim();
+      label.dataset.v2221Stat = original;
+
       const target = Math.max(1, rowHeight * 0.40);
-      const maxHeight = Math.max(1, rowHeight * 0.80);
-      const availableWidth = Math.max(1, box.clientWidth - 1);
-      const minSize = 4;
-      const split = splitGeekStatTwoLinesV1821(original);
+      const availableWidth = Math.max(1, box.clientWidth - 2);
+      const physicalBoxHeight = Math.max(1, box.clientHeight - 2);
+      const maxHeight = Math.max(1, Math.min(rowHeight * 0.80, physicalBoxHeight));
+      const lineHeight = 1.08;
 
       const renderLines = (lines, size) => {
         label.style.setProperty('font-size', size + 'px', 'important');
-        label.style.setProperty('line-height', '.95', 'important');
+        label.style.setProperty('line-height', String(lineHeight), 'important');
         label.innerHTML = lines.map(line =>
           '<span class="geek-all-teams-stat-line-v2220">' + escapeHtml(line) + '</span>'
         ).join('');
@@ -27768,23 +27859,27 @@ let scoreTimingDetail =
         const maxWidth = rendered.length
           ? Math.max(...rendered.map(line => line.getBoundingClientRect().width))
           : label.getBoundingClientRect().width;
-        const blockHeight = label.getBoundingClientRect().height;
-        return maxWidth <= availableWidth + 0.25 && blockHeight <= maxHeight + 0.25;
+        const blockRect = label.getBoundingClientRect();
+        const blockHeight = Math.max(blockRect.height, label.scrollHeight || 0);
+        return maxWidth <= availableWidth + 0.10 && blockHeight <= maxHeight + 0.10;
       };
 
       const oneLine = [original];
       if (fits(oneLine, target)) return;
 
-      const lines = Array.isArray(split) && split.length === 2 && split[0] && split[1]
-        ? split
-        : oneLine;
-
+      /* Pick the legal two-line break that is actually narrowest in Oswald,
+         not merely the cut nearest the character midpoint. */
+      const split = geekAllTeamsBestStatSplitV2221(original, label, target);
+      const lines = Array.isArray(split) && split.length === 2 ? split : oneLine;
       if (fits(lines, target)) return;
 
-      let low = minSize;
+      /* Deliberately no practical minimum font floor. If a legal two-line stat
+         needs to get smaller to fit its true width AND full 80% height, shrink
+         until it does rather than allowing the cell to crop its glyphs. */
+      let low = 0.25;
       let high = target;
-      let best = minSize;
-      for (let i = 0; i < 18; i++) {
+      let best = low;
+      for (let i = 0; i < 24; i++) {
         const mid = (low + high) / 2;
         if (fits(lines, mid)) {
           best = mid;
@@ -27794,6 +27889,48 @@ let scoreTimingDetail =
         }
       }
       renderLines(lines, best);
+
+      /* Final pixel guard for browser/font rounding. */
+      let guard = best;
+      while (guard > 0.25 && !fits(lines, guard)) {
+        guard = Math.max(0.25, guard - 0.10);
+      }
+      renderLines(lines, guard);
+    }
+
+    function fitGeekAllTeamsCatLabelV2221(label, rowHeight) {
+      if (!label) return;
+      const cell = label.closest('.geek-all-teams-cat-v2217');
+      if (!cell) return;
+      const original = String(label.dataset.v2221Cat || label.textContent || '').trim();
+      label.dataset.v2221Cat = original;
+      const target = Math.max(6, Number(label.closest('.geek-all-teams-table-v2216')?.dataset.catFontSizeV2221) || (rowHeight * 0.15));
+      const availableWidth = Math.max(1, cell.clientWidth - 7);
+
+      const apply = size => {
+        label.textContent = original;
+        label.style.setProperty('font-size', size + 'px', 'important');
+        label.style.setProperty('line-height', '1', 'important');
+      };
+      const fits = size => {
+        apply(size);
+        return label.getBoundingClientRect().width <= availableWidth + 0.10;
+      };
+
+      if (fits(target)) return;
+      let low = 0.25;
+      let high = target;
+      let best = low;
+      for (let i = 0; i < 20; i++) {
+        const mid = (low + high) / 2;
+        if (fits(mid)) {
+          best = mid;
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+      apply(best);
     }
 
     function fitGeekAllTeamsTextV2217() {
@@ -27823,22 +27960,17 @@ let scoreTimingDetail =
         });
       });
 
-      /* V22.20 — STAT is fit against the ACTUAL post-dot label box. The browser
-         gets either one intact line or exactly two legal intact lines. We then
-         binary-fit both width and the complete 80%-of-row height envelope. */
+      /* V22.21 — STAT has no practical minimum floor. One or two legal lines
+         are measured against the actual post-dot box until both full width and
+         full glyph-safe height fit inside the 80%-of-row envelope. */
       table.querySelectorAll('.geek-all-teams-stat-label-v2217').forEach(label => {
-        fitGeekAllTeamsStatLabelV2220(label, rowHeight);
+        fitGeekAllTeamsStatLabelV2221(label, rowHeight);
       });
 
+      /* CAT is tiny by design, but never clipped. Geometry already reserves the
+         longest category width at the target size; this is the rounding guard. */
       table.querySelectorAll('.geek-all-teams-cat-label-v2217').forEach(label => {
-        const cell = label.closest('.geek-all-teams-cell-v2216');
-        if (!cell) return;
-        fitTextToBoxV5(cell, label, rowHeight * 0.22, Math.max(6, rowHeight * 0.11), {
-          horizontalPad: 3,
-          verticalPad: rowHeight * 0.25,
-          wrap: false,
-          lineHeight: 1
-        });
+        fitGeekAllTeamsCatLabelV2221(label, rowHeight);
       });
 
       table.querySelectorAll('.geek-all-teams-value-v2217').forEach(label => {
@@ -27899,13 +28031,6 @@ let scoreTimingDetail =
       const teamCount = Math.max(1, Number(table.dataset.teamCount) || 1);
       const width = Math.max(1, scroll.clientWidth || window.innerWidth || 1);
 
-      /* V22.20 — STAT keeps roughly the same useful width while CAT becomes a
-         compact utility track. The reclaimed space belongs to the six teams. */
-      const metaWidth = Math.max(136, Math.round(width * 0.20));
-      const statWidth = Math.round(metaWidth * 0.84);
-      const catWidth = metaWidth - statWidth;
-      const teamWidth = Math.max(82, (width - metaWidth) / 6);
-
       /* V22.18 target: header + exactly four data rows fill the scroll viewport.
          Header is intentionally a little shorter than a stat row. */
       const availableHeight = Math.max(1, scroll.clientHeight || 1);
@@ -27916,14 +28041,35 @@ let scoreTimingDetail =
         headerRowHeight = dataRowHeight * 0.82;
       }
 
+      /* V22.21 — CAT is contextual, so keep its font intentionally tiny; size
+         the COLUMN from the longest real rendered category instead of guessing
+         a percentage and then clipping STEADY/SCORES. STAT receives the rest of
+         the compact left-side allocation and the six teams keep all remaining
+         width. */
+      const catFontSize = Math.max(6, dataRowHeight * 0.15);
+      let catTextWidth = 0;
+      table.querySelectorAll('.geek-all-teams-cat-label-v2217').forEach(label => {
+        const value = String(label.textContent || '').trim();
+        if (!value) return;
+        catTextWidth = Math.max(catTextWidth, measureTeamLineWidthV58(label, value, catFontSize));
+      });
+      const catWidth = Math.max(28, Math.ceil(catTextWidth + 8));
+      const desiredMetaWidth = Math.max(136, Math.round(width * 0.20));
+      const statFloor = Math.max(92, Math.round(width * 0.12));
+      const metaWidth = Math.max(desiredMetaWidth, catWidth + statFloor);
+      const statWidth = metaWidth - catWidth;
+      const teamWidth = Math.max(82, (width - metaWidth) / 6);
+
       table.style.setProperty('--gat-stat-w-v2217', statWidth.toFixed(2) + 'px');
       table.style.setProperty('--gat-cat-w-v2217', catWidth.toFixed(2) + 'px');
+      table.style.setProperty('--gat-cat-font-v2221', catFontSize.toFixed(2) + 'px');
       table.style.setProperty('--gat-team-w-v2216', teamWidth.toFixed(2) + 'px');
       table.style.setProperty('--gat-team-count-v2216', String(teamCount));
       table.style.setProperty('--gat-row-h-v2217', dataRowHeight.toFixed(2) + 'px');
       table.style.setProperty('--gat-head-h-v2217', headerRowHeight.toFixed(2) + 'px');
       table.dataset.dataRowHeight = dataRowHeight.toFixed(3);
       table.dataset.headerRowHeight = headerRowHeight.toFixed(3);
+      table.dataset.catFontSizeV2221 = catFontSize.toFixed(3);
       requestAnimationFrame(() => {
         fitGeekAllTeamsTextV2217();
         updateGeekAllTeamsProgressV2218();
@@ -28025,7 +28171,8 @@ let scoreTimingDetail =
         'sshcp-geek-all-teams-v2216',
         'sshcp-geek-enter-pending-v2220',
         'sshcp-geek-exit-pending-v2220',
-        'sshcp-geek-required-white-v2220'
+        'sshcp-geek-required-white-v2220',
+        'sshcp-geek-rotation-start-v2221'
       );
       const view = document.getElementById('geekAllTeamsViewV2216');
       const rotate = document.getElementById('geekAllTeamsRotateV2216');
@@ -28155,14 +28302,16 @@ let scoreTimingDetail =
       geekRequiredRotationReloadingV2220 = true;
       persistGeekRequiredRotationStateV2220(target);
 
-      /* REQUIRED rotation sequence: the 0.10s orientation warning fades INTO
-         solid white first. Only after white is established do we reload. The
-         next document starts white before first paint and later uses the exact
-         existing AFTER-PLAY GEEK fade to reveal the rebuilt destination. */
-      document.documentElement.classList.add('sshcp-geek-required-white-v2220');
-      window.setTimeout(() => {
-        window.location.reload();
-      }, 115);
+      /* V22.21 REQUIRED rotation: the warning already lives on solid WHITE.
+         Clear only the Gray 3 card at 0s; the visually identical white surface
+         remains through the browser orientation snap and the real refresh. Two
+         paint frames guarantee the card is gone before navigation begins. */
+      document.documentElement.classList.add('sshcp-geek-rotation-start-v2221');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.location.reload();
+        });
+      });
     }
 
     function handleGeekRequiredOrientationV2220() {
@@ -28179,8 +28328,9 @@ let scoreTimingDetail =
       }
 
       /* No required transition: this is an accidental orientation mismatch.
-         Do not rerender, refetch or resize the saved ALL TEAMS table. The Gray 3
-         warning is CSS-driven and the original landscape state simply returns. */
+         Do not rerender, refetch or resize the saved ALL TEAMS table. White is
+         already behind the Gray 3 warning; when valid orientation returns the
+         card clears at 0s and that white reveals the saved table over .25s. */
       geekAllTeamsLastLandscapeV2220 = landscapeNow;
     }
 
@@ -28252,6 +28402,7 @@ let scoreTimingDetail =
       }
 
       const finalCurtain = beginAfterPlayCurtainV2086('after-play-geek-required-v2220');
+      if (finalCurtain) finalCurtain.classList.add('sshcp-geek-orientation-curtain-v2221');
       if (document.fonts && document.fonts.ready) {
         try { await document.fonts.ready; } catch (_) {}
       }
@@ -28276,7 +28427,7 @@ let scoreTimingDetail =
         sessionStorage.removeItem('sshcpGeekAllTeamsOrientationReturnV2219');
       } catch (_) {}
 
-      document.documentElement.classList.remove('sshcp-pre-geek-transition-v2220');
+      document.documentElement.classList.remove('sshcp-pre-geek-transition-v2220', 'sshcp-geek-rotation-start-v2221');
       await revealAfterPlayCurtainV2086(
         'after-play-geek-required-v2220',
         finalCurtain,
