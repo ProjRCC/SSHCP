@@ -1,12 +1,12 @@
-<!-- SSHCP | BASE KEY: 22.24-R7M5QK | BUILD KEY: 22.25-L6Q3VN -->
-<!-- SSHCP V22.25 ORIENTATION SOURCE + CARD-FADE FIX - exact V22.24 donor.
-     Keeps V22.24 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, 98vw x 98dvh ALL TEAMS
-     geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing and ALL TEAMS +2px action buffer unchanged.
-     Fixes the orientation warning itself rather than stacking another override: matchMedia('(orientation: landscape)') is now
-     the single orientation truth source for this subsystem; obsolete screen.orientation/resize/orientationchange decision paths
-     and the old currentGeekLandscapeV2220 helper are removed. The Gray 3 card now uses a class-driven opacity transition with
-     no !important opacity pin, so timing-panel 6A can actually fade 0->1 over 2.00s; removing the class still clears instantly.
-     Timing-panel 6B remains 2.00s for the separate destination white-curtain reveal. No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.25-L6Q3VN | BUILD KEY: 22.26-H4N8QZ -->
+<!-- SSHCP V22.26 ALL TEAMS EXIT ROTATION HANDOFF - exact V22.25 donor.
+     Keeps V22.25 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, 98vw x 98dvh ALL TEAMS
+     geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing, ALL TEAMS +2px action buffer and the
+     2.00s orientation timing-test values unchanged. Fixes ONLY required ALL TEAMS -> normal GEEK exit: BACK still shows
+     the normal white warning surface + Gray 3 ROTATE PHONE TO PORTRAIT card, but the first physical-rotation hint clears
+     that entire warning layer immediately so the already-held separate white curtain is exposed before the browser rotates
+     the outgoing warning surface. matchMedia('(orientation: landscape)') remains the ONLY orientation truth used to decide
+     when portrait is actually reached and when the required refresh/rebuild may occur. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -13064,8 +13064,8 @@ html.sshcp-pre-geek-transition-v2220 body::after{
 </style>
 
 
-<style id="sshcp-v2225-orientation-system">
-/* SSHCP V22.25 — ONE authoritative orientation presentation system.
+<style id="sshcp-orientation-system-current">
+/* SSHCP V22.26 — ONE authoritative orientation presentation system.
    Layer order: Gray 3 warning card > immediate white warning surface >
    separate white transition curtain > preserved/rebuilt app screen.
    IMPORTANT: orientation/media rules control ONLY the white warning surface.
@@ -13194,6 +13194,16 @@ html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
     visibility:visible!important;
     pointer-events:auto!important;
   }
+}
+
+/* Required ALL TEAMS -> GEEK exit only. Once physical rotation has begun,
+   remove BOTH the Gray 3 card and its white warning surface immediately.
+   The independent white transition curtain is already underneath, so the
+   visual field stays continuously white while the browser rotates/rebuilds. */
+html.sshcp-geek-exit-rotation-started .geek-all-teams-rotate-v2216{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
 }
 
 /* ONLY this runtime class reveals a warning card. The base card is opacity 0
@@ -13350,7 +13360,7 @@ html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.25</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.26</span></span>
         </button>
 
       </div>
@@ -27635,7 +27645,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.25 — GEEK <-> ALL TEAMS ORIENTATION STATE
+       SSHCP V22.26 — GEEK <-> ALL TEAMS ORIENTATION STATE
        Only entering ALL TEAMS or pressing its BACK requires a fresh rebuild.
        Accidental orientation mismatches preserve the existing ALL TEAMS DOM,
        scroll position and filters. The warning and transition curtain are separate
@@ -27647,7 +27657,7 @@ let scoreTimingDetail =
     let geekRequiredRotationV2220 = '';
     let geekRequiredRotationReloadingV2220 = false;
 
-    /* V22.25 — this MediaQueryList is the ONE orientation truth source used by
+    /* V22.26 — this MediaQueryList is the ONE orientation truth source used by
        the orientation subsystem. It matches the CSS @media condition exactly. */
     const sshcpLandscapeMediaV2225 = window.matchMedia
       ? window.matchMedia('(orientation: landscape)')
@@ -28144,6 +28154,9 @@ let scoreTimingDetail =
     function closeGeekAllTeamsV2216(cancelCheck) {
       geekAllTeamsOpenV2216 = false;
       geekRequiredRotationV2220 = '';
+      sshcpGeekExitRotationStarted = false;
+      sshcpGeekExitViewportStart = null;
+      document.documentElement.classList.remove('sshcp-geek-exit-rotation-started');
       closeGeekAllTeamsFilterV2216();
       document.documentElement.classList.remove(
         'sshcp-geek-all-teams-v2216',
@@ -28242,6 +28255,13 @@ let scoreTimingDetail =
       if (!geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
       closeGeekAllTeamsFilterV2216();
       geekRequiredRotationV2220 = 'exit';
+      sshcpGeekExitRotationStarted = false;
+      const vv = window.visualViewport || null;
+      sshcpGeekExitViewportStart = {
+        w: Math.max(1, Number(vv && vv.width) || Number(window.innerWidth) || 1),
+        h: Math.max(1, Number(vv && vv.height) || Number(window.innerHeight) || 1)
+      };
+      document.documentElement.classList.remove('sshcp-geek-exit-rotation-started');
       holdOrientationCurtainV2225();
       setGeekAllTeamsWarningMessageV2220('ROTATE PHONE TO PORTRAIT');
       document.documentElement.classList.remove('sshcp-geek-enter-pending-v2220');
@@ -28263,13 +28283,15 @@ let scoreTimingDetail =
       } catch (_) {}
     }
 
-    /* V22.25 — one current orientation subsystem. The CSS warning surface and
+    /* V22.26 — one current orientation subsystem. The CSS warning surface and
        JS state both use the same orientation media query. WHITE is immediate;
        only the Gray 3 card waits two paints before beginning timing-panel 6A. */
     let sshcpOrientationCurtainTimerV2225 = 0;
     let sshcpNormalLastLandscapeV2225 = isLandscapeOrientationV2225();
     let sshcpNormalWarningRunningV2225 = false;
     let sshcpAllTeamsWarningRunningV2225 = false;
+    let sshcpGeekExitViewportStart = null;
+    let sshcpGeekExitRotationStarted = false;
 
     function orientationTimingMsV2225(key, fallbackSeconds) {
       const timing = window.SSHCP_FADE_TIMING_V2092 || {};
@@ -28459,6 +28481,30 @@ let scoreTimingDetail =
       syncGeekAllTeamsAccidentalCurtainV2225(landscapeNow);
     }
 
+    function clearGeekExitWarningAtRotationStart() {
+      if (sshcpGeekExitRotationStarted) return;
+      if (!geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
+      if (geekRequiredRotationV2220 !== 'exit') return;
+      sshcpGeekExitRotationStarted = true;
+      clearAllTeamsOrientationWarningV2225();
+      document.documentElement.classList.add('sshcp-geek-exit-rotation-started');
+      holdOrientationCurtainV2225();
+    }
+
+    function detectGeekExitPhysicalRotationStart() {
+      if (geekRequiredRotationV2220 !== 'exit' || !sshcpGeekExitViewportStart) return;
+      const vv = window.visualViewport || null;
+      const w = Math.max(1, Number(vv && vv.width) || Number(window.innerWidth) || 1);
+      const h = Math.max(1, Number(vv && vv.height) || Number(window.innerHeight) || 1);
+      const base = sshcpGeekExitViewportStart;
+      /* Not an orientation decision: this only catches the beginning of the
+         landscape->portrait viewport motion so the outgoing warning layer can
+         disappear before the browser visually rotates it. */
+      const widthContracted = w <= base.w * 0.94;
+      const heightExpanded = h >= base.h * 1.06;
+      if (widthContracted && heightExpanded) clearGeekExitWarningAtRotationStart();
+    }
+
     function handleOrientationMediaChangeV2225() {
       handleGeekAllTeamsOrientationV2225();
       handleNormalOrientationV2225();
@@ -28470,6 +28516,14 @@ let scoreTimingDetail =
       } else if (sshcpLandscapeMediaV2225.addListener) {
         sshcpLandscapeMediaV2225.addListener(handleOrientationMediaChangeV2225);
       }
+    }
+
+    /* Early EXIT handoff only. These events are allowed to remove the outgoing
+       warning layer, but they never decide portrait/landscape and never reload. */
+    window.addEventListener('orientationchange', clearGeekExitWarningAtRotationStart, { passive:true });
+    window.addEventListener('resize', detectGeekExitPhysicalRotationStart, { passive:true });
+    if (window.visualViewport && window.visualViewport.addEventListener) {
+      window.visualViewport.addEventListener('resize', detectGeekExitPhysicalRotationStart, { passive:true });
     }
     requestAnimationFrame(handleOrientationMediaChangeV2225);
 
