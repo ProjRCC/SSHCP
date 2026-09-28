@@ -1,5 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.14-Q8M5TZ | BUILD KEY: 22.15-H6R9MP -->
-<!-- SSHCP V22.15 WELCOME TIPS DE-EMPHASIS + SCRAMBLE COMPLETE GUIDE - exact V22.14 donor.
+<!-- SSHCP | BASE KEY: 22.15-H6R9MP | BUILD KEY: 22.16-N7K4QX -->
+<!-- SSHCP V22.16 ALL-TEAMS LANDSCAPE SETUP - exact V22.15 donor.
+     Keeps V22.15 Welcome Tips de-emphasis, SCRAMBLE COMPLETE guide, result payload, GEEK math/detail,
+     Scramble Mode, scoring, authorization, Worker/API, table geometry and global scaling unchanged.
+     Adds only the first ALL TEAMS GEEK landscape setup: filter opt-in, rotate prompt, 7-column view
+     (STAT + six visible team columns), ten live stat rows for geometry/scroll testing, and BACK/FILTERS.
+     BACK cancels the ALL TEAMS filter and returns to the normal GEEK presentation. -->
+<!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
      presentation: (1) the Welcome TIPS & TRICKS opt-in is intentionally quiet when unchecked (Gray 4 label + very-light
@@ -12570,6 +12576,293 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 </style>
 
+
+<style id="sshcp-v2216-geek-all-teams-landscape">
+/* SSHCP V22.16 — first ALL TEAMS landscape setup only.
+   Normal SSHCP remains portrait-only. The existing ROTATE TO PORTRAIT guard is
+   suppressed solely while this explicit GEEK ALL TEAMS mode is active. */
+html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+.geek-all-teams-rotate-v2216,
+.geek-all-teams-view-v2216{
+  position:fixed!important;
+  inset:0!important;
+  z-index:12000!important;
+  display:none!important;
+  box-sizing:border-box!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+}
+
+html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  background:rgba(199,199,199,.90)!important;
+  -webkit-backdrop-filter:blur(6px)!important;
+  backdrop-filter:blur(6px)!important;
+}
+.geek-all-teams-rotate-card-v2216{
+  width:min(520px,calc(100% - 36px))!important;
+  padding:calc(24px * var(--v221-global-scale,1)) 24px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  color:#000!important;
+  text-align:center!important;
+  font-size:calc(27px * var(--v221-global-scale,1))!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+  box-shadow:0 4px 14px rgba(0,0,0,.14)!important;
+}
+
+@media (orientation:landscape){
+  html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
+    display:none!important;
+  }
+  html.sshcp-geek-all-teams-v2216 .geek-all-teams-view-v2216{
+    display:flex!important;
+  }
+}
+
+.geek-all-teams-view-v2216{
+  flex-direction:column!important;
+  width:100vw!important;
+  height:100dvh!important;
+  padding:max(7px,env(safe-area-inset-top)) 10px max(7px,env(safe-area-inset-bottom))!important;
+  background:#fff!important;
+  color:#000!important;
+  overflow:hidden!important;
+}
+.geek-all-teams-title-v2216{
+  flex:0 0 auto!important;
+  height:38px!important;
+  min-height:38px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:#000!important;
+  font-size:clamp(20px,5.1dvh,27px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.geek-all-teams-scroll-v2216{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  overflow:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+  border:1px solid var(--line-strong)!important;
+  border-radius:9px!important;
+  background:#fff!important;
+}
+.geek-all-teams-table-v2216{
+  min-width:100%!important;
+  width:max-content!important;
+  background:#fff!important;
+}
+.geek-all-teams-row-v2216{
+  display:grid!important;
+  grid-template-columns:var(--gat-stat-w-v2216,180px) repeat(var(--gat-team-count-v2216,6),var(--gat-team-w-v2216,100px))!important;
+  width:max-content!important;
+  min-width:100%!important;
+  min-height:46px!important;
+  border-bottom:1px solid var(--line)!important;
+  background:#fff!important;
+}
+.geek-all-teams-row-v2216:last-child{
+  border-bottom:0!important;
+}
+.geek-all-teams-row-v2216.header-v2216{
+  position:sticky!important;
+  top:0!important;
+  z-index:8!important;
+  min-height:44px!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+}
+.geek-all-teams-cell-v2216{
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:4px 5px!important;
+  border-right:1px solid var(--line)!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+  font-size:clamp(12px,3.25dvh,17px)!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  font-weight:700!important;
+  background:inherit!important;
+}
+.geek-all-teams-cell-v2216:last-child{
+  border-right:0!important;
+}
+.geek-all-teams-stat-v2216{
+  position:sticky!important;
+  left:0!important;
+  z-index:5!important;
+  justify-content:flex-start!important;
+  padding-left:9px!important;
+  padding-right:7px!important;
+  text-align:left!important;
+  font-weight:800!important;
+  background:#fff!important;
+}
+.header-v2216 .geek-all-teams-stat-v2216{
+  z-index:10!important;
+  justify-content:center!important;
+  padding-left:5px!important;
+  text-align:center!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+}
+.header-v2216 .geek-all-teams-cell-v2216{
+  font-weight:900!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+}
+.geek-all-teams-cell-v2216.leader-v2216{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  font-weight:900!important;
+}
+.geek-all-teams-actions-v2216{
+  flex:0 0 auto!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:8px!important;
+  width:100%!important;
+  height:52px!important;
+  min-height:52px!important;
+  margin-top:7px!important;
+}
+.geek-all-teams-action-v2216{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:0 10px!important;
+  border:0!important;
+  border-radius:9px!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  font-size:clamp(18px,4.5dvh,24px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+.geek-all-teams-back-v2216{
+  background:var(--sshcp-gray-3-v1842,#e8e8e8)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+.geek-all-teams-filter-button-v2216{
+  background:var(--sshcp-control-gray-v1840,#666)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+
+/* Landscape filter card — compact, functional, and deliberately separate from
+   the portrait GEEK popover so no existing geometry has to be repurposed. */
+.geek-all-teams-filter-shade-v2216{
+  position:absolute!important;
+  inset:0!important;
+  z-index:20!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:10px!important;
+  background:rgba(0,0,0,.42)!important;
+}
+.geek-all-teams-filter-shade-v2216.open-v2216{
+  display:flex!important;
+}
+.geek-all-teams-filter-card-v2216{
+  width:min(760px,96vw)!important;
+  max-height:92dvh!important;
+  overflow:auto!important;
+  padding:10px!important;
+  border-radius:12px!important;
+  background:var(--sshcp-gray-7-v1851,#444)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.28)!important;
+}
+.geek-all-teams-filter-grid-v2216{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:7px!important;
+}
+.geek-all-teams-filter-choice-v2216{
+  min-width:0!important;
+  height:42px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  padding:0 7px!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+  border-radius:8px!important;
+  background:rgba(255,255,255,.05)!important;
+  color:#fff!important;
+  font-size:clamp(12px,3.1dvh,16px)!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+.geek-all-teams-filter-choice-v2216.master-v2216{
+  grid-column:span 2!important;
+  font-weight:900!important;
+}
+.geek-all-teams-filter-choice-v2216 input{
+  width:18px!important;
+  height:18px!important;
+  margin:0!important;
+  flex:0 0 18px!important;
+  accent-color:var(--accent)!important;
+}
+.geek-all-teams-filter-apply-v2216{
+  grid-column:1 / -1!important;
+  height:46px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  font-size:clamp(17px,4.3dvh,23px)!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+
+/* Add ALL TEAMS as a full-width row in the existing portrait GEEK filter. */
+.geek-filter-choice-v186.geek-filter-all-teams-v2216{
+  grid-column:1 / -1!important;
+  height:44px!important;
+  justify-content:center!important;
+  font-weight:800!important;
+}
+.modal-overlay.geek-mode-v180 .geek-filter-grid-v186{
+  grid-template-rows:
+    50px
+    44px
+    12px
+    44px
+    14px
+    44px
+    44px
+    44px
+    var(--v187-post-button-h,50px)!important;
+}
+</style>
+
 </head>
 
 
@@ -12704,7 +12997,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.15</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.16</span></span>
         </button>
 
       </div>
@@ -25378,6 +25671,8 @@ let scoreTimingDetail =
       ...GEEK_CATEGORY_FILTER_ORDER_V1830
     ];
 
+    const GEEK_ALL_TEAMS_FILTER_V2216 = 'ALL_TEAMS';
+
     function geekFullFilterSetV1830() {
       return new Set(['ALL', ...GEEK_FILTER_ORDER_V186]);
     }
@@ -26900,6 +27195,13 @@ let scoreTimingDetail =
       renderGeekTableV180();
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) scroll.scrollTop = 0;
+
+      if (geekSelectedCategoriesV180.has(GEEK_ALL_TEAMS_FILTER_V2216)) {
+        openGeekAllTeamsV2216();
+      } else {
+        closeGeekAllTeamsV2216(false);
+      }
+
       requestAnimationFrame(() => {
         fitGeekRowsV180();
         revealGeekFilterCoverV1812();
@@ -26916,6 +27218,10 @@ let scoreTimingDetail =
           '<label class="geek-filter-choice-v186 geek-filter-all-v186">' +
             '<input type="checkbox" data-geek-filter="ALL">' +
             '<span class="geek-filter-text-v186">ALL</span>' +
+          '</label>' +
+          '<label class="geek-filter-choice-v186 geek-filter-all-teams-v2216">' +
+            '<input type="checkbox" data-geek-filter="' + GEEK_ALL_TEAMS_FILTER_V2216 + '">' +
+            '<span class="geek-filter-text-v186">ALL TEAMS</span>' +
           '</label>' +
           '<div class="geek-filter-separator-v1830" aria-hidden="true"></div>' +
           '<label class="geek-filter-choice-v186 geek-filter-tone-v1830">' +
@@ -26966,6 +27272,285 @@ let scoreTimingDetail =
       if (apply) apply.addEventListener('click', applyGeekFiltersV186);
       return panel;
     }
+
+
+    /* =========================================================
+       SSHCP V22.16 — ALL TEAMS LANDSCAPE SETUP
+       First geometry/interaction pass only: ten live stat rows, six visible
+       team columns, two-axis scrolling, Blue leader cells, FILTERS and BACK.
+       BACK explicitly cancels ALL TEAMS and restores the normal GEEK view.
+       ========================================================= */
+    let geekAllTeamsOpenV2216 = false;
+    let geekAllTeamsFilterDraftV2216 = null;
+
+    function ensureGeekAllTeamsShellV2216() {
+      let rotate = document.getElementById('geekAllTeamsRotateV2216');
+      if (!rotate) {
+        rotate = document.createElement('div');
+        rotate.id = 'geekAllTeamsRotateV2216';
+        rotate.className = 'geek-all-teams-rotate-v2216';
+        rotate.setAttribute('aria-hidden', 'true');
+        rotate.innerHTML = '<div class="geek-all-teams-rotate-card-v2216">ROTATE PHONE TO LANDSCAPE</div>';
+        document.body.appendChild(rotate);
+      }
+
+      let view = document.getElementById('geekAllTeamsViewV2216');
+      if (!view) {
+        view = document.createElement('div');
+        view.id = 'geekAllTeamsViewV2216';
+        view.className = 'geek-all-teams-view-v2216';
+        view.setAttribute('aria-hidden', 'true');
+        view.innerHTML =
+          '<div class="geek-all-teams-title-v2216">GEEK MODE • ALL TEAMS</div>' +
+          '<div id="geekAllTeamsScrollV2216" class="geek-all-teams-scroll-v2216">' +
+            '<div id="geekAllTeamsTableV2216" class="geek-all-teams-table-v2216"></div>' +
+          '</div>' +
+          '<div class="geek-all-teams-actions-v2216">' +
+            '<button id="geekAllTeamsBackV2216" class="geek-all-teams-action-v2216 geek-all-teams-back-v2216" type="button">BACK</button>' +
+            '<button id="geekAllTeamsFiltersV2216" class="geek-all-teams-action-v2216 geek-all-teams-filter-button-v2216" type="button">FILTERS</button>' +
+          '</div>' +
+          '<div id="geekAllTeamsFilterShadeV2216" class="geek-all-teams-filter-shade-v2216" aria-hidden="true">' +
+            '<div id="geekAllTeamsFilterCardV2216" class="geek-all-teams-filter-card-v2216"></div>' +
+          '</div>';
+        document.body.appendChild(view);
+
+        const back = view.querySelector('#geekAllTeamsBackV2216');
+        const filters = view.querySelector('#geekAllTeamsFiltersV2216');
+        const shade = view.querySelector('#geekAllTeamsFilterShadeV2216');
+        if (back) back.addEventListener('click', () => closeGeekAllTeamsV2216(true));
+        if (filters) filters.addEventListener('click', openGeekAllTeamsFilterV2216);
+        if (shade) shade.addEventListener('click', event => {
+          if (event.target === shade) closeGeekAllTeamsFilterV2216();
+        });
+      }
+      return { rotate, view };
+    }
+
+    function geekAllTeamsTeamNamesV2216() {
+      const names = [];
+      const seen = new Set();
+      const add = value => {
+        const name = String(value || '').trim();
+        const key = normalizeName(name);
+        if (!name || !key || seen.has(key)) return;
+        seen.add(key);
+        names.push(name);
+      };
+
+      const model = geekEvidenceModelV1920();
+      if (model && Array.isArray(model.teams)) {
+        model.teams.forEach(team => add(team && team.name));
+      }
+
+      if (geekDataV180 && Array.isArray(geekDataV180.categories)) {
+        geekDataV180.categories.forEach(block => {
+          (Array.isArray(block && block.stats) ? block.stats : []).forEach(stat => {
+            (Array.isArray(stat && stat.results) ? stat.results : []).forEach(item => add(item && item.team));
+          });
+        });
+      }
+      return names;
+    }
+
+    function geekAllTeamsStatsV2216() {
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return [];
+      const selected = geekSelectedCategoriesV180;
+      const rows = [];
+
+      GEEK_CATEGORY_ORDER_V180.forEach(category => {
+        if (!selected.has(category)) return;
+        const block = geekDataV180.categories.find(item =>
+          String(item && item.category || '').trim().toUpperCase() === category
+        );
+        const stats = Array.isArray(block && block.stats) ? block.stats : [];
+        stats.forEach(stat => {
+          if (!stat || stat.supported === false) return;
+          const tone = geekStatToneV186(stat && stat.stat);
+          if (tone === 'good' && !selected.has('GOOD')) return;
+          if (tone === 'bad' && !selected.has('BAD')) return;
+          if (tone !== 'good' && tone !== 'bad' && !selected.has('GOOD')) return;
+          rows.push(stat);
+        });
+      });
+
+      /* V22.16 deliberately starts with ten live rows. This is enough to prove
+         the landscape shell and vertical scroll before the full 32-stat pass. */
+      return rows.slice(0, 10);
+    }
+
+    function geekAllTeamsResultForV2216(stat, teamName) {
+      const target = normalizeName(teamName);
+      const results = Array.isArray(stat && stat.results) ? stat.results : [];
+      const match = results.find(item => normalizeName(item && item.team) === target);
+      if (match) return match;
+      if (String(stat && stat.direction || '').toLowerCase() === 'fixed') {
+        return { rawValue:stat && stat.rawValue, value:stat && stat.value };
+      }
+      return null;
+    }
+
+    function geekAllTeamsOwnsV2216(stat, teamName) {
+      const target = normalizeName(teamName);
+      return Boolean(target) && Array.isArray(stat && stat.teams) && stat.teams.some(item =>
+        normalizeName(item && item.team) === target
+      );
+    }
+
+    function syncGeekAllTeamsColumnGeometryV2216() {
+      const scroll = document.getElementById('geekAllTeamsScrollV2216');
+      const table = document.getElementById('geekAllTeamsTableV2216');
+      if (!scroll || !table) return;
+      const teamCount = Math.max(1, Number(table.dataset.teamCount) || 1);
+      const width = Math.max(1, scroll.clientWidth || window.innerWidth || 1);
+      const statWidth = Math.max(132, Math.round(width * 0.25));
+      const teamWidth = Math.max(82, (width - statWidth) / 6);
+      table.style.setProperty('--gat-stat-w-v2216', statWidth.toFixed(2) + 'px');
+      table.style.setProperty('--gat-team-w-v2216', teamWidth.toFixed(2) + 'px');
+      table.style.setProperty('--gat-team-count-v2216', String(teamCount));
+    }
+
+    function renderGeekAllTeamsV2216() {
+      const shell = ensureGeekAllTeamsShellV2216();
+      const table = shell.view.querySelector('#geekAllTeamsTableV2216');
+      if (!table) return;
+
+      const teams = geekAllTeamsTeamNamesV2216();
+      const stats = geekAllTeamsStatsV2216();
+      table.dataset.teamCount = String(Math.max(1, teams.length));
+
+      let html = '<div class="geek-all-teams-row-v2216 header-v2216">' +
+        '<div class="geek-all-teams-cell-v2216 geek-all-teams-stat-v2216">STAT</div>';
+      teams.forEach(team => {
+        html += '<div class="geek-all-teams-cell-v2216">' + escapeHtml(team) + '</div>';
+      });
+      html += '</div>';
+
+      stats.forEach(stat => {
+        html += '<div class="geek-all-teams-row-v2216">' +
+          '<div class="geek-all-teams-cell-v2216 geek-all-teams-stat-v2216">' +
+            escapeHtml(String(stat && stat.stat || '').toUpperCase()) +
+          '</div>';
+        teams.forEach(team => {
+          const item = geekAllTeamsResultForV2216(stat, team);
+          const value = geekMainValueV1813(stat, item);
+          const leaderClass = geekAllTeamsOwnsV2216(stat, team) ? ' leader-v2216' : '';
+          html += '<div class="geek-all-teams-cell-v2216' + leaderClass + '">' +
+            escapeHtml(value) +
+          '</div>';
+        });
+        html += '</div>';
+      });
+
+      if (!stats.length) {
+        html += '<div class="geek-all-teams-row-v2216">' +
+          '<div class="geek-all-teams-cell-v2216 geek-all-teams-stat-v2216">NO FILTERS SELECTED</div>' +
+        '</div>';
+      }
+
+      table.innerHTML = html;
+      requestAnimationFrame(syncGeekAllTeamsColumnGeometryV2216);
+    }
+
+    function openGeekAllTeamsV2216() {
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return;
+      ensureGeekAllTeamsShellV2216();
+      geekAllTeamsOpenV2216 = true;
+      document.documentElement.classList.add('sshcp-geek-all-teams-v2216');
+      const view = document.getElementById('geekAllTeamsViewV2216');
+      const rotate = document.getElementById('geekAllTeamsRotateV2216');
+      if (view) view.setAttribute('aria-hidden', 'false');
+      if (rotate) rotate.setAttribute('aria-hidden', 'false');
+      renderGeekAllTeamsV2216();
+    }
+
+    function closeGeekAllTeamsV2216(cancelCheck) {
+      geekAllTeamsOpenV2216 = false;
+      closeGeekAllTeamsFilterV2216();
+      document.documentElement.classList.remove('sshcp-geek-all-teams-v2216');
+      const view = document.getElementById('geekAllTeamsViewV2216');
+      const rotate = document.getElementById('geekAllTeamsRotateV2216');
+      if (view) view.setAttribute('aria-hidden', 'true');
+      if (rotate) rotate.setAttribute('aria-hidden', 'true');
+
+      if (cancelCheck) {
+        geekSelectedCategoriesV180.delete(GEEK_ALL_TEAMS_FILTER_V2216);
+        geekPendingFiltersV186.delete(GEEK_ALL_TEAMS_FILTER_V2216);
+        const panel = els.modalBox ? els.modalBox.querySelector('.geek-filter-popover-v186') : null;
+        if (panel) syncGeekFilterChecksV180(panel);
+        renderGeekTableV180();
+      }
+    }
+
+    function geekAllTeamsFilterChoiceHtmlV2216(key, label, master) {
+      const checked = geekAllTeamsFilterDraftV2216 && geekAllTeamsFilterDraftV2216.has(key) ? ' checked' : '';
+      return '<label class="geek-all-teams-filter-choice-v2216' + (master ? ' master-v2216' : '') + '">' +
+        '<input type="checkbox" data-geek-all-filter="' + escapeHtml(key) + '"' + checked + '>' +
+        '<span>' + escapeHtml(label) + '</span>' +
+      '</label>';
+    }
+
+    function openGeekAllTeamsFilterV2216() {
+      const shell = ensureGeekAllTeamsShellV2216();
+      const shade = shell.view.querySelector('#geekAllTeamsFilterShadeV2216');
+      const card = shell.view.querySelector('#geekAllTeamsFilterCardV2216');
+      if (!shade || !card) return;
+
+      geekAllTeamsFilterDraftV2216 = new Set(geekSelectedCategoriesV180);
+      let html = '<div class="geek-all-teams-filter-grid-v2216">' +
+        geekAllTeamsFilterChoiceHtmlV2216('ALL', 'ALL', true) +
+        geekAllTeamsFilterChoiceHtmlV2216(GEEK_ALL_TEAMS_FILTER_V2216, 'ALL TEAMS', true) +
+        geekAllTeamsFilterChoiceHtmlV2216('GOOD', 'GOOD', false) +
+        geekAllTeamsFilterChoiceHtmlV2216('BAD', 'BAD', false);
+      GEEK_CATEGORY_FILTER_ORDER_V1830.forEach(label => {
+        html += geekAllTeamsFilterChoiceHtmlV2216(label, label, false);
+      });
+      html += '<button class="geek-all-teams-filter-apply-v2216" type="button">APPLY</button></div>';
+      card.innerHTML = html;
+
+      card.querySelectorAll('input[data-geek-all-filter]').forEach(input => {
+        input.addEventListener('change', () => {
+          const key = input.dataset.geekAllFilter;
+          if (!geekAllTeamsFilterDraftV2216) geekAllTeamsFilterDraftV2216 = new Set();
+          if (key === 'ALL') {
+            const keepAllTeams = geekAllTeamsFilterDraftV2216.has(GEEK_ALL_TEAMS_FILTER_V2216);
+            geekAllTeamsFilterDraftV2216 = input.checked ? geekFullFilterSetV1830() : new Set();
+            if (keepAllTeams) geekAllTeamsFilterDraftV2216.add(GEEK_ALL_TEAMS_FILTER_V2216);
+          } else {
+            if (input.checked) geekAllTeamsFilterDraftV2216.add(key);
+            else geekAllTeamsFilterDraftV2216.delete(key);
+            geekSyncAllFlagV1830(geekAllTeamsFilterDraftV2216);
+          }
+          openGeekAllTeamsFilterV2216();
+        });
+      });
+
+      const apply = card.querySelector('.geek-all-teams-filter-apply-v2216');
+      if (apply) apply.addEventListener('click', () => {
+        geekSelectedCategoriesV180 = new Set(geekAllTeamsFilterDraftV2216 || []);
+        geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
+        const keepAllTeams = geekSelectedCategoriesV180.has(GEEK_ALL_TEAMS_FILTER_V2216);
+        closeGeekAllTeamsFilterV2216();
+        renderGeekTableV180();
+        if (keepAllTeams) renderGeekAllTeamsV2216();
+        else closeGeekAllTeamsV2216(false);
+      });
+
+      shade.classList.add('open-v2216');
+      shade.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeGeekAllTeamsFilterV2216() {
+      const shade = document.getElementById('geekAllTeamsFilterShadeV2216');
+      if (!shade) return;
+      shade.classList.remove('open-v2216');
+      shade.setAttribute('aria-hidden', 'true');
+      geekAllTeamsFilterDraftV2216 = null;
+    }
+
+    window.addEventListener('resize', () => {
+      if (!geekAllTeamsOpenV2216) return;
+      requestAnimationFrame(syncGeekAllTeamsColumnGeometryV2216);
+    });
 
     /* =========================================================
        SSHCP V20.54 — post-play popup return context.
