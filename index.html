@@ -1,11 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.16-N7K4QX | BUILD KEY: 22.17-T4M8QK -->
-<!-- SSHCP V22.17 ALL-TEAMS LANDSCAPE FULL TABLE - exact V22.16 donor.
-     Keeps V22.16 ALL TEAMS entry/rotate flow plus all V22.15 scoring, authorization, Worker/API, result,
-     GEEK calculation/detail and global scaling behavior unchanged. Refines only the ALL TEAMS landscape
-     presentation: all supported Geek stats, four-stat viewport target, sticky STAT/CAT columns with a 70/30
-     split, GOOD/NEUTRAL/BAD dots, six visible team columns, Blue leaders, Blue authorized-team header text,
-     thinner BACK/FILTERS actions, and matching GOOD/BAD color cues in the landscape filter. BACK still
-     cancels ALL TEAMS and returns to normal GEEK. No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.17-T4M8QK | BUILD KEY: 22.18-R5N7QK -->
+<!-- SSHCP V22.18 ALL-TEAMS LANDSCAPE TYPOGRAPHY + SCROLL RAIL - exact V22.17 donor.
+     Keeps V22.17 complete ALL TEAMS stat set, STAT/CAT + six-team landscape geometry, filters, calculations,
+     scoring, authorization, Worker/API and all normal GEEK behavior unchanged. Refines only ALL TEAMS: leader
+     values stay bold while non-leader values are regular weight; STAT labels target 40% of row height and may
+     use up to two legal lines; CAT is smaller and regular weight; the table gets the established custom Blue
+     vertical progress rail in a 16px right gutter; and the portrait ROTATE PHONE card now includes a Blue BACK
+     action that cancels ALL TEAMS. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -12578,8 +12578,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 </style>
 
 
-<style id="sshcp-v2217-geek-all-teams-landscape">
-/* SSHCP V22.17 — ALL TEAMS landscape full-table refinement.
+<style id="sshcp-v2218-geek-all-teams-landscape">
+/* SSHCP V22.18 — ALL TEAMS landscape typography, custom vertical rail and portrait BACK refinement.
    Normal SSHCP remains portrait-only. The established landscape exception is
    active only while explicit GEEK ALL TEAMS mode is open. */
 html.sshcp-geek-all-teams-v2216 .rotate-portrait-overlay{
@@ -12614,10 +12614,31 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   background:#fff!important;
   color:#000!important;
   text-align:center!important;
+  box-shadow:0 4px 14px rgba(0,0,0,.14)!important;
+}
+.geek-all-teams-rotate-message-v2218{
+  color:#000!important;
   font-size:calc(27px * var(--v221-global-scale,1))!important;
   font-weight:800!important;
   line-height:1.05!important;
-  box-shadow:0 4px 14px rgba(0,0,0,.14)!important;
+}
+.geek-all-teams-rotate-back-v2218{
+  width:100%!important;
+  height:calc(48px * var(--v221-global-scale,1))!important;
+  min-height:42px!important;
+  margin-top:calc(18px * var(--v221-global-scale,1))!important;
+  padding:0 12px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  font-size:calc(20px * var(--v221-global-scale,1))!important;
+  font-weight:900!important;
+  line-height:1!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
 }
 
 @media (orientation:landscape){
@@ -12633,7 +12654,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   flex-direction:column!important;
   width:100vw!important;
   height:100dvh!important;
-  padding:max(5px,env(safe-area-inset-top)) 9px max(5px,env(safe-area-inset-bottom))!important;
+  padding:max(5px,env(safe-area-inset-top)) var(--sshcp-shared-gutter-v2123,16px) max(5px,env(safe-area-inset-bottom))!important;
   background:#fff!important;
   color:#000!important;
   overflow:hidden!important;
@@ -12658,9 +12679,43 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   overflow:auto!important;
   -webkit-overflow-scrolling:touch!important;
   overscroll-behavior:contain!important;
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
   border:1px solid var(--line-strong)!important;
   border-radius:9px!important;
   background:#fff!important;
+}
+.geek-all-teams-scroll-v2216::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+  display:none!important;
+  background:transparent!important;
+}
+.geek-all-teams-progress-v2218{
+  position:absolute!important;
+  right:6px!important;
+  top:var(--gat-progress-top-v2218,0px)!important;
+  width:4px!important;
+  height:var(--gat-progress-height-v2218,0px)!important;
+  border-radius:999px!important;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+  z-index:18!important;
+  opacity:1!important;
+}
+.geek-all-teams-progress-thumb-v2218{
+  position:absolute!important;
+  left:0!important;
+  top:var(--gat-progress-thumb-top-v2218,0%)!important;
+  width:100%!important;
+  height:var(--gat-progress-thumb-size-v2218,100%)!important;
+  min-height:18px!important;
+  max-height:100%!important;
+  border-radius:999px!important;
+  background:var(--accent)!important;
+  transition:top .06s linear,height .08s linear,opacity .15s ease!important;
+  opacity:.92!important;
 }
 .geek-all-teams-table-v2216{
   min-width:100%!important;
@@ -12705,7 +12760,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:clip!important;
-  font-weight:700!important;
+  font-weight:400!important;
   background:inherit!important;
 }
 .geek-all-teams-cell-v2216:last-child{border-right:0!important;}
@@ -12721,7 +12776,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   padding-left:8px!important;
   padding-right:5px!important;
   text-align:left!important;
-  font-weight:800!important;
+  font-weight:700!important;
   background:#fff!important;
 }
 .geek-all-teams-cat-v2217{
@@ -12731,7 +12786,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   padding-left:3px!important;
   padding-right:3px!important;
   text-align:center!important;
-  font-weight:800!important;
+  font-weight:400!important;
   background:#fff!important;
 }
 .header-v2216 .geek-all-teams-stat-v2216,
@@ -12757,6 +12812,18 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   max-width:100%!important;
   overflow:hidden!important;
   line-height:1!important;
+}
+.geek-all-teams-stat-label-v2217{
+  max-height:80%!important;
+  white-space:normal!important;
+  line-height:1.02!important;
+  font-weight:700!important;
+}
+.geek-all-teams-cat-label-v2217{
+  font-weight:400!important;
+}
+.geek-all-teams-value-v2217{
+  font-weight:400!important;
 }
 .geek-all-teams-team-name-v2217{
   display:block!important;
@@ -12795,6 +12862,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
 }
 .geek-all-teams-cell-v2216.leader-v2216 .geek-all-teams-value-v2217{
   color:var(--on-accent)!important;
+  font-weight:900!important;
   -webkit-text-fill-color:var(--on-accent)!important;
 }
 
@@ -13070,7 +13138,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.17</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.18</span></span>
         </button>
 
       </div>
@@ -27348,11 +27416,11 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.17 — ALL TEAMS LANDSCAPE FULL TABLE
-       Complete supported stat set with four-stat viewport geometry, STAT/CAT
-       sticky metadata columns, tone dots, six visible team columns, Blue
-       leaders, authorized-team header cue, FILTERS and BACK. BACK explicitly
-       cancels ALL TEAMS and restores the normal GEEK view.
+       SSHCP V22.18 — ALL TEAMS LANDSCAPE REFINEMENT
+       Keeps the complete stat set and four-row viewport, but makes non-leader
+       values regular weight, gives STAT a 40%-row two-line target, de-emphasizes
+       CAT, adds a custom Blue vertical rail in the shared 16px right gutter, and
+       adds portrait BACK to the rotate card. BACK always cancels ALL TEAMS.
        ========================================================= */
     let geekAllTeamsOpenV2216 = false;
     let geekAllTeamsFilterDraftV2216 = null;
@@ -27364,8 +27432,14 @@ let scoreTimingDetail =
         rotate.id = 'geekAllTeamsRotateV2216';
         rotate.className = 'geek-all-teams-rotate-v2216';
         rotate.setAttribute('aria-hidden', 'true');
-        rotate.innerHTML = '<div class="geek-all-teams-rotate-card-v2216">ROTATE PHONE TO LANDSCAPE</div>';
+        rotate.innerHTML =
+          '<div class="geek-all-teams-rotate-card-v2216">' +
+            '<div class="geek-all-teams-rotate-message-v2218">ROTATE PHONE TO LANDSCAPE</div>' +
+            '<button id="geekAllTeamsRotateBackV2218" class="geek-all-teams-rotate-back-v2218" type="button">BACK</button>' +
+          '</div>';
         document.body.appendChild(rotate);
+        const portraitBack = rotate.querySelector('#geekAllTeamsRotateBackV2218');
+        if (portraitBack) portraitBack.addEventListener('click', () => closeGeekAllTeamsV2216(true));
       }
 
       let view = document.getElementById('geekAllTeamsViewV2216');
@@ -27379,6 +27453,9 @@ let scoreTimingDetail =
           '<div id="geekAllTeamsScrollV2216" class="geek-all-teams-scroll-v2216">' +
             '<div id="geekAllTeamsTableV2216" class="geek-all-teams-table-v2216"></div>' +
           '</div>' +
+          '<div id="geekAllTeamsProgressV2218" class="geek-all-teams-progress-v2218" aria-hidden="true">' +
+            '<div class="geek-all-teams-progress-thumb-v2218"></div>' +
+          '</div>' +
           '<div class="geek-all-teams-actions-v2216">' +
             '<button id="geekAllTeamsBackV2216" class="geek-all-teams-action-v2216 geek-all-teams-back-v2216" type="button">BACK</button>' +
             '<button id="geekAllTeamsFiltersV2216" class="geek-all-teams-action-v2216 geek-all-teams-filter-button-v2216" type="button">FILTERS</button>' +
@@ -27391,11 +27468,13 @@ let scoreTimingDetail =
         const back = view.querySelector('#geekAllTeamsBackV2216');
         const filters = view.querySelector('#geekAllTeamsFiltersV2216');
         const shade = view.querySelector('#geekAllTeamsFilterShadeV2216');
+        const scroll = view.querySelector('#geekAllTeamsScrollV2216');
         if (back) back.addEventListener('click', () => closeGeekAllTeamsV2216(true));
         if (filters) filters.addEventListener('click', openGeekAllTeamsFilterV2216);
         if (shade) shade.addEventListener('click', event => {
           if (event.target === shade) closeGeekAllTeamsFilterV2216();
         });
+        if (scroll) scroll.addEventListener('scroll', updateGeekAllTeamsProgressV2218, { passive:true });
       }
       return { rotate, view };
     }
@@ -27479,12 +27558,11 @@ let scoreTimingDetail =
       table.querySelectorAll('.geek-all-teams-team-name-v2217').forEach(label => {
         const cell = label.closest('.geek-all-teams-cell-v2216');
         if (!cell) return;
-        fitTextToBoxV5(cell, label, headHeight * 0.40, Math.max(9, headHeight * 0.22), {
-          horizontalPad: 10,
-          verticalPad: headHeight * 0.20,
-          wrap: true,
-          lineHeight: .95
-        });
+        fitTwoLineTeamTextV58(
+          cell, label, label, headHeight,
+          headHeight * 0.40, Math.max(9, headHeight * 0.22), 10, 0.80,
+          splitLeaderboardTeamTwoLinesV58, headHeight * 0.40
+        );
       });
 
       table.querySelectorAll('.geek-all-teams-head-label-v2217').forEach(label => {
@@ -27498,21 +27576,34 @@ let scoreTimingDetail =
         });
       });
 
+      /* V22.18 — STAT targets 40% of the actual row height and may use at
+         most two legal lines. The colored tone dot remains outside the fit box. */
       table.querySelectorAll('.geek-all-teams-stat-label-v2217').forEach(label => {
         const cell = label.closest('.geek-all-teams-cell-v2216');
         if (!cell) return;
         const dot = cell.querySelector('.geek-all-teams-tone-v2217');
         const dotWidth = dot ? (dot.getBoundingClientRect().width + 7) : 0;
-        fitTextToBoxV5(cell, label, rowHeight * 0.50, Math.max(10, rowHeight * 0.24), {
-          horizontalPad: 12 + dotWidth,
-          verticalPad: rowHeight * 0.14,
-          wrap: false,
-          lineHeight: 1
-        });
+        fitTwoLineTeamTextV58(
+          cell, label, label, rowHeight,
+          rowHeight * 0.40, Math.max(8, rowHeight * 0.18), 12 + dotWidth, 0.80,
+          splitGeekStatTwoLinesV1821, rowHeight * 0.40
+        );
         label.style.setProperty('text-align', 'left', 'important');
       });
 
-      table.querySelectorAll('.geek-all-teams-cat-label-v2217, .geek-all-teams-value-v2217').forEach(label => {
+      /* CAT is intentionally quieter than STAT and team values. */
+      table.querySelectorAll('.geek-all-teams-cat-label-v2217').forEach(label => {
+        const cell = label.closest('.geek-all-teams-cell-v2216');
+        if (!cell) return;
+        fitTextToBoxV5(cell, label, rowHeight * 0.27, Math.max(8, rowHeight * 0.16), {
+          horizontalPad: 6,
+          verticalPad: rowHeight * 0.22,
+          wrap: false,
+          lineHeight: 1
+        });
+      });
+
+      table.querySelectorAll('.geek-all-teams-value-v2217').forEach(label => {
         const cell = label.closest('.geek-all-teams-cell-v2216');
         if (!cell) return;
         fitTextToBoxV5(cell, label, rowHeight * 0.50, Math.max(10, rowHeight * 0.25), {
@@ -27522,6 +27613,44 @@ let scoreTimingDetail =
           lineHeight: 1
         });
       });
+    }
+
+    function updateGeekAllTeamsProgressV2218() {
+      if (!geekAllTeamsOpenV2216) return;
+      const view = document.getElementById('geekAllTeamsViewV2216');
+      const scroll = document.getElementById('geekAllTeamsScrollV2216');
+      const table = document.getElementById('geekAllTeamsTableV2216');
+      const rail = document.getElementById('geekAllTeamsProgressV2218');
+      const thumb = rail ? rail.querySelector('.geek-all-teams-progress-thumb-v2218') : null;
+      if (!view || !scroll || !table || !rail || !thumb) return;
+
+      const viewRect = view.getBoundingClientRect();
+      const scrollRect = scroll.getBoundingClientRect();
+      const headHeight = Math.max(0, Number(table.dataset.headerRowHeight) || 0);
+      const scrollStyle = window.getComputedStyle(scroll);
+      const bottomRadiusPx = Math.max(0,
+        parseFloat(scrollStyle.borderBottomRightRadius) ||
+        parseFloat(scrollStyle.borderBottomLeftRadius) || 0
+      );
+      const topPx = Math.max(0, scrollRect.top - viewRect.top + headHeight);
+      const bottomPx = Math.max(topPx, scrollRect.bottom - viewRect.top - bottomRadiusPx);
+      const railHeightPx = Math.max(0, bottomPx - topPx);
+      rail.style.setProperty('--gat-progress-top-v2218', topPx.toFixed(2) + 'px');
+      rail.style.setProperty('--gat-progress-height-v2218', railHeightPx.toFixed(2) + 'px');
+
+      const client = scroll.clientHeight;
+      const total = scroll.scrollHeight;
+      const max = Math.max(0, total - client);
+      const sizePct = (client > 0 && total > 0)
+        ? Math.max(0, Math.min(100, (client / total) * 100))
+        : 100;
+      const travelPct = 100 - sizePct;
+      const ratio = max > 1
+        ? Math.max(0, Math.min(1, scroll.scrollTop / max))
+        : 0;
+      rail.style.setProperty('--gat-progress-thumb-size-v2218', sizePct.toFixed(2) + '%');
+      rail.style.setProperty('--gat-progress-thumb-top-v2218', (travelPct * ratio).toFixed(2) + '%');
+      rail.style.opacity = max > 1 ? '1' : '.28';
     }
 
     function syncGeekAllTeamsColumnGeometryV2216() {
@@ -27538,7 +27667,7 @@ let scoreTimingDetail =
       const catWidth = metaWidth - statWidth;
       const teamWidth = Math.max(82, (width - metaWidth) / 6);
 
-      /* V22.17 target: header + exactly four data rows fill the scroll viewport.
+      /* V22.18 target: header + exactly four data rows fill the scroll viewport.
          Header is intentionally a little shorter than a stat row. */
       const availableHeight = Math.max(1, scroll.clientHeight || 1);
       let dataRowHeight = Math.max(44, availableHeight / 4.82);
@@ -27556,7 +27685,10 @@ let scoreTimingDetail =
       table.style.setProperty('--gat-head-h-v2217', headerRowHeight.toFixed(2) + 'px');
       table.dataset.dataRowHeight = dataRowHeight.toFixed(3);
       table.dataset.headerRowHeight = headerRowHeight.toFixed(3);
-      requestAnimationFrame(fitGeekAllTeamsTextV2217);
+      requestAnimationFrame(() => {
+        fitGeekAllTeamsTextV2217();
+        updateGeekAllTeamsProgressV2218();
+      });
     }
 
     function renderGeekAllTeamsV2216() {
