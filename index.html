@@ -1,11 +1,10 @@
-<!-- SSHCP | BASE KEY: 22.31-H6Q8NV | BUILD KEY: 22.32-T4M8QZ -->
-<!-- SSHCP V22.32 ALL TEAMS HORIZONTAL-SCROLL TEST - exact V22.31 donor.
-     Keeps V22.31 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, direct portrait/landscape GEEK ownership,
-     1.00s destination reveal timing, 98vw x 98dvh ALL TEAMS geometry and normal-GEEK whole-pixel 1X/2X sizing. ALL TEAMS removes BACK,
-     centers a single FILTERS action at 33vw, sizes team columns for five visible teams so six-plus teams exercise horizontal scrolling, widens CAT
-     slightly without stealing the prior STAT allowance, adds a dedicated bottom horizontal scroll rail, and shaves only the ALL TEAMS header-row
-     fraction needed to fund that rail while preserving the established four visible data rows. HOME version display advances to V22.32.
-     No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.32-T4M8QZ | BUILD KEY: 22.33-N7Q4LX -->
+<!-- SSHCP V22.33 ALL TEAMS RAIL ALIGNMENT + SUMMARY BUFFER STABILITY - exact V22.32 donor.
+     Keeps V22.32 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, direct portrait/landscape GEEK ownership,
+     1.00s destination reveal timing, five-visible-team ALL TEAMS geometry and normal-GEEK whole-pixel 1X/2X sizing. ALL TEAMS CAT now uses
+     the same Gray 3 fill as its header; the horizontal position rail begins exactly at CAT's right edge and is vertically centered in the existing
+     table-to-FILTERS gap. Scramble Summary now re-fits against late title/body/action/font geometry changes so its lower table cannot consume the
+     protected button buffer during first-load timing races. HOME version display advances to V22.33. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -9518,6 +9517,8 @@ body.team-qr-locked #scorecardView .score-table-head{
 
 .modal-overlay.tournament-summary .modal-text{
   grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)!important;
+  min-height:0!important;
+  overflow:hidden!important;
 }
 
 .modal-overlay.tournament-summary .modal-title{
@@ -12777,7 +12778,7 @@ html.sshcp-pre-geek-transition-v2220 body::after{
   padding-right:3px!important;
   text-align:center!important;
   font-weight:400!important;
-  background:#fff!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
 }
 .header-v2216 .geek-all-teams-stat-v2216,
 .header-v2216 .geek-all-teams-cat-v2217{
@@ -13185,7 +13186,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  margin:7px auto 0!important;
+  margin:0 auto!important;
 }
 .geek-all-teams-actions-v2216 .geek-all-teams-filter-button-v2216{
   flex:0 0 33vw!important;
@@ -13193,16 +13194,17 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
   max-width:33vw!important;
 }
 
-/* V22.32 — dedicated horizontal position rail for the five-visible-team test.
-   Its 4px track + 2px top spacing consume exactly the 6px shaved from the
-   ALL TEAMS table header by syncGeekAllTeamsColumnGeometryV2216(). */
+/* V22.33 — the dedicated horizontal position rail represents only the
+   horizontally moving TEAM region. It begins at the measured right edge of
+   CAT and sits centered inside the existing table-to-FILTERS gap. */
 .geek-all-teams-hprogress-v2232{
   position:relative!important;
   flex:0 0 4px!important;
-  width:100%!important;
+  align-self:flex-start!important;
+  width:var(--gat-hprogress-width-v2233,100%)!important;
   height:4px!important;
   min-height:4px!important;
-  margin-top:2px!important;
+  margin:4.5px 0 4.5px var(--gat-hprogress-start-v2233,0px)!important;
   border-radius:999px!important;
   background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
   overflow:hidden!important;
@@ -13364,7 +13366,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.32</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.33</span></span>
         </button>
 
       </div>
@@ -28010,15 +28012,18 @@ let scoreTimingDetail =
       rail.style.setProperty('--gat-progress-thumb-top-v2218', (travelPct * ratio).toFixed(2) + '%');
       rail.style.opacity = max > 1 ? '1' : '.28';
 
-      /* V22.32 — mirror horizontal scroll position on a dedicated bottom rail.
-         This is presentation only; the native overflow surface remains the
-         actual touch/drag owner. */
+      /* V22.33 — mirror horizontal scroll position only across the moving
+         TEAM region. STAT + CAT are sticky, so the rail starts after CAT and
+         its thumb ratio excludes that fixed meta width. */
       if (hRail && hThumb) {
         const clientW = scroll.clientWidth;
         const totalW = scroll.scrollWidth;
+        const metaW = Math.max(0, Number(hRail.dataset.metaWidthV2233) || 0);
+        const teamClientW = Math.max(1, clientW - metaW);
+        const teamTotalW = Math.max(teamClientW, totalW - metaW);
         const maxX = Math.max(0, totalW - clientW);
-        const sizeXPct = (clientW > 0 && totalW > 0)
-          ? Math.max(0, Math.min(100, (clientW / totalW) * 100))
+        const sizeXPct = (teamClientW > 0 && teamTotalW > 0)
+          ? Math.max(0, Math.min(100, (teamClientW / teamTotalW) * 100))
           : 100;
         const travelXPct = 100 - sizeXPct;
         const ratioX = maxX > 1
@@ -28067,6 +28072,14 @@ let scoreTimingDetail =
       const metaWidth = Math.max(desiredMetaWidth, catWidth + statFloor);
       const statWidth = metaWidth - catWidth;
       const teamWidth = Math.max(82, (width - metaWidth) / 5);
+      const hRailV2233 = document.getElementById('geekAllTeamsHProgressV2232');
+      if (hRailV2233) {
+        const railStartV2233 = Math.max(0, (scroll.clientLeft || 0) + metaWidth);
+        const railWidthV2233 = Math.max(1, (scroll.clientWidth || width) - metaWidth);
+        hRailV2233.dataset.metaWidthV2233 = metaWidth.toFixed(3);
+        hRailV2233.style.setProperty('--gat-hprogress-start-v2233', railStartV2233.toFixed(2) + 'px');
+        hRailV2233.style.setProperty('--gat-hprogress-width-v2233', railWidthV2233.toFixed(2) + 'px');
+      }
 
       table.style.setProperty('--gat-stat-w-v2217', statWidth.toFixed(2) + 'px');
       table.style.setProperty('--gat-cat-w-v2217', catWidth.toFixed(2) + 'px');
@@ -29651,25 +29664,46 @@ let scoreTimingDetail =
         tournamentSummaryResizeObserver.disconnect();
       }
 
-      tournamentSummaryResizeObserver =
-        new ResizeObserver(() => {
-          requestAnimationFrame(
-            fitTournamentSummaryRemaining
-          );
+      /* V22.33 — Summary's outer box is fixed-height, so watching only that
+         box misses late title/font/action-track settling. That can leave the
+         body with pixel rows calculated from a temporarily taller grid track,
+         letting the lower table consume the protected button buffer. Re-fit
+         after the inner tracks settle and whenever any of those tracks resize. */
+      let summaryFitQueuedV2233 = false;
+      const scheduleSummaryFitV2233 = () => {
+        if (summaryFitQueuedV2233) return;
+        summaryFitQueuedV2233 = true;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            summaryFitQueuedV2233 = false;
+            if (!els.modalOverlay.classList.contains('tournament-summary')) return;
+            fitTournamentSummaryRemaining();
+            updateTournamentSummaryProgressV2116();
+          });
         });
+      };
 
-      tournamentSummaryResizeObserver.observe(els.modalBox);
-
-      requestAnimationFrame(() => {
-        fitTournamentSummaryRemaining();
-        if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
+      tournamentSummaryResizeObserver = new ResizeObserver(scheduleSummaryFitV2233);
+      [els.modalBox, els.modalBody, els.modalTitle, els.modalActions].forEach(node => {
+        if (node) tournamentSummaryResizeObserver.observe(node);
       });
+
+      scheduleSummaryFitV2233();
+      if (summaryLowerV1931) summaryLowerV1931.scrollTop = 0;
+
+      if (document.fonts && document.fonts.ready) {
+        Promise.resolve(document.fonts.ready).then(scheduleSummaryFitV2233).catch(() => {});
+      }
+
       requestAnimationFrame(() => captureTournamentSummaryAuditV189());
       Promise.resolve(revealAfterPlayCurtainV2086(
         'after-play-summary-v2086',
         summaryCurtainV2086,
         2
-      )).then(() => showTipsAfterSettledV2155('summary'));
+      )).then(() => {
+        scheduleSummaryFitV2233();
+        return showTipsAfterSettledV2155('summary');
+      });
       void recordScrambleSummaryViewedV2141();
     }
 
