@@ -1,11 +1,10 @@
-<!-- SSHCP | BASE KEY: 22.26-H4N8QZ | BUILD KEY: 22.27-K8R4MN -->
-<!-- SSHCP V22.27 ORIENTATION TIMING + ALL TEAMS FILTER FIX - exact V22.26 donor.
-     Keeps V22.26 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, orientation architecture, 98vw x 98dvh
-     ALL TEAMS geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing and ALL TEAMS +2px action buffer.
-     Changes only: (1) timing-panel 6A warning-card fade IN and 6B destination-curtain fade OUT are both 1.00s; and
-     (2) ALL TEAMS FILTERS now preserve the live draft while checkboxes are changed instead of rebuilding the panel from the
-     last committed filter set after every click. ALL/GOOD/BAD/category choices now remain visibly selected until APPLY, APPLY
-     commits them to both normal GEEK and ALL TEAMS, and unchecking ALL TEAMS on APPLY still exits to normal GEEK. No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.27-K8R4MN | BUILD KEY: 22.28-M6R9QK -->
+<!-- SSHCP V22.28 ALL TEAMS FILTER EXIT PARITY - exact V22.27 donor.
+     Keeps V22.27 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, 1.00s orientation timings, orientation
+     architecture, 98vw x 98dvh ALL TEAMS geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing,
+     ALL TEAMS +2px action buffer and the repaired live FILTERS draft behavior unchanged. Changes only the ALL TEAMS filter
+     exit: unchecking ALL TEAMS and pressing APPLY now uses the exact same required ROTATE PHONE TO PORTRAIT warning/curtain/
+     refresh path as the ALL TEAMS BACK button instead of closing the landscape view immediately. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -13359,7 +13358,7 @@ html.sshcp-geek-exit-rotation-started .geek-all-teams-rotate-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.27</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.28</span></span>
         </button>
 
       </div>
@@ -28247,8 +28246,16 @@ let scoreTimingDetail =
         const keepAllTeams = geekSelectedCategoriesV180.has(GEEK_ALL_TEAMS_FILTER_V2216);
         closeGeekAllTeamsFilterV2216();
         renderGeekTableV180();
-        if (keepAllTeams) renderGeekAllTeamsV2216();
-        else closeGeekAllTeamsV2216(false);
+        if (keepAllTeams) {
+          renderGeekAllTeamsV2216();
+        } else {
+          /* V22.28 — leaving ALL TEAMS from FILTERS is an intentional mode
+             change, so it owns the same required portrait-rotation path as
+             the ALL TEAMS BACK button. Keep the landscape view in place
+             behind the warning/curtain until portrait is reached and the
+             normal GEEK refresh/rebuild completes. */
+          requestGeekAllTeamsExitV2220();
+        }
       });
 
       shade.classList.add('open-v2216');
