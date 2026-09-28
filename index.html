@@ -1,12 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.25-L6Q3VN | BUILD KEY: 22.26-H4N8QZ -->
-<!-- SSHCP V22.26 ALL TEAMS EXIT ROTATION HANDOFF - exact V22.25 donor.
-     Keeps V22.25 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, 98vw x 98dvh ALL TEAMS
-     geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing, ALL TEAMS +2px action buffer and the
-     2.00s orientation timing-test values unchanged. Fixes ONLY required ALL TEAMS -> normal GEEK exit: BACK still shows
-     the normal white warning surface + Gray 3 ROTATE PHONE TO PORTRAIT card, but the first physical-rotation hint clears
-     that entire warning layer immediately so the already-held separate white curtain is exposed before the browser rotates
-     the outgoing warning surface. matchMedia('(orientation: landscape)') remains the ONLY orientation truth used to decide
-     when portrait is actually reached and when the required refresh/rebuild may occur. No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.26-H4N8QZ | BUILD KEY: 22.27-K8R4MN -->
+<!-- SSHCP V22.27 ORIENTATION TIMING + ALL TEAMS FILTER FIX - exact V22.26 donor.
+     Keeps V22.26 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, orientation architecture, 98vw x 98dvh
+     ALL TEAMS geometry, STAT/CAT hard-fit behavior, normal-GEEK whole-pixel 1X/2X sizing and ALL TEAMS +2px action buffer.
+     Changes only: (1) timing-panel 6A warning-card fade IN and 6B destination-curtain fade OUT are both 1.00s; and
+     (2) ALL TEAMS FILTERS now preserve the live draft while checkboxes are changed instead of rebuilding the panel from the
+     last committed filter set after every click. ALL/GOOD/BAD/category choices now remain visibly selected until APPLY, APPLY
+     commits them to both normal GEEK and ALL TEAMS, and unchecking ALL TEAMS on APPLY still exits to normal GEEK. No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -49,8 +48,8 @@
       FADE_4_QUICK_GUIDE: 0.80,
       FADE_5A_CC_ENTER_REFRESH: 0.25,
       FADE_5B_SM_REFRESH: 0.50,
-      FADE_6A_ORIENTATION_WARNING_IN: 2.00,
-      FADE_6B_ORIENTATION_CURTAIN_OUT: 2.00,
+      FADE_6A_ORIENTATION_WARNING_IN: 1.00,
+      FADE_6B_ORIENTATION_CURTAIN_OUT: 1.00,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -68,8 +67,8 @@
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
       setSeconds('--sshcp-fade-5a-cc-enter-refresh', timing.FADE_5A_CC_ENTER_REFRESH, 0.25);
       setSeconds('--sshcp-fade-5b-sm-refresh', timing.FADE_5B_SM_REFRESH, 0.50);
-      setSeconds('--sshcp-fade-6a-orientation-warning-in', timing.FADE_6A_ORIENTATION_WARNING_IN, 2.00);
-      setSeconds('--sshcp-fade-6b-orientation-curtain-out', timing.FADE_6B_ORIENTATION_CURTAIN_OUT, 2.00);
+      setSeconds('--sshcp-fade-6a-orientation-warning-in', timing.FADE_6A_ORIENTATION_WARNING_IN, 1.00);
+      setSeconds('--sshcp-fade-6b-orientation-curtain-out', timing.FADE_6B_ORIENTATION_CURTAIN_OUT, 1.00);
     })();
   </script>
   <meta
@@ -13065,7 +13064,7 @@ html.sshcp-pre-geek-transition-v2220 body::after{
 
 
 <style id="sshcp-orientation-system-current">
-/* SSHCP V22.26 — ONE authoritative orientation presentation system.
+/* SSHCP V22.27 — ONE authoritative orientation presentation system.
    Layer order: Gray 3 warning card > immediate white warning surface >
    separate white transition curtain > preserved/rebuilt app screen.
    IMPORTANT: orientation/media rules control ONLY the white warning surface.
@@ -13095,7 +13094,7 @@ html.sshcp-pre-geek-transition-v2220 body::after{
   opacity:0!important;
   visibility:visible!important;
   pointer-events:auto!important;
-  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,2s) ease-out!important;
+  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,1s) ease-out!important;
 }
 
 /* Normal SSHCP is portrait-only. The WHITE warning surface is controlled by
@@ -13213,13 +13212,13 @@ html.sshcp-geek-exit-rotation-started .geek-all-teams-rotate-v2216{
 .rotate-portrait-box.sshcp-orientation-warning-card-in,
 .geek-all-teams-rotate-card-v2216.sshcp-orientation-warning-card-in{
   opacity:1;
-  transition:opacity var(--sshcp-fade-6a-orientation-warning-in,2s) ease-out!important;
+  transition:opacity var(--sshcp-fade-6a-orientation-warning-in,1s) ease-out!important;
 }
 
 /* Required rebuild reveal still uses the existing after-play curtain DOM, but
    this transition gets timing-panel 6B after destination layout/paint settles. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086.sshcp-geek-orientation-curtain-v2221{
-  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,2s) ease-out!important;
+  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,1s) ease-out!important;
 }
 
 /* V22.22-approved ALL TEAMS-only breathing room. Normal GEEK X/2X math is untouched. */
@@ -13360,7 +13359,7 @@ html.sshcp-geek-exit-rotation-started .geek-all-teams-rotate-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.26</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.27</span></span>
         </button>
 
       </div>
@@ -20867,7 +20866,7 @@ let scoreTimingDetail =
           shield.classList.contains('sshcp-geek-orientation-curtain-v2221'));
         const revealDurationMsV2092 =
           orientationRevealV2222
-            ? timingMsV2092(timingV2092.FADE_6B_ORIENTATION_CURTAIN_OUT, 2.00)
+            ? timingMsV2092(timingV2092.FADE_6B_ORIENTATION_CURTAIN_OUT, 1.00)
             : key === 'home-full-v1986'
               ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.25)
               : (key === 'scorecard' || key === 'leaderboard')
@@ -27645,7 +27644,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.26 — GEEK <-> ALL TEAMS ORIENTATION STATE
+       SSHCP V22.27 — GEEK <-> ALL TEAMS ORIENTATION STATE
        Only entering ALL TEAMS or pressing its BACK requires a fresh rebuild.
        Accidental orientation mismatches preserve the existing ALL TEAMS DOM,
        scroll position and filters. The warning and transition curtain are separate
@@ -27657,7 +27656,7 @@ let scoreTimingDetail =
     let geekRequiredRotationV2220 = '';
     let geekRequiredRotationReloadingV2220 = false;
 
-    /* V22.26 — this MediaQueryList is the ONE orientation truth source used by
+    /* V22.27 — this MediaQueryList is the ONE orientation truth source used by
        the orientation subsystem. It matches the CSS @media condition exactly. */
     const sshcpLandscapeMediaV2225 = window.matchMedia
       ? window.matchMedia('(orientation: landscape)')
@@ -28189,12 +28188,23 @@ let scoreTimingDetail =
       '</label>';
     }
 
+    function syncGeekAllTeamsFilterChecksV2227(card) {
+      if (!card || !(geekAllTeamsFilterDraftV2216 instanceof Set)) return;
+      geekSyncAllFlagV1830(geekAllTeamsFilterDraftV2216);
+      card.querySelectorAll('input[data-geek-all-filter]').forEach(input => {
+        input.checked = geekAllTeamsFilterDraftV2216.has(input.dataset.geekAllFilter);
+      });
+    }
+
     function openGeekAllTeamsFilterV2216() {
       const shell = ensureGeekAllTeamsShellV2216();
       const shade = shell.view.querySelector('#geekAllTeamsFilterShadeV2216');
       const card = shell.view.querySelector('#geekAllTeamsFilterCardV2216');
       if (!shade || !card) return;
 
+      /* V22.27 — initialize the draft ONCE when FILTERS opens. V22.26 rebuilt
+         the entire panel after every checkbox change, which re-copied the last
+         committed set and silently erased the user's pending change. */
       geekAllTeamsFilterDraftV2216 = new Set(geekSelectedCategoriesV180);
       let html = '<div class="geek-all-teams-filter-grid-v2216">' +
         geekAllTeamsFilterChoiceHtmlV2216('ALL', 'ALL', true) +
@@ -28206,11 +28216,14 @@ let scoreTimingDetail =
       });
       html += '<button class="geek-all-teams-filter-apply-v2216" type="button">APPLY</button></div>';
       card.innerHTML = html;
+      syncGeekAllTeamsFilterChecksV2227(card);
 
       card.querySelectorAll('input[data-geek-all-filter]').forEach(input => {
         input.addEventListener('change', () => {
           const key = input.dataset.geekAllFilter;
-          if (!geekAllTeamsFilterDraftV2216) geekAllTeamsFilterDraftV2216 = new Set();
+          if (!(geekAllTeamsFilterDraftV2216 instanceof Set)) {
+            geekAllTeamsFilterDraftV2216 = new Set(geekSelectedCategoriesV180);
+          }
           if (key === 'ALL') {
             const keepAllTeams = geekAllTeamsFilterDraftV2216.has(GEEK_ALL_TEAMS_FILTER_V2216);
             geekAllTeamsFilterDraftV2216 = input.checked ? geekFullFilterSetV1830() : new Set();
@@ -28220,13 +28233,16 @@ let scoreTimingDetail =
             else geekAllTeamsFilterDraftV2216.delete(key);
             geekSyncAllFlagV1830(geekAllTeamsFilterDraftV2216);
           }
-          openGeekAllTeamsFilterV2216();
+          /* Keep the same live panel/DOM. Only synchronize checkbox state; do
+             NOT call openGeekAllTeamsFilterV2216() again and reset the draft. */
+          syncGeekAllTeamsFilterChecksV2227(card);
         });
       });
 
       const apply = card.querySelector('.geek-all-teams-filter-apply-v2216');
       if (apply) apply.addEventListener('click', () => {
         geekSelectedCategoriesV180 = new Set(geekAllTeamsFilterDraftV2216 || []);
+        geekSyncAllFlagV1830(geekSelectedCategoriesV180);
         geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
         const keepAllTeams = geekSelectedCategoriesV180.has(GEEK_ALL_TEAMS_FILTER_V2216);
         closeGeekAllTeamsFilterV2216();
@@ -28283,7 +28299,7 @@ let scoreTimingDetail =
       } catch (_) {}
     }
 
-    /* V22.26 — one current orientation subsystem. The CSS warning surface and
+    /* V22.27 — one current orientation subsystem. The CSS warning surface and
        JS state both use the same orientation media query. WHITE is immediate;
        only the Gray 3 card waits two paints before beginning timing-panel 6A. */
     let sshcpOrientationCurtainTimerV2225 = 0;
@@ -28351,7 +28367,7 @@ let scoreTimingDetail =
           if (!curtain.classList.contains('reveal')) return;
           curtain.classList.remove('active', 'reveal');
           curtain.setAttribute('aria-hidden', 'true');
-        }, Math.ceil(orientationTimingMsV2225('FADE_6B_ORIENTATION_CURTAIN_OUT', 2.00) + 60));
+        }, Math.ceil(orientationTimingMsV2225('FADE_6B_ORIENTATION_CURTAIN_OUT', 1.00) + 60));
       };
       requestAnimationFrame(start);
     }
