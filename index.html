@@ -1,13 +1,12 @@
-<!-- SSHCP | BASE KEY: 22.21-N4Q7VX | BUILD KEY: 22.22-ZMPF8U -->
-<!-- SSHCP V22.22 FOUR-LAYER ORIENTATION HANDOFF + GEEK BUFFER REFINEMENT - exact V22.21 donor.
-     Keeps V22.21 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, ALL TEAMS data/STAT/CAT
-     hard-fit behavior and 98vw x 98dvh ALL TEAMS popup unchanged. Orientation handling now uses distinct stacked layers:
-     Gray 3 warning card over an immediate white warning background, over a separate already-opaque white transition curtain,
-     over the preserved/rebuilt app. Warning cards fade IN for 0.50s and the warning layer clears immediately at the requested
-     rotation; accidental rotations preserve state and reveal the settled destination by fading the separate curtain for 0.50s.
-     Required GEEK <-> ALL TEAMS rotations use the same visual handoff but hold white through the real refresh/rebuild and only
-     begin the 0.50s reveal after the destination is settled. Normal GEEK table-to-actions spacing is compensated toward a true
-     12px x global-scale visible buffer; ALL TEAMS table-to-actions buffer increases by 2px (5px -> 7px). No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.22-ZMPF8U | BUILD KEY: 22.23-C8R5QX -->
+<!-- SSHCP V22.23 ORIENTATION TIMING TEST + NORMAL GEEK X/2X RESTORE - exact V22.22 donor.
+     Keeps V22.22 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, filters, four-layer orientation
+     architecture, ALL TEAMS data/STAT/CAT hard-fit behavior and 98vw x 98dvh popup unchanged. Adds two explicit
+     orientation controls to the top timing panel: warning-card fade IN = 2.00s and destination white-curtain fade OUT =
+     2.00s for both accidental and required rotations. Required rotations still hold white through refresh/rebuild before
+     starting the reveal. Reverts ONLY the V22.22 normal-GEEK buffer compensation so the established whole-pixel 1X category /
+     2X stat calculation and V22.21 leftover-space behavior are restored exactly. ALL TEAMS retains its separate +2px
+     table-to-actions buffer (5px -> 7px). No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -39,6 +38,8 @@
        4  = QUICK GUIDE full-screen white curtain
        5A = CONTROL CENTER entry + manual-refresh white curtain
        5B = SCRAMBLE MODE manual-refresh white curtain
+       6A = ORIENTATION warning-card fade IN
+       6B = ORIENTATION destination white-curtain fade OUT
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
@@ -48,6 +49,8 @@
       FADE_4_QUICK_GUIDE: 0.80,
       FADE_5A_CC_ENTER_REFRESH: 0.25,
       FADE_5B_SM_REFRESH: 0.50,
+      FADE_6A_ORIENTATION_WARNING_IN: 2.00,
+      FADE_6B_ORIENTATION_CURTAIN_OUT: 2.00,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -65,6 +68,8 @@
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
       setSeconds('--sshcp-fade-5a-cc-enter-refresh', timing.FADE_5A_CC_ENTER_REFRESH, 0.25);
       setSeconds('--sshcp-fade-5b-sm-refresh', timing.FADE_5B_SM_REFRESH, 0.50);
+      setSeconds('--sshcp-fade-6a-orientation-warning-in', timing.FADE_6A_ORIENTATION_WARNING_IN, 2.00);
+      setSeconds('--sshcp-fade-6b-orientation-curtain-out', timing.FADE_6B_ORIENTATION_CURTAIN_OUT, 2.00);
     })();
   </script>
   <meta
@@ -13260,12 +13265,12 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
 
 
 <style id="sshcp-v2222-four-layer-orientation-buffer-refinement">
-/* V22.22 — four independent visual layers during orientation handling:
+/* V22.23 — four independent visual layers during orientation handling:
    1) Gray 3 warning card; 2) immediate white warning background;
    3) separate white transition curtain already underneath; 4) app screen.
-   The warning card fades IN .50s. At the requested rotation the whole warning
+   The warning card fades IN from timing-panel 6A. At the requested rotation the whole warning
    layer clears at 0s; the independent curtain stays white, then reveals the
-   settled destination over .50s. Required rotations wait for refresh/rebuild. */
+   settled destination using timing-panel 6B. Required rotations wait for refresh/rebuild. */
 .sshcp-orientation-transition-curtain-v2222{
   position:fixed!important;
   inset:0!important;
@@ -13290,7 +13295,7 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
   opacity:0!important;
   visibility:visible!important;
   pointer-events:auto!important;
-  transition:opacity .50s ease-out!important;
+  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,2s) ease-out!important;
 }
 
 @keyframes sshcp-orientation-warning-in-v2222{
@@ -13319,7 +13324,7 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
   }
   html:not(.sshcp-geek-all-teams-v2216) .rotate-portrait-box{
     opacity:1!important;
-    animation:sshcp-orientation-warning-in-v2222 .50s ease-out both!important;
+    animation:sshcp-orientation-warning-in-v2222 var(--sshcp-fade-6a-orientation-warning-in,2s) ease-out both!important;
   }
 }
 @media(orientation:portrait){
@@ -13336,7 +13341,7 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
 }
 
 /* ALL TEAMS warning layer is above the dedicated z6240 curtain. Wrong/required
-   orientation shows immediate white + a .50s Gray 3 card. Correct orientation
+   orientation shows immediate white + the timing-panel 6A Gray 3 fade. Correct orientation
    removes the ENTIRE warning layer at 0s; it does not become the curtain. */
 html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
   z-index:6250!important;
@@ -13346,7 +13351,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-v2216{
 html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-card-v2216{
   background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   opacity:1!important;
-  animation:sshcp-orientation-warning-in-v2222 .50s ease-out both!important;
+  animation:sshcp-orientation-warning-in-v2222 var(--sshcp-fade-6a-orientation-warning-in,2s) ease-out both!important;
 }
 @media(orientation:landscape){
   html.sshcp-geek-all-teams-v2216:not(.sshcp-geek-enter-pending-v2220):not(.sshcp-geek-exit-pending-v2220) .geek-all-teams-rotate-v2216{
@@ -13377,7 +13382,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-rotate-card-v2216{
   }
   html.sshcp-geek-exit-pending-v2220 .geek-all-teams-rotate-card-v2216{
     opacity:1!important;
-    animation:sshcp-orientation-warning-in-v2222 .50s ease-out both!important;
+    animation:sshcp-orientation-warning-in-v2222 var(--sshcp-fade-6a-orientation-warning-in,2s) ease-out both!important;
   }
 }
 @media(orientation:portrait){
@@ -13410,10 +13415,10 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
   transition:none!important;
 }
 
-/* Required rebuild reveal now matches accidental rotation: .50s, but only
+/* Required rebuild reveal uses timing-panel 6B, but only
    after the refreshed destination has completed its layout/paint wait. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086.sshcp-geek-orientation-curtain-v2221{
-  transition:opacity .50s ease-out!important;
+  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,2s) ease-out!important;
 }
 
 /* ALL TEAMS gets exactly +2px more table-to-actions breathing room. */
@@ -13556,7 +13561,7 @@ html.sshcp-geek-rotation-start-v2221 .geek-all-teams-rotate-card-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.22</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.23</span></span>
         </button>
 
       </div>
@@ -21063,7 +21068,7 @@ let scoreTimingDetail =
           shield.classList.contains('sshcp-geek-orientation-curtain-v2221'));
         const revealDurationMsV2092 =
           orientationRevealV2222
-            ? 500
+            ? timingMsV2092(timingV2092.FADE_6B_ORIENTATION_CURTAIN_OUT, 2.00)
             : key === 'home-full-v1986'
               ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.25)
               : (key === 'scorecard' || key === 'leaderboard')
@@ -27457,12 +27462,10 @@ let scoreTimingDetail =
       const categoryHeight = xUnit;
       const statHeight = xUnit * 2;
       const usedDataPixelsV2097 = xUnit * targetUnitsV220;
-      /* V22.22 — the quantized table can leave a residual blank below the last
-         whole-X row inside geek-main. Compensate the ACTION margin in the
-         opposite direction so residual + margin stays as close as possible to
-         the intended 12px x multiplier visible table-to-button buffer. */
-      const residualGapV2222 = Math.max(0, availableDataPixelsV2097 - usedDataPixelsV2097);
-      const actualGapV220 = Math.max(0, targetGapV220 - residualGapV2222);
+      /* V22.23 — restore the exact V22.21 whole-X contract. Leftover quantization
+         space stays OUTSIDE the table and adds to the external actions gap; it
+         never feeds back into X/2X sizing or gets compensated away. */
+      const actualGapV220 = Math.max(0, targetGapV220 + availableDataPixelsV2097 - usedDataPixelsV2097);
       const exactShellHeightV2097 = Math.max(1, headerHeight + usedDataPixelsV2097);
       const exactShellValueV2097 = exactShellHeightV2097 + 'px';
       shell.style.setProperty('--geek-visible-units-v220', String(targetUnitsV220));
@@ -27843,11 +27846,11 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.22 — GEEK <-> ALL TEAMS FOUR-LAYER ORIENTATION STATE
+       SSHCP V22.23 — GEEK <-> ALL TEAMS FOUR-LAYER ORIENTATION STATE
        Only entering ALL TEAMS or pressing its BACK requires a fresh rebuild.
        Accidental orientation mismatches preserve the existing ALL TEAMS DOM,
        scroll position and filters. The warning and transition curtain are separate
-       white-backed layers: warning fades in .50s, clears at 0s on rotation, then
+       white-backed layers: warning uses timing-panel 6A, clears at 0s on rotation, then
        the already-present transition curtain reveals the settled page over .50s.
        ========================================================= */
     let geekAllTeamsOpenV2216 = false;
@@ -28472,12 +28475,18 @@ let scoreTimingDetail =
       return (window.innerWidth || 0) > (window.innerHeight || 0);
     }
 
-    /* V22.22 — dedicated transition curtain. This is deliberately NOT the
+    /* V22.23 — dedicated transition curtain. This is deliberately NOT the
        warning's white background. During a mismatch the two white layers stack
        invisibly; when the warning layer clears at rotation, this curtain is
-       already underneath and owns the .50s reveal of the settled destination. */
+       already underneath and owns the timing-panel 6B reveal of the settled destination. */
     let sshcpOrientationCurtainTimerV2222 = 0;
     let sshcpNormalLastLandscapeV2222 = currentGeekLandscapeV2220();
+
+    function orientationTimingMsV2223(key, fallbackSeconds) {
+      const timing = window.SSHCP_FADE_TIMING_V2092 || {};
+      const seconds = Number(timing[key]);
+      return 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : fallbackSeconds);
+    }
 
     function ensureOrientationCurtainV2222() {
       let curtain = document.getElementById('sshcpOrientationCurtainV2222');
@@ -28531,7 +28540,7 @@ let scoreTimingDetail =
           if (!curtain.classList.contains('reveal-v2222')) return;
           curtain.classList.remove('active-v2222', 'reveal-v2222');
           curtain.setAttribute('aria-hidden', 'true');
-        }, 560);
+        }, Math.ceil(orientationTimingMsV2223('FADE_6B_ORIENTATION_CURTAIN_OUT', 2.00) + 60));
       };
       requestAnimationFrame(start);
     }
@@ -28574,7 +28583,7 @@ let scoreTimingDetail =
       geekRequiredRotationReloadingV2220 = true;
       persistGeekRequiredRotationStateV2220(target);
 
-      /* V22.22 REQUIRED rotation: keep the dedicated white transition curtain
+      /* V22.23 REQUIRED rotation: keep the dedicated white transition curtain
          already mounted UNDER the warning layer. The entire warning layer clears
          at 0s when the requested orientation arrives; white remains unchanged
          because this curtain is underneath. Hold it through the real refresh. */
@@ -28603,7 +28612,7 @@ let scoreTimingDetail =
       /* No required transition: this is an accidental orientation mismatch.
          Do not rerender/refetch/resize. The warning's white background sits over
          a separate already-opaque white curtain; on return to landscape the
-         warning layer clears instantly and the curtain reveals over .50s. */
+         warning layer clears instantly and the curtain reveals using timing-panel 6B. */
       syncGeekAllTeamsAccidentalCurtainV2222(landscapeNow);
     }
 
@@ -28710,7 +28719,7 @@ let scoreTimingDetail =
 
       /* The final after-play curtain is now fully opaque above the destination,
          so the dedicated orientation curtain underneath can be removed with no
-         visual change before the .50s final reveal begins. */
+         visual change before the timing-panel 6B final reveal begins. */
       hideOrientationCurtainV2222Instant();
       window.__sshcpGeekRequiredRotationRestoreV2220 = '';
       document.documentElement.classList.remove('sshcp-pre-geek-transition-v2220', 'sshcp-geek-rotation-start-v2221');
