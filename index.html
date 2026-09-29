@@ -1,5 +1,5 @@
-<!-- SSHCP | BASE KEY: 22.35-V6K3RM | BUILD KEY: 22.36-Q8M5TX -->
-<!-- SSHCP V22.36 SCRAMBLE SUMMARY FRESH-READ + VIEWPORT-SETTLE REVEAL - exact V22.35 donor.
+<!-- SSHCP | BASE KEY: 22.36-Q8M5TX | BUILD KEY: 22.37-L9Q5MX -->
+<!-- SSHCP V22.37 GEEK ACTION-ROW STATE CLEANUP - exact V22.36 donor.
      Keeps V22.35 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, direct portrait/landscape GEEK ownership,
      1.00s orientation reveal timing, normal-GEEK whole-pixel 1X/2X sizing, five-visible-team ALL TEAMS geometry, horizontal rail alignment,
      white untappable FILTERS backdrops, and ALL TEAMS APPLY curtain behavior. Every Scramble Summary entry now raises its existing white
@@ -13391,7 +13391,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.36</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.37</span></span>
         </button>
 
       </div>
@@ -32531,6 +32531,12 @@ let scoreTimingDetail =
 
       els.modalActions.className =
         'modal-actions';
+
+      /* V22.37 — GEEK row fitting owns a temporary inline !important zero
+         margin on the shared modal action row. The node is reused by Scramble
+         Summary, so remove that GEEK-only state when any modal closes; otherwise
+         it overrides Summary's protected 10px table-to-buttons buffer. */
+      els.modalActions.style.removeProperty('margin-top');
 
       const geekCopyV180b = els.modalBox && els.modalBox.querySelector('.geek-copy-v180b');
       if (geekCopyV180b) geekCopyV180b.remove();
