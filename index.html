@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.47-N5Q8RV | BUILD KEY: 22.48-M7Q4TX -->
+<!-- SSHCP | BASE KEY: 22.48-M7Q4TX | BUILD KEY: 22.49-H6M3QW -->
+<!-- SSHCP V22.49 ALL TEAMS ADAPTIVE <9 TEAM WIDTH - exact V22.48 donor.
+     ALL TEAMS now fills the visible team region with the actual assigned-team count whenever fewer than nine teams exist. The established nine-team viewport remains unchanged for 9+ teams. Device-pixel divisibility now uses min(9, assigned teams), so STAT + visible teams exactly fills the table viewport with no blank right-side area; 10-36 teams still use the same horizontal scrolling and V22.48 eased column snap. Regular GEEK, GEEK Tips & Tricks, filters, five-stat geometry, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.48 ALL TEAMS EASED 2-AXIS SNAP - exact V22.47 donor.
      Replaces ALL TEAMS' browser-native hard vertical snap with a short custom eased settle after user scrolling finishes. Landscape ALL TEAMS now settles over ~150ms to the nearest exact stat-row boundary vertically and nearest exact team-column boundary horizontally, using the existing live row height/team width so both axes finish on the same established geometry. Regular portrait GEEK remains fully free/smooth with no snap. GEEK Tips & Tricks, filters, ALL TEAMS device-pixel track geometry, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.47 REGULAR GEEK FREE-SCROLL / ALL TEAMS SNAP RETAINED - exact V22.46 donor.
@@ -13639,7 +13641,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.48</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.49</span></span>
         </button>
 
       </div>
@@ -28646,15 +28648,16 @@ let scoreTimingDetail =
       const dataRowHeight = Math.max(1, (availableHeight - headerExtraV2242) / 5.82);
       const headerRowHeight = Math.max(1, (dataRowHeight * 0.82) + headerExtraV2242);
 
-      /* V22.45 — solve the horizontal grid in DEVICE pixels, not rounded CSS pixels.
-         The left popup gap has a 5 CSS px minimum and is the only flexible spacing.
-         We grow it by at most a few device pixels until the moving team region is
-         exactly divisible by nine. STAT and every TEAM track are then expressed
-         back in CSS px as physicalPx / DPR, so every vertical boundary lands on
-         the same device-pixel cadence:
-           visible physical width = STATpx + (9 × TEAMpx)
+      /* V22.49 — solve the horizontal grid in DEVICE pixels using the actual
+         number of visible teams: fewer than nine assigned teams fill the moving
+         region; nine or more keep the established nine-team viewport. The left
+         popup gap remains the only flexible spacing used to land every boundary
+         on a whole-device-pixel cadence:
+           visible physical width = STATpx + (visibleTeams × TEAMpx)
+           visibleTeams           = min(9, assigned teams)
            full physical width    = STATpx + (N × TEAMpx) */
       const dprV2245 = Math.max(1, Number(window.devicePixelRatio) || 1);
+      const visibleTeamCountV2249 = Math.max(1, Math.min(9, teamCount));
       const baseLeftGutterCssV2245 = 5;
       const scrollComputedV2245 = window.getComputedStyle(scroll);
       const borderInlineCssV2245 =
@@ -28675,16 +28678,26 @@ let scoreTimingDetail =
       let leftGutterCssV2245 = baseLeftGutterCssV2245;
       for (let passV2245 = 0; passV2245 < 3; passV2245++) {
         const currentPhysicalV2245 = Math.max(1, Math.round(innerCssWidthV2245() * dprV2245));
-        const remainderV2245 = positiveModV2245(currentPhysicalV2245 - preferredStatPhysicalV2245, 9);
+        const remainderV2245 = positiveModV2245(
+          currentPhysicalV2245 - preferredStatPhysicalV2245,
+          visibleTeamCountV2249
+        );
         if (remainderV2245 === 0) break;
         leftGutterCssV2245 += remainderV2245 / dprV2245;
         scroll.style.setProperty('--gat-left-gutter-v2245', leftGutterCssV2245.toFixed(4) + 'px');
       }
 
       const visiblePhysicalV2245 = Math.max(1, Math.round(innerCssWidthV2245() * dprV2245));
-      const finalTeamBudgetPhysicalV2245 = Math.max(9, visiblePhysicalV2245 - preferredStatPhysicalV2245);
-      const teamWidthPhysicalV2245 = Math.max(1, Math.floor(finalTeamBudgetPhysicalV2245 / 9));
-      const exactVisiblePhysicalV2245 = preferredStatPhysicalV2245 + (teamWidthPhysicalV2245 * 9);
+      const finalTeamBudgetPhysicalV2245 = Math.max(
+        visibleTeamCountV2249,
+        visiblePhysicalV2245 - preferredStatPhysicalV2245
+      );
+      const teamWidthPhysicalV2245 = Math.max(
+        1,
+        Math.floor(finalTeamBudgetPhysicalV2245 / visibleTeamCountV2249)
+      );
+      const exactVisiblePhysicalV2245 =
+        preferredStatPhysicalV2245 + (teamWidthPhysicalV2245 * visibleTeamCountV2249);
 
       /* If browser rounding left a final physical pixel discrepancy, absorb only
          that discrepancy into the flexible left gutter and re-use the exact grid. */
@@ -28696,7 +28709,7 @@ let scoreTimingDetail =
 
       const statWidth = preferredStatPhysicalV2245 / dprV2245;
       const teamWidth = teamWidthPhysicalV2245 / dprV2245;
-      const width = statWidth + (teamWidth * 9);
+      const width = statWidth + (teamWidth * visibleTeamCountV2249);
       const metaWidth = statWidth;
       const fullTableWidthV2243 = statWidth + (teamCount * teamWidth);
       const hRailV2233 = document.getElementById('geekAllTeamsHProgressV2232');
