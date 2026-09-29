@@ -1,10 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.33-N7Q4LX | BUILD KEY: 22.34-R5N8QK -->
-<!-- SSHCP V22.34 GEEK FILTER WHITE BACKDROP + TAP BLOCK - exact V22.33 donor.
-     Keeps V22.33 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, direct portrait/landscape GEEK ownership,
-     1.00s destination reveal timing, normal-GEEK whole-pixel 1X/2X sizing, five-visible-team ALL TEAMS geometry, horizontal rail alignment,
-     and Scramble Summary stability fix. When FILTERS is open in either regular GEEK or ALL TEAMS, the surrounding backdrop is solid white
-     and absorbs taps so hidden GEEK/table controls cannot fire and tapping outside the filter card cannot dismiss it. APPLY remains the explicit
-     filter exit/commit action. HOME version display advances to V22.34. No Worker change. -->
+<!-- SSHCP | BASE KEY: 22.34-R5N8QK | BUILD KEY: 22.35-V6K3RM -->
+<!-- SSHCP V22.35 ALL TEAMS FILTER APPLY CURTAIN - exact V22.34 donor.
+     Keeps V22.34 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, direct portrait/landscape GEEK ownership,
+     1.00s orientation reveal timing, normal-GEEK whole-pixel 1X/2X sizing, five-visible-team ALL TEAMS geometry, horizontal rail alignment,
+     Scramble Summary stability fix, and white untappable FILTERS backdrops. Landscape ALL TEAMS APPLY now mirrors regular GEEK:
+     the white filter backdrop stays fully opaque while filtered rows, column geometry, and fitted numbers/text rebuild underneath, then fades
+     away only after fitting completes so intermediate number-resize frames are never exposed. HOME version display advances to V22.35.
+     No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
      skins/GEEK math, table geometry, GAME logic and global VPH×DPR scaling unchanged. Changes only player-facing
@@ -12914,8 +12915,25 @@ html.sshcp-pre-geek-transition-v2220 body::after{
   padding:10px!important;
   background:#fff!important;
   pointer-events:auto!important;
+  opacity:1!important;
 }
 .geek-all-teams-filter-shade-v2216.open-v2216{display:flex!important;}
+/* V22.35 — APPLY uses the already-white FILTERS backdrop as a reveal curtain.
+   Hide the filter card, keep the destination fully covered through row/column
+   rebuild + fitted typography, then use the same .5s visual reveal as regular GEEK. */
+.geek-all-teams-filter-shade-v2216.applying-v2235{
+  display:flex!important;
+  opacity:1!important;
+  transition:opacity .5s ease-out!important;
+  will-change:opacity;
+}
+.geek-all-teams-filter-shade-v2216.applying-v2235 > .geek-all-teams-filter-card-v2216{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.geek-all-teams-filter-shade-v2216.applying-v2235.reveal-v2235{
+  opacity:0!important;
+}
 .geek-all-teams-filter-card-v2216{
   width:min(760px,96vw)!important;
   max-height:92dvh!important;
@@ -13372,7 +13390,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.34</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.35</span></span>
         </button>
 
       </div>
@@ -28049,7 +28067,7 @@ let scoreTimingDetail =
       }
     }
 
-    function syncGeekAllTeamsColumnGeometryV2216() {
+    function syncGeekAllTeamsColumnGeometryV2216(afterFitV2235 = null) {
       const scroll = document.getElementById('geekAllTeamsScrollV2216');
       const table = document.getElementById('geekAllTeamsTableV2216');
       if (!scroll || !table) return;
@@ -28108,10 +28126,11 @@ let scoreTimingDetail =
       requestAnimationFrame(() => {
         fitGeekAllTeamsTextV2217();
         updateGeekAllTeamsProgressV2218();
+        if (typeof afterFitV2235 === 'function') afterFitV2235();
       });
     }
 
-    function renderGeekAllTeamsV2216() {
+    function renderGeekAllTeamsV2216(afterFitV2235 = null) {
       const shell = ensureGeekAllTeamsShellV2216();
       const table = shell.view.querySelector('#geekAllTeamsTableV2216');
       if (!table) return;
@@ -28167,7 +28186,7 @@ let scoreTimingDetail =
       }
 
       table.innerHTML = html;
-      requestAnimationFrame(syncGeekAllTeamsColumnGeometryV2216);
+      requestAnimationFrame(() => syncGeekAllTeamsColumnGeometryV2216(afterFitV2235));
     }
 
     function openGeekAllTeamsV2216() {
@@ -28214,11 +28233,18 @@ let scoreTimingDetail =
       });
     }
 
+    let geekAllTeamsFilterRevealTimerV2235 = 0;
+
     function openGeekAllTeamsFilterV2216() {
       const shell = ensureGeekAllTeamsShellV2216();
       const shade = shell.view.querySelector('#geekAllTeamsFilterShadeV2216');
       const card = shell.view.querySelector('#geekAllTeamsFilterCardV2216');
       if (!shade || !card) return;
+      if (geekAllTeamsFilterRevealTimerV2235) {
+        clearTimeout(geekAllTeamsFilterRevealTimerV2235);
+        geekAllTeamsFilterRevealTimerV2235 = 0;
+      }
+      shade.classList.remove('applying-v2235', 'reveal-v2235');
 
       /* V22.27 — initialize the draft ONCE when FILTERS opens. V22.26 rebuilt
          the entire panel after every checkbox change, which re-copied the last
@@ -28259,9 +28285,25 @@ let scoreTimingDetail =
         geekSelectedCategoriesV180 = new Set(geekAllTeamsFilterDraftV2216 || []);
         geekSyncAllFlagV1830(geekSelectedCategoriesV180);
         geekPendingFiltersV186 = new Set(geekSelectedCategoriesV180);
-        closeGeekAllTeamsFilterV2216();
+
+        /* V22.35 — match regular GEEK APPLY. The existing white FILTERS shade
+           becomes the temporary curtain; the card disappears immediately, but
+           the finished ALL TEAMS table is not exposed until row/column sizing
+           and all fitted number/text passes have completed underneath. */
+        shade.classList.remove('reveal-v2235');
+        shade.classList.add('applying-v2235');
         renderGeekTableV180();
-        renderGeekAllTeamsV2216();
+        renderGeekAllTeamsV2216(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              shade.classList.add('reveal-v2235');
+              geekAllTeamsFilterRevealTimerV2235 = window.setTimeout(() => {
+                geekAllTeamsFilterRevealTimerV2235 = 0;
+                closeGeekAllTeamsFilterV2216();
+              }, 540);
+            });
+          });
+        });
       });
 
       shade.classList.add('open-v2216');
@@ -28271,7 +28313,11 @@ let scoreTimingDetail =
     function closeGeekAllTeamsFilterV2216() {
       const shade = document.getElementById('geekAllTeamsFilterShadeV2216');
       if (!shade) return;
-      shade.classList.remove('open-v2216');
+      if (geekAllTeamsFilterRevealTimerV2235) {
+        clearTimeout(geekAllTeamsFilterRevealTimerV2235);
+        geekAllTeamsFilterRevealTimerV2235 = 0;
+      }
+      shade.classList.remove('open-v2216', 'applying-v2235', 'reveal-v2235');
       shade.setAttribute('aria-hidden', 'true');
       geekAllTeamsFilterDraftV2216 = null;
     }
