@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.45-P7M2QX | BUILD KEY: 22.46-V6R3MX -->
+<!-- SSHCP | BASE KEY: 22.46-V6R3MX | BUILD KEY: 22.47-N5Q8RV -->
+<!-- SSHCP V22.47 REGULAR GEEK FREE-SCROLL / ALL TEAMS SNAP RETAINED - exact V22.46 donor.
+     Removes vertical row snapping only from regular portrait GEEK so its mixed 1X/2X category/stat geometry scrolls freely again. Landscape ALL TEAMS keeps the V22.46 stat-row snap unchanged. GEEK Tips & Tricks, filters, ALL TEAMS device-pixel track geometry, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.46 GEEK TIPS + STAT-ROW SCROLL SNAP - exact V22.45 donor.
      Updates the GEEK Tips & Tricks card to explain landscape ALL TEAMS and individual-result detail. Regular GEEK and landscape ALL TEAMS now snap vertical scrolling to complete stat-row boundaries while preserving existing filters, horizontal ALL TEAMS scrolling, pull refresh, detail taps, device-pixel track geometry, ROTB26 generation, scoring/GEEK calculations and CF V3.3 unchanged. -->
 <!-- SSHCP V22.45 ALL TEAMS DEVICE-PIXEL DIVISIBILITY LOCK - exact V22.44 donor.
@@ -13479,15 +13481,15 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
 
 <style id="sshcp-v2246-geek-stat-row-scroll-snap">
-/* V22.46 — vertical snapping lands on complete stat rows only.
-   Regular GEEK's header is outside the scroller. ALL TEAMS keeps its sticky
-   header inside the scroller, so stat rows reserve the live header height. */
+/* V22.47 — regular GEEK free-scrolls because its category/stat rows use mixed
+   1X/2X geometry. ALL TEAMS retains vertical snapping to complete stat rows;
+   its sticky header stays inside the scroller, so rows reserve header height. */
 .modal-overlay.geek-mode-v180 .geek-table-scroll-v180{
-  scroll-snap-type:y mandatory!important;
+  scroll-snap-type:none!important;
   overscroll-behavior-y:contain!important;
 }
 .modal-overlay.geek-mode-v180 .geek-table-scroll-v180 .geek-row-v180.stat{
-  scroll-snap-align:start!important;
+  scroll-snap-align:none!important;
   scroll-snap-stop:normal!important;
 }
 .geek-all-teams-scroll-v2216{
@@ -13635,7 +13637,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.46</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.47</span></span>
         </button>
 
       </div>
