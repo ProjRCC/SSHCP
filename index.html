@@ -1,6 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.37-L9Q5MX | BUILD KEY: 22.38-C7M9QX -->
-<!-- SSHCP V22.38 ALL TEAMS TEAM-DETAIL POPUP - exact V22.37 donor.
-     Adds a landscape team-specific GEEK detail popup from any ALL TEAMS result cell, reusing the established detail title/description/context/result styling, owner emphasis, and evidence model. Supporting evidence is limited to the useful per-team detail rows represented by the GEEK STATS export plus PARS, with landscape hole lists compressing only runs of four or more. Popup width never exceeds 50vw and may use up to 98dvh.
+<!-- SSHCP | BASE KEY: 22.38-C7M9QX | BUILD KEY: 22.39-M4R8QV -->
+<!-- SSHCP V22.39 ALL TEAMS TEAM-DETAIL PRESENTATION TUNE - exact V22.38 donor.
+     Keeps the V22.38 team-specific ALL TEAMS detail behavior, but widens its landscape card to a smart 75vw ceiling, slightly reduces only its title/result scale, increases BACK height, trims internal top/bottom gutter, resets popup scroll position on open, and explicitly inherits the established regular GEEK detail backdrop/card/shadow treatment. Supporting evidence and hole formatting remain unchanged.
      Keeps V22.35 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, direct portrait/landscape GEEK ownership,
      1.00s orientation reveal timing, normal-GEEK whole-pixel 1X/2X sizing, five-visible-team ALL TEAMS geometry, horizontal rail alignment,
      white untappable FILTERS backdrops, and ALL TEAMS APPLY curtain behavior. Every Scramble Summary entry now raises its existing white
@@ -13260,21 +13260,31 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
 
 <style id="sshcp-v2238-geek-all-teams-detail">
-/* V22.38 — team-specific detail opened from a landscape ALL TEAMS result cell.
-   It intentionally reuses the established GEEK detail typography and card
-   language, but remains above the ALL TEAMS surface and never exceeds half of
-   the landscape viewport width. */
+/* V22.39 — team-specific detail opened from a landscape ALL TEAMS result cell.
+   It reuses the established GEEK detail backdrop/card language while allowing
+   a smart landscape width up to 75vw for long descriptions/evidence. */
 .modal-overlay.geek-all-teams-detail-v2238{
   z-index:6400!important;
-  padding:1dvh 1vw!important;
-  background:rgba(0,0,0,.88)!important;
+  padding:.35dvh 1vw!important;
+  /* V22.39: exact backdrop treatment is inherited from regular GEEK detail. */
 }
 .modal-overlay.geek-all-teams-detail-v2238 .modal-box{
-  width:min(50vw,740px)!important;
-  max-width:50vw!important;
-  max-height:98dvh!important;
+  width:min(75vw,1120px)!important;
+  max-width:75vw!important;
+  max-height:99.3dvh!important;
   margin:auto!important;
-  padding:18px!important;
+  padding:8px 18px!important;
+  /* V22.39: background/border/shadow remain the established GEEK detail values. */
+}
+.modal-overlay.geek-all-teams-detail-v2238 .modal-title{
+  margin-top:0!important;
+  margin-bottom:8px!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .modal-actions{
+  margin-top:12px!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .modal-actions .modal-btn{
+  min-height:62px!important;
 }
 .modal-overlay.geek-all-teams-detail-v2238 .geek-detail-teams-v180{
   width:100%!important;
@@ -13453,7 +13463,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.38</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.39</span></span>
         </button>
 
       </div>
@@ -28195,7 +28205,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.38 — ALL TEAMS TEAM-SPECIFIC DETAIL
+       SSHCP V22.39 — ALL TEAMS TEAM-SPECIFIC DETAIL PRESENTATION
        Every individual ALL TEAMS result cell can open a detail card for that
        exact team/stat pairing. The Worker/GEEK response and existing evidence
        snapshot remain authoritative; this layer only presents the already-loaded
@@ -28413,6 +28423,7 @@ let scoreTimingDetail =
       const back = makeModalButton('BACK', 'geek-detail-back-v182 geek-all-teams-detail-back-v2238', returnToGeekAllTeamsFromDetailV2238);
       els.modalActions.className = 'modal-actions single';
       els.modalActions.replaceChildren(back);
+      if (els.modalBox) els.modalBox.scrollTop = 0;
       els.modalOverlay.classList.add('open');
 
       requestAnimationFrame(() => {
@@ -29208,7 +29219,10 @@ let scoreTimingDetail =
       };
 
       if (title) {
-        fitTextToBoxV5(title, title, geekDetailBasisV2238 * 0.05, 12, {
+        const geekDetailTitleTargetV2239 = els.modalOverlay.classList.contains('geek-all-teams-detail-v2238')
+          ? geekDetailBasisV2238 * 0.044
+          : geekDetailBasisV2238 * 0.05;
+        fitTextToBoxV5(title, title, geekDetailTitleTargetV2239, 12, {
           horizontalPad: 20,
           verticalPad: 0,
           wrap: false,
@@ -29267,7 +29281,8 @@ let scoreTimingDetail =
              then shrink RESULT only when that complete one-line string would
              exceed the existing 82%-max result card. */
           if (result) {
-            fitGeekResultOneLineV2213(baseSize * 1.20);
+            const geekResultRatioV2239 = els.modalOverlay.classList.contains('geek-all-teams-detail-v2238') ? 1.05 : 1.20;
+            fitGeekResultOneLineV2213(baseSize * geekResultRatioV2239);
           }
 
           teamNodes.forEach(node => {
