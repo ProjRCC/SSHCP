@@ -1,10 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.34-R5N8QK | BUILD KEY: 22.35-V6K3RM -->
-<!-- SSHCP V22.35 ALL TEAMS FILTER APPLY CURTAIN - exact V22.34 donor.
-     Keeps V22.34 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, direct portrait/landscape GEEK ownership,
+<!-- SSHCP | BASE KEY: 22.35-V6K3RM | BUILD KEY: 22.36-Q8M5TX -->
+<!-- SSHCP V22.36 SCRAMBLE SUMMARY FRESH-READ + VIEWPORT-SETTLE REVEAL - exact V22.35 donor.
+     Keeps V22.35 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, direct portrait/landscape GEEK ownership,
      1.00s orientation reveal timing, normal-GEEK whole-pixel 1X/2X sizing, five-visible-team ALL TEAMS geometry, horizontal rail alignment,
-     Scramble Summary stability fix, and white untappable FILTERS backdrops. Landscape ALL TEAMS APPLY now mirrors regular GEEK:
-     the white filter backdrop stays fully opaque while filtered rows, column geometry, and fitted numbers/text rebuild underneath, then fades
-     away only after fitting completes so intermediate number-resize frames are never exposed. HOME version display advances to V22.35.
+     white untappable FILTERS backdrops, and ALL TEAMS APPLY curtain behavior. Every Scramble Summary entry now raises its existing white
+     after-play curtain first, performs a fresh no-store leaderboard read underneath it, waits for the post-orientation visual viewport to settle,
+     renders/refits Summary against the settled portrait geometry, and only then fades the curtain. A Summary-only visualViewport resize refit
+     catches any final Android/PWA viewport correction without restoring a manual Summary refresh control. HOME display advances to V22.36.
      No Worker change. -->
 <!-- V22.15 donor notes:
      Keeps V22.14 result payload, GEEK wording/fit, Scramble Mode, scoring, authorization, Worker/API, result/tiebreak/
@@ -13390,7 +13391,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.35</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.36</span></span>
         </button>
 
       </div>
@@ -29603,15 +29604,103 @@ let scoreTimingDetail =
 
     
     
-    function showTournamentSummary() {
-      setHomeHamburgerVisibleV2055(false);
+    async function refreshTournamentSummaryRowsV2236() {
+      /* V22.36 — Summary owns a fresh data-only leaderboard read while its
+         existing full-screen white curtain is already opaque. Do not route this
+         through loadLeaderboard(): that function owns Leaderboard rendering,
+         progress/tips and reveal side effects that Summary does not need. */
+      try {
+        const response = await fetch(
+          CLOUDFLARE_API_URL +
+          '?action=leaderboard' +
+          '&refresh=' + Date.now() + '-summary-v2236',
+          { cache: 'no-store' }
+        );
+        if (!response.ok) return false;
+
+        const data = await response.json();
+        if (!data || data.ok !== true || !Array.isArray(data.leaderboard)) {
+          return false;
+        }
+
+        updateTournamentFinishState(data.leaderboard);
+        leaderboardHasLoaded = true;
+        return true;
+      }
+      catch (_) {
+        /* A failed hidden refresh must not destroy the last verified Summary
+           snapshot. The existing rows remain available under the white curtain. */
+        return false;
+      }
+    }
+
+    function waitForTournamentSummaryViewportStableV2236() {
+      /* Android/PWA can report one or more transient visualViewport sizes after
+         the GEEK portrait/landscape reload cycle. Require several unchanged
+         animation frames before Summary commits its weighted pixel rows. */
+      return new Promise(resolve => {
+        let lastW = -1;
+        let lastH = -1;
+        let stableFrames = 0;
+        let totalFrames = 0;
+
+        const tick = () => {
+          const vv = window.visualViewport;
+          const width = Number(vv && vv.width) || window.innerWidth || 0;
+          const height = Number(vv && vv.height) || window.innerHeight || 0;
+          const unchanged =
+            lastW >= 0 &&
+            Math.abs(width - lastW) <= 0.5 &&
+            Math.abs(height - lastH) <= 0.5;
+
+          stableFrames = unchanged ? stableFrames + 1 : 0;
+          lastW = width;
+          lastH = height;
+          totalFrames += 1;
+
+          if (stableFrames >= 3 || totalFrames >= 36) {
+            resolve();
+            return;
+          }
+          requestAnimationFrame(tick);
+        };
+
+        requestAnimationFrame(tick);
+      });
+    }
+
+    async function settleTournamentSummaryBeforeRevealV2236() {
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch (_) {}
+      }
+      await new Promise(resolve => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
+      if (!els.modalOverlay.classList.contains('tournament-summary')) return;
       syncSharedGeometryV187();
+      fitTournamentSummaryRemaining();
+      updateTournamentSummaryProgressV2116();
+    }
+
+    async function showTournamentSummary() {
+      setHomeHamburgerVisibleV2055(false);
+
+      /* V22.36 — the curtain begins BEFORE the fresh read and before any
+         post-rotation viewport correction can become visible. */
+      const summaryCurtainV2086 = beginAfterPlayCurtainV2086('after-play-summary-v2086');
+      await refreshTournamentSummaryRowsV2236();
+      await waitForTournamentSummaryViewportStableV2236();
+      syncSharedGeometryV187();
+
       if (!tournamentIsComplete(lastLeaderboardRows)) {
         closeModal();
+        await revealAfterPlayCurtainV2086(
+          'after-play-summary-v2086',
+          summaryCurtainV2086,
+          2
+        );
         return;
       }
-
-      const summaryCurtainV2086 = beginAfterPlayCurtainV2086('after-play-summary-v2086');
 
       const podium = buildTournamentPodium(lastLeaderboardRows);
       /* V19.31 — render the complete resolved standings. The Summary shell still
@@ -29756,6 +29845,7 @@ let scoreTimingDetail =
       }
 
       requestAnimationFrame(() => captureTournamentSummaryAuditV189());
+      await settleTournamentSummaryBeforeRevealV2236();
       Promise.resolve(revealAfterPlayCurtainV2086(
         'after-play-summary-v2086',
         summaryCurtainV2086,
@@ -33917,7 +34007,11 @@ let scoreTimingDetail =
 
     window.addEventListener('resize', () => {
       if (els.modalOverlay.classList.contains('tournament-summary')) {
-        requestAnimationFrame(fitTournamentSummaryRemaining);
+        requestAnimationFrame(() => {
+          syncSharedGeometryV187();
+          fitTournamentSummaryRemaining();
+          updateTournamentSummaryProgressV2116();
+        });
       }
       if (els.modalOverlay.classList.contains('geek-mode-v180')) {
         requestAnimationFrame(fitGeekRowsV180);
@@ -33936,6 +34030,28 @@ let scoreTimingDetail =
         requestAnimationFrame(fitTieBreakExplanationV1515);
       }
     });
+
+    /* V22.36 — window.resize is not guaranteed to fire for every late Android
+       visualViewport correction. Summary listens directly so its body/table
+       equation is re-committed to the final visible viewport if one more
+       correction arrives after the curtain reveal. */
+    if (window.visualViewport) {
+      let summaryVisualViewportFitQueuedV2236 = false;
+      window.visualViewport.addEventListener('resize', () => {
+        if (!els.modalOverlay.classList.contains('tournament-summary')) return;
+        if (summaryVisualViewportFitQueuedV2236) return;
+        summaryVisualViewportFitQueuedV2236 = true;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            summaryVisualViewportFitQueuedV2236 = false;
+            if (!els.modalOverlay.classList.contains('tournament-summary')) return;
+            syncSharedGeometryV187();
+            fitTournamentSummaryRemaining();
+            updateTournamentSummaryProgressV2116();
+          });
+        });
+      }, { passive:true });
+    }
 
 </script>
 
@@ -34237,17 +34353,9 @@ let scoreTimingDetail =
 
     async function openSummaryV2054(){
       closeMenuV2054();
-
-      try {
-        if (typeof tournamentIsComplete === 'function' &&
-            !tournamentIsComplete(lastLeaderboardRows) &&
-            typeof loadLeaderboard === 'function' &&
-            !leaderboardLoadInProgress) {
-          await loadLeaderboard(false, false);
-        }
-      } catch (_) {}
-
-      if (typeof showTournamentSummary === 'function') showTournamentSummary();
+      /* V22.36 — showTournamentSummary() now owns the one fresh read under its
+         white curtain, so the HOME menu must not issue a second pre-read. */
+      if (typeof showTournamentSummary === 'function') await showTournamentSummary();
     }
 
     toggle.addEventListener('click', toggleMenuV2054);
