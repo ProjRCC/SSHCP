@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.48-M7Q4TX | BUILD KEY: 22.49-H6M3QW -->
+<!-- SSHCP | BASE KEY: 22.49-H6M3QW | BUILD KEY: 22.50-R4N7QX -->
+<!-- SSHCP V22.50 ROTB26 BULK WORKER HOOKUP - exact V22.49 donor.
+     Control Center button text is now ROTB26. The active ROTB26 action now uses CF V3.4 mode=rotb26 as one test-only bulk transaction: exact ROTB26 scorecards for assigned Teams 1-6 plus the existing RANDOM 2 generator for any additional assigned Teams 7-36, followed by one full verification readback. Normal golfer save/verification, ENTER/CLEAR, auth/QR ownership, leaderboard/tiebreak, Summary, SKINS, GEEK, shotgun logic, regular RANDOM 2, ALL TEAMS, scaling and presentation remain unchanged. -->
 <!-- SSHCP V22.49 ALL TEAMS ADAPTIVE <9 TEAM WIDTH - exact V22.48 donor.
      ALL TEAMS now fills the visible team region with the actual assigned-team count whenever fewer than nine teams exist. The established nine-team viewport remains unchanged for 9+ teams. Device-pixel divisibility now uses min(9, assigned teams), so STAT + visible teams exactly fills the table viewport with no blank right-side area; 10-36 teams still use the same horizontal scrolling and V22.48 eased column snap. Regular GEEK, GEEK Tips & Tricks, filters, five-stat geometry, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.48 ALL TEAMS EASED 2-AXIS SNAP - exact V22.47 donor.
@@ -13641,7 +13643,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.49</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.50</span></span>
         </button>
 
       </div>
@@ -14075,7 +14077,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
         </div>
 
         <div class="test-score-controls">
-          <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD ROTB26</button>
+          <button id="testAddParCurrentButton" class="test-score-action add" type="button">ROTB26</button>
           <button id="testAddRandomCurrentButton" class="test-score-action add" type="button">RANDOM</button>
           <button id="testAddRandom2CurrentButton" class="test-score-action add" type="button">RANDOM 2</button>
           <button id="testDeleteAllButton" class="test-score-action delete" type="button">DELETE ALL</button>
@@ -19956,12 +19958,12 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V22.40 — CONTROL CENTER BULK TEST WRITES
-       ADD ROTB26 / ADD RANDOM / ADD RANDOM 2 / DELETE ALL remain test-only
-       score generators. ADD ROTB26 composes the unchanged Worker RANDOM 2
-       current-team generator with exact verified ROTB26 saves for Teams 1-6.
-       RANDOM 2 keeps the accepted 68–74 total / 3–7 birdies / 3–7 bogeys /
-       0–2 eagles rules. Worker/API implementation remains unchanged.
+       SSHCP V22.50 — CONTROL CENTER BULK TEST WRITES
+       ROTB26 / ADD RANDOM / ADD RANDOM 2 / DELETE ALL remain test-only
+       score generators. ROTB26 now uses CF V3.4's single bulk testScores
+       mode=rotb26 path: exact Teams 1-6 + unchanged RANDOM 2 generation for
+       any additional assigned Teams 7-36, one batch write, one verification
+       readback. Normal score-save/auth paths remain untouched.
        ========================================================= */
 
     async function runRandom2Current() {
@@ -20087,68 +20089,37 @@ let scoreTimingDetail =
     }
 
     async function runRotb26CurrentV2240() {
-      const assignedSlots = await fetchAssignedSlotsForRotb26V2240();
-      const assignedSet = new Set(assignedSlots);
-      const missingHistorical = [1,2,3,4,5,6].filter(slot => !assignedSet.has(slot));
-
-      if (missingHistorical.length) {
-        throw new Error(
-          'ADD ROTB26 requires assigned Teams 1-6. Missing: ' +
-          missingHistorical.map(slot => 'Team ' + slot).join(', ') + '.'
-        );
-      }
-
-      /* Reuse the exact accepted RANDOM 2 generator for every assigned team.
-         The six historical teams are immediately overwritten below with the
-         exact event cards, leaving assigned Teams 7-36 as RANDOM 2. */
-      const random2Data = await runRandom2Current();
-      const randomSlots = Array.isArray(random2Data.slots)
-        ? random2Data.slots.map(Number).filter(Number.isInteger)
-        : assignedSlots;
-      const randomSlotSet = new Set(randomSlots);
-
-      const missingAfterRandom = [1,2,3,4,5,6].filter(slot => !randomSlotSet.has(slot));
-      if (missingAfterRandom.length) {
-        throw new Error('Team assignments changed during ADD ROTB26. Try again.');
-      }
-
-      /* Independent verified saves use the existing MASTER saveScores path.
-         Retry only a failed historical slot once; do not alter Worker logic. */
-      const historicalSlots = [1,2,3,4,5,6];
-      const firstPass = await Promise.allSettled(
-        historicalSlots.map(slot => saveRotb26HistoricalSlotV2240(slot))
+      /* V22.50 — CF V3.4 owns the complete ROTB26 test transaction.
+         The legacy frontend score arrays/helpers above remain preserved as
+         historical reference but are no longer used by the active action. */
+      const response = await fetch(
+        CLOUDFLARE_API_URL +
+          '?action=testScores' +
+          '&mode=rotb26' +
+          '&scope=current' +
+          '&passkey=' + encodeURIComponent(SSHCP_MASTER_TEST_KEY) +
+          '&refresh=' + Date.now(),
+        { cache: 'no-store' }
       );
-      const failedSlots = firstPass
-        .map((result, index) => result.status === 'rejected' ? historicalSlots[index] : null)
-        .filter(Boolean);
 
-      if (failedSlots.length) {
-        const retry = await Promise.allSettled(
-          failedSlots.map(slot => saveRotb26HistoricalSlotV2240(slot))
-        );
-        const stillFailed = retry
-          .map((result, index) => result.status === 'rejected' ? failedSlots[index] : null)
-          .filter(Boolean);
-        if (stillFailed.length) {
-          throw new Error(
-            'ROTB26 verification failed for ' +
-            stillFailed.map(slot => 'Team ' + slot).join(', ') + '.'
-          );
-        }
+      let data = null;
+      try { data = await response.json(); } catch (_) {}
+
+      if (!response.ok) {
+        const reason = data && (data.reason || data.error)
+          ? String(data.reason || data.error)
+          : 'request failed';
+        throw new Error('ADD ROTB26 failed • HTTP ' + response.status + ' • ' + reason);
       }
 
-      const random2Slots = randomSlots.filter(slot => slot >= 7 && slot <= 36);
+      if (!data || data.ok !== true || data.verified !== true) {
+        throw new Error(
+          (data && data.error) ||
+          'ADD ROTB26 was not verified.'
+        );
+      }
 
-      return {
-        ok: true,
-        verified: true,
-        mode: 'rotb26',
-        scope: 'current',
-        affectedTeams: randomSlots.length,
-        slots: randomSlots,
-        rotb26Teams: 6,
-        random2Teams: random2Slots.length
-      };
+      return data;
     }
 
     function showTestScoreWarning(mode, scope) {
