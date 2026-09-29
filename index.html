@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.46-V6R3MX | BUILD KEY: 22.47-N5Q8RV -->
+<!-- SSHCP | BASE KEY: 22.47-N5Q8RV | BUILD KEY: 22.48-M7Q4TX -->
+<!-- SSHCP V22.48 ALL TEAMS EASED 2-AXIS SNAP - exact V22.47 donor.
+     Replaces ALL TEAMS' browser-native hard vertical snap with a short custom eased settle after user scrolling finishes. Landscape ALL TEAMS now settles over ~150ms to the nearest exact stat-row boundary vertically and nearest exact team-column boundary horizontally, using the existing live row height/team width so both axes finish on the same established geometry. Regular portrait GEEK remains fully free/smooth with no snap. GEEK Tips & Tricks, filters, ALL TEAMS device-pixel track geometry, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.47 REGULAR GEEK FREE-SCROLL / ALL TEAMS SNAP RETAINED - exact V22.46 donor.
      Removes vertical row snapping only from regular portrait GEEK so its mixed 1X/2X category/stat geometry scrolls freely again. Landscape ALL TEAMS keeps the V22.46 stat-row snap unchanged. GEEK Tips & Tricks, filters, ALL TEAMS device-pixel track geometry, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.46 GEEK TIPS + STAT-ROW SCROLL SNAP - exact V22.45 donor.
@@ -13481,9 +13483,9 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
 
 <style id="sshcp-v2246-geek-stat-row-scroll-snap">
-/* V22.47 — regular GEEK free-scrolls because its category/stat rows use mixed
-   1X/2X geometry. ALL TEAMS retains vertical snapping to complete stat rows;
-   its sticky header stays inside the scroller, so rows reserve header height. */
+/* V22.48 — regular GEEK remains completely free-scroll because its category/stat
+   rows use mixed 1X/2X geometry. ALL TEAMS also disables browser-native snap;
+   its exact row/column settle is handled by the short eased V22.48 JS routine. */
 .modal-overlay.geek-mode-v180 .geek-table-scroll-v180{
   scroll-snap-type:none!important;
   overscroll-behavior-y:contain!important;
@@ -13493,13 +13495,13 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
   scroll-snap-stop:normal!important;
 }
 .geek-all-teams-scroll-v2216{
-  scroll-snap-type:y mandatory!important;
-  overscroll-behavior-y:contain!important;
+  scroll-snap-type:none!important;
+  scroll-behavior:auto!important;
+  overscroll-behavior:contain!important;
 }
 .geek-all-teams-scroll-v2216 .geek-all-teams-row-v2216:not(.header-v2216){
-  scroll-snap-align:start!important;
+  scroll-snap-align:none!important;
   scroll-snap-stop:normal!important;
-  scroll-margin-top:var(--gat-head-h-v2217,48px)!important;
 }
 </style>
 
@@ -13637,7 +13639,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.47</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.48</span></span>
         </button>
 
       </div>
@@ -28132,6 +28134,152 @@ let scoreTimingDetail =
     const GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220 = 'sshcpGeekRequiredRotationFiltersV2220';
     const GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220 = 'sshcpGeekRequiredRotationReturnV2220';
 
+    /* =========================================================
+       SSHCP V22.48 — ALL TEAMS EASED TWO-AXIS SETTLE
+       Native CSS snapping is intentionally disabled. The user's drag/momentum
+       remains fully natural; after scrolling actually stops, only the final
+       correction is animated. Vertical targets are exact STAT-row increments.
+       Horizontal targets are exact TEAM-column increments. Both axes share one
+       ~150ms ease-out settle and finish on the current live geometry.
+       ========================================================= */
+    const GEEK_ALL_TEAMS_SNAP_MS_V2248 = 150;
+    const GEEK_ALL_TEAMS_SNAP_IDLE_MS_V2248 = 90;
+    let geekAllTeamsSnapFrameV2248 = 0;
+    let geekAllTeamsSnapTimerV2248 = 0;
+    let geekAllTeamsSnapAnimatingV2248 = false;
+    let geekAllTeamsSnapArmedV2248 = false;
+
+    function cancelGeekAllTeamsSnapV2248() {
+      if (geekAllTeamsSnapFrameV2248) {
+        cancelAnimationFrame(geekAllTeamsSnapFrameV2248);
+        geekAllTeamsSnapFrameV2248 = 0;
+      }
+      if (geekAllTeamsSnapTimerV2248) {
+        clearTimeout(geekAllTeamsSnapTimerV2248);
+        geekAllTeamsSnapTimerV2248 = 0;
+      }
+      geekAllTeamsSnapAnimatingV2248 = false;
+    }
+
+    function geekAllTeamsNearestSnapTargetV2248(scroll) {
+      const table = document.getElementById('geekAllTeamsTableV2216');
+      if (!scroll || !table) return null;
+
+      const rowHeight = Math.max(0.001, Number(table.dataset.dataRowHeight) || 0);
+      const teamWidth = Math.max(
+        0.001,
+        parseFloat(table.style.getPropertyValue('--gat-team-w-v2216')) || 0
+      );
+      if (!(rowHeight > 0) || !(teamWidth > 0)) return null;
+
+      const maxY = Math.max(0, scroll.scrollHeight - scroll.clientHeight);
+      const maxX = Math.max(0, scroll.scrollWidth - scroll.clientWidth);
+
+      const targetY = Math.max(
+        0,
+        Math.min(maxY, Math.round((scroll.scrollTop || 0) / rowHeight) * rowHeight)
+      );
+      const targetX = Math.max(
+        0,
+        Math.min(maxX, Math.round((scroll.scrollLeft || 0) / teamWidth) * teamWidth)
+      );
+
+      return { x:targetX, y:targetY };
+    }
+
+    function settleGeekAllTeamsSnapV2248() {
+      if (!geekAllTeamsOpenV2216 || !geekAllTeamsSnapArmedV2248) return;
+      const scroll = document.getElementById('geekAllTeamsScrollV2216');
+      if (!scroll) return;
+
+      const target = geekAllTeamsNearestSnapTargetV2248(scroll);
+      if (!target) return;
+
+      const startX = scroll.scrollLeft || 0;
+      const startY = scroll.scrollTop || 0;
+      const deltaX = target.x - startX;
+      const deltaY = target.y - startY;
+
+      geekAllTeamsSnapArmedV2248 = false;
+      if (Math.abs(deltaX) < 0.10 && Math.abs(deltaY) < 0.10) {
+        scroll.scrollLeft = target.x;
+        scroll.scrollTop = target.y;
+        updateGeekAllTeamsProgressV2218();
+        return;
+      }
+
+      cancelGeekAllTeamsSnapV2248();
+      geekAllTeamsSnapAnimatingV2248 = true;
+      const startedV2248 = performance.now();
+
+      const stepV2248 = now => {
+        if (!geekAllTeamsSnapAnimatingV2248 || !geekAllTeamsOpenV2216) return;
+        const t = Math.max(
+          0,
+          Math.min(1, (now - startedV2248) / GEEK_ALL_TEAMS_SNAP_MS_V2248)
+        );
+        const eased = 1 - Math.pow(1 - t, 3); /* ease-out cubic */
+
+        scroll.scrollLeft = startX + (deltaX * eased);
+        scroll.scrollTop = startY + (deltaY * eased);
+
+        if (t < 1) {
+          geekAllTeamsSnapFrameV2248 = requestAnimationFrame(stepV2248);
+          return;
+        }
+
+        scroll.scrollLeft = target.x;
+        scroll.scrollTop = target.y;
+        geekAllTeamsSnapAnimatingV2248 = false;
+        geekAllTeamsSnapFrameV2248 = 0;
+        updateGeekAllTeamsProgressV2218();
+      };
+
+      geekAllTeamsSnapFrameV2248 = requestAnimationFrame(stepV2248);
+    }
+
+    function scheduleGeekAllTeamsSnapV2248() {
+      if (!geekAllTeamsOpenV2216 || !geekAllTeamsSnapArmedV2248 || geekAllTeamsSnapAnimatingV2248) return;
+      if (geekAllTeamsSnapTimerV2248) clearTimeout(geekAllTeamsSnapTimerV2248);
+      geekAllTeamsSnapTimerV2248 = window.setTimeout(() => {
+        geekAllTeamsSnapTimerV2248 = 0;
+        settleGeekAllTeamsSnapV2248();
+      }, GEEK_ALL_TEAMS_SNAP_IDLE_MS_V2248);
+    }
+
+    function installGeekAllTeamsSnapV2248(scroll) {
+      if (!scroll || scroll.dataset.snapV2248 === '1') return;
+      scroll.dataset.snapV2248 = '1';
+
+      const armV2248 = () => {
+        cancelGeekAllTeamsSnapV2248();
+        geekAllTeamsSnapArmedV2248 = true;
+      };
+
+      scroll.addEventListener('pointerdown', armV2248, { passive:true });
+      scroll.addEventListener('touchstart', armV2248, { passive:true });
+      scroll.addEventListener('wheel', armV2248, { passive:true });
+      scroll.addEventListener('keydown', event => {
+        if (![
+          'ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
+          'PageUp','PageDown','Home','End',' '
+        ].includes(event.key)) return;
+        armV2248();
+      });
+
+      scroll.addEventListener('scroll', () => {
+        if (geekAllTeamsSnapAnimatingV2248) return;
+        scheduleGeekAllTeamsSnapV2248();
+      }, { passive:true });
+
+      if ('onscrollend' in scroll) {
+        scroll.addEventListener('scrollend', () => {
+          if (geekAllTeamsSnapAnimatingV2248) return;
+          settleGeekAllTeamsSnapV2248();
+        }, { passive:true });
+      }
+    }
+
     function ensureGeekAllTeamsShellV2216() {
       let rotate = document.getElementById('geekAllTeamsRotateV2216');
       if (!rotate) {
@@ -28165,7 +28313,10 @@ let scoreTimingDetail =
 
         const scroll = view.querySelector('#geekAllTeamsScrollV2216');
         const title = view.querySelector('.geek-all-teams-title-v2216');
-        if (scroll) scroll.addEventListener('scroll', updateGeekAllTeamsProgressV2218, { passive:true });
+        if (scroll) {
+          scroll.addEventListener('scroll', updateGeekAllTeamsProgressV2218, { passive:true });
+          installGeekAllTeamsSnapV2248(scroll);
+        }
         if (title) installGeekAllTeamsPullRefreshV2241(title);
       }
       return { rotate, view };
@@ -28915,6 +29066,8 @@ let scoreTimingDetail =
 
     function closeGeekAllTeamsV2216() {
       geekAllTeamsOpenV2216 = false;
+      cancelGeekAllTeamsSnapV2248();
+      geekAllTeamsSnapArmedV2248 = false;
       closeGeekAllTeamsFilterV2216();
       document.documentElement.classList.remove('sshcp-geek-all-teams-v2216');
       const view = document.getElementById('geekAllTeamsViewV2216');
