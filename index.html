@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.44-J6R3NX | BUILD KEY: 22.45-P7M2QX -->
+<!-- SSHCP | BASE KEY: 22.45-P7M2QX | BUILD KEY: 22.46-V6R3MX -->
+<!-- SSHCP V22.46 GEEK TIPS + STAT-ROW SCROLL SNAP - exact V22.45 donor.
+     Updates the GEEK Tips & Tricks card to explain landscape ALL TEAMS and individual-result detail. Regular GEEK and landscape ALL TEAMS now snap vertical scrolling to complete stat-row boundaries while preserving existing filters, horizontal ALL TEAMS scrolling, pull refresh, detail taps, device-pixel track geometry, ROTB26 generation, scoring/GEEK calculations and CF V3.3 unchanged. -->
 <!-- SSHCP V22.45 ALL TEAMS DEVICE-PIXEL DIVISIBILITY LOCK - exact V22.44 donor.
      The nine visible team columns are now solved in physical/device pixels instead of rounded CSS pixels: the ALL TEAMS left gutter remains at least 5 CSS px but may grow by a few device pixels so the available team region is exactly divisible by nine. STAT is kept at its preferred width on the same device-pixel grid; every team track is one identical whole-device-pixel width, and the full table remains STAT + N×TEAM. ALL TEAMS value text also has no practical minimum floor, so values such as 100% must shrink until they actually fit rather than clip. All V22.44 rails, filters, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.44 ALL TEAMS INTEGER-PIXEL TRACK LOCK - exact V22.43 donor.
@@ -13475,6 +13477,30 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 }
 </style>
 
+
+<style id="sshcp-v2246-geek-stat-row-scroll-snap">
+/* V22.46 — vertical snapping lands on complete stat rows only.
+   Regular GEEK's header is outside the scroller. ALL TEAMS keeps its sticky
+   header inside the scroller, so stat rows reserve the live header height. */
+.modal-overlay.geek-mode-v180 .geek-table-scroll-v180{
+  scroll-snap-type:y mandatory!important;
+  overscroll-behavior-y:contain!important;
+}
+.modal-overlay.geek-mode-v180 .geek-table-scroll-v180 .geek-row-v180.stat{
+  scroll-snap-align:start!important;
+  scroll-snap-stop:normal!important;
+}
+.geek-all-teams-scroll-v2216{
+  scroll-snap-type:y mandatory!important;
+  overscroll-behavior-y:contain!important;
+}
+.geek-all-teams-scroll-v2216 .geek-all-teams-row-v2216:not(.header-v2216){
+  scroll-snap-align:start!important;
+  scroll-snap-stop:normal!important;
+  scroll-margin-top:var(--gat-head-h-v2217,48px)!important;
+}
+</style>
+
 </head>
 
 
@@ -13609,7 +13635,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.45</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.46</span></span>
         </button>
 
       </div>
@@ -20964,7 +20990,9 @@ let scoreTimingDetail =
           title:'GEEK MODE',
           lines:[
             'Tap a <strong>STAT</strong> for more detail.',
-            'Use <strong>FILTERS</strong> to filter stat categories.'
+            'Use <strong>FILTERS</strong> to filter stat categories.',
+            '<strong>ROTATE</strong> to view <strong>ALL TEAMS</strong> stats.',
+            'Tap an individual <strong>RESULT</strong> for more detail.'
           ]
         };
       }
