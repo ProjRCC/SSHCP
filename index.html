@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.43-D8K5RV | BUILD KEY: 22.44-J6R3NX -->
+<!-- SSHCP | BASE KEY: 22.44-J6R3NX | BUILD KEY: 22.45-P7M2QX -->
+<!-- SSHCP V22.45 ALL TEAMS DEVICE-PIXEL DIVISIBILITY LOCK - exact V22.44 donor.
+     The nine visible team columns are now solved in physical/device pixels instead of rounded CSS pixels: the ALL TEAMS left gutter remains at least 5 CSS px but may grow by a few device pixels so the available team region is exactly divisible by nine. STAT is kept at its preferred width on the same device-pixel grid; every team track is one identical whole-device-pixel width, and the full table remains STAT + N×TEAM. ALL TEAMS value text also has no practical minimum floor, so values such as 100% must shrink until they actually fit rather than clip. All V22.44 rails, filters, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.44 ALL TEAMS INTEGER-PIXEL TRACK LOCK - exact V22.43 donor.
      Fixes the remaining ALL TEAMS column-edge inconsistency by eliminating fractional team-track widths. The scroll viewport client width is treated as the exact integer-pixel budget; a preferred STAT width is chosen first, then each of the nine visible team columns gets one identical whole-pixel width, and STAT absorbs the 0-8px remainder so STAT + 9×TEAM equals the viewport exactly. The full scroll table is then exactly STAT + N×TEAM using those same whole-pixel tracks. No gutter compensation or fractional CSS track widths are used. All V22.43 styling/behavior, rails, filters, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.43 ALL TEAMS EXACT TRACK GEOMETRY / REGULAR-GEEK BORDER - exact V22.42 donor.
@@ -13395,6 +13397,14 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 }
 </style>
 
+<style id="sshcp-v2245-geek-all-teams-device-pixel-lock">
+/* V22.45 — left gutter is presentation-only but may grow above its 5px minimum
+   by a few device pixels so the nine-team moving region divides perfectly. */
+.geek-all-teams-scroll-v2216{
+  margin-left:var(--gat-left-gutter-v2245,5px)!important;
+}
+</style>
+
 <style id="sshcp-v2238-geek-all-teams-detail">
 /* V22.39 — team-specific detail opened from a landscape ALL TEAMS result cell.
    It reuses the established GEEK detail backdrop/card language while allowing
@@ -13599,7 +13609,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.44</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.45</span></span>
         </button>
 
       </div>
@@ -28367,11 +28377,12 @@ let scoreTimingDetail =
       table.querySelectorAll('.geek-all-teams-value-v2217').forEach(label => {
         const cell = label.closest('.geek-all-teams-cell-v2216');
         if (!cell) return;
-        fitTextToBoxV5(cell, label, rowHeight * 0.50, Math.max(10, rowHeight * 0.25), {
-          horizontalPad: 7,
+        fitTextToBoxV5(cell, label, rowHeight * 0.50, 1, {
+          horizontalPad: 9,
           verticalPad: rowHeight * 0.14,
           wrap: false,
-          lineHeight: 1
+          lineHeight: 1,
+          noMin: true
         });
       });
     }
@@ -28444,7 +28455,6 @@ let scoreTimingDetail =
       const table = document.getElementById('geekAllTeamsTableV2216');
       if (!scroll || !table) return;
       const teamCount = Math.max(1, Number(table.dataset.teamCount) || 1);
-      const width = Math.max(1, scroll.clientWidth || window.innerWidth || 1);
 
       /* V22.43 — five COMPLETE stat rows remain visible. The horizontal rail now
          owns the separate 16px popup gutter below the table, so scroll.clientHeight
@@ -28455,15 +28465,57 @@ let scoreTimingDetail =
       const dataRowHeight = Math.max(1, (availableHeight - headerExtraV2242) / 5.82);
       const headerRowHeight = Math.max(1, (dataRowHeight * 0.82) + headerExtraV2242);
 
-      /* V22.44 — integer-pixel track lock. scroll.clientWidth is the exact
-         visible inner table budget. Choose the preferred STAT width, then make
-         all nine visible TEAM tracks identical whole CSS pixels. STAT absorbs
-         the unavoidable 0-8px remainder, so there are no fractional grid lines:
-           visible width = STAT + (9 × TEAM)
-           full width    = STAT + (N × TEAM) */
-      const preferredStatWidthV2244 = Math.max(104, Math.round(width * 0.16));
-      const teamWidth = Math.max(1, Math.floor((width - preferredStatWidthV2244) / 9));
-      const statWidth = Math.max(1, width - (teamWidth * 9));
+      /* V22.45 — solve the horizontal grid in DEVICE pixels, not rounded CSS pixels.
+         The left popup gap has a 5 CSS px minimum and is the only flexible spacing.
+         We grow it by at most a few device pixels until the moving team region is
+         exactly divisible by nine. STAT and every TEAM track are then expressed
+         back in CSS px as physicalPx / DPR, so every vertical boundary lands on
+         the same device-pixel cadence:
+           visible physical width = STATpx + (9 × TEAMpx)
+           full physical width    = STATpx + (N × TEAMpx) */
+      const dprV2245 = Math.max(1, Number(window.devicePixelRatio) || 1);
+      const baseLeftGutterCssV2245 = 5;
+      const scrollComputedV2245 = window.getComputedStyle(scroll);
+      const borderInlineCssV2245 =
+        (parseFloat(scrollComputedV2245.borderLeftWidth) || 0) +
+        (parseFloat(scrollComputedV2245.borderRightWidth) || 0);
+      const innerCssWidthV2245 = () => Math.max(1, scroll.getBoundingClientRect().width - borderInlineCssV2245);
+      const positiveModV2245 = (value, divisor) => ((value % divisor) + divisor) % divisor;
+
+      /* Start from the guaranteed minimum gutter every time so a previous fit
+         cannot accumulate extra space across refreshes/orientation restores. */
+      scroll.style.setProperty('--gat-left-gutter-v2245', baseLeftGutterCssV2245.toFixed(4) + 'px');
+      let firstInnerPhysicalV2245 = Math.max(1, Math.round(innerCssWidthV2245() * dprV2245));
+      const preferredStatPhysicalV2245 = Math.max(
+        Math.ceil(104 * dprV2245),
+        Math.round(firstInnerPhysicalV2245 * 0.16)
+      );
+
+      let leftGutterCssV2245 = baseLeftGutterCssV2245;
+      for (let passV2245 = 0; passV2245 < 3; passV2245++) {
+        const currentPhysicalV2245 = Math.max(1, Math.round(innerCssWidthV2245() * dprV2245));
+        const remainderV2245 = positiveModV2245(currentPhysicalV2245 - preferredStatPhysicalV2245, 9);
+        if (remainderV2245 === 0) break;
+        leftGutterCssV2245 += remainderV2245 / dprV2245;
+        scroll.style.setProperty('--gat-left-gutter-v2245', leftGutterCssV2245.toFixed(4) + 'px');
+      }
+
+      const visiblePhysicalV2245 = Math.max(1, Math.round(innerCssWidthV2245() * dprV2245));
+      const finalTeamBudgetPhysicalV2245 = Math.max(9, visiblePhysicalV2245 - preferredStatPhysicalV2245);
+      const teamWidthPhysicalV2245 = Math.max(1, Math.floor(finalTeamBudgetPhysicalV2245 / 9));
+      const exactVisiblePhysicalV2245 = preferredStatPhysicalV2245 + (teamWidthPhysicalV2245 * 9);
+
+      /* If browser rounding left a final physical pixel discrepancy, absorb only
+         that discrepancy into the flexible left gutter and re-use the exact grid. */
+      const finalPhysicalDeltaV2245 = visiblePhysicalV2245 - exactVisiblePhysicalV2245;
+      if (finalPhysicalDeltaV2245 > 0) {
+        leftGutterCssV2245 += finalPhysicalDeltaV2245 / dprV2245;
+        scroll.style.setProperty('--gat-left-gutter-v2245', leftGutterCssV2245.toFixed(4) + 'px');
+      }
+
+      const statWidth = preferredStatPhysicalV2245 / dprV2245;
+      const teamWidth = teamWidthPhysicalV2245 / dprV2245;
+      const width = statWidth + (teamWidth * 9);
       const metaWidth = statWidth;
       const fullTableWidthV2243 = statWidth + (teamCount * teamWidth);
       const hRailV2233 = document.getElementById('geekAllTeamsHProgressV2232');
