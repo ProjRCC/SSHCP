@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.41-R6N3QW | BUILD KEY: 22.42-K8M4QZ -->
+<!-- SSHCP | BASE KEY: 22.42-K8M4QZ | BUILD KEY: 22.43-D8K5RV -->
+<!-- SSHCP V22.43 ALL TEAMS EXACT TRACK GEOMETRY / REGULAR-GEEK BORDER - exact V22.42 donor.
+     Keeps the 98vw x 98dvh nine-team / five-stat ALL TEAMS view, but makes the rendered table width mathematically exact: STAT width + N identical team tracks, with the visible viewport defined as STAT + exactly nine team tracks. The left popup gap is presentation-only with a 5px minimum; it is not used to compensate column math. The ALL TEAMS table shell now matches regular GEEK's 1px #aaa border/radius treatment, STAT uses Gray 2 as its dedicated sticky-column fill, and the team-name header remains Gray 3. Right/bottom 16px rail gutters, pull refresh, team-detail taps, regular-GEEK SETUP centering, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.42 ALL TEAMS 98x98 / RAIL-GUTTER / NO-CAT REFINEMENT - exact V22.41 donor.
      Keeps the nine-team / five-stat ALL TEAMS overview and regular-GEEK filter ownership, but restores the actual landscape popup to 98vw x 98dvh, places the table 5px from the popup's left edge while reserving 16px inside the popup on the right and bottom for the established position rails, removes the ALL TEAMS CAT column, gives the team-name header a few extra pixels and refits names fresh from their target size, and strengthens only the table perimeter, the divider after STAT, and the divider below the team-name header. Pull refresh, team-detail taps, normal-GEEK SETUP centering, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.41 ALL TEAMS NINE-COLUMN / FIVE-ROW SIMPLIFICATION - exact V22.40 donor.
@@ -13318,10 +13320,11 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 }
 </style>
 
-<style id="sshcp-v2242-geek-all-teams-geometry">
-/* V22.42 — the popup itself is 98 x 98. The table is intentionally asymmetric
-   inside it: 5px left, 16px right and 16px bottom. The right/bottom strips belong
-   to the existing vertical/horizontal position rails, not to the table. */
+<style id="sshcp-v2243-geek-all-teams-geometry">
+/* V22.43 — exact ALL TEAMS track math.
+   The left gap is presentation-only (minimum 5px). The table viewport itself is
+   solved independently: visible width = STAT + exactly 9 equal TEAM tracks.
+   Full scroll width = STAT + N * TEAM. Right/bottom 16px strips remain rail space. */
 .geek-all-teams-view-v2216{
   padding:0!important;
 }
@@ -13331,14 +13334,23 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
   padding:0!important;
 }
 .geek-all-teams-scroll-v2216{
-  width:calc(100% - 21px)!important;
-  margin-left:5px!important;
+  width:auto!important;
+  align-self:stretch!important;
+  margin-left:max(5px,env(safe-area-inset-left))!important;
   margin-right:16px!important;
   margin-bottom:16px!important;
-  border:2px solid var(--line-strong)!important;
-  border-radius:9px!important;
+  box-sizing:border-box!important;
+  border:1px solid #aaa!important;
+  border-radius:10px!important;
 }
-/* CAT is retired from ALL TEAMS; STAT is the only sticky meta column. */
+/* CAT remains retired. Every row and the table itself use one explicit runtime
+   width, so header/body tracks cannot finish on different right edges. */
+.geek-all-teams-table-v2216,
+.geek-all-teams-row-v2216{
+  width:var(--gat-table-w-v2243,100%)!important;
+  min-width:var(--gat-table-w-v2243,100%)!important;
+  max-width:var(--gat-table-w-v2243,100%)!important;
+}
 .geek-all-teams-row-v2216{
   grid-template-columns:
     var(--gat-stat-w-v2217,126px)
@@ -13347,14 +13359,23 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 .header-v2216 .geek-all-teams-stat-v2216{
   grid-column:1!important;
 }
+/* Match regular GEEK's normal 1px cell/grid treatment. STAT uses Gray 2 as the
+   persistent sticky-column cue; Gray 3 is reserved for team-name header cells. */
 .geek-all-teams-stat-v2216{
-  border-right:2px solid var(--line-strong)!important;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
+  border-right:1px solid #b7b7b7!important;
+}
+.header-v2216 .geek-all-teams-stat-v2216{
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
 }
 .geek-all-teams-row-v2216.header-v2216{
-  border-bottom:2px solid var(--line-strong)!important;
+  border-bottom:1px solid #b7b7b7!important;
 }
-/* The horizontal rail lives inside the 16px strip below the table. Its runtime
-   left/width variables are measured from the popup edge and only describe teams. */
+.geek-all-teams-row-v2216.header-v2216 .geek-all-teams-team-head-v2217{
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+}
+/* Horizontal rail remains in the dedicated bottom strip and starts exactly at
+   STAT's right edge; its width is the visible nine-team region only. */
 .geek-all-teams-hprogress-v2232{
   position:absolute!important;
   left:var(--gat-hprogress-start-v2233,0px)!important;
@@ -13366,8 +13387,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
   flex:none!important;
   align-self:auto!important;
 }
-/* Team names are always eligible to refit from the full target size after
-   geometry/font settlement; no stale shrink from a previous landscape fit. */
+/* Team names restart fitting from the target size after each settled geometry. */
 .geek-all-teams-team-name-v2217{
   max-height:86%!important;
 }
@@ -13577,7 +13597,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.42</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.43</span></span>
         </button>
 
       </div>
@@ -28394,7 +28414,7 @@ let scoreTimingDetail =
       rail.style.setProperty('--gat-progress-thumb-top-v2218', (travelPct * ratio).toFixed(2) + '%');
       rail.style.opacity = max > 1 ? '1' : '.28';
 
-      /* V22.42 — mirror horizontal scroll position only across the moving
+      /* V22.43 — mirror horizontal scroll position only across the moving
          TEAM region. STAT is the sole sticky meta column, so the rail begins
          at STAT's right edge and its thumb ratio excludes only that width. */
       if (hRail && hThumb) {
@@ -28424,7 +28444,7 @@ let scoreTimingDetail =
       const teamCount = Math.max(1, Number(table.dataset.teamCount) || 1);
       const width = Math.max(1, scroll.clientWidth || window.innerWidth || 1);
 
-      /* V22.42 — five COMPLETE stat rows remain visible. The horizontal rail now
+      /* V22.43 — five COMPLETE stat rows remain visible. The horizontal rail now
          owns the separate 16px popup gutter below the table, so scroll.clientHeight
          is the exact table budget. Add four pixels to the header and solve the five
          data rows around it rather than taking those pixels from the bottom rail. */
@@ -28433,12 +28453,13 @@ let scoreTimingDetail =
       const dataRowHeight = Math.max(1, (availableHeight - headerExtraV2242) / 5.82);
       const headerRowHeight = Math.max(1, (dataRowHeight * 0.82) + headerExtraV2242);
 
-      /* V22.42 — CAT is gone. Keep STAT near its prior visual width and give the
-         recovered CAT width back to the NINE visible team tracks. Team names still
-         shrink without a practical floor, so real names fit before Team 10 scrolls in. */
+      /* V22.43 — rigid track equation. The visible viewport is always exactly
+         STAT + nine equal TEAM tracks; the full scrollable table is exactly
+         STAT + N equal TEAM tracks. Gutter space never participates in this math. */
       const statWidth = Math.max(104, Math.round(width * 0.16));
       const metaWidth = statWidth;
-      const teamWidth = Math.max(1, (width - metaWidth) / 9);
+      const teamWidth = Math.max(1, (width - statWidth) / 9);
+      const fullTableWidthV2243 = statWidth + (teamCount * teamWidth);
       const hRailV2233 = document.getElementById('geekAllTeamsHProgressV2232');
       if (hRailV2233) {
         const popupV2242 = scroll.closest('.geek-all-teams-popup-v2220');
@@ -28452,9 +28473,10 @@ let scoreTimingDetail =
         hRailV2233.style.setProperty('--gat-hprogress-width-v2233', railWidthV2233.toFixed(2) + 'px');
       }
 
-      table.style.setProperty('--gat-stat-w-v2217', statWidth.toFixed(2) + 'px');
-      table.style.setProperty('--gat-team-w-v2216', teamWidth.toFixed(2) + 'px');
+      table.style.setProperty('--gat-stat-w-v2217', statWidth.toFixed(4) + 'px');
+      table.style.setProperty('--gat-team-w-v2216', teamWidth.toFixed(4) + 'px');
       table.style.setProperty('--gat-team-count-v2216', String(teamCount));
+      table.style.setProperty('--gat-table-w-v2243', fullTableWidthV2243.toFixed(4) + 'px');
       table.style.setProperty('--gat-row-h-v2217', dataRowHeight.toFixed(2) + 'px');
       table.style.setProperty('--gat-head-h-v2217', headerRowHeight.toFixed(2) + 'px');
       table.dataset.dataRowHeight = dataRowHeight.toFixed(3);
