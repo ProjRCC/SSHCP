@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.42-K8M4QZ | BUILD KEY: 22.43-D8K5RV -->
+<!-- SSHCP | BASE KEY: 22.43-D8K5RV | BUILD KEY: 22.44-J6R3NX -->
+<!-- SSHCP V22.44 ALL TEAMS INTEGER-PIXEL TRACK LOCK - exact V22.43 donor.
+     Fixes the remaining ALL TEAMS column-edge inconsistency by eliminating fractional team-track widths. The scroll viewport client width is treated as the exact integer-pixel budget; a preferred STAT width is chosen first, then each of the nine visible team columns gets one identical whole-pixel width, and STAT absorbs the 0-8px remainder so STAT + 9×TEAM equals the viewport exactly. The full scroll table is then exactly STAT + N×TEAM using those same whole-pixel tracks. No gutter compensation or fractional CSS track widths are used. All V22.43 styling/behavior, rails, filters, pull refresh, team details, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.43 ALL TEAMS EXACT TRACK GEOMETRY / REGULAR-GEEK BORDER - exact V22.42 donor.
      Keeps the 98vw x 98dvh nine-team / five-stat ALL TEAMS view, but makes the rendered table width mathematically exact: STAT width + N identical team tracks, with the visible viewport defined as STAT + exactly nine team tracks. The left popup gap is presentation-only with a 5px minimum; it is not used to compensate column math. The ALL TEAMS table shell now matches regular GEEK's 1px #aaa border/radius treatment, STAT uses Gray 2 as its dedicated sticky-column fill, and the team-name header remains Gray 3. Right/bottom 16px rail gutters, pull refresh, team-detail taps, regular-GEEK SETUP centering, ROTB26 generation, scoring/GEEK calculations and CF V3.3 remain unchanged. -->
 <!-- SSHCP V22.42 ALL TEAMS 98x98 / RAIL-GUTTER / NO-CAT REFINEMENT - exact V22.41 donor.
@@ -13597,7 +13599,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.43</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.44</span></span>
         </button>
 
       </div>
@@ -28453,12 +28455,16 @@ let scoreTimingDetail =
       const dataRowHeight = Math.max(1, (availableHeight - headerExtraV2242) / 5.82);
       const headerRowHeight = Math.max(1, (dataRowHeight * 0.82) + headerExtraV2242);
 
-      /* V22.43 — rigid track equation. The visible viewport is always exactly
-         STAT + nine equal TEAM tracks; the full scrollable table is exactly
-         STAT + N equal TEAM tracks. Gutter space never participates in this math. */
-      const statWidth = Math.max(104, Math.round(width * 0.16));
+      /* V22.44 — integer-pixel track lock. scroll.clientWidth is the exact
+         visible inner table budget. Choose the preferred STAT width, then make
+         all nine visible TEAM tracks identical whole CSS pixels. STAT absorbs
+         the unavoidable 0-8px remainder, so there are no fractional grid lines:
+           visible width = STAT + (9 × TEAM)
+           full width    = STAT + (N × TEAM) */
+      const preferredStatWidthV2244 = Math.max(104, Math.round(width * 0.16));
+      const teamWidth = Math.max(1, Math.floor((width - preferredStatWidthV2244) / 9));
+      const statWidth = Math.max(1, width - (teamWidth * 9));
       const metaWidth = statWidth;
-      const teamWidth = Math.max(1, (width - statWidth) / 9);
       const fullTableWidthV2243 = statWidth + (teamCount * teamWidth);
       const hRailV2233 = document.getElementById('geekAllTeamsHProgressV2232');
       if (hRailV2233) {
@@ -28473,10 +28479,10 @@ let scoreTimingDetail =
         hRailV2233.style.setProperty('--gat-hprogress-width-v2233', railWidthV2233.toFixed(2) + 'px');
       }
 
-      table.style.setProperty('--gat-stat-w-v2217', statWidth.toFixed(4) + 'px');
-      table.style.setProperty('--gat-team-w-v2216', teamWidth.toFixed(4) + 'px');
+      table.style.setProperty('--gat-stat-w-v2217', String(statWidth) + 'px');
+      table.style.setProperty('--gat-team-w-v2216', String(teamWidth) + 'px');
       table.style.setProperty('--gat-team-count-v2216', String(teamCount));
-      table.style.setProperty('--gat-table-w-v2243', fullTableWidthV2243.toFixed(4) + 'px');
+      table.style.setProperty('--gat-table-w-v2243', String(fullTableWidthV2243) + 'px');
       table.style.setProperty('--gat-row-h-v2217', dataRowHeight.toFixed(2) + 'px');
       table.style.setProperty('--gat-head-h-v2217', headerRowHeight.toFixed(2) + 'px');
       table.dataset.dataRowHeight = dataRowHeight.toFixed(3);
