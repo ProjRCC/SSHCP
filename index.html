@@ -1,6 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.38-C7M9QX | BUILD KEY: 22.39-M4R8QV -->
-<!-- SSHCP V22.39 ALL TEAMS TEAM-DETAIL PRESENTATION TUNE - exact V22.38 donor.
-     Keeps the V22.38 team-specific ALL TEAMS detail behavior, but widens its landscape card to a smart 75vw ceiling, slightly reduces only its title/result scale, increases BACK height, trims internal top/bottom gutter, resets popup scroll position on open, and explicitly inherits the established regular GEEK detail backdrop/card/shadow treatment. Supporting evidence and hole formatting remain unchanged.
+<!-- SSHCP | BASE KEY: 22.39-M4R8QV | BUILD KEY: 22.40-H7Q2VX -->
+<!-- SSHCP V22.40 ROTB26 CONTROL CENTER GENERATOR - exact V22.39 donor.
+     Replaces the visible ADD PAR Control Center generator with ADD ROTB26. The action preflights that Teams 1-6 are assigned, runs the existing Worker RANDOM 2 bulk generator unchanged for every assigned team through Team 36, then overwrites Teams 1-6 with the exact ROTB 2026 final scorecards using the existing verified MASTER saveScores path. Team setup/auth/Worker logic remain unchanged.
      Keeps V22.35 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, direct portrait/landscape GEEK ownership,
      1.00s orientation reveal timing, normal-GEEK whole-pixel 1X/2X sizing, five-visible-team ALL TEAMS geometry, horizontal rail alignment,
      white untappable FILTERS backdrops, and ALL TEAMS APPLY curtain behavior. Every Scramble Summary entry now raises its existing white
@@ -44,14 +44,14 @@
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
-      FADE_1A_HOME_FULL: 0.2,
-      FADE_2_SCORECARD_LEADERBOARD: 0.20,
-      FADE_3_AFTER_PLAY: 0.20,
+      FADE_1A_HOME_FULL: 0.25,
+      FADE_2_SCORECARD_LEADERBOARD: 0.30,
+      FADE_3_AFTER_PLAY: 0.30,
       FADE_4_QUICK_GUIDE: 0.80,
       FADE_5A_CC_ENTER_REFRESH: 0.25,
       FADE_5B_SM_REFRESH: 0.50,
       FADE_6A_ORIENTATION_WARNING_IN: 1.00,
-      FADE_6B_ORIENTATION_CURTAIN_OUT: .20,
+      FADE_6B_ORIENTATION_CURTAIN_OUT: 1.00,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -13463,7 +13463,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.39</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.40</span></span>
         </button>
 
       </div>
@@ -13897,7 +13897,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
         </div>
 
         <div class="test-score-controls">
-          <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD PAR</button>
+          <button id="testAddParCurrentButton" class="test-score-action add" type="button">ADD ROTB26</button>
           <button id="testAddRandomCurrentButton" class="test-score-action add" type="button">RANDOM</button>
           <button id="testAddRandom2CurrentButton" class="test-score-action add" type="button">RANDOM 2</button>
           <button id="testDeleteAllButton" class="test-score-action delete" type="button">DELETE ALL</button>
@@ -19778,10 +19778,12 @@ let scoreTimingDetail =
     }
 
     /* =========================================================
-       SSHCP V19.64 — CONTROL CENTER BULK TEST WRITES
-       ADD PAR / ADD RANDOM / ADD RANDOM 2 / DELETE ALL all use
-       the Worker testScores bulk path. RANDOM 2 keeps the accepted
-       68–74 total / 3–7 birdies / 3–7 bogeys / 0–2 eagles rules.
+       SSHCP V22.40 — CONTROL CENTER BULK TEST WRITES
+       ADD ROTB26 / ADD RANDOM / ADD RANDOM 2 / DELETE ALL remain test-only
+       score generators. ADD ROTB26 composes the unchanged Worker RANDOM 2
+       current-team generator with exact verified ROTB26 saves for Teams 1-6.
+       RANDOM 2 keeps the accepted 68–74 total / 3–7 birdies / 3–7 bogeys /
+       0–2 eagles rules. Worker/API implementation remains unchanged.
        ========================================================= */
 
     async function runRandom2Current() {
@@ -19820,6 +19822,157 @@ let scoreTimingDetail =
       return data;
     }
 
+    /* =========================================================
+       SSHCP V22.40 — ROTB26 HISTORICAL SCORE GENERATOR
+       Exact ROTB 2026 final scorecards are fixed test payload only.
+       Team names / HCP / QR / starting holes are never changed here.
+       ========================================================= */
+    const ROTB26_FINAL_SCORES_V2240 = Object.freeze({
+      1: Object.freeze([4,4,3,3,4,3,5,3,4,4,4,3,3,3,4,3,4,4]),
+      2: Object.freeze([4,4,3,3,3,3,5,4,4,4,3,3,3,4,5,4,3,4]),
+      3: Object.freeze([5,3,3,4,4,3,5,5,5,4,3,4,3,3,5,4,3,4]),
+      4: Object.freeze([4,3,3,3,3,3,4,4,3,4,4,4,3,4,3,3,4,3]),
+      5: Object.freeze([5,3,3,3,4,3,4,3,4,4,3,3,3,5,4,4,4,5]),
+      6: Object.freeze([4,4,3,3,4,3,5,3,3,3,4,4,3,3,3,4,3,4])
+    });
+
+    async function fetchAssignedSlotsForRotb26V2240() {
+      const response = await fetch(
+        CLOUDFLARE_API_URL + '?action=teams&refresh=' + Date.now(),
+        { cache: 'no-store' }
+      );
+
+      let data = null;
+      try { data = await response.json(); } catch (_) {}
+
+      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.teams)) {
+        throw new Error(
+          (data && data.error) ||
+          ('ADD ROTB26 team preflight failed • HTTP ' + response.status)
+        );
+      }
+
+      return data.teams
+        .map((row, index) => normalizeControlCenterTeamRow(row, index + 1))
+        .filter(team => team.active && String(team.name || '').trim() !== '')
+        .map(team => Number(team.slot))
+        .filter(slot => Number.isInteger(slot) && slot >= 1 && slot <= 36);
+    }
+
+    async function saveRotb26HistoricalSlotV2240(slot) {
+      const targetScores = ROTB26_FINAL_SCORES_V2240[slot];
+      if (!targetScores) {
+        throw new Error('No ROTB26 historical payload exists for Team ' + slot + '.');
+      }
+
+      const url =
+        CLOUDFLARE_API_URL +
+        '?action=saveScores' +
+        '&slot=' + encodeURIComponent(slot) +
+        '&scores=' + encodeURIComponent(JSON.stringify([...targetScores])) +
+        '&passkey=' + encodeURIComponent(SSHCP_MASTER_TEST_KEY) +
+        '&audit=0' +
+        '&refresh=' + Date.now();
+
+      const response = await fetch(url, { cache: 'no-store' });
+      let data = null;
+      try { data = await response.json(); } catch (_) {}
+
+      if (!response.ok) {
+        const reason = data && (data.reason || data.error)
+          ? String(data.reason || data.error)
+          : 'request failed';
+        throw new Error(
+          'ROTB26 Team ' + slot + ' failed • HTTP ' + response.status + ' • ' + reason
+        );
+      }
+
+      if (!data || data.ok !== true || data.verified !== true) {
+        throw new Error(
+          (data && data.error) ||
+          ('ROTB26 Team ' + slot + ' was not verified.')
+        );
+      }
+
+      const verified = Array.isArray(data.verifiedScores)
+        ? data.verifiedScores.map(value => Number(value))
+        : [];
+
+      if (
+        verified.length !== 18 ||
+        verified.some((value, index) => value !== Number(targetScores[index]))
+      ) {
+        throw new Error('ROTB26 Team ' + slot + ' verification mismatch.');
+      }
+
+      return data;
+    }
+
+    async function runRotb26CurrentV2240() {
+      const assignedSlots = await fetchAssignedSlotsForRotb26V2240();
+      const assignedSet = new Set(assignedSlots);
+      const missingHistorical = [1,2,3,4,5,6].filter(slot => !assignedSet.has(slot));
+
+      if (missingHistorical.length) {
+        throw new Error(
+          'ADD ROTB26 requires assigned Teams 1-6. Missing: ' +
+          missingHistorical.map(slot => 'Team ' + slot).join(', ') + '.'
+        );
+      }
+
+      /* Reuse the exact accepted RANDOM 2 generator for every assigned team.
+         The six historical teams are immediately overwritten below with the
+         exact event cards, leaving assigned Teams 7-36 as RANDOM 2. */
+      const random2Data = await runRandom2Current();
+      const randomSlots = Array.isArray(random2Data.slots)
+        ? random2Data.slots.map(Number).filter(Number.isInteger)
+        : assignedSlots;
+      const randomSlotSet = new Set(randomSlots);
+
+      const missingAfterRandom = [1,2,3,4,5,6].filter(slot => !randomSlotSet.has(slot));
+      if (missingAfterRandom.length) {
+        throw new Error('Team assignments changed during ADD ROTB26. Try again.');
+      }
+
+      /* Independent verified saves use the existing MASTER saveScores path.
+         Retry only a failed historical slot once; do not alter Worker logic. */
+      const historicalSlots = [1,2,3,4,5,6];
+      const firstPass = await Promise.allSettled(
+        historicalSlots.map(slot => saveRotb26HistoricalSlotV2240(slot))
+      );
+      const failedSlots = firstPass
+        .map((result, index) => result.status === 'rejected' ? historicalSlots[index] : null)
+        .filter(Boolean);
+
+      if (failedSlots.length) {
+        const retry = await Promise.allSettled(
+          failedSlots.map(slot => saveRotb26HistoricalSlotV2240(slot))
+        );
+        const stillFailed = retry
+          .map((result, index) => result.status === 'rejected' ? failedSlots[index] : null)
+          .filter(Boolean);
+        if (stillFailed.length) {
+          throw new Error(
+            'ROTB26 verification failed for ' +
+            stillFailed.map(slot => 'Team ' + slot).join(', ') + '.'
+          );
+        }
+      }
+
+      const random2Slots = randomSlots.filter(slot => slot >= 7 && slot <= 36);
+
+      return {
+        ok: true,
+        verified: true,
+        mode: 'rotb26',
+        scope: 'current',
+        affectedTeams: randomSlots.length,
+        slots: randomSlots,
+        rotb26Teams: 6,
+        random2Teams: random2Slots.length
+      };
+    }
+
     function showTestScoreWarning(mode, scope) {
       if (isScrambleProtectionActiveV2136()) return;
       closeModal();
@@ -19827,11 +19980,14 @@ let scoreTimingDetail =
       const isPar = mode === 'par';
       const isRandom = mode === 'random';
       const isRandom2 = mode === 'random2';
-      const isAdd = isPar || isRandom || isRandom2;
+      const isRotb26 = mode === 'rotb26';
+      const isAdd = isPar || isRandom || isRandom2 || isRotb26;
 
       const title =
-        isRandom2
-          ? 'ADD RANDOM 2?'
+        isRotb26
+          ? 'ADD ROTB26?'
+          : isRandom2
+            ? 'ADD RANDOM 2?'
           : isRandom
             ? 'ADD RANDOM?'
             : isPar
@@ -19839,8 +19995,10 @@ let scoreTimingDetail =
               : 'DELETE ALL?';
 
       const question =
-        isRandom2
-          ? 'Add a stronger random round to every current team? Each round finishes 68–74 with 3–7 birdies, 3–7 bogeys and 0–2 eagles.'
+        isRotb26
+          ? 'Load the exact ROTB 2026 final scores into Teams 1–6, then use RANDOM 2 for every other assigned team through Team 36?'
+          : isRandom2
+            ? 'Add a stronger random round to every current team? Each round finishes 68–74 with 3–7 birdies, 3–7 bogeys and 0–2 eagles.'
           : isRandom
             ? 'Add a realistic random mix of birdies, pars, and bogeys to every current team?'
             : isPar
@@ -19874,10 +20032,13 @@ let scoreTimingDetail =
       const isPar = mode === 'par';
       const isRandom = mode === 'random';
       const isRandom2 = mode === 'random2';
+      const isRotb26 = mode === 'rotb26';
 
       const actionLabel =
-        isRandom2
-          ? 'ADD RANDOM 2'
+        isRotb26
+          ? 'ADD ROTB26'
+          : isRandom2
+            ? 'ADD RANDOM 2'
           : isRandom
             ? 'ADD RANDOM'
             : isPar
@@ -19887,7 +20048,9 @@ let scoreTimingDetail =
       try {
         let data;
 
-        if (isRandom2) {
+        if (isRotb26) {
+          data = await runRotb26CurrentV2240();
+        } else if (isRandom2) {
           data = await runRandom2Current();
         } else {
           const controlCenterPasskey = SSHCP_MASTER_TEST_KEY;
@@ -19926,7 +20089,7 @@ let scoreTimingDetail =
            A successfully VERIFIED ADD PAR / ADD RANDOM / ADD RANDOM 2 starts
            a fresh tiebreak-presentation cycle for that generated dataset.
            DELETE ALL and normal tournament scoring/navigation do not reset it. */
-        if (isPar || isRandom || isRandom2) {
+        if (isPar || isRandom || isRandom2 || isRotb26) {
           resetTournamentTieBreakViewed();
         }
 
@@ -19952,6 +20115,13 @@ let scoreTimingDetail =
           );
         }
 
+        if (isRotb26) {
+          testDetailParts.push(
+            Number(data.rotb26Teams || 0) + ' ROTB26 • ' +
+            Number(data.random2Teams || 0) + ' RANDOM 2'
+          );
+        }
+
         if (isRandom2 && data.random2Summary) {
           testDetailParts.push(data.random2Summary);
         }
@@ -19973,11 +20143,20 @@ let scoreTimingDetail =
         els.modalOverlay.classList.add('reset-authorization');
         els.modalTitle.textContent = actionLabel + ' COMPLETE';
         els.modalTitle.classList.remove('testing');
-        els.modalBody.textContent =
-          data.affectedTeams +
-          ' team slot' +
-          (Number(data.affectedTeams) === 1 ? '' : 's') +
-          ' verified.';
+        els.modalBody.textContent = isRotb26
+          ? (
+              'Teams 1–6 ROTB26 verified • ' +
+              Number(data.random2Teams || 0) +
+              ' additional assigned team' +
+              (Number(data.random2Teams || 0) === 1 ? '' : 's') +
+              ' RANDOM 2.'
+            )
+          : (
+              data.affectedTeams +
+              ' team slot' +
+              (Number(data.affectedTeams) === 1 ? '' : 's') +
+              ' verified.'
+            );
         els.modalInput.style.display = 'none';
 
         const ok = makeModalButton('OK', 'primary', closeModal);
@@ -33281,7 +33460,7 @@ let scoreTimingDetail =
     /* V21.42 — no visibilitychange Scramble read. Cross-device state is
        intentionally refreshed only by explicit navigation/refresh actions. */
 
-    els.testAddParCurrentButton.addEventListener('click', () => showTestScoreWarning('par', 'current'));
+    els.testAddParCurrentButton.addEventListener('click', () => showTestScoreWarning('rotb26', 'current'));
     els.testAddRandomCurrentButton.addEventListener('click', () => showTestScoreWarning('random', 'current'));
     els.testAddRandom2CurrentButton.addEventListener('click', () => showTestScoreWarning('random2', 'current'));
     els.testDeleteAllButton.addEventListener('click', () => showTestScoreWarning('clear', 'all'));
