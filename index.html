@@ -1,5 +1,8 @@
-<!-- SSHCP | BASE KEY: 22.39-M4R8QV | BUILD KEY: 22.40-H7Q2VX -->
-<!-- SSHCP V22.40 ROTB26 CONTROL CENTER GENERATOR - exact V22.39 donor.
+<!-- SSHCP | BASE KEY: 22.40-H7Q2VX | BUILD KEY: 22.41-R6N3QW -->
+<!-- SSHCP V22.41 ALL TEAMS NINE-COLUMN / FIVE-ROW SIMPLIFICATION - exact V22.40 donor.
+     Landscape ALL TEAMS now presents nine team columns at once and five complete stat rows, removes its FILTERS control so regular-GEEK filter state is authoritative across rotation, preserves a protected 16px outer buffer for the established position rails, and adds an explicit pull-down reload gesture from the ALL TEAMS title/header area. Regular GEEK keeps its existing filter layout with SETUP centered. Browser/WebView tap/focus highlighting is suppressed on both GEEK tables without changing their click/detail behavior. CF V3.3 and all scoring/GEEK calculations remain unchanged. -->
+<!-- V22.40 donor notes:
+     ROTB26 CONTROL CENTER GENERATOR - exact V22.39 donor.
      Replaces the visible ADD PAR Control Center generator with ADD ROTB26. The action preflights that Teams 1-6 are assigned, runs the existing Worker RANDOM 2 bulk generator unchanged for every assigned team through Team 36, then overwrites Teams 1-6 with the exact ROTB 2026 final scorecards using the existing verified MASTER saveScores path. Team setup/auth/Worker logic remain unchanged.
      Keeps V22.35 scoring, authorization, Worker/API, result/tiebreak/skins/GEEK math, direct portrait/landscape GEEK ownership,
      1.00s orientation reveal timing, normal-GEEK whole-pixel 1X/2X sizing, five-visible-team ALL TEAMS geometry, horizontal rail alignment,
@@ -13259,6 +13262,60 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 </style>
 
 
+<style id="sshcp-v2241-geek-all-teams-simplify">
+/* V22.41 — ALL TEAMS is a wide read-only overview controlled by regular GEEK filters.
+   Protect 16px around the landscape surface so both position rails retain their
+   intended breathing room; the horizontal rail is the final bottom element. */
+.geek-all-teams-view-v2216{
+  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))!important;
+}
+.geek-all-teams-popup-v2220{
+  width:100%!important;
+  height:100%!important;
+  padding:0!important;
+}
+.geek-all-teams-title-v2216{
+  touch-action:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+.geek-all-teams-title-v2216.pull-ready-v2241{
+  transform:translateY(2px)!important;
+}
+.geek-all-teams-actions-v2216,
+.geek-all-teams-filter-shade-v2216{
+  display:none!important;
+}
+/* SETUP is the lone fifth category; center only that existing normal-GEEK choice. */
+.modal-overlay.geek-mode-v180 .geek-filter-choice-v186.geek-filter-setup-centered-v2241{
+  grid-column:1 / -1!important;
+  width:calc(50% - 3px)!important;
+  justify-self:center!important;
+}
+/* No browser/WebView blue/teal selection flash on either GEEK data table. */
+.modal-overlay.geek-mode-v180 .geek-table-scroll-v180,
+.modal-overlay.geek-mode-v180 .geek-table-scroll-v180 *,
+.geek-all-teams-scroll-v2216,
+.geek-all-teams-scroll-v2216 *{
+  -webkit-tap-highlight-color:transparent!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat *,
+.geek-all-teams-result-cell-v2238,
+.geek-all-teams-result-cell-v2238 *{
+  -webkit-user-select:none!important;
+  user-select:none!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat:focus,
+.modal-overlay.geek-mode-v180 .geek-row-v180.stat:focus-visible,
+.geek-all-teams-result-cell-v2238:focus,
+.geek-all-teams-result-cell-v2238:focus-visible{
+  outline:none!important;
+  box-shadow:none!important;
+}
+</style>
+
 <style id="sshcp-v2238-geek-all-teams-detail">
 /* V22.39 — team-specific detail opened from a landscape ALL TEAMS result cell.
    It reuses the established GEEK detail backdrop/card language while allowing
@@ -13463,7 +13520,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.40</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.41</span></span>
         </button>
 
       </div>
@@ -27893,7 +27950,7 @@ let scoreTimingDetail =
           '</label>' +
           '<div class="geek-filter-separator-v1830" aria-hidden="true"></div>' +
           GEEK_CATEGORY_FILTER_ORDER_V1830.map(label =>
-            '<label class="geek-filter-choice-v186">' +
+            '<label class="geek-filter-choice-v186' + (label === 'SETUP' ? ' geek-filter-setup-centered-v2241' : '') + '">' +
               '<input type="checkbox" data-geek-filter="' + escapeHtml(label) + '">' +
               '<span class="geek-filter-text-v186">' + escapeHtml(label) + '</span>' +
             '</label>'
@@ -27984,29 +28041,13 @@ let scoreTimingDetail =
             '<div id="geekAllTeamsHProgressV2232" class="geek-all-teams-hprogress-v2232" aria-hidden="true">' +
               '<div class="geek-all-teams-hprogress-thumb-v2232"></div>' +
             '</div>' +
-            '<div class="geek-all-teams-actions-v2216">' +
-              '<button id="geekAllTeamsFiltersV2216" class="geek-all-teams-action-v2216 geek-all-teams-filter-button-v2216" type="button">FILTERS</button>' +
-            '</div>' +
-            '<div id="geekAllTeamsFilterShadeV2216" class="geek-all-teams-filter-shade-v2216" aria-hidden="true">' +
-              '<div id="geekAllTeamsFilterCardV2216" class="geek-all-teams-filter-card-v2216"></div>' +
-            '</div>' +
           '</div>';
         document.body.appendChild(view);
 
-        const filters = view.querySelector('#geekAllTeamsFiltersV2216');
-        const shade = view.querySelector('#geekAllTeamsFilterShadeV2216');
         const scroll = view.querySelector('#geekAllTeamsScrollV2216');
-        if (filters) filters.addEventListener('click', openGeekAllTeamsFilterV2216);
-        if (shade) {
-          const blockOutsideFilterTapV2234 = event => {
-            if (event.target !== shade) return;
-            event.preventDefault();
-            event.stopPropagation();
-          };
-          shade.addEventListener('pointerdown', blockOutsideFilterTapV2234);
-          shade.addEventListener('click', blockOutsideFilterTapV2234);
-        }
+        const title = view.querySelector('.geek-all-teams-title-v2216');
         if (scroll) scroll.addEventListener('scroll', updateGeekAllTeamsProgressV2218, { passive:true });
+        if (title) installGeekAllTeamsPullRefreshV2241(title);
       }
       return { rotate, view };
     }
@@ -28059,7 +28100,7 @@ let scoreTimingDetail =
       });
 
       /* V22.17 — render the complete supported filtered set. Viewport geometry,
-         not row truncation, limits the screen to roughly four visible stats. */
+         not row truncation, limits the screen to five complete visible stats. */
       return rows;
     }
 
@@ -28326,23 +28367,23 @@ let scoreTimingDetail =
       const teamCount = Math.max(1, Number(table.dataset.teamCount) || 1);
       const width = Math.max(1, scroll.clientWidth || window.innerWidth || 1);
 
-      /* V22.32 — keep the established four visible data rows. The new bottom
-         horizontal rail consumes 6px (4px track + 2px spacing), so recover the
-         pre-rail row budget and shave that 6px only from the header fraction. */
+      /* V22.41 — five COMPLETE stat rows remain visible below the sticky header.
+         The horizontal position rail lives beneath the table, so the row budget
+         is solved as 5 data rows + the established .82X header. */
       const availableHeight = Math.max(1, scroll.clientHeight || 1);
       const horizontalRailSpaceV2232 = 6;
       const preRailHeightV2232 = availableHeight + horizontalRailSpaceV2232;
-      let dataRowHeight = Math.max(44, preRailHeightV2232 / 4.82);
-      let headerRowHeight = Math.max(30, (dataRowHeight * 0.82) - horizontalRailSpaceV2232);
-      if ((headerRowHeight + (dataRowHeight * 4)) > availableHeight) {
-        dataRowHeight = (availableHeight + horizontalRailSpaceV2232) / 4.82;
-        headerRowHeight = Math.max(30, (dataRowHeight * 0.82) - horizontalRailSpaceV2232);
+      let dataRowHeight = Math.max(1, preRailHeightV2232 / 5.82);
+      let headerRowHeight = Math.max(1, (dataRowHeight * 0.82) - horizontalRailSpaceV2232);
+      if ((headerRowHeight + (dataRowHeight * 5)) > availableHeight) {
+        dataRowHeight = (availableHeight + horizontalRailSpaceV2232) / 5.82;
+        headerRowHeight = Math.max(1, (dataRowHeight * 0.82) - horizontalRailSpaceV2232);
       }
 
-      /* V22.32 — preserve the prior STAT allowance, give CAT roughly 8px more
-         breathing room, and size team columns from FIVE visible teams. All real
-         teams are still rendered, so six-plus-team events now intentionally
-         overflow horizontally for swipe/rail testing. */
+      /* V22.41 — preserve the STAT/CAT allowance but divide the moving team
+         region across NINE visible team columns. Team-name fitting intentionally
+         has no practical minimum so long real names shrink rather than reducing
+         the requested nine-team overview. Teams 10-36 remain horizontally scrollable. */
       const catFontSize = Math.max(6, dataRowHeight * 0.15);
       let catTextWidth = 0;
       table.querySelectorAll('.geek-all-teams-cat-label-v2217').forEach(label => {
@@ -28355,7 +28396,7 @@ let scoreTimingDetail =
       const statFloor = Math.max(92, Math.round(width * 0.12));
       const metaWidth = Math.max(desiredMetaWidth, catWidth + statFloor);
       const statWidth = metaWidth - catWidth;
-      const teamWidth = Math.max(82, (width - metaWidth) / 5);
+      const teamWidth = Math.max(1, (width - metaWidth) / 9);
       const hRailV2233 = document.getElementById('geekAllTeamsHProgressV2232');
       if (hRailV2233) {
         const railStartV2233 = Math.max(0, (scroll.clientLeft || 0) + metaWidth);
@@ -28834,6 +28875,74 @@ let scoreTimingDetail =
       shade.classList.remove('open-v2216', 'applying-v2235', 'reveal-v2235');
       shade.setAttribute('aria-hidden', 'true');
       geekAllTeamsFilterDraftV2216 = null;
+    }
+
+    /* V22.41 — explicit ALL TEAMS pull refresh. Starting on the landscape
+       title/header and pulling downward performs the same full fresh-read rebuild
+       used by orientation handoff, while preserving regular-GEEK filter state. */
+    let geekAllTeamsPullRefreshInstalledV2241 = false;
+    let geekAllTeamsManualReloadingV2241 = false;
+
+    function manualRefreshGeekAllTeamsV2241() {
+      if (!geekAllTeamsOpenV2216 || geekAllTeamsManualReloadingV2241) return;
+      geekAllTeamsManualReloadingV2241 = true;
+      geekRequiredRotationReloadingV2220 = true;
+      holdOrientationCurtainV2225();
+      persistGeekRequiredRotationStateV2220('allteams');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => window.location.reload());
+      });
+    }
+
+    function installGeekAllTeamsPullRefreshV2241(title) {
+      if (!title || title.dataset.pullRefreshV2241 === '1') return;
+      title.dataset.pullRefreshV2241 = '1';
+      let active = false;
+      let pointerId = null;
+      let startX = 0;
+      let startY = 0;
+      let ready = false;
+
+      const reset = () => {
+        active = false;
+        pointerId = null;
+        startX = 0;
+        startY = 0;
+        ready = false;
+        title.classList.remove('pull-ready-v2241');
+      };
+
+      title.addEventListener('pointerdown', event => {
+        if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+        if (!geekAllTeamsOpenV2216 || geekAllTeamsManualReloadingV2241) return;
+        active = true;
+        pointerId = event.pointerId;
+        startX = event.clientX;
+        startY = event.clientY;
+        ready = false;
+        try { title.setPointerCapture(pointerId); } catch (_) {}
+      });
+
+      title.addEventListener('pointermove', event => {
+        if (!active || event.pointerId !== pointerId) return;
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
+        if (dy <= 0 || Math.abs(dx) > Math.abs(dy)) return;
+        event.preventDefault();
+        const nowReady = dy >= 48;
+        if (nowReady && !ready) triggerHapticV185(10);
+        ready = nowReady;
+        title.classList.toggle('pull-ready-v2241', ready);
+      }, { passive:false });
+
+      const finish = event => {
+        if (!active || (event.pointerId != null && event.pointerId !== pointerId)) return;
+        const shouldRefresh = ready;
+        reset();
+        if (shouldRefresh) manualRefreshGeekAllTeamsV2241();
+      };
+      title.addEventListener('pointerup', finish);
+      title.addEventListener('pointercancel', reset);
     }
 
     function persistGeekRequiredRotationStateV2220(target) {
