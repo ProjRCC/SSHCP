@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.50-R4N7QX | BUILD KEY: 22.51-Q9V2KM -->
+<!-- SSHCP | BASE KEY: 22.51-Q9V2KM | BUILD KEY: 22.52-N6R3QK -->
+<!-- SSHCP V22.52 GEEK LANDSCAPE VIEWPORT SETTLE - exact corrected V22.51 donor.
+     Keeps the V22.51 in-place portrait GEEK <-> landscape ALL TEAMS switch and adds only a settled-viewport geometry handoff: while the existing white orientation curtain is still covering the destination, Android/PWA visualViewport width/height must remain stable for several animation frames (with a bounded safety timeout) before shared geometry and ALL TEAMS tracks are committed and 6B reveal begins. A landscape-only visualViewport resize safety pass resyncs ALL TEAMS geometry and any open ALL TEAMS detail card if Android reports a final late viewport correction. No reload, no extra Worker/Sheets read, no scoring/GEEK-data changes, and no popup design/proportion changes. HOME label advances to V22.52. CF V3.4 remains unchanged. -->
 <!-- SSHCP V22.51 CORRECTED HOME LABEL / IN-PLACE GEEK ROTATION + TIMING - exact V22.50 donor.
      Corrected build: HOME visible version label is V22.51. After portrait GEEK finishes its existing fresh load, ALL TEAMS is prepared in the background from that same already-loaded GEEK/evidence data. Normal GEEK <-> ALL TEAMS rotation no longer reloads the page, reinitializes authorization, or performs another Worker/Sheets read: the white orientation curtain covers an in-place view switch, the actual post-rotation orientation is rechecked before reveal, and rapid rotate-back events are reconciled instead of being ignored. ALL TEAMS pull-to-refresh remains an explicit fresh reload/read. Timing-panel 5B and 6B are both 0.30s. CF V3.4 and all scoring, authorization, QR ownership, leaderboard/tiebreak, Summary, SKINS, GEEK calculations/evidence, shotgun, RANDOM 2, ALL TEAMS table geometry/snap, and other presentation remain unchanged. -->
 <!-- SSHCP V22.50 ROTB26 BULK WORKER HOOKUP - exact V22.49 donor.
@@ -13646,7 +13648,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.51</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.52</span></span>
         </button>
 
       </div>
@@ -29433,9 +29435,43 @@ let scoreTimingDetail =
       document.documentElement.classList.add('sshcp-geek-regular-v2230');
     }
 
-    /* V22.51 — normal GEEK rotation is now an in-place presentation switch.
-       Recheck the actual orientation AFTER the viewport has started settling so
-       a quick rotate-back cannot strand the app behind the white curtain. */
+    /* V22.52 — Android/PWA can report a transient landscape visualViewport
+       after the orientation media query has already changed. Keep the existing
+       white orientation curtain up until width/height remain unchanged for
+       several animation frames. This is geometry-only: no fetch/reload occurs. */
+    function waitForGeekOrientationViewportStableV2252(done) {
+      let lastW = -1;
+      let lastH = -1;
+      let stableFrames = 0;
+      let totalFrames = 0;
+
+      const tickV2252 = () => {
+        const vv = window.visualViewport;
+        const width = Number(vv && vv.width) || window.innerWidth || 0;
+        const height = Number(vv && vv.height) || window.innerHeight || 0;
+        const unchanged =
+          lastW >= 0 &&
+          Math.abs(width - lastW) <= 0.5 &&
+          Math.abs(height - lastH) <= 0.5;
+
+        stableFrames = unchanged ? stableFrames + 1 : 0;
+        lastW = width;
+        lastH = height;
+        totalFrames += 1;
+
+        if (stableFrames >= 3 || totalFrames >= 30) {
+          if (typeof done === 'function') done();
+          return;
+        }
+        requestAnimationFrame(tickV2252);
+      };
+
+      requestAnimationFrame(tickV2252);
+    }
+
+    /* V22.52 — normal GEEK rotation remains an in-place presentation switch.
+       The destination is now committed only after the actual visual viewport
+       settles, then shared geometry + ALL TEAMS tracks are refit before 6B reveal. */
     function reconcileGeekOrientationInPlaceV2251() {
       if (geekRequiredRotationReloadingV2220) return;
 
@@ -29461,39 +29497,70 @@ let scoreTimingDetail =
             restoreRegularGeekFromAllTeamsV2251();
           }
 
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              const finalLandscapeV2251 = isLandscapeOrientationV2225();
+          waitForGeekOrientationViewportStableV2252(() => {
+            const finalLandscapeV2251 = isLandscapeOrientationV2225();
 
-              /* If Android changed its mind while the viewport was settling,
-                 correct once more BEFORE revealing anything. */
-              if (finalLandscapeV2251 && !geekAllTeamsOpenV2216) {
-                activatePreparedGeekAllTeamsV2251();
-              } else if (!finalLandscapeV2251 && geekAllTeamsOpenV2216) {
-                restoreRegularGeekFromAllTeamsV2251();
-              }
+            /* If Android changed its mind while the viewport was settling,
+               correct once more BEFORE revealing anything. */
+            if (finalLandscapeV2251 && !geekAllTeamsOpenV2216) {
+              activatePreparedGeekAllTeamsV2251();
+            } else if (!finalLandscapeV2251 && geekAllTeamsOpenV2216) {
+              restoreRegularGeekFromAllTeamsV2251();
+            }
 
-              if (geekAllTeamsOpenV2216) {
-                syncGeekAllTeamsColumnGeometryV2216();
-              } else if (isRegularGeekModeOpenV2230()) {
-                fitGeekRowsV180();
-                requestAnimationFrame(updateGeekProgressV2119);
-              }
+            /* V22.52: commit the settled viewport to the shared multiplier
+               before sizing either orientation. This is what the first
+               landscape detail card inherits when it opens immediately. */
+            syncSharedGeometryV187();
+            if (geekAllTeamsOpenV2216) {
+              syncGeekAllTeamsColumnGeometryV2216();
+            } else if (isRegularGeekModeOpenV2230()) {
+              fitGeekRowsV180();
+              requestAnimationFrame(updateGeekProgressV2119);
+            }
 
-              sshcpNormalLastLandscapeV2225 = finalLandscapeV2251;
-              revealOrientationCurtainV2225(1);
-              geekOrientationSwitchingV2251 = false;
+            sshcpNormalLastLandscapeV2225 = finalLandscapeV2251;
+            revealOrientationCurtainV2225(1);
+            geekOrientationSwitchingV2251 = false;
 
-              const orientationMismatchV2251 =
-                isLandscapeOrientationV2225() !== Boolean(geekAllTeamsOpenV2216);
-              if (geekOrientationRecheckV2251 || orientationMismatchV2251) {
-                geekOrientationRecheckV2251 = false;
-                requestAnimationFrame(reconcileGeekOrientationInPlaceV2251);
-              }
-            });
+            const orientationMismatchV2251 =
+              isLandscapeOrientationV2225() !== Boolean(geekAllTeamsOpenV2216);
+            if (geekOrientationRecheckV2251 || orientationMismatchV2251) {
+              geekOrientationRecheckV2251 = false;
+              requestAnimationFrame(reconcileGeekOrientationInPlaceV2251);
+            }
           });
         });
       });
+    }
+
+    /* V22.52 — final Android visualViewport correction safety. If landscape
+       ALL TEAMS or its detail card is already visible, refit from the final
+       viewport only. No data request and no navigation are performed. */
+    let geekLandscapeViewportRefitFrameV2252 = 0;
+    function scheduleGeekLandscapeViewportRefitV2252() {
+      if (!geekAllTeamsOpenV2216 &&
+          !(els.modalOverlay && els.modalOverlay.classList.contains('geek-all-teams-detail-v2238'))) return;
+      if (!isLandscapeOrientationV2225()) return;
+
+      if (geekLandscapeViewportRefitFrameV2252) {
+        cancelAnimationFrame(geekLandscapeViewportRefitFrameV2252);
+      }
+      geekLandscapeViewportRefitFrameV2252 = requestAnimationFrame(() => {
+        geekLandscapeViewportRefitFrameV2252 = requestAnimationFrame(() => {
+          geekLandscapeViewportRefitFrameV2252 = 0;
+          if (!isLandscapeOrientationV2225()) return;
+          syncSharedGeometryV187();
+          if (geekAllTeamsOpenV2216) syncGeekAllTeamsColumnGeometryV2216();
+          if (els.modalOverlay && els.modalOverlay.classList.contains('geek-all-teams-detail-v2238')) {
+            fitGeekDetailV182();
+          }
+        });
+      });
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', scheduleGeekLandscapeViewportRefitV2252, { passive:true });
     }
 
     function handleNormalOrientationV2225() {
