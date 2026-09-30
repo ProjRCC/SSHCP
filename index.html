@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.58-V7K3QM | BUILD KEY: 22.59-R5M8QK -->
+<!-- SSHCP | BASE KEY: 22.59-R5M8QK | BUILD KEY: 22.60-N8Q4VK -->
+<!-- SSHCP V22.60 DYNAMIC SCRAMBLE COMPLETE ACTION - exact V22.59 donor.
+     Makes only the first completed-round SCRAMBLE COMPLETE card reflect the already-known final Leaderboard state. When a first-place tie is still pending, the centered copy tells the player to break the tie before exploring Scramble Summary, Game and GEEK results, and the existing Gold action reads TIE BREAK. When no tie is pending, or the tie has already been viewed, the same Gold action reads SCRAMBLE SUMMARY and the existing completion copy is retained. The button continues to use the established handleLeaderboardFinalAction() path, so no tiebreak math, reads, scoring, auth, Worker/API, Summary, GEEK, event config or timing changes are introduced. HOME label advances to V22.60. -->
 <!-- SSHCP V22.59 CONTEXTUAL TIPS / QUICK GUIDE VISUAL ALIGNMENT - exact V22.58 donor.
      Makes the individual Tips & Tricks cards visually follow the Quick Guide reading style while preserving centered Blue titles: instructional copy is left-aligned, bullets use the same clean hanging-indent rhythm, and HOME visual-cue rows align like the Quick Guide legend. The established white card, gray contextual backdrop, shared checkbox and Blue OK behavior remain intact. Removes em dashes from all player-facing Quick Guide and contextual Tips & Tricks copy, replacing them with normal punctuation only. Scramble Complete's specialized centered completion card remains unchanged. Scoring, authorization, Worker/API, GEEK/ALL TEAMS, Summary, event config, timing and CF V3.4 remain unchanged. HOME label advances to V22.59. -->
 <!-- SSHCP V22.58 QUICK GUIDE ORDER / SCREEN DIVIDERS / GEEK COPY - exact V22.57 donor.
@@ -13712,7 +13714,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.59</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.60</span></span>
         </button>
         <script>
           (function () {
@@ -20968,7 +20970,20 @@ let scoreTimingDetail =
       markScrambleCompleteSeenV2215();
       activeTipsIdV2154 = 'scramble-complete-v2215';
       title.textContent = 'SCRAMBLE COMPLETE';
-      body.innerHTML = '<div class="tips-line-v2154">Check out Scramble Summary, Game, and Geek Results</div>';
+
+      /* V22.60 - the completion card mirrors the same already-known final
+         action state as the Leaderboard. No extra read or tie calculation. */
+      const tieBreakPendingV2260 = homeTieBreakPendingV2104();
+      body.innerHTML = tieBreakPendingV2260
+        ? '<div class="tips-line-v2154">Break the tie, then check out Scramble Summary, Game, and Geek Results</div>'
+        : '<div class="tips-line-v2154">Check out Scramble Summary, Game, and Geek Results</div>';
+
+      const completionActionV2260 = document.getElementById('tipsSummaryButtonV2215');
+      if (completionActionV2260) {
+        completionActionV2260.textContent = tieBreakPendingV2260
+          ? 'TIE BREAK'
+          : 'SCRAMBLE SUMMARY';
+      }
 
       if (tipsCloseTimerV2162) {
         window.clearTimeout(tipsCloseTimerV2162);
