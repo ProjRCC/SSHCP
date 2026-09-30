@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.51-Q9V2KM | BUILD KEY: 22.52-N6R3QK -->
+<!-- SSHCP | BASE KEY: 22.52-N6R3QK | BUILD KEY: 22.53-K7M4VX -->
+<!-- SSHCP V22.53 ALL TEAMS FIRST-DETAIL ACTION MARGIN RESET - exact V22.52 donor.
+     Fixes only the first landscape ALL TEAMS detail-card height after an in-place portrait GEEK rotation. Portrait GEEK row fitting intentionally leaves modalActions with an inline margin-top:0 !important; because V22.51+ preserves the shared modal across rotation, that portrait-only inline value could survive into the first ALL TEAMS detail and override its established landscape action spacing. The ALL TEAMS detail opener now clears that inherited inline margin before mounting BACK, so the first detail uses the same established geometry as every reopen. No orientation timing, viewport settle, popup proportions, GEEK data, scoring, auth, Worker/API, or other presentation changes. HOME label advances to V22.53. CF V3.4 remains unchanged. -->
 <!-- SSHCP V22.52 GEEK LANDSCAPE VIEWPORT SETTLE - exact corrected V22.51 donor.
      Keeps the V22.51 in-place portrait GEEK <-> landscape ALL TEAMS switch and adds only a settled-viewport geometry handoff: while the existing white orientation curtain is still covering the destination, Android/PWA visualViewport width/height must remain stable for several animation frames (with a bounded safety timeout) before shared geometry and ALL TEAMS tracks are committed and 6B reveal begins. A landscape-only visualViewport resize safety pass resyncs ALL TEAMS geometry and any open ALL TEAMS detail card if Android reports a final late viewport correction. No reload, no extra Worker/Sheets read, no scoring/GEEK-data changes, and no popup design/proportion changes. HOME label advances to V22.52. CF V3.4 remains unchanged. -->
 <!-- SSHCP V22.51 CORRECTED HOME LABEL / IN-PLACE GEEK ROTATION + TIMING - exact V22.50 donor.
@@ -13648,7 +13650,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.52</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.53</span></span>
         </button>
 
       </div>
@@ -28938,6 +28940,10 @@ let scoreTimingDetail =
         '</ul>';
 
       const back = makeModalButton('BACK', 'geek-detail-back-v182 geek-all-teams-detail-back-v2238', returnToGeekAllTeamsFromDetailV2238);
+      /* V22.53 — portrait GEEK fitting owns an inline !important margin-top:0 on
+         the shared modalActions node. In-place rotation keeps that node alive,
+         so clear the portrait-only override before the first ALL TEAMS detail. */
+      els.modalActions.style.removeProperty('margin-top');
       els.modalActions.className = 'modal-actions single';
       els.modalActions.replaceChildren(back);
       if (els.modalBox) els.modalBox.scrollTop = 0;
