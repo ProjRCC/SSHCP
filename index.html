@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.49-H6M3QW | BUILD KEY: 22.50-R4N7QX -->
+<!-- SSHCP | BASE KEY: 22.50-R4N7QX | BUILD KEY: 22.51-J4R8NX -->
+<!-- SSHCP V22.51 IN-PLACE GEEK ROTATION + TIMING - exact V22.50 donor.
+     After portrait GEEK finishes its existing fresh load, ALL TEAMS is prepared in the background from that same already-loaded GEEK/evidence data. Normal GEEK <-> ALL TEAMS rotation no longer reloads the page, reinitializes authorization, or performs another Worker/Sheets read: the white orientation curtain covers an in-place view switch, the actual post-rotation orientation is rechecked before reveal, and rapid rotate-back events are reconciled instead of being ignored. ALL TEAMS pull-to-refresh remains an explicit fresh reload/read. Timing-panel 5B and 6B are both 0.30s. CF V3.4 and all scoring, authorization, QR ownership, leaderboard/tiebreak, Summary, SKINS, GEEK calculations/evidence, shotgun, RANDOM 2, ALL TEAMS table geometry/snap, and other presentation remain unchanged. -->
 <!-- SSHCP V22.50 ROTB26 BULK WORKER HOOKUP - exact V22.49 donor.
      Control Center button text is now ROTB26. The active ROTB26 action now uses CF V3.4 mode=rotb26 as one test-only bulk transaction: exact ROTB26 scorecards for assigned Teams 1-6 plus the existing RANDOM 2 generator for any additional assigned Teams 7-36, followed by one full verification readback. Normal golfer save/verification, ENTER/CLEAR, auth/QR ownership, leaderboard/tiebreak, Summary, SKINS, GEEK, shotgun logic, regular RANDOM 2, ALL TEAMS, scaling and presentation remain unchanged. -->
 <!-- SSHCP V22.49 ALL TEAMS ADAPTIVE <9 TEAM WIDTH - exact V22.48 donor.
@@ -70,9 +72,9 @@
       FADE_3_AFTER_PLAY: 0.30,
       FADE_4_QUICK_GUIDE: 0.80,
       FADE_5A_CC_ENTER_REFRESH: 0.25,
-      FADE_5B_SM_REFRESH: 0.50,
+      FADE_5B_SM_REFRESH: 0.30,
       FADE_6A_ORIENTATION_WARNING_IN: 1.00,
-      FADE_6B_ORIENTATION_CURTAIN_OUT: 1.00,
+      FADE_6B_ORIENTATION_CURTAIN_OUT: 0.30,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -89,9 +91,9 @@
       setSeconds('--sshcp-fade-3-after-play', timing.FADE_3_AFTER_PLAY, 0.30);
       setSeconds('--sshcp-fade-4-quick-guide', timing.FADE_4_QUICK_GUIDE, 0.80);
       setSeconds('--sshcp-fade-5a-cc-enter-refresh', timing.FADE_5A_CC_ENTER_REFRESH, 0.25);
-      setSeconds('--sshcp-fade-5b-sm-refresh', timing.FADE_5B_SM_REFRESH, 0.50);
+      setSeconds('--sshcp-fade-5b-sm-refresh', timing.FADE_5B_SM_REFRESH, 0.30);
       setSeconds('--sshcp-fade-6a-orientation-warning-in', timing.FADE_6A_ORIENTATION_WARNING_IN, 1.00);
-      setSeconds('--sshcp-fade-6b-orientation-curtain-out', timing.FADE_6B_ORIENTATION_CURTAIN_OUT, 1.00);
+      setSeconds('--sshcp-fade-6b-orientation-curtain-out', timing.FADE_6B_ORIENTATION_CURTAIN_OUT, 0.30);
     })();
   </script>
   <meta
@@ -101,9 +103,10 @@
   <script>
     (function () {
       try {
-        /* V22.20 — only an intentional GEEK <-> ALL TEAMS orientation change
-           performs a real refresh. Hold the first paint solid white until the
-           destination has rebuilt, then hand off to the existing AFTER-PLAY fade. */
+        /* V22.51 — normal GEEK <-> ALL TEAMS rotation is now in-place.
+           This legacy restore key remains only for the explicit ALL TEAMS pull
+           refresh, which intentionally performs a fresh reload/read. Hold first
+           paint white until that requested refresh has rebuilt. */
         var geekRequiredRotationRestoreV2220 = String(
           sessionStorage.getItem('sshcpGeekRequiredRotationRestoreV2220') || ''
         ).trim();
@@ -11918,7 +11921,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 
 /* V21.43 — CC / Scramble manual-refresh runtime curtain. Unlike START/END,
-   refresh uses white and a 0.5s reveal. It blocks every touch until the fresh
+   refresh uses white and a 0.30s reveal. It blocks every touch until the fresh
    Worker read has completed and the destination is fully staged underneath. */
 .sshcp-cc-sm-refresh-curtain-v2143{
   position:fixed!important;
@@ -11936,7 +11939,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .sshcp-cc-sm-refresh-curtain-v2143.reveal-v2143{
   opacity:0!important;
   pointer-events:none!important;
-  transition:opacity var(--sshcp-fade-5b-sm-refresh,.5s) ease-out!important;
+  transition:opacity var(--sshcp-fade-5b-sm-refresh,.3s) ease-out!important;
 }
 /* V21.46 — any normal CONTROL CENTER entry/refresh uses the same full-screen
    white shield but a faster 0.25s reveal. */
@@ -13104,7 +13107,7 @@ html.sshcp-pre-geek-transition-v2220 body::after{
    Outside GEEK, the existing portrait-only warning remains unchanged.
    Inside GEEK there are NO orientation warning cards: portrait = regular GEEK,
    landscape = ALL TEAMS. The white orientation surfaces cover physical rotation
-   immediately while the destination rebuilds; timing 6B owns the 1.00s reveal. */
+   immediately while the destination rebuilds; timing 6B owns the 0.30s reveal. */
 
 .sshcp-orientation-transition-curtain{
   position:fixed!important;
@@ -13130,7 +13133,7 @@ html.sshcp-pre-geek-transition-v2220 body::after{
   opacity:0!important;
   visibility:visible!important;
   pointer-events:auto!important;
-  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,1s) ease-out!important;
+  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,.3s) ease-out!important;
 }
 
 /* Normal SSHCP remains portrait-only outside GEEK. During regular GEEK's
@@ -13223,7 +13226,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
 /* GEEK orientation rebuilds use timing-panel 6B after destination layout settles. */
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-after-play-curtain-v2086.sshcp-geek-orientation-curtain-v2221{
-  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,1s) ease-out!important;
+  transition:opacity var(--sshcp-fade-6b-orientation-curtain-out,.3s) ease-out!important;
 }
 
 /* V22.32 — ALL TEAMS is orientation-owned, so no BACK action is needed.
@@ -19049,7 +19052,7 @@ let scoreTimingDetail =
           ? timing.FADE_5A_CC_ENTER_REFRESH
           : timing.FADE_5B_SM_REFRESH
       );
-      const fallbackSeconds = isControlCenterCurtainV2146 ? 0.25 : 0.50;
+      const fallbackSeconds = isControlCenterCurtainV2146 ? 0.25 : 0.30;
       const durationMs = 1000 * (Number.isFinite(seconds) && seconds >= 0 ? seconds : fallbackSeconds);
       await waitMsV2142(durationMs + 60);
 
@@ -21300,7 +21303,7 @@ let scoreTimingDetail =
           shield.classList.contains('sshcp-geek-orientation-curtain-v2221'));
         const revealDurationMsV2092 =
           orientationRevealV2222
-            ? timingMsV2092(timingV2092.FADE_6B_ORIENTATION_CURTAIN_OUT, 1.00)
+            ? timingMsV2092(timingV2092.FADE_6B_ORIENTATION_CURTAIN_OUT, 0.30)
             : key === 'home-full-v1986'
               ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.25)
               : (key === 'scorecard' || key === 'leaderboard')
@@ -28017,6 +28020,10 @@ let scoreTimingDetail =
       requestAnimationFrame(() => {
         fitGeekRowsV180();
         revealGeekFilterCoverV1812();
+
+        /* Keep the hidden ALL TEAMS copy aligned with the newly committed
+           portrait filters without any Worker request. */
+        window.setTimeout(prepareGeekAllTeamsV2251, 40);
       });
     }
 
@@ -28083,11 +28090,11 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V22.30 — DIRECT GEEK ORIENTATION STATE
-       Portrait owns regular GEEK; landscape owns ALL TEAMS. No GEEK orientation
-       warning card or BACK-armed orientation state exists. Physical rotation is
-       white-covered immediately, rebuilt through the established refresh path,
-       then revealed with timing-panel 6B.
+       SSHCP V22.51 — IN-PLACE GEEK ORIENTATION STATE
+       Portrait owns regular GEEK; landscape owns ALL TEAMS. After GEEK's normal
+       fresh read, ALL TEAMS is prepared from the same in-memory data. Physical
+       rotation is white-covered immediately, switched in place with NO page
+       reload and NO extra Worker read, then revealed with timing-panel 6B.
        ========================================================= */
     let geekAllTeamsOpenV2216 = false;
     let geekAllTeamsFilterDraftV2216 = null;
@@ -29034,6 +29041,39 @@ let scoreTimingDetail =
       }
     }
 
+    /* V22.51 — prepare the landscape ALL TEAMS DOM from the SAME GEEK payload
+       after portrait GEEK is already visible. This performs no fetch and no
+       authorization work. Hidden geometry is intentionally refit after the real
+       landscape viewport exists. */
+    function prepareGeekAllTeamsV2251() {
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return false;
+      ensureGeekAllTeamsShellV2216();
+      renderGeekAllTeamsV2216();
+      return true;
+    }
+
+    /* V22.51 — activate the already-prepared landscape view without rerunning
+       the app. If rotation beats the background preparation, build from the
+       already-loaded data once here, still with no network request. */
+    function activatePreparedGeekAllTeamsV2251() {
+      if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return false;
+      const shell = ensureGeekAllTeamsShellV2216();
+      const table = shell.view && shell.view.querySelector('#geekAllTeamsTableV2216');
+      if (!table || !table.childElementCount) {
+        renderGeekAllTeamsV2216();
+      }
+
+      geekAllTeamsOpenV2216 = true;
+      const rotate = document.getElementById('geekAllTeamsRotateV2216');
+      const view = document.getElementById('geekAllTeamsViewV2216');
+      if (rotate) rotate.setAttribute('aria-hidden', 'false');
+      if (view) view.setAttribute('aria-hidden', 'false');
+
+      document.documentElement.classList.remove('sshcp-geek-regular-v2230');
+      document.documentElement.classList.add('sshcp-geek-all-teams-v2216');
+      return true;
+    }
+
     function openGeekAllTeamsV2216() {
       if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return;
       ensureGeekAllTeamsShellV2216();
@@ -29054,6 +29094,9 @@ let scoreTimingDetail =
       geekAllTeamsSnapArmedV2248 = false;
       closeGeekAllTeamsFilterV2216();
       document.documentElement.classList.remove('sshcp-geek-all-teams-v2216');
+      if (els.modalOverlay && els.modalOverlay.classList.contains('geek-mode-v180')) {
+        document.documentElement.classList.add('sshcp-geek-regular-v2230');
+      }
       const view = document.getElementById('geekAllTeamsViewV2216');
       const rotate = document.getElementById('geekAllTeamsRotateV2216');
       if (view) view.setAttribute('aria-hidden', 'true');
@@ -29169,9 +29212,10 @@ let scoreTimingDetail =
       geekAllTeamsFilterDraftV2216 = null;
     }
 
-    /* V22.41 — explicit ALL TEAMS pull refresh. Starting on the landscape
-       title/header and pulling downward performs the same full fresh-read rebuild
-       used by orientation handoff, while preserving regular-GEEK filter state. */
+    /* V22.51 — explicit ALL TEAMS pull refresh remains the one intentional
+       fresh-read/reload path. Normal orientation handoff is now in-place and
+       request-free; a deliberate title/header pull still rebuilds from fresh
+       Worker data while preserving regular-GEEK filter state. */
     let geekAllTeamsPullRefreshInstalledV2241 = false;
     let geekAllTeamsManualReloadingV2241 = false;
 
@@ -29317,7 +29361,7 @@ let scoreTimingDetail =
           if (!curtain.classList.contains('reveal')) return;
           curtain.classList.remove('active', 'reveal');
           curtain.setAttribute('aria-hidden', 'true');
-        }, Math.ceil(orientationTimingMsV2225('FADE_6B_ORIENTATION_CURTAIN_OUT', 1.00) + 60));
+        }, Math.ceil(orientationTimingMsV2225('FADE_6B_ORIENTATION_CURTAIN_OUT', 0.30) + 60));
       };
       requestAnimationFrame(start);
     }
@@ -29360,17 +29404,94 @@ let scoreTimingDetail =
       );
     }
 
-    function beginGeekOrientationRefreshV2230(target) {
+    let geekOrientationSwitchingV2251 = false;
+    let geekOrientationRecheckV2251 = false;
+
+    function restoreRegularGeekFromAllTeamsV2251() {
+      /* A landscape ALL TEAMS detail replaces the modal's regular-GEEK DOM.
+         If the phone returns to portrait from that detail, rebuild regular GEEK
+         from the already-loaded data only; no Worker request is needed. */
+      const fromAllTeamsDetailV2251 = Boolean(
+        els.modalOverlay &&
+        els.modalOverlay.classList.contains('geek-all-teams-detail-v2238')
+      );
+
+      if (fromAllTeamsDetailV2251) {
+        clearGeekAllTeamsTeamDetailModalV2238();
+        closeGeekAllTeamsV2216();
+        renderGeekMainShellV180();
+        renderGeekTableV180();
+        const shieldV2251 = els.modalBody.querySelector('.geek-load-shield-v180');
+        if (shieldV2251 && shieldV2251.parentNode) shieldV2251.parentNode.removeChild(shieldV2251);
+        const scrollV2251 = els.modalBody.querySelector('.geek-table-scroll-v180');
+        if (scrollV2251) scrollV2251.scrollTop = geekScrollTopV180;
+        wireGeekProgressV2119();
+        return;
+      }
+
+      closeGeekAllTeamsV2216();
+      document.documentElement.classList.add('sshcp-geek-regular-v2230');
+    }
+
+    /* V22.51 — normal GEEK rotation is now an in-place presentation switch.
+       Recheck the actual orientation AFTER the viewport has started settling so
+       a quick rotate-back cannot strand the app behind the white curtain. */
+    function reconcileGeekOrientationInPlaceV2251() {
       if (geekRequiredRotationReloadingV2220) return;
-      if (target === 'allteams' && geekAllTeamsOpenV2216) return;
-      if (target === 'geek' && !geekAllTeamsOpenV2216) return;
-      geekRequiredRotationReloadingV2220 = true;
+
+      if (geekOrientationSwitchingV2251) {
+        geekOrientationRecheckV2251 = true;
+        return;
+      }
+
+      if (!geekAllTeamsOpenV2216 && !isRegularGeekModeOpenV2230()) return;
+
+      geekOrientationSwitchingV2251 = true;
+      geekOrientationRecheckV2251 = false;
       clearNormalOrientationWarningV2225();
       holdOrientationCurtainV2225();
-      persistGeekRequiredRotationStateV2220(target);
+
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          window.location.reload();
+          const landscapeNowV2251 = isLandscapeOrientationV2225();
+
+          if (landscapeNowV2251) {
+            activatePreparedGeekAllTeamsV2251();
+          } else if (geekAllTeamsOpenV2216) {
+            restoreRegularGeekFromAllTeamsV2251();
+          }
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const finalLandscapeV2251 = isLandscapeOrientationV2225();
+
+              /* If Android changed its mind while the viewport was settling,
+                 correct once more BEFORE revealing anything. */
+              if (finalLandscapeV2251 && !geekAllTeamsOpenV2216) {
+                activatePreparedGeekAllTeamsV2251();
+              } else if (!finalLandscapeV2251 && geekAllTeamsOpenV2216) {
+                restoreRegularGeekFromAllTeamsV2251();
+              }
+
+              if (geekAllTeamsOpenV2216) {
+                syncGeekAllTeamsColumnGeometryV2216();
+              } else if (isRegularGeekModeOpenV2230()) {
+                fitGeekRowsV180();
+                requestAnimationFrame(updateGeekProgressV2119);
+              }
+
+              sshcpNormalLastLandscapeV2225 = finalLandscapeV2251;
+              revealOrientationCurtainV2225(1);
+              geekOrientationSwitchingV2251 = false;
+
+              const orientationMismatchV2251 =
+                isLandscapeOrientationV2225() !== Boolean(geekAllTeamsOpenV2216);
+              if (geekOrientationRecheckV2251 || orientationMismatchV2251) {
+                geekOrientationRecheckV2251 = false;
+                requestAnimationFrame(reconcileGeekOrientationInPlaceV2251);
+              }
+            });
+          });
         });
       });
     }
@@ -29387,7 +29508,7 @@ let scoreTimingDetail =
 
       if (isRegularGeekModeOpenV2230()) {
         clearNormalOrientationWarningV2225();
-        if (landscapeNow) beginGeekOrientationRefreshV2230('allteams');
+        if (landscapeNow) reconcileGeekOrientationInPlaceV2251();
         sshcpNormalLastLandscapeV2225 = landscapeNow;
         return;
       }
@@ -29406,7 +29527,7 @@ let scoreTimingDetail =
     function handleGeekAllTeamsOrientationV2225() {
       if (!geekAllTeamsOpenV2216 || geekRequiredRotationReloadingV2220) return;
       if (!isLandscapeOrientationV2225()) {
-        beginGeekOrientationRefreshV2230('geek');
+        reconcileGeekOrientationInPlaceV2251();
       }
     }
 
@@ -29454,10 +29575,12 @@ let scoreTimingDetail =
       await openGeekModeV180();
       removeDataRevealShieldV177('after-play-geek-v2086');
 
-      if (target === 'allteams' && geekDataV180 && Array.isArray(geekDataV180.categories)) {
+      const resolvedTargetV2251 = isLandscapeOrientationV2225() ? 'allteams' : 'geek';
+      if (resolvedTargetV2251 === 'allteams' && geekDataV180 && Array.isArray(geekDataV180.categories)) {
         openGeekAllTeamsV2216();
       } else {
         closeGeekAllTeamsV2216();
+        document.documentElement.classList.add('sshcp-geek-regular-v2230');
       }
 
       const finalCurtain = beginAfterPlayCurtainV2086('after-play-geek-required-v2220');
@@ -29468,7 +29591,7 @@ let scoreTimingDetail =
 
       await new Promise(resolve => requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          if (target === 'allteams' && geekAllTeamsOpenV2216) {
+          if (resolvedTargetV2251 === 'allteams' && geekAllTeamsOpenV2216) {
             syncGeekAllTeamsColumnGeometryV2216();
           } else {
             fitGeekRowsV180();
@@ -29666,7 +29789,19 @@ let scoreTimingDetail =
               'after-play-geek-v2086',
               geekAfterPlayCurtainV2086,
               2
-            )).then(() => showTipsAfterSettledV2155('geek'));
+            )).then(() => {
+              showTipsAfterSettledV2155('geek');
+
+              /* V22.51 — portrait GEEK is already finished and visible. Build
+                 ALL TEAMS shortly afterward from this same in-memory payload so
+                 the likely later landscape rotation has no network work to do. */
+              window.setTimeout(() => {
+                if (geekDataV180 && Array.isArray(geekDataV180.categories)) {
+                  prepareGeekAllTeamsV2251();
+                  handleOrientationMediaChangeV2225();
+                }
+              }, 80);
+            });
           });
         });
 
@@ -34712,8 +34847,8 @@ let scoreTimingDetail =
         return;
       }
 
-      /* V22.20 — only REQUIRED GEEK <-> ALL TEAMS rotations own this boot.
-         Rebuild under white, then reveal with the exact normal GEEK after-play fade. */
+      /* V22.51 — only the explicit ALL TEAMS pull-refresh owns this legacy
+         GEEK restore boot. Normal portrait/landscape rotation never reloads. */
       if (window.__sshcpGeekRequiredRotationRestoreV2220 === 'allteams' ||
           window.__sshcpGeekRequiredRotationRestoreV2220 === 'geek') {
         await restoreGeekAfterRequiredRotationV2220(window.__sshcpGeekRequiredRotationRestoreV2220);
@@ -34925,6 +35060,17 @@ let scoreTimingDetail =
         removeDataRevealShieldV177('scorecard');
         removeDataRevealShieldV177('leaderboard');
         document.documentElement.classList.remove('sshcp-pre-main-full-v2069', 'sshcp-pre-geek-transition-v2220');
+
+        /* V22.51 safety: the legacy first-paint GEEK restore cover is now used
+           only by explicit ALL TEAMS pull refresh. Never allow any failed restore
+           to leave the installed app permanently white. */
+        hideOrientationCurtainV2225Instant();
+        try {
+          sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_RESTORE_KEY_V2220);
+          sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220);
+          sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220);
+        } catch (_) {}
+        window.__sshcpGeekRequiredRotationRestoreV2220 = '';
         console.error('SSHCP initialization failed:', error);
       })
       .finally(() => {
