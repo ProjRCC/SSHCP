@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.55-P7K3RM | BUILD KEY: 22.56-L4Q8NV -->
+<!-- SSHCP | BASE KEY: 22.56-L4Q8NV | BUILD KEY: 22.57-H6Q2RM -->
+<!-- SSHCP V22.57 SUMMARY NET HIERARCHY + WELCOME BUTTON WIDTH SWAP - exact V22.56 donor.
+     Locks Scramble Summary NET +/- score typography to one hierarchy instead of fitting 1st/2nd/3rd independently by content width: 1st targets 60% of its row height, 2nd is exactly 90% of resolved 1st, 3rd is exactly 90% of 2nd (81% of 1st), and places 4-36 share one uniform target at 75% of resolved 1st; each group shrinks together only when needed to fit. Also swaps only the WELCOME action widths so ENTER is the full-width primary action and QUICK GUIDE uses the former 64% width. TEAM fitting, PLACE sizing, NET-strokes typography, Summary geometry, Welcome timing/behavior, GEEK/ALL TEAMS, scoring, auth, Worker/API and CF V3.4 remain unchanged. HOME label advances to V22.57. -->
 <!-- SSHCP V22.56 ALL TEAMS TEAM-HEADER HEIGHT FIT - exact V22.55 donor.
      Fixes only ALL TEAMS team-name headers that legally wrap to two lines. After the established width-based fitter runs, the rendered two-line label is now checked against the actual header-cell height and its 80% text envelope; only names that still overflow vertically shrink further until both full lines fit. Short/one-line names, header-row height, STAT/team column geometry, five-row landscape layout, rails, snap/scroll behavior, GEEK data/detail logic, scoring, auth, Worker/API and CF V3.4 remain unchanged. HOME label advances to V22.56. -->
 <!-- SSHCP V22.55 CENTRAL EVENT DETAILS - exact V22.54 donor.
@@ -7197,11 +7199,11 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
   appearance:none;
 }
 .qr-welcome-guide-v170{
-  width:100%;
+  width:64%;
   border:3px solid var(--accent);
   }
 .qr-welcome-enter-v170{
-  width:64%;
+  width:100%;
   border:3px solid var(--accent);
   background:var(--accent);
   color:var(--on-accent);
@@ -13670,7 +13672,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.56</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.57</span></span>
         </button>
         <script>
           (function () {
@@ -26186,12 +26188,15 @@ let scoreTimingDetail =
         });
       }
 
-      /* V20.38 — Summary keeps the approved NET +/- 60/55/50% podium score
-         hierarchy and all existing TEAM fitting. PLACE is independently sized
-         from its own row height: 1st 50%, 2nd 45%, 3rd 40%. Double-digit NET +/-
-         scores may shrink themselves without changing the PLACE number. */
-      const podiumNetRatiosV1998 = [0.60, 0.55, 0.50];
+      /* V22.57 — NET +/- typography uses one locked hierarchy. 1st targets
+         60% of the 1st-place row height, 2nd is exactly 90% of the resolved
+         1st size, and 3rd is exactly 90% of 2nd (81% of 1st). Content width
+         can only shrink the podium through one shared scale factor, so a wider
+         score such as -12 can never make 1st visually smaller than 2nd. */
       const podiumPlaceRatiosV2038 = [0.50, 0.45, 0.40];
+      const podiumNetCellsV2257 = [];
+      const podiumNetTargetsV2257 = [];
+      let podiumFirstTargetV2257 = 0;
 
       [1,2,3].forEach((place, index) => {
         const row = topGrid.querySelector('.tournament-summary-row.place-' + place);
@@ -26214,15 +26219,14 @@ let scoreTimingDetail =
           );
         }
 
-        /* Keep the approved 60/55/50% podium NET +/- hierarchy. */
+        if (place === 1) {
+          podiumFirstTargetV2257 = Math.max(0.001, row.clientHeight * 0.60);
+        }
         if (net) {
-          fitTextToBoxV5(
-            net,
-            net,
-            row.clientHeight * podiumNetRatiosV1998[index],
-            0.001,
-            { horizontalPad: 6, verticalPad: 5, noMin: true }
-          );
+          const firstTarget = podiumFirstTargetV2257 || Math.max(0.001, row.clientHeight * 0.60);
+          const ratioFromFirst = index === 0 ? 1 : (index === 1 ? 0.90 : 0.81);
+          podiumNetCellsV2257.push(net);
+          podiumNetTargetsV2257.push(firstTarget * ratioFromFirst);
         }
 
         /* V20.37 — podium PLACE is row-height-driven, never score-width-driven. */
@@ -26245,24 +26249,38 @@ let scoreTimingDetail =
         }
       });
 
+      /* Measure each podium value at its locked target, then apply the smallest
+         required proportional reduction to all three values together. */
+      let podiumNetScaleV2257 = 1;
+      podiumNetCellsV2257.forEach((cell, index) => {
+        const target = Math.max(0.001, podiumNetTargetsV2257[index] || 0.001);
+        const fitted = fitTextToBoxV5(
+          cell,
+          cell,
+          target,
+          0.001,
+          { horizontalPad: 6, verticalPad: 5, wrap: false, lineHeight: 1, noMin: true }
+        );
+        if (Number.isFinite(fitted) && fitted > 0) {
+          podiumNetScaleV2257 = Math.min(podiumNetScaleV2257, fitted / target);
+        }
+      });
+      podiumNetScaleV2257 = Math.max(0.001, Math.min(1, podiumNetScaleV2257));
+      podiumNetCellsV2257.forEach((cell, index) => {
+        const finalSize = Math.max(0.001, podiumNetTargetsV2257[index] * podiumNetScaleV2257);
+        cell.style.setProperty('font-size', finalSize + 'px', 'important');
+        cell.style.setProperty('line-height', '1', 'important');
+        cell.style.setProperty('white-space', 'nowrap', 'important');
+        cell.style.setProperty('overflow', 'hidden', 'important');
+      });
+
+      const resolvedFirstNetSizeV2257 = podiumNetTargetsV2257.length
+        ? Math.max(0.001, podiumNetTargetsV2257[0] * podiumNetScaleV2257)
+        : 0;
+
       const lowerPlace = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.place'));
       const lowerTeam = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.team'));
       const lowerNet = Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-score'));
-
-      const fitUniform = (cells, ratio, minimum, pad=6) => {
-        let chosen = Infinity;
-        cells.forEach(cell => {
-          chosen = Math.min(chosen, fitTextToBoxV5(cell, cell, cell.clientHeight * ratio, 0.001, {
-            horizontalPad: pad,
-            verticalPad: 5,
-            noMin: true
-          }));
-        });
-        if (Number.isFinite(chosen)) {
-          cells.forEach(cell => cell.style.setProperty('font-size', chosen + 'px', 'important'));
-        }
-        return chosen;
-      };
 
       /* Every lower TEAM is independent and uses the same own-row 50%/80%
          architecture as the podium. No team name can resize another row. */
@@ -26281,7 +26299,36 @@ let scoreTimingDetail =
         );
       });
 
-      fitUniform(lowerNet, 0.48, 12, 6);
+      /* V22.57 — places 4-36 share one uniform NET +/- size at 75% of the
+         resolved 1st-place size. If any lower score cannot fit that target,
+         the entire lower group shrinks together rather than independently. */
+      if (lowerNet.length) {
+        const lowerTargetV2257 = Math.max(
+          0.001,
+          resolvedFirstNetSizeV2257 > 0
+            ? resolvedFirstNetSizeV2257 * 0.75
+            : Math.min(...lowerNet.map(cell => Math.max(0.001, cell.clientHeight * 0.48)))
+        );
+        let lowerResolvedV2257 = lowerTargetV2257;
+        lowerNet.forEach(cell => {
+          const fitted = fitTextToBoxV5(
+            cell,
+            cell,
+            lowerTargetV2257,
+            0.001,
+            { horizontalPad: 6, verticalPad: 5, wrap: false, lineHeight: 1, noMin: true }
+          );
+          if (Number.isFinite(fitted) && fitted > 0) {
+            lowerResolvedV2257 = Math.min(lowerResolvedV2257, fitted);
+          }
+        });
+        lowerNet.forEach(cell => {
+          cell.style.setProperty('font-size', lowerResolvedV2257 + 'px', 'important');
+          cell.style.setProperty('line-height', '1', 'important');
+          cell.style.setProperty('white-space', 'nowrap', 'important');
+          cell.style.setProperty('overflow', 'hidden', 'important');
+        });
+      }
 
       /* V20.38 — every lower PLACE (4th through 36th) targets 35% of its
          own row height. It is independent of NET +/- font width/fit. */
