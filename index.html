@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.63-M6Q4VN | BUILD KEY: 22.64-R3K8MV -->
+<!-- SSHCP | BASE KEY: 22.64-R3K8MV | BUILD KEY: 22.65-N7R4QX -->
+<!-- SSHCP V22.65 SUMMARY SCORE SPACING + 90/80/70 HIERARCHY - exact V22.64 donor.
+     Changes only SCRAMBLE SUMMARY presentation. Keeps the V22.64 merged NET SCORE header and elastic 35% result region, but gives the stroke-total track 4px of additional breathing room beyond its measured minimum. NET +/- hierarchy is simplified to 1st at the existing 60% row-height target, 2nd at 90% of resolved 1st, 3rd at 80% of resolved 1st, and places 4-36 at 70% of resolved 1st. PLACE/TEAM widths, stroke-font floor/cap, ranking, tiebreak, Summary data/math, scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.65. -->
 <!-- SSHCP V22.64 SUMMARY NET SCORE WIDTH ALLOCATION - exact V22.63 donor.
      Changes only SCRAMBLE SUMMARY presentation. The NET and NET +/- header cells merge into one NET SCORE header spanning the existing 35% result region; PLACE remains 10% and TEAM remains 55%. Within that same 35%, the stroke-total track now shrinks to the minimum width required by its widest value while its shared font may range from the actual rendered last-place PLACE font up to 22px times the existing device multiplier. The remaining result width belongs to NET +/-, allowing the protected V22.57 60%/90%/81%/75% hierarchy to reach its row-height targets whenever width permits. Ranking, tiebreak, Summary data/math, scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.64. -->
 <!-- SSHCP V22.63 GEEK HEADER TEXT REFINEMENT - exact V22.62 donor.
@@ -13794,7 +13796,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.64</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.65</span></span>
         </button>
         <script>
           (function () {
@@ -26324,11 +26326,11 @@ let scoreTimingDetail =
         });
       }
 
-      /* V22.57 — NET +/- typography uses one locked hierarchy. 1st targets
-         60% of the 1st-place row height, 2nd is exactly 90% of the resolved
-         1st size, and 3rd is exactly 90% of 2nd (81% of 1st). Content width
-         can only shrink the podium through one shared scale factor, so a wider
-         score such as -12 can never make 1st visually smaller than 2nd. */
+      /* V22.65 — NET +/- typography uses one locked hierarchy. 1st targets
+         60% of the 1st-place row height, 2nd is 90% of resolved 1st, and 3rd
+         is 80% of resolved 1st. Content width can only shrink the podium
+         through one shared scale factor, so a wider score such as -12 can
+         never make 1st visually smaller than 2nd. */
       const podiumPlaceRatiosV2038 = [0.50, 0.45, 0.40];
       const podiumNetCellsV2257 = [];
       const podiumNetTargetsV2257 = [];
@@ -26360,7 +26362,7 @@ let scoreTimingDetail =
         }
         if (net) {
           const firstTarget = podiumFirstTargetV2257 || Math.max(0.001, row.clientHeight * 0.60);
-          const ratioFromFirst = index === 0 ? 1 : (index === 1 ? 0.90 : 0.81);
+          const ratioFromFirst = index === 0 ? 1 : (index === 1 ? 0.90 : 0.80);
           podiumNetCellsV2257.push(net);
           podiumNetTargetsV2257.push(firstTarget * ratioFromFirst);
         }
@@ -26390,7 +26392,7 @@ let scoreTimingDetail =
          the last-place team first, then let stroke totals range from that actual
          font size up to 22px * the existing device multiplier. The stroke track
          receives only the pixels required by the widest stroke total at the
-         largest size that still leaves enough room for the protected V22.57 NET
+         largest size that still leaves enough room for the active V22.65 NET
          +/- row-height targets. Any remaining result width belongs to NET +/-. */
       const lowerPlacePrepassV2264 = Array.from(
         lower.querySelectorAll('.tournament-summary-remaining-cell.place')
@@ -26466,8 +26468,8 @@ let scoreTimingDetail =
       }
 
       /* Reserve enough of the 35% result region for every NET +/- value at the
-         unshrunk V22.57 hierarchy: 1st 60%, 2nd 90% of 1st, 3rd 81% of 1st,
-         and all lower places 75% of 1st. */
+         unshrunk V22.65 hierarchy: 1st 60%, 2nd 90% of 1st, 3rd 80% of 1st,
+         and all lower places 70% of 1st. */
       let desiredNetTrackV2264 = 1;
       podiumNetCellsV2257.forEach((cell, index) => {
         desiredNetTrackV2264 = Math.max(
@@ -26478,7 +26480,7 @@ let scoreTimingDetail =
       const firstTargetV2264 = podiumNetTargetsV2257.length
         ? Math.max(0.001, podiumNetTargetsV2257[0])
         : 0.001;
-      const lowerTargetV2264 = Math.max(0.001, firstTargetV2264 * 0.75);
+      const lowerTargetV2264 = Math.max(0.001, firstTargetV2264 * 0.70);
       lowerNetPrepassV2264.forEach(cell => {
         desiredNetTrackV2264 = Math.max(
           desiredNetTrackV2264,
@@ -26496,7 +26498,8 @@ let scoreTimingDetail =
         allStrokesV2264.forEach(cell => {
           required = Math.max(required, textTrackWidthV2264(cell, size));
         });
-        return required;
+        /* V22.65 — 2px visual breathing room on each side beyond the measured minimum. */
+        return required + 4;
       }
 
       let strokesSizeV2264 = strokesCapV2264;
@@ -26593,14 +26596,14 @@ let scoreTimingDetail =
         );
       });
 
-      /* V22.57 — places 4-36 share one uniform NET +/- size at 75% of the
+      /* V22.65 — places 4-36 share one uniform NET +/- size at 70% of the
          resolved 1st-place size. If any lower score cannot fit that target,
          the entire lower group shrinks together rather than independently. */
       if (lowerNet.length) {
         const lowerTargetV2257 = Math.max(
           0.001,
           resolvedFirstNetSizeV2257 > 0
-            ? resolvedFirstNetSizeV2257 * 0.75
+            ? resolvedFirstNetSizeV2257 * 0.70
             : Math.min(...lowerNet.map(cell => Math.max(0.001, cell.clientHeight * 0.48)))
         );
         let lowerResolvedV2257 = lowerTargetV2257;
