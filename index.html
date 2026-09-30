@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.69-H5M8QK | BUILD KEY: 22.70-J6R3VN -->
+<!-- SSHCP | BASE KEY: 22.70-J6R3VN | BUILD KEY: 22.71-C4P7NX -->
+<!-- SSHCP V22.71 LEADERBOARD HALF-GAP PROGRESS BALANCE - exact V22.70 donor.
+     Presentation-only refinement to LIVE LEADERBOARD upper spacing. Uses the QR-locked Scorecard HOME-to-table gap as G, then places the existing 3px progress/divider bar inside one total G of vertical whitespace: TITLE -> 0.5G -> BAR -> 0.5G -> TABLE. The title bar remains at its established fixed height and is explicitly border-box so internal spacing does not increase outside height. Leaderboard table/header/rows/footer positions and available table space remain unchanged. FINAL RESULTS remains protected by its established completed-state title suppression. V22.69 TEAM/HCP and Summary typography, Scorecard, GEEK, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.71. -->
 <!-- SSHCP V22.70 LEADERBOARD TITLE / PROGRESS / TABLE GAP BALANCE - exact V22.69 donor.
      Presentation-only Leaderboard shell refinement. LIVE LEADERBOARD and FINAL RESULTS keep the table, rows, header, footer and all available table space in their established positions. The title bar's legacy -6px visual translation is removed; within the unchanged title-bar height, the title is aligned so the clear gap from title text to the 3px progress/divider bar equals the Scorecard's established HOME-to-table gap, while the unchanged title-bar bottom margin supplies that same gap from the bar to the Leaderboard table. Result: TITLE -> gap G -> BAR -> gap G -> TABLE, with G matching the QR-locked Scorecard HOME -> TABLE spacing. V22.69 TEAM/HCP and Summary header typography remain unchanged; Scorecard, GEEK, ranking, tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.70. -->
 <!-- SSHCP V22.69 TEAM/HCP HEADER MERGE + HEADER FONT TARGETS - exact V22.68 donor.
@@ -6148,9 +6150,10 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   height:var(--v16-context-h,60px)!important;
   min-height:var(--v16-context-h,60px)!important;
   max-height:var(--v16-context-h,60px)!important;
-  margin:var(--v16-nav-context-gap,8px) 0 var(--v16-context-table-gap,8px)!important;
+  margin:var(--v16-nav-context-gap,8px) 0 calc(var(--v16-nav-context-gap,8px) / 2)!important;
+  box-sizing:border-box!important;
   align-items:flex-end!important;
-  padding:0 0 calc(var(--v16-nav-context-gap,8px) + 3px) 0!important;
+  padding:0 0 calc((var(--v16-nav-context-gap,8px) / 2) + 3px) 0!important;
 }
 #leaderboardView .leader-title{
   width:100%!important;
@@ -13819,7 +13822,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.70</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.71</span></span>
         </button>
         <script>
           (function () {
