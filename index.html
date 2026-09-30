@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.54-T8Q5MR | BUILD KEY: 22.55-P7K3RM -->
+<!-- SSHCP | BASE KEY: 22.55-P7K3RM | BUILD KEY: 22.56-L4Q8NV -->
+<!-- SSHCP V22.56 ALL TEAMS TEAM-HEADER HEIGHT FIT - exact V22.55 donor.
+     Fixes only ALL TEAMS team-name headers that legally wrap to two lines. After the established width-based fitter runs, the rendered two-line label is now checked against the actual header-cell height and its 80% text envelope; only names that still overflow vertically shrink further until both full lines fit. Short/one-line names, header-row height, STAT/team column geometry, five-row landscape layout, rails, snap/scroll behavior, GEEK data/detail logic, scoring, auth, Worker/API and CF V3.4 remain unchanged. HOME label advances to V22.56. -->
 <!-- SSHCP V22.55 CENTRAL EVENT DETAILS - exact V22.54 donor.
      Adds one simple SSHCP_EVENT configuration block at the top of the code. DETAILS owns the HOME event-details line and SHORT_NAME owns the Leaderboard top-center event name, so either can be changed in one place without hunting through presentation code. Initial HOME/Leaderboard paint and subsequent Leaderboard header refreshes all use the same configuration. Historical ROTB26 test-generator naming/data, scoring, authorization, Worker/API, GEEK/ALL TEAMS, orientation, rails, timing and CF V3.4 remain unchanged. HOME label advances to V22.55. -->
 <!-- SSHCP V22.54 ALL TEAMS LEFT VERTICAL RAIL - exact V22.53 donor.
@@ -13668,7 +13670,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.55</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.56</span></span>
         </button>
         <script>
           (function () {
@@ -28536,6 +28538,83 @@ let scoreTimingDetail =
       apply(best);
     }
 
+    function fitGeekAllTeamsTeamNameV2256(cell, label, headHeight) {
+      if (!cell || !label) return;
+
+      const fitted = fitTwoLineTeamTextV58(
+        cell, label, label, headHeight,
+        headHeight * 0.40, Math.max(9, headHeight * 0.22), 10, 0.80,
+        splitLeaderboardTeamTwoLinesV58, headHeight * 0.40
+      );
+
+      /* V22.56 — the shared team-name fitter historically solved two-line
+         height from font-size math. ALL TEAMS has a strict 80%-of-header text
+         envelope, so Oswald's real rendered line boxes can be a few pixels
+         taller than that estimate. Keep the established fit exactly when it
+         already works; only two-line labels that actually overflow get a
+         second, rendered-height guard. */
+      if (!fitted || fitted.lines !== 2) return;
+
+      const original = String(
+        label.dataset.v58Name ||
+        label.dataset.fullTeamName ||
+        label.textContent || ''
+      ).trim();
+      const split = splitLeaderboardTeamTwoLinesV58(original);
+      if (!Array.isArray(split) || split.length !== 2 || !split[0] || !split[1]) return;
+
+      const availableWidth = Math.max(1, cell.clientWidth - 10);
+      const actualHeadHeight = Math.max(1, Math.min(headHeight, cell.clientHeight || headHeight));
+      const availableHeight = Math.max(1, (actualHeadHeight * 0.80) - 1);
+
+      const apply = size => {
+        renderTwoLineTeamTextV58(label, split[0], split[1]);
+        label.style.setProperty('font-size', size + 'px', 'important');
+        label.style.setProperty('line-height', '1.02', 'important');
+        label.style.setProperty('white-space', 'normal', 'important');
+        label.style.setProperty('overflow', 'hidden', 'important');
+      };
+
+      const renderedFits = size => {
+        apply(size);
+        const widest = Math.max(
+          measureTeamLineWidthV58(label, split[0], size),
+          measureTeamLineWidthV58(label, split[1], size)
+        );
+        const renderedHeight = Math.max(
+          label.scrollHeight || 0,
+          size * 1.02 * 2
+        );
+        return widest <= availableWidth + 0.50 &&
+          renderedHeight <= availableHeight + 0.50;
+      };
+
+      let current = parseFloat(label.style.fontSize) ||
+        parseFloat(getComputedStyle(label).fontSize) ||
+        (headHeight * 0.40);
+      current = Math.max(0.25, current);
+      if (renderedFits(current)) return;
+
+      let low = 0.25;
+      let high = current;
+      let best = low;
+      for (let i = 0; i < 24; i++) {
+        const mid = (low + high) / 2;
+        if (renderedFits(mid)) {
+          best = mid;
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+
+      let guard = best;
+      while (guard > 0.25 && !renderedFits(guard)) {
+        guard = Math.max(0.25, guard - 0.10);
+      }
+      apply(guard);
+    }
+
     function fitGeekAllTeamsTextV2217() {
       const table = document.getElementById('geekAllTeamsTableV2216');
       if (!table) return;
@@ -28545,11 +28624,7 @@ let scoreTimingDetail =
       table.querySelectorAll('.geek-all-teams-team-name-v2217').forEach(label => {
         const cell = label.closest('.geek-all-teams-cell-v2216');
         if (!cell) return;
-        fitTwoLineTeamTextV58(
-          cell, label, label, headHeight,
-          headHeight * 0.40, Math.max(9, headHeight * 0.22), 10, 0.80,
-          splitLeaderboardTeamTwoLinesV58, headHeight * 0.40
-        );
+        fitGeekAllTeamsTeamNameV2256(cell, label, headHeight);
       });
 
       table.querySelectorAll('.geek-all-teams-head-label-v2217').forEach(label => {
