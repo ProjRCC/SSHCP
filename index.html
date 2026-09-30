@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.66-P6K3RV | BUILD KEY: 22.67-Q4N8VX -->
+<!-- SSHCP | BASE KEY: 22.67-Q4N8VX | BUILD KEY: 22.68-L7Q3MX -->
+<!-- SSHCP V22.68 MERGED TEAM TABLE HEADERS - exact V22.67 donor.
+     Presentation-only header refinement. LIVE LEADERBOARD and FINAL RESULTS merge the PLACE + TEAM header tracks into one TEAM header spanning the unchanged 9% + 40% body columns; SCRAMBLE SUMMARY merges the PLACE + TEAM header tracks into one TEAM header spanning the unchanged 10% + 55% body columns. Body columns, place numbers, table widths/geometry, ranking, finalized after-play standings/tiebreak logic, Summary NET SCORE geometry/90-80-70 typography, scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.68. -->
 <!-- SSHCP V22.67 AFTER-PLAY FINAL STANDINGS LOCK - exact V22.66 donor.
      Once the player enters after-play results by pressing TIE BREAK or viewing SCRAMBLE SUMMARY, FINAL RESULTS now adopts the same resolved standings already used by Summary: protected podium resolution remains unchanged, ordinary middle ties remain T-place ties, and a tied worst-NET group uses the V22.66 reverse handicap-hole resolver so the true last-place team receives the actual final place number. The finalized after-play state is persisted per device until play becomes incomplete or Control Center test scores are regenerated. Summary entry re-renders the hidden/visible FINAL RESULTS immediately so returning to the leaderboard matches Summary; TIE BREAK does the same behind its existing result popup. No extra read is added beyond Summary's existing fresh read, no last-place annotation is added, and scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config, timing and V22.65/V22.66 Summary geometry/typography remain unchanged. HOME label advances to V22.67. -->
 <!-- SSHCP V22.66 SUMMARY LAST-PLACE TIEBREAK - exact V22.65 donor.
@@ -4646,6 +4648,11 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 #leaderboardView .leader-table-head > div{padding:2% 3%!important;}
 
+/* V22.68 — header-only merge. Body remains 9% PLACE + 40% TEAM. */
+#leaderboardView .leader-table-head > .leader-team-header-v2268{
+  grid-column:1 / 3!important;
+}
+
 #leaderboardView .leader-content{
   min-height:0!important;
   height:100%!important;
@@ -4866,6 +4873,13 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 .modal-overlay.tournament-summary .tournament-summary-row.header > div:last-child{
   white-space:normal!important;
   line-height:.92!important;
+}
+
+/* V22.68 — header-only merge. Body remains 10% PLACE + 55% TEAM. */
+.modal-overlay.tournament-summary .tournament-summary-row.header > .summary-team-header-v2268{
+  grid-column:1 / 3!important;
+  white-space:nowrap!important;
+  line-height:1!important;
 }
 
 /* V22.64 — one NET SCORE header spans the unchanged 35% result region. */
@@ -13800,7 +13814,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.67</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.68</span></span>
         </button>
         <script>
           (function () {
@@ -14089,9 +14103,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
       <div class="leader-table-head">
 
-        <div class="leader-place-cell" aria-hidden="true"></div>
-
-        <div>TEAM</div>
+        <div class="leader-team-header-v2268">TEAM</div>
 
         <div class="leader-hcp-header"><span>HCP</span></div>
 
@@ -31544,7 +31556,7 @@ let scoreTimingDetail =
       let html =
         '<div class="tournament-summary-grid">' +
         '<div class="tournament-summary-row header">' +
-        '<div>#</div><div>TEAM</div><div class="summary-net-score-header-v2264">NET SCORE</div>' +
+        '<div class="summary-team-header-v2268">TEAM</div><div class="summary-net-score-header-v2264">NET SCORE</div>' +
         '</div>';
 
       rows.slice(0, 3).forEach((row, index) => {
