@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.57-H6Q2RM | BUILD KEY: 22.58-V7K3QM -->
+<!-- SSHCP | BASE KEY: 22.58-V7K3QM | BUILD KEY: 22.59-R5M8QK -->
+<!-- SSHCP V22.59 CONTEXTUAL TIPS / QUICK GUIDE VISUAL ALIGNMENT - exact V22.58 donor.
+     Makes the individual Tips & Tricks cards visually follow the Quick Guide reading style while preserving centered Blue titles: instructional copy is left-aligned, bullets use the same clean hanging-indent rhythm, and HOME visual-cue rows align like the Quick Guide legend. The established white card, gray contextual backdrop, shared checkbox and Blue OK behavior remain intact. Removes em dashes from all player-facing Quick Guide and contextual Tips & Tricks copy, replacing them with normal punctuation only. Scramble Complete's specialized centered completion card remains unchanged. Scoring, authorization, Worker/API, GEEK/ALL TEAMS, Summary, event config, timing and CF V3.4 remain unchanged. HOME label advances to V22.59. -->
 <!-- SSHCP V22.58 QUICK GUIDE ORDER / SCREEN DIVIDERS / GEEK COPY - exact V22.57 donor.
      Moves the existing BLUE/GRAY/GOLD visual cues to the top of Quick Guide immediately after the Tips & Tricks toggle, adds a thin horizontal divider before each subsequent screen section so HOME, SCORECARD, LEADERBOARD, SCRAMBLE SUMMARY, GEEK MODE and SKINS / GAME MODE are visually separated, and updates the Quick Guide GEEK MODE bullets to match the current GEEK Tips & Tricks wording: tap a STAT, use FILTERS, ROTATE for ALL TEAMS, and tap an individual RESULT for detail. Quick Guide geometry/rail/footer behavior, Tips & Tricks behavior, scoring, auth, Worker/API, GEEK/ALL TEAMS functionality, Summary math, and CF V3.4 remain unchanged. HOME label advances to V22.58. -->
 
@@ -12586,6 +12588,36 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 }
 </style>
 
+<style id="sshcp-v2259-contextual-tips-quick-guide-alignment">
+/* SSHCP V22.59 - contextual Tips & Tricks use Quick Guide reading geometry. */
+.tips-overlay-v2154:not(.tips-scramble-complete-v2215) .tips-body-v2154{
+  text-align:left!important;
+  line-height:1.24!important;
+}
+.tips-overlay-v2154:not(.tips-scramble-complete-v2215) .tips-body-v2154 .tips-line-v2154{
+  position:relative!important;
+  box-sizing:border-box!important;
+  margin:0 0 calc(10px * var(--v2074-utility-scale,1))!important;
+  padding-left:1.05em!important;
+  text-indent:0!important;
+  text-align:left!important;
+  line-height:1.24!important;
+}
+.tips-overlay-v2154:not(.tips-scramble-complete-v2215) .tips-body-v2154 .tips-line-v2154::before{
+  position:absolute!important;
+  left:0!important;
+  top:.06em!important;
+  margin:0!important;
+  display:block!important;
+}
+.tips-overlay-v2154:not(.tips-scramble-complete-v2215) .tips-cue-row-v2162{
+  justify-content:flex-start!important;
+}
+.tips-overlay-v2154:not(.tips-scramble-complete-v2215) .tips-title-v2154{
+  text-align:center!important;
+}
+</style>
+
 <style id="sshcp-v2215-welcome-complete-tip">
 /* SSHCP V22.15 — Welcome Tips opt-in is deliberately low-emphasis until selected.
    This override is Welcome-only; the shared Quick Guide / contextual Tips controls are unchanged. */
@@ -13680,7 +13712,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.58</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.59</span></span>
         </button>
         <script>
           (function () {
@@ -20965,9 +20997,9 @@ let scoreTimingDetail =
             '__CUE_BLUE__',
             '__CUE_GRAY__',
             '__CUE_GOLD__',
-            '<strong>SCORECARD</strong> — enter and edit scores.',
-            '<strong>LEADERBOARD</strong> — view current standings.',
-            '<strong>SCRAMBLE SUMMARY</strong> — available after the scramble is complete.'
+            '<strong>SCORECARD</strong>: enter and edit scores.',
+            '<strong>LEADERBOARD</strong>: view current standings.',
+            '<strong>SCRAMBLE SUMMARY</strong>: available after the scramble is complete.'
           ]
         };
       }
@@ -20980,7 +21012,7 @@ let scoreTimingDetail =
             'Tap <strong>− / + / CLEAR - ENTER</strong> to save.',
             'Tap a submitted score to <strong>EDIT</strong> it.',
             'Tap the <strong>GRAY GAME CIRCLES</strong> for Game information.',
-            '<strong>SCORE HEADER</strong> — left score is <strong>GROSS</strong> and right score is <strong>NET</strong>.'
+            '<strong>SCORE HEADER</strong>: left score is <strong>GROSS</strong> and right score is <strong>NET</strong>.'
           ]
         };
       }
@@ -33595,7 +33627,7 @@ let scoreTimingDetail =
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>− / + / CLEAR - ENTER</strong> to save.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap a submitted score to <strong>EDIT</strong>.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>GRAY GAME CIRCLES</strong> for Game information.</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>SCORE HEADER</strong> — left is <strong>GROSS</strong>, right is <strong>NET</strong>.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>SCORE HEADER</strong>: left is <strong>GROSS</strong>, right is <strong>NET</strong>.</div>' +
             '<div class="quick-guide-section-heading-v2161 quick-guide-screen-divider-v2258">LEADERBOARD</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• View current standings.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>20s AUTO REFRESH</strong>.</div>' +
