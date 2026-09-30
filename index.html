@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.65-N7R4QX | BUILD KEY: 22.66-P6K3RV -->
+<!-- SSHCP | BASE KEY: 22.66-P6K3RV | BUILD KEY: 22.67-Q4N8VX -->
+<!-- SSHCP V22.67 AFTER-PLAY FINAL STANDINGS LOCK - exact V22.66 donor.
+     Once the player enters after-play results by pressing TIE BREAK or viewing SCRAMBLE SUMMARY, FINAL RESULTS now adopts the same resolved standings already used by Summary: protected podium resolution remains unchanged, ordinary middle ties remain T-place ties, and a tied worst-NET group uses the V22.66 reverse handicap-hole resolver so the true last-place team receives the actual final place number. The finalized after-play state is persisted per device until play becomes incomplete or Control Center test scores are regenerated. Summary entry re-renders the hidden/visible FINAL RESULTS immediately so returning to the leaderboard matches Summary; TIE BREAK does the same behind its existing result popup. No extra read is added beyond Summary's existing fresh read, no last-place annotation is added, and scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config, timing and V22.65/V22.66 Summary geometry/typography remain unchanged. HOME label advances to V22.67. -->
 <!-- SSHCP V22.66 SUMMARY LAST-PLACE TIEBREAK - exact V22.65 donor.
      Changes only SCRAMBLE SUMMARY standings when the worst NET score is tied below the podium. The tied last-place group is silently resolved through the existing handicap-hole order using the highest score as the losing/last-place result; only the resolved last-place row receives the actual final place number, while any remaining members of a 3+ team bottom tie keep their correct unresolved T-place label. No last-place annotation or popup is added. FINAL RESULTS/Leaderboard ordering and labels remain unchanged. Existing podium tiebreaks, Summary math/data, V22.65 NET SCORE geometry/90-80-70 typography, scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.66. -->
 <!-- SSHCP V22.65 SUMMARY SCORE SPACING + 90/80/70 HIERARCHY - exact V22.64 donor.
@@ -13798,7 +13800,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.66</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.67</span></span>
         </button>
         <script>
           (function () {
@@ -17110,6 +17112,31 @@ let scoreTimingDetail =
       );
     }
 
+    /* V22.67 — after the player enters after-play results, FINAL RESULTS and
+       SCRAMBLE SUMMARY share the same revealed standings, including a resolved
+       tied last place. This state is presentation-only and per-device. */
+    const TOURNAMENT_PLACES_FINALIZED_KEY_V2267 =
+      'rotbTournamentPlacesFinalizedV2267';
+
+    function hasFinalizedTournamentPlacesV2267() {
+      return localStorage.getItem(
+        TOURNAMENT_PLACES_FINALIZED_KEY_V2267
+      ) === '1';
+    }
+
+    function markTournamentPlacesFinalizedV2267() {
+      localStorage.setItem(
+        TOURNAMENT_PLACES_FINALIZED_KEY_V2267,
+        '1'
+      );
+    }
+
+    function resetTournamentPlacesFinalizedV2267() {
+      localStorage.removeItem(
+        TOURNAMENT_PLACES_FINALIZED_KEY_V2267
+      );
+    }
+
     /* =========================================================
        TEST LOG — FULL LOCAL HISTORY
        ========================================================= */
@@ -18245,6 +18272,7 @@ let scoreTimingDetail =
         ? sourceRows.map(row => ({ ...row }))
         : [];
 
+      let resolvedLastAuditRowV2267 = null;
       if (tournamentIsComplete(rows)) {
         const firstTie = firstPlaceTiedRows(rows);
         const mayShowResolvedPodium =
@@ -18252,8 +18280,16 @@ let scoreTimingDetail =
 
         if (mayShowResolvedPodium) {
           const podium = buildTournamentPodium(rows);
+          let revealedOrderV2267 = podium.ordered;
+
+          if (hasFinalizedTournamentPlacesV2267()) {
+            const lastPlaceV2267 = resolveTournamentSummaryLastPlaceV2266(revealedOrderV2267);
+            revealedOrderV2267 = lastPlaceV2267.ordered;
+            resolvedLastAuditRowV2267 = lastPlaceV2267.last;
+          }
+
           const podiumOrder = new Map(
-            podium.ordered.map((row, index) => [Number(row.slot), index])
+            revealedOrderV2267.map((row, index) => [Number(row.slot), index])
           );
 
           rows = [...rows].sort((a, b) => {
@@ -18294,7 +18330,11 @@ let scoreTimingDetail =
           netKey === previousNet;
 
         const place = useResolvedTournamentPlaces
-          ? resolvedTournamentPlaceLabel(rows, index)
+          ? (
+              resolvedLastAuditRowV2267
+                ? resolvedTournamentSummaryPlaceLabelV2266(rows, index, resolvedLastAuditRowV2267)
+                : resolvedTournamentPlaceLabel(rows, index)
+            )
           : (samePlace ? previousPlace : index + 1);
 
         previousNet = netKey;
@@ -20489,6 +20529,7 @@ let scoreTimingDetail =
            DELETE ALL and normal tournament scoring/navigation do not reset it. */
         if (isPar || isRandom || isRandom2 || isRotb26) {
           resetTournamentTieBreakViewed();
+          resetTournamentPlacesFinalizedV2267();
         }
 
         teams.forEach(team => {
@@ -25540,10 +25581,10 @@ let scoreTimingDetail =
       };
     }
 
-    /* V22.66 — SCRAMBLE SUMMARY only. Resolve a tie for the worst NET
-       score by walking the same handicap-hole sequence as the podium resolver,
-       but retain the HIGHEST score at each hole because that team is the
-       last-place side of the tie. This does not alter FINAL RESULTS. */
+    /* V22.66/V22.67 — resolve a tie for the worst NET score by walking
+       the same handicap-hole sequence as the podium resolver, but retain the
+       HIGHEST score at each hole because that team is the last-place side of
+       the tie. V22.67 also reuses this result in finalized FINAL RESULTS. */
     function resolveLastPlaceTieContendersV2266(tied) {
       if (!Array.isArray(tied) || tied.length < 2) return null;
 
@@ -25817,6 +25858,7 @@ let scoreTimingDetail =
       if (!complete) {
         resetScrambleCompleteSeenV2215();
         resetTournamentTieBreakViewed();
+        resetTournamentPlacesFinalizedV2267();
         setLeaderboardFinalAction(null);
 
         if (currentView === 'leaderboard' && !leaderboardLoadInProgress) {
@@ -25889,11 +25931,13 @@ let scoreTimingDetail =
       const tieBreakCurtainV2086 = beginAfterPlayCurtainV2086('after-play-tiebreak-v2086');
 
       markTournamentTieBreakViewed();
+      markTournamentPlacesFinalizedV2267();
       setLeaderboardFinalAction('tournament-summary');
       syncHomeTieBreakActionV2104();
 
-      /* Re-render immediately so the revealed tiebreak result is reflected
-         in FINAL RESULTS behind the result popup. */
+      /* V22.67 — this is the after-play reveal point. Re-render immediately so
+         FINAL RESULTS behind the popup includes both podium and last-place
+         resolution and therefore matches SCRAMBLE SUMMARY. */
       renderLeaderboard(lastLeaderboardRows, false);
 
       closeModal();
@@ -26122,8 +26166,8 @@ let scoreTimingDetail =
       };
     }
 
-    /* V22.66 — leave the shared podium/FINAL RESULTS order untouched. Only
-       SCRAMBLE SUMMARY moves a resolved worst-NET loser to the final row. */
+    /* V22.66/V22.67 — move a resolved worst-NET loser to the final row.
+       Summary always uses this; finalized FINAL RESULTS reuses the same order. */
     function resolveTournamentSummaryLastPlaceV2266(orderedRows) {
       const rows = Array.isArray(orderedRows) ? [...orderedRows] : [];
       if (rows.length <= 3) {
@@ -31454,6 +31498,12 @@ let scoreTimingDetail =
         return;
       }
 
+      /* V22.67 — viewing Summary is the other after-play reveal point. The
+         existing fresh Summary read has already updated lastLeaderboardRows,
+         so finalize locally and re-render FINAL RESULTS with no extra read. */
+      markTournamentPlacesFinalizedV2267();
+      renderLeaderboard(lastLeaderboardRows, false);
+
       const podium = buildTournamentPodium(lastLeaderboardRows);
       const summaryLastPlaceV2266 = resolveTournamentSummaryLastPlaceV2266(podium.ordered);
       /* V19.31 — render the complete resolved standings. The Summary shell still
@@ -31638,10 +31688,10 @@ let scoreTimingDetail =
         ? els.leaderContent.scrollTop
         : 0;
 
-      /* SSHCP V5.2 — Once the tournament is complete, the normal leaderboard
-         keeps the existing resolved podium ordering. Scramble Summary uses
-         that same top-three logic, but does not resolve places 4 and below.
-         A first-place tie still remains unrevealed until BREAK TIE is viewed. */
+      /* V22.67 — FINAL RESULTS keeps the protected podium reveal rules. Once
+         TIE BREAK or SCRAMBLE SUMMARY has been entered, the same revealed order
+         also resolves a tied last place so FINAL RESULTS and Summary agree. */
+      let resolvedLastLeaderboardRowV2267 = null;
       if (tournamentIsComplete(rows)) {
         const firstTie = firstPlaceTiedRows(rows);
         const mayShowResolvedPodium =
@@ -31649,8 +31699,16 @@ let scoreTimingDetail =
 
         if (mayShowResolvedPodium) {
           const podium = buildTournamentPodium(rows);
+          let revealedOrderV2267 = podium.ordered;
+
+          if (hasFinalizedTournamentPlacesV2267()) {
+            const lastPlaceV2267 = resolveTournamentSummaryLastPlaceV2266(revealedOrderV2267);
+            revealedOrderV2267 = lastPlaceV2267.ordered;
+            resolvedLastLeaderboardRowV2267 = lastPlaceV2267.last;
+          }
+
           const podiumOrder = new Map(
-            podium.ordered.map((row, index) => [Number(row.slot), index])
+            revealedOrderV2267.map((row, index) => [Number(row.slot), index])
           );
 
           rows = [...rows].sort((a, b) => {
@@ -31686,11 +31744,10 @@ let scoreTimingDetail =
       let previousNet = null;
       let previousPlace = 0;
 
-      /* V16.8 — once FINAL RESULTS can legitimately reveal podium order,
-         its PLACE labels must match SCRAMBLE SUMMARY immediately. A first-place
-         tie remains intentionally unresolved until TIE BREAK is viewed; when
-         there is no first-place tie, podium places 1/2/3 are already safe to
-         resolve and lower unresolved ties use T4/T6/etc. */
+      /* V22.67 — once FINAL RESULTS can reveal podium order, place labels match
+         SCRAMBLE SUMMARY. A first-place tie stays hidden until TIE BREAK; after
+         TIE BREAK or Summary entry, a resolved tied last place also gets the
+         actual final number while ordinary middle ties remain T-place ties. */
       const completedForPlaces = tournamentIsComplete(rows);
       const firstPlaceTieForPlaces = completedForPlaces
         ? firstPlaceTiedRows(rows)
@@ -31726,7 +31783,11 @@ let scoreTimingDetail =
             netKey === previousNet;
 
           const place = useResolvedTournamentPlaces
-            ? resolvedTournamentPlaceLabel(rows, index)
+            ? (
+                resolvedLastLeaderboardRowV2267
+                  ? resolvedTournamentSummaryPlaceLabelV2266(rows, index, resolvedLastLeaderboardRowV2267)
+                  : resolvedTournamentPlaceLabel(rows, index)
+              )
             : (samePlace ? previousPlace : index + 1);
 
           previousNet = netKey;
