@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.64-R3K8MV | BUILD KEY: 22.65-N7R4QX -->
+<!-- SSHCP | BASE KEY: 22.65-N7R4QX | BUILD KEY: 22.66-P6K3RV -->
+<!-- SSHCP V22.66 SUMMARY LAST-PLACE TIEBREAK - exact V22.65 donor.
+     Changes only SCRAMBLE SUMMARY standings when the worst NET score is tied below the podium. The tied last-place group is silently resolved through the existing handicap-hole order using the highest score as the losing/last-place result; only the resolved last-place row receives the actual final place number, while any remaining members of a 3+ team bottom tie keep their correct unresolved T-place label. No last-place annotation or popup is added. FINAL RESULTS/Leaderboard ordering and labels remain unchanged. Existing podium tiebreaks, Summary math/data, V22.65 NET SCORE geometry/90-80-70 typography, scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.66. -->
 <!-- SSHCP V22.65 SUMMARY SCORE SPACING + 90/80/70 HIERARCHY - exact V22.64 donor.
      Changes only SCRAMBLE SUMMARY presentation. Keeps the V22.64 merged NET SCORE header and elastic 35% result region, but gives the stroke-total track 4px of additional breathing room beyond its measured minimum. NET +/- hierarchy is simplified to 1st at the existing 60% row-height target, 2nd at 90% of resolved 1st, 3rd at 80% of resolved 1st, and places 4-36 at 70% of resolved 1st. PLACE/TEAM widths, stroke-font floor/cap, ranking, tiebreak, Summary data/math, scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.65. -->
 <!-- SSHCP V22.64 SUMMARY NET SCORE WIDTH ALLOCATION - exact V22.63 donor.
@@ -13796,7 +13798,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.65</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.66</span></span>
         </button>
         <script>
           (function () {
@@ -18045,6 +18047,35 @@ let scoreTimingDetail =
       return { winner:null, decidingIndex:null, unresolved:true, contenders };
     }
 
+    /* V22.66 — independent audit mirror for Summary-only last place. This
+       intentionally does not call the app's V22.66 resolver. */
+    function independentlyResolveLastTieV2266(group, tiebreakOrder) {
+      let contenders = [...group];
+      for (let index = 0; index < tiebreakOrder.length && contenders.length > 1; index++) {
+        const actualHole = Number(tiebreakOrder[index]);
+        const scored = contenders.map(team => ({
+          team,
+          score: Number(team.scores[actualHole - 1])
+        }));
+        if (scored.some(item => !Number.isFinite(item.score) || item.score <= 0)) {
+          return { last:null, decidingIndex:null, unresolved:true, actualHole, contenders };
+        }
+        const high = Math.max(...scored.map(item => item.score));
+        contenders = scored.filter(item => item.score === high).map(item => item.team);
+        if (contenders.length === 1) {
+          return {
+            last: contenders[0],
+            decidingIndex: index,
+            actualHole,
+            losingScore: high,
+            unresolved: false,
+            entering: scored
+          };
+        }
+      }
+      return { last:null, decidingIndex:null, unresolved:true, contenders };
+    }
+
     function independentExpectedSummaryV189(scoreData, rawLeaderRows) {
       const sourceHoles = Array.isArray(scoreData && scoreData.course && scoreData.course.holes)
         ? scoreData.course.holes.slice(0, 18)
@@ -18128,33 +18159,76 @@ let scoreTimingDetail =
       }
 
       remaining.sort(byNetThenSlot);
+
+      /* V22.66 — preserve the pre-last-place order as the independent expected
+         FINAL RESULTS order. Scramble Summary alone may then move one resolved
+         bottom-tie loser to the final row. */
+      const leaderboardOrderedV2266 = [...podium, ...remaining];
+      let resolvedLastTeamV2266 = null;
+
+      if (remaining.length >= 2) {
+        const worstNetV2266 = Math.max(...remaining.map(team => team.netStrokes));
+        const tiedLastV2266 = remaining.filter(team => team.netStrokes === worstNetV2266);
+        if (tiedLastV2266.length > 1) {
+          const lastResolutionV2266 = independentlyResolveLastTieV2266(
+            tiedLastV2266,
+            tiebreakOrder
+          );
+          if (lastResolutionV2266 && lastResolutionV2266.last) {
+            resolvedLastTeamV2266 = lastResolutionV2266.last;
+            const removeLastAtV2266 = remaining.indexOf(resolvedLastTeamV2266);
+            if (removeLastAtV2266 >= 0) remaining.splice(removeLastAtV2266, 1);
+            remaining.push(resolvedLastTeamV2266);
+          }
+        }
+      }
+
       /* V19.31 — Scramble Summary now contains the complete field; keep the
          independent audit aligned with every rendered standings row. */
       const ordered = [...podium, ...remaining];
-      const expectedRows = ordered.map((team, index) => {
-        let place;
-        if (index < 3) {
-          place = String(index + 1);
-        } else {
-          const currentNet = team.netStrokes;
-          const priorSame = ordered.slice(3, index).some(item => item.netStrokes === currentNet);
-          const laterSame = ordered.slice(index + 1).some(item => item.netStrokes === currentNet);
-          let unresolvedPlace = 4;
-          for (let i = 3; i < index; i++) {
-            if (ordered[i].netStrokes < currentNet) unresolvedPlace += 1;
-          }
-          place = (priorSame || laterSame) ? 'T' + unresolvedPlace : String(unresolvedPlace);
-        }
-        return {
-          place,
-          team: normalizeAuditTextV189(team.team),
-          strokes: String(team.netStrokes),
-          net: auditGolfScoreV189(team.netToPar),
-          slot: team.slot
-        };
-      });
 
-      return { parTotal, teams, tiebreakOrder, expectedRows, notes, traces };
+      const auditPlaceLabelV2266 = (order, team, index, resolvedLastTeam) => {
+        if (resolvedLastTeam && team === resolvedLastTeam) return String(order.length);
+        if (index < 3) return String(index + 1);
+        const currentNet = team.netStrokes;
+        const priorSame = order.slice(3, index).some(
+          item => item !== resolvedLastTeam && item.netStrokes === currentNet
+        );
+        const laterSame = order.slice(index + 1).some(
+          item => item !== resolvedLastTeam && item.netStrokes === currentNet
+        );
+        let unresolvedPlace = 4;
+        for (let i = 3; i < index; i++) {
+          const prior = order[i];
+          if (prior === resolvedLastTeam) continue;
+          if (prior.netStrokes < currentNet) unresolvedPlace += 1;
+        }
+        return (priorSame || laterSame) ? 'T' + unresolvedPlace : String(unresolvedPlace);
+      };
+
+      const expectedRows = ordered.map((team, index) => ({
+        place: auditPlaceLabelV2266(ordered, team, index, resolvedLastTeamV2266),
+        team: normalizeAuditTextV189(team.team),
+        strokes: String(team.netStrokes),
+        net: auditGolfScoreV189(team.netToPar),
+        slot: team.slot
+      }));
+
+      const leaderboardExpectedRows = leaderboardOrderedV2266.map((team, index) => ({
+        place: auditPlaceLabelV2266(leaderboardOrderedV2266, team, index, null),
+        team: normalizeAuditTextV189(team.team),
+        slot: team.slot
+      }));
+
+      return {
+        parTotal,
+        teams,
+        tiebreakOrder,
+        expectedRows,
+        leaderboardExpectedRows,
+        notes,
+        traces
+      };
     }
 
     /* SSHCP V20.81 — cross-view order integrity.
@@ -18236,13 +18310,16 @@ let scoreTimingDetail =
     function compareExpectedToRenderedLeaderboardV2081(expected, actualRows) {
       const mismatches = [];
       const actual = Array.isArray(actualRows) ? actualRows : [];
+      const expectedLeaderboardRows = Array.isArray(expected && expected.leaderboardExpectedRows)
+        ? expected.leaderboardExpectedRows
+        : expected.expectedRows;
       if (!actual.length) return ['LEADERBOARD SNAPSHOT MISSING'];
-      if (actual.length !== expected.expectedRows.length) {
-        mismatches.push('LEADERBOARD ROW COUNT ' + actual.length + '!=' + expected.expectedRows.length);
+      if (actual.length !== expectedLeaderboardRows.length) {
+        mismatches.push('LEADERBOARD ROW COUNT ' + actual.length + '!=' + expectedLeaderboardRows.length);
       }
-      const count = Math.min(actual.length, expected.expectedRows.length);
+      const count = Math.min(actual.length, expectedLeaderboardRows.length);
       for (let index = 0; index < count; index++) {
-        const e = expected.expectedRows[index];
+        const e = expectedLeaderboardRows[index];
         const a = actual[index];
         const prefix = 'LEADERBOARD ROW ' + (index + 1) + ' / T' + e.slot;
         if (normalizeAuditTextV189(a.place).toUpperCase() !== normalizeAuditTextV189(e.place).toUpperCase()) {
@@ -18562,7 +18639,7 @@ let scoreTimingDetail =
           'CROSS-VIEW CHECK ' +
           ((entry.leaderboardMismatches || []).length
             ? 'FAILED — ' + entry.leaderboardMismatches.join(' • ')
-            : 'OK — LEADERBOARD / SCRAMBLE SUMMARY / RESULT LOG ORDER MATCH')
+            : 'OK — LEADERBOARD AND SCRAMBLE SUMMARY EACH MATCH THEIR RESULT RULES')
         );
       }
 
@@ -25463,6 +25540,67 @@ let scoreTimingDetail =
       };
     }
 
+    /* V22.66 — SCRAMBLE SUMMARY only. Resolve a tie for the worst NET
+       score by walking the same handicap-hole sequence as the podium resolver,
+       but retain the HIGHEST score at each hole because that team is the
+       last-place side of the tie. This does not alter FINAL RESULTS. */
+    function resolveLastPlaceTieContendersV2266(tied) {
+      if (!Array.isArray(tied) || tied.length < 2) return null;
+
+      let contenders = [...tied];
+
+      const holeCount = Math.max(
+        0,
+        ...tied.map(row =>
+          Array.isArray(row?.tiebreakScores)
+            ? row.tiebreakScores.length
+            : 0
+        )
+      );
+
+      for (let index = 0; index < holeCount; index++) {
+        const enteringHole = [...contenders];
+        const scored = enteringHole.map(row => ({
+          row,
+          score: tiebreakValue(row, index)
+        }));
+
+        if (scored.some(item => !Number.isFinite(item.score))) {
+          return {
+            tied: [...tied],
+            last: null,
+            decidingIndex: null,
+            unresolved: true,
+            decidingContenders: enteringHole
+          };
+        }
+
+        const worstScore = Math.max(...scored.map(item => item.score));
+        contenders = scored
+          .filter(item => item.score === worstScore)
+          .map(item => item.row);
+
+        if (contenders.length === 1) {
+          return {
+            tied: [...tied],
+            last: contenders[0],
+            decidingIndex: index,
+            losingScore: worstScore,
+            unresolved: false,
+            decidingContenders: enteringHole
+          };
+        }
+      }
+
+      return {
+        tied: [...tied],
+        last: null,
+        decidingIndex: null,
+        unresolved: true,
+        decidingContenders: [...contenders]
+      };
+    }
+
     function resolveFirstPlaceTie(rows) {
       const tied = firstPlaceTiedRows(rows);
       if (tied.length < 2) return null;
@@ -25982,6 +26120,77 @@ let scoreTimingDetail =
         annotations,
         firstTie: firstPlaceTiedRows(source)
       };
+    }
+
+    /* V22.66 — leave the shared podium/FINAL RESULTS order untouched. Only
+       SCRAMBLE SUMMARY moves a resolved worst-NET loser to the final row. */
+    function resolveTournamentSummaryLastPlaceV2266(orderedRows) {
+      const rows = Array.isArray(orderedRows) ? [...orderedRows] : [];
+      if (rows.length <= 3) {
+        return { ordered: rows, last: null, resolution: null };
+      }
+
+      const numericRows = rows.filter(row => Number.isFinite(Number(row && row.net)));
+      if (numericRows.length < 2) {
+        return { ordered: rows, last: null, resolution: null };
+      }
+
+      const worstNet = Math.max(...numericRows.map(row => Number(row.net)));
+      const tiedWorst = rows.filter(row => Number(row && row.net) === worstNet);
+      if (tiedWorst.length < 2) {
+        return { ordered: rows, last: null, resolution: null };
+      }
+
+      const firstWorstIndex = rows.findIndex(row => Number(row && row.net) === worstNet);
+      if (firstWorstIndex < 3) {
+        return { ordered: rows, last: null, resolution: null };
+      }
+
+      const resolution = resolveLastPlaceTieContendersV2266(tiedWorst);
+      if (!resolution || !resolution.last) {
+        return { ordered: rows, last: null, resolution };
+      }
+
+      const last = resolution.last;
+      const resolvedRows = rows.filter(row => row !== last);
+      resolvedRows.push(last);
+      return { ordered: resolvedRows, last, resolution };
+    }
+
+    function resolvedTournamentSummaryPlaceLabelV2266(orderedRows, rowIndex, resolvedLastRow) {
+      if (!Array.isArray(orderedRows) || rowIndex < 0 || rowIndex >= orderedRows.length) {
+        return '';
+      }
+
+      const row = orderedRows[rowIndex];
+      if (resolvedLastRow && row === resolvedLastRow) {
+        return String(orderedRows.length);
+      }
+
+      if (!resolvedLastRow) {
+        return resolvedTournamentPlaceLabel(orderedRows, rowIndex);
+      }
+
+      if (rowIndex < 3) return String(rowIndex + 1);
+
+      const currentNet = Number(row && row.net);
+      const priorSameNet = orderedRows
+        .slice(3, rowIndex)
+        .some(item => item !== resolvedLastRow && Number(item && item.net) === currentNet);
+      const laterSameNet = orderedRows
+        .slice(rowIndex + 1)
+        .some(item => item !== resolvedLastRow && Number(item && item.net) === currentNet);
+
+      let unresolvedPlace = 4;
+      for (let i = 3; i < rowIndex; i++) {
+        const prior = orderedRows[i];
+        if (prior === resolvedLastRow) continue;
+        if (Number(prior && prior.net) < currentNet) unresolvedPlace++;
+      }
+
+      return (priorSameNet || laterSameNet)
+        ? 'T' + unresolvedPlace
+        : String(unresolvedPlace);
     }
 
     function ordinalSuffix(number) {
@@ -31246,10 +31455,12 @@ let scoreTimingDetail =
       }
 
       const podium = buildTournamentPodium(lastLeaderboardRows);
+      const summaryLastPlaceV2266 = resolveTournamentSummaryLastPlaceV2266(podium.ordered);
       /* V19.31 — render the complete resolved standings. The Summary shell still
          shows the Top 10 initially: places 1-3 are fixed and places 4-10 occupy the
-         fixed-height lower viewport, with any additional places available by manual scroll. */
-      const rows = podium.ordered.slice();
+         fixed-height lower viewport, with any additional places available by manual scroll.
+         V22.66 silently resolves only a tied worst-NET team into the final row. */
+      const rows = summaryLastPlaceV2266.ordered.slice();
       const summaryAuthorizedTeamV1827 = normalizeName(getAuthorizedTeam() || '');
 
       function summaryOwnsAuthorizedPlaceV1827(row) {
@@ -31267,7 +31478,11 @@ let scoreTimingDetail =
       }
 
       function summaryPlaceLabel(rowIndex) {
-        return resolvedTournamentPlaceLabel(rows, rowIndex);
+        return resolvedTournamentSummaryPlaceLabelV2266(
+          rows,
+          rowIndex,
+          summaryLastPlaceV2266.last
+        );
       }
 
       closeModal();
