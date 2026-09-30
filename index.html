@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.62-F8M3QK | BUILD KEY: 22.63-M6Q4VN -->
+<!-- SSHCP | BASE KEY: 22.63-M6Q4VN | BUILD KEY: 22.64-R3K8MV -->
+<!-- SSHCP V22.64 SUMMARY NET SCORE WIDTH ALLOCATION - exact V22.63 donor.
+     Changes only SCRAMBLE SUMMARY presentation. The NET and NET +/- header cells merge into one NET SCORE header spanning the existing 35% result region; PLACE remains 10% and TEAM remains 55%. Within that same 35%, the stroke-total track now shrinks to the minimum width required by its widest value while its shared font may range from the actual rendered last-place PLACE font up to 22px times the existing device multiplier. The remaining result width belongs to NET +/-, allowing the protected V22.57 60%/90%/81%/75% hierarchy to reach its row-height targets whenever width permits. Ranking, tiebreak, Summary data/math, scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.64. -->
 <!-- SSHCP V22.63 GEEK HEADER TEXT REFINEMENT - exact V22.62 donor.
      Changes only GEEK presentation. Regular GEEK keeps Gray 3 top/category header surfaces; all top-header labels, including YOU, are black, while category-header text uses Gray 7. ALL TEAMS keeps the V22.62 Gray 3 table header and sticky STAT column, while the full GEEK MODE • ALL TEAMS title uses the app Blue accent. No data cells, winner highlighting, dots, geometry, scrolling, snapping, filters, calculations, detail behavior, scoring, authorization, Worker/API, Summary, event config, timing or CF V3.4 changes. HOME label advances to V22.63. -->
 <!-- SSHCP V22.62 GEEK TABLE LIGHT HEADER TREATMENT - exact V22.61 donor.
@@ -4834,7 +4836,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   height:auto!important;
   max-height:none!important;
   display:grid!important;
-  grid-template-columns:10% 55% 15% 20%!important;
+  grid-template-columns:10% 55% var(--v2264-summary-strokes-track,15%) minmax(0,1fr)!important;
   overflow:hidden!important;
 }
 
@@ -4860,6 +4862,13 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   line-height:.92!important;
 }
 
+/* V22.64 — one NET SCORE header spans the unchanged 35% result region. */
+.modal-overlay.tournament-summary .tournament-summary-row.header > .summary-net-score-header-v2264{
+  grid-column:3 / 5!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+}
+
 .modal-overlay.tournament-summary .tournament-summary-notes{
   padding:0!important;
   display:flex!important;
@@ -4882,7 +4891,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   max-height:none!important;
   margin:0!important;
   display:grid!important;
-  grid-template-columns:10% 55% 15% 20%!important;
+  grid-template-columns:10% 55% var(--v2264-summary-strokes-track,15%) minmax(0,1fr)!important;
   grid-template-rows:repeat(var(--v5-summary-lower-count,7),minmax(0,1fr))!important;
   grid-auto-rows:unset!important;
   align-content:stretch!important;
@@ -13785,7 +13794,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.63</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.64</span></span>
         </button>
         <script>
           (function () {
@@ -26376,6 +26385,164 @@ let scoreTimingDetail =
         }
       });
 
+      /* V22.64 — the existing 35% result region is now internally elastic.
+         PLACE stays 10% and TEAM stays 55%. Resolve the rendered PLACE size of
+         the last-place team first, then let stroke totals range from that actual
+         font size up to 22px * the existing device multiplier. The stroke track
+         receives only the pixels required by the widest stroke total at the
+         largest size that still leaves enough room for the protected V22.57 NET
+         +/- row-height targets. Any remaining result width belongs to NET +/-. */
+      const lowerPlacePrepassV2264 = Array.from(
+        lower.querySelectorAll('.tournament-summary-remaining-cell.place')
+      );
+      lowerPlacePrepassV2264.forEach(placeCell => {
+        const placeNumber = placeCell.querySelector('.summary-place-number') || placeCell;
+        fitTextToBoxV5(
+          placeCell,
+          placeNumber,
+          placeCell.clientHeight * 0.35,
+          1,
+          {
+            horizontalPad: 4,
+            verticalPad: 5,
+            wrap: false,
+            lineHeight: 1,
+            noMin: true
+          }
+        );
+      });
+
+      const lastPlaceCellV2264 = lowerPlacePrepassV2264.length
+        ? lowerPlacePrepassV2264[lowerPlacePrepassV2264.length - 1]
+        : (
+            topGrid.querySelector('.tournament-summary-row.place-3 .tournament-summary-place') ||
+            topGrid.querySelector('.tournament-summary-row.place-2 .tournament-summary-place') ||
+            topGrid.querySelector('.tournament-summary-row.place-1 .tournament-summary-place')
+          );
+      const lastPlaceTextV2264 = lastPlaceCellV2264
+        ? (lastPlaceCellV2264.querySelector('.summary-place-number') || lastPlaceCellV2264)
+        : null;
+      const lastPlaceFontV2264 = lastPlaceTextV2264
+        ? parseFloat(getComputedStyle(lastPlaceTextV2264).fontSize)
+        : 0;
+      const summaryMultiplierV2264 = getVerticalMetricsV188().multiplier;
+      const strokesCapV2264 = Math.max(0.001, 22 * summaryMultiplierV2264);
+      const strokesFloorV2264 = Math.max(
+        0.001,
+        Math.min(
+          strokesCapV2264,
+          Number.isFinite(lastPlaceFontV2264) && lastPlaceFontV2264 > 0
+            ? lastPlaceFontV2264
+            : strokesCapV2264
+        )
+      );
+
+      const allStrokesV2264 = [
+        ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
+        ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-strokes'))
+      ];
+      const lowerNetPrepassV2264 = Array.from(
+        lower.querySelectorAll('.tournament-summary-remaining-cell.net-score')
+      );
+      const netRegionWidthV2264 = Math.max(1, topGrid.clientWidth * 0.35);
+
+      function boxHorizontalExtraV2264(cell) {
+        if (!cell) return 2;
+        const style = getComputedStyle(cell);
+        const left = parseFloat(style.paddingLeft) || 0;
+        const right = parseFloat(style.paddingRight) || 0;
+        const borderLeft = parseFloat(style.borderLeftWidth) || 0;
+        const borderRight = parseFloat(style.borderRightWidth) || 0;
+        return left + right + borderLeft + borderRight + 2;
+      }
+
+      function textTrackWidthV2264(cell, size) {
+        const text = String(cell?.textContent || '').replace(/\s+/g, ' ').trim();
+        return Math.max(
+          1,
+          measureTeamLineWidthV58(cell, text, Math.max(0.001, size)) +
+            boxHorizontalExtraV2264(cell)
+        );
+      }
+
+      /* Reserve enough of the 35% result region for every NET +/- value at the
+         unshrunk V22.57 hierarchy: 1st 60%, 2nd 90% of 1st, 3rd 81% of 1st,
+         and all lower places 75% of 1st. */
+      let desiredNetTrackV2264 = 1;
+      podiumNetCellsV2257.forEach((cell, index) => {
+        desiredNetTrackV2264 = Math.max(
+          desiredNetTrackV2264,
+          textTrackWidthV2264(cell, podiumNetTargetsV2257[index] || 0.001)
+        );
+      });
+      const firstTargetV2264 = podiumNetTargetsV2257.length
+        ? Math.max(0.001, podiumNetTargetsV2257[0])
+        : 0.001;
+      const lowerTargetV2264 = Math.max(0.001, firstTargetV2264 * 0.75);
+      lowerNetPrepassV2264.forEach(cell => {
+        desiredNetTrackV2264 = Math.max(
+          desiredNetTrackV2264,
+          textTrackWidthV2264(cell, lowerTargetV2264)
+        );
+      });
+
+      const maxStrokeTrackForFullNetV2264 = Math.max(
+        1,
+        netRegionWidthV2264 - desiredNetTrackV2264
+      );
+
+      function requiredStrokeTrackV2264(size) {
+        let required = 1;
+        allStrokesV2264.forEach(cell => {
+          required = Math.max(required, textTrackWidthV2264(cell, size));
+        });
+        return required;
+      }
+
+      let strokesSizeV2264 = strokesCapV2264;
+      let strokesTrackV2264 = requiredStrokeTrackV2264(strokesSizeV2264);
+
+      if (
+        strokesTrackV2264 > maxStrokeTrackForFullNetV2264 &&
+        strokesFloorV2264 < strokesCapV2264
+      ) {
+        const floorTrack = requiredStrokeTrackV2264(strokesFloorV2264);
+        if (floorTrack <= maxStrokeTrackForFullNetV2264) {
+          let low = strokesFloorV2264;
+          let high = strokesCapV2264;
+          let best = strokesFloorV2264;
+          for (let i = 0; i < 28; i++) {
+            const size = (low + high) / 2;
+            if (requiredStrokeTrackV2264(size) <= maxStrokeTrackForFullNetV2264) {
+              best = size;
+              low = size;
+            } else {
+              high = size;
+            }
+          }
+          strokesSizeV2264 = best;
+          strokesTrackV2264 = requiredStrokeTrackV2264(strokesSizeV2264);
+        } else {
+          strokesSizeV2264 = strokesFloorV2264;
+          strokesTrackV2264 = floorTrack;
+        }
+      }
+
+      strokesTrackV2264 = Math.max(
+        1,
+        Math.min(strokesTrackV2264, Math.max(1, netRegionWidthV2264 - 1))
+      );
+      els.modalBox.style.setProperty(
+        '--v2264-summary-strokes-track',
+        strokesTrackV2264 + 'px'
+      );
+      allStrokesV2264.forEach(cell => {
+        cell.style.setProperty('font-size', strokesSizeV2264 + 'px', 'important');
+        cell.style.setProperty('line-height', '1', 'important');
+        cell.style.setProperty('white-space', 'nowrap', 'important');
+        cell.style.setProperty('overflow', 'hidden', 'important');
+      });
+
       /* Measure each podium value at its locked target, then apply the smallest
          required proportional reduction to all three values together. */
       let podiumNetScaleV2257 = 1;
@@ -26477,57 +26644,11 @@ let scoreTimingDetail =
         );
       });
 
-      /* V20.0 — Summary NET lists score only. It follows score typography,
-         never TEAM text: target 80% of the smallest FINAL rendered NET +/-
-         score font, shared one-line size for the entire NET column. */
-      const allNetScoreCellsV1998 = [
-        ...Array.from(topGrid.querySelectorAll('.tournament-summary-net')),
-        ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-score'))
-      ];
-      const finalNetScoreFontsV1998 = allNetScoreCellsV1998
-        .map(cell => parseFloat(getComputedStyle(cell).fontSize))
-        .filter(size => Number.isFinite(size) && size > 0);
-      const strokesTargetV1998 = finalNetScoreFontsV1998.length
-        ? Math.min(...finalNetScoreFontsV1998) * 0.80
-        : 8;
-
-      const allStrokes = [
-        ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
-        ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-strokes'))
-      ];
-      let strokesSizeV1998 = strokesTargetV1998;
-
-      allStrokes.forEach(cell => {
-        cell.style.setProperty('line-height', '1', 'important');
-        cell.style.setProperty('white-space', 'nowrap', 'important');
-        cell.style.setProperty('overflow', 'hidden', 'important');
-
-        const text = String(cell.textContent || '').replace(/\s+/g, ' ').trim();
-        const availableWidth = Math.max(0.001, cell.clientWidth - 4);
-        const availableHeight = Math.max(0.001, cell.clientHeight - 4);
-        const highStart = Math.max(0.001, Math.min(strokesTargetV1998, availableHeight));
-
-        let low = 0;
-        let high = highStart;
-        let best = 0;
-        for (let i = 0; i < 28; i++) {
-          const size = (low + high) / 2;
-          const widthFits = measureTeamLineWidthV58(cell, text, size) <= availableWidth + 0.75;
-          if (widthFits) {
-            best = size;
-            low = size;
-          } else {
-            high = size;
-          }
-        }
-        strokesSizeV1998 = Math.min(
-          strokesSizeV1998,
-          best > 0 ? best : highStart
-        );
-      });
-
-      allStrokes.forEach(cell => {
-        cell.style.setProperty('font-size', strokesSizeV1998 + 'px', 'important');
+      /* V22.64 — stroke font and track were resolved before NET +/- fitting so
+         the result hierarchy sees the final available width. Re-assert the shared
+         stroke typography after the later row fitters; do not derive it from NET +/- size. */
+      allStrokesV2264.forEach(cell => {
+        cell.style.setProperty('font-size', strokesSizeV2264 + 'px', 'important');
         cell.style.setProperty('line-height', '1', 'important');
         cell.style.setProperty('white-space', 'nowrap', 'important');
         cell.style.setProperty('overflow', 'hidden', 'important');
@@ -31155,7 +31276,7 @@ let scoreTimingDetail =
       let html =
         '<div class="tournament-summary-grid">' +
         '<div class="tournament-summary-row header">' +
-        '<div>#</div><div>TEAM</div><div>NET</div><div>NET +/-</div>' +
+        '<div>#</div><div>TEAM</div><div class="summary-net-score-header-v2264">NET SCORE</div>' +
         '</div>';
 
       rows.slice(0, 3).forEach((row, index) => {
