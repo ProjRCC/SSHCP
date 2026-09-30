@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.60-N8Q4VK | BUILD KEY: 22.61-P4N7QX -->
+<!-- SSHCP | BASE KEY: 22.61-P4N7QX | BUILD KEY: 22.62-F8M3QK -->
+<!-- SSHCP V22.62 GEEK TABLE LIGHT HEADER TREATMENT - exact V22.61 donor.
+     Changes only GEEK MODE table presentation. Regular GEEK top headers and category rows use Gray 3 with black text, while the YOU header label remains Blue. ALL TEAMS top headers use Gray 3 with black text, including authorized team names, and the sticky STAT column uses Gray 3 down the body. Existing YOU data highlighting, winner cells, stat dots, table geometry, scrolling, snapping, filters, calculations, detail behavior, scoring, authorization, Worker/API, Summary, event config, timing and CF V3.4 remain unchanged. HOME label advances to V22.62. -->
 <!-- SSHCP V22.61 TIE-BREAK COMPLETION ACTION RED - exact V22.60 donor.
      Keeps the V22.60 dynamic SCRAMBLE COMPLETE action/copy unchanged, but when the already-known final state is a pending first-place tie, the popup TIE BREAK action now uses the established Tie Break red treatment instead of the Scramble Summary gold treatment. Once no tie is pending, the same action remains Antique Gold as SCRAMBLE SUMMARY. No tiebreak math, reads, scoring, auth, Worker/API, Summary, GEEK, event config, timing or geometry changes. HOME label advances to V22.61. -->
 <!-- SSHCP V22.60 DYNAMIC SCRAMBLE COMPLETE ACTION - exact V22.59 donor.
@@ -13596,6 +13598,47 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 }
 </style>
 
+
+<style id="sshcp-v2262-geek-light-table-headers">
+/* SSHCP V22.62: GEEK-only lighter table surfaces. */
+.modal-overlay.geek-mode-v180 .geek-row-v180.header,
+.modal-overlay.geek-mode-v180 .geek-row-v180.category{
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:#000!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.header .geek-cell-v180,
+.modal-overlay.geek-mode-v180 .geek-row-v180.category .geek-cell-v180{
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  border-right-color:var(--line)!important;
+  border-bottom-color:var(--line)!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.header .geek-us-header-v1813{
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  border-right-color:var(--line)!important;
+  border-bottom-color:var(--line)!important;
+}
+
+html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216,
+html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216 .geek-all-teams-cell-v2216{
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+html.sshcp-geek-all-teams-v2216 .geek-all-teams-team-head-v2217.authorized-v2217 .geek-all-teams-team-name-v2217{
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+</style>
+
 </head>
 
 
@@ -13730,7 +13773,7 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.61</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.62</span></span>
         </button>
         <script>
           (function () {
