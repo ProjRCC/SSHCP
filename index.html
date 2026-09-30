@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.67-Q4N8VX | BUILD KEY: 22.68-L7Q3MX -->
+<!-- SSHCP | BASE KEY: 22.68-L7Q3MX | BUILD KEY: 22.69-H5M8QK -->
+<!-- SSHCP V22.69 TEAM/HCP HEADER MERGE + HEADER FONT TARGETS - exact V22.68 donor.
+     Presentation-only header refinement. LIVE LEADERBOARD and FINAL RESULTS merge PLACE + TEAM + HCP into one TEAM / HCP header spanning the unchanged 9% + 40% + 9% body tracks; that merged header targets 48% of actual header-row height while ROUND and TOTAL remain at the established 38% target. SCRAMBLE SUMMARY keeps its V22.68 TEAM and NET SCORE merged regions, but TEAM alone now targets 48% of actual header-row height while NET SCORE remains at 38%. Body columns/data, widths/geometry, Scorecard, GEEK, ranking, finalized after-play standings/tiebreak logic, Summary NET SCORE geometry/90-80-70 typography, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.69. -->
 <!-- SSHCP V22.68 MERGED TEAM TABLE HEADERS - exact V22.67 donor.
      Presentation-only header refinement. LIVE LEADERBOARD and FINAL RESULTS merge the PLACE + TEAM header tracks into one TEAM header spanning the unchanged 9% + 40% body columns; SCRAMBLE SUMMARY merges the PLACE + TEAM header tracks into one TEAM header spanning the unchanged 10% + 55% body columns. Body columns, place numbers, table widths/geometry, ranking, finalized after-play standings/tiebreak logic, Summary NET SCORE geometry/90-80-70 typography, scoring, authorization, Worker/API, GEEK, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.68. -->
 <!-- SSHCP V22.67 AFTER-PLAY FINAL STANDINGS LOCK - exact V22.66 donor.
@@ -4648,9 +4650,9 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
 
 #leaderboardView .leader-table-head > div{padding:2% 3%!important;}
 
-/* V22.68 — header-only merge. Body remains 9% PLACE + 40% TEAM. */
-#leaderboardView .leader-table-head > .leader-team-header-v2268{
-  grid-column:1 / 3!important;
+/* V22.69 — header-only merge. Body remains 9% PLACE + 40% TEAM + 9% HCP. */
+#leaderboardView .leader-table-head > .leader-team-hcp-header-v2269{
+  grid-column:1 / 4!important;
 }
 
 #leaderboardView .leader-content{
@@ -13814,7 +13816,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.68</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.69</span></span>
         </button>
         <script>
           (function () {
@@ -14103,9 +14105,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
       <div class="leader-table-head">
 
-        <div class="leader-team-header-v2268">TEAM</div>
-
-        <div class="leader-hcp-header"><span>HCP</span></div>
+        <div class="leader-team-hcp-header-v2269">TEAM / HCP</div>
 
         <div>ROUND</div>
 
@@ -26580,8 +26580,13 @@ let scoreTimingDetail =
       if (header) {
         /* V20.0 — Summary header is one line across all four columns. NET is
            intentionally score-only, so it uses the same shared header fitter. */
+        /* V22.69: merged TEAM gets a 48%-of-row target while NET SCORE
+           retains the established 38% target. */
         Array.from(header.children).forEach(cell => {
-          fitTextToBoxV5(cell, cell, cell.clientHeight * 0.38, 0.001, {
+          const targetRatioV2269 = cell.classList.contains('summary-team-header-v2268')
+            ? 0.48
+            : 0.38;
+          fitTextToBoxV5(cell, cell, cell.clientHeight * targetRatioV2269, 0.001, {
             horizontalPad: 6,
             verticalPad: 4,
             wrap: false,
@@ -32703,12 +32708,17 @@ let scoreTimingDetail =
       const headerHeight = header.getBoundingClientRect().height;
       if (rowHeight <= 0 || headerHeight <= 0) return;
 
+      /* V22.69: merged TEAM / HCP gets the larger 48%-of-row target;
+         ROUND and TOTAL retain the established 38% target. */
       Array.from(header.children).forEach(cell => {
         const target = cell.querySelector('span') || cell;
+        const targetRatioV2269 = cell.classList.contains('leader-team-hcp-header-v2269')
+          ? 0.48
+          : 0.38;
         fitTextToBoxV5(
           cell,
           target,
-          headerHeight * 0.38,
+          headerHeight * targetRatioV2269,
           8,
           { horizontalPad: 6, verticalPad: 4, noMin: true }
         );
