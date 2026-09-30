@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.61-P4N7QX | BUILD KEY: 22.62-F8M3QK -->
+<!-- SSHCP | BASE KEY: 22.62-F8M3QK | BUILD KEY: 22.63-M6Q4VN -->
+<!-- SSHCP V22.63 GEEK HEADER TEXT REFINEMENT - exact V22.62 donor.
+     Changes only GEEK presentation. Regular GEEK keeps Gray 3 top/category header surfaces; all top-header labels, including YOU, are black, while category-header text uses Gray 7. ALL TEAMS keeps the V22.62 Gray 3 table header and sticky STAT column, while the full GEEK MODE • ALL TEAMS title uses the app Blue accent. No data cells, winner highlighting, dots, geometry, scrolling, snapping, filters, calculations, detail behavior, scoring, authorization, Worker/API, Summary, event config, timing or CF V3.4 changes. HOME label advances to V22.63. -->
 <!-- SSHCP V22.62 GEEK TABLE LIGHT HEADER TREATMENT - exact V22.61 donor.
      Changes only GEEK MODE table presentation. Regular GEEK top headers and category rows use Gray 3 with black text, while the YOU header label remains Blue. ALL TEAMS top headers use Gray 3 with black text, including authorized team names, and the sticky STAT column uses Gray 3 down the body. Existing YOU data highlighting, winner cells, stat dots, table geometry, scrolling, snapping, filters, calculations, detail behavior, scoring, authorization, Worker/API, Summary, event config, timing and CF V3.4 remain unchanged. HOME label advances to V22.62. -->
 <!-- SSHCP V22.61 TIE-BREAK COMPLETION ACTION RED - exact V22.60 donor.
@@ -13599,15 +13601,13 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 </style>
 
 
-<style id="sshcp-v2262-geek-light-table-headers">
-/* SSHCP V22.62: GEEK-only lighter table surfaces. */
+<style id="sshcp-v2263-geek-light-table-headers">
+/* SSHCP V22.63: GEEK-only header text refinement. */
 .modal-overlay.geek-mode-v180 .geek-row-v180.header,
 .modal-overlay.geek-mode-v180 .geek-row-v180.category{
   background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
-  color:#000!important;
 }
-.modal-overlay.geek-mode-v180 .geek-row-v180.header .geek-cell-v180,
-.modal-overlay.geek-mode-v180 .geek-row-v180.category .geek-cell-v180{
+.modal-overlay.geek-mode-v180 .geek-row-v180.header .geek-cell-v180{
   background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
   color:#000!important;
   -webkit-text-fill-color:#000!important;
@@ -13616,12 +13616,24 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 }
 .modal-overlay.geek-mode-v180 .geek-row-v180.header .geek-us-header-v1813{
   background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
-  color:var(--accent)!important;
-  -webkit-text-fill-color:var(--accent)!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  border-right-color:var(--line)!important;
+  border-bottom-color:var(--line)!important;
+}
+.modal-overlay.geek-mode-v180 .geek-row-v180.category,
+.modal-overlay.geek-mode-v180 .geek-row-v180.category .geek-cell-v180{
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
   border-right-color:var(--line)!important;
   border-bottom-color:var(--line)!important;
 }
 
+html.sshcp-geek-all-teams-v2216 .geek-all-teams-title-v2216{
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+}
 html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216,
 html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216 .geek-all-teams-cell-v2216{
   background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
@@ -13773,7 +13785,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.62</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.63</span></span>
         </button>
         <script>
           (function () {
