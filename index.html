@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.71-C4P7NX | BUILD KEY: 22.72-T4Q9MX -->
+<!-- SSHCP | BASE KEY: 22.72-T4Q9MX | BUILD KEY: 22.73-R6M2QV -->
+<!-- SSHCP V22.73 FINAL RESULTS HALF-GAP LOCK - exact V22.72 donor.
+     Presentation-only completed-Leaderboard correction. FINAL RESULTS now explicitly escapes the later legacy fixed 40px context-height rule so its title bar is true content height. Completed state therefore follows NAV BUTTONS -> G -> FINAL RESULTS -> 0.5G -> 3px progress/divider bar -> 0.5G -> TABLE. LIVE LEADERBOARD is intentionally unchanged from V22.72. Table/header/body/footer geometry, V22.69 TEAM/HCP and Summary typography, Scorecard, GEEK, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.73. -->
 <!-- SSHCP V22.72 LEADERBOARD TOP-GAP MATCH - exact V22.71 donor.
      Presentation-only refinement to LIVE LEADERBOARD and FINAL RESULTS upper-shell spacing. The QR-locked Scorecard HOME-button-to-table gap remains the single reference G. Leaderboard/Final Results now use NAV BUTTONS -> G -> TITLE -> 0.5G -> 3px progress/divider bar -> 0.5G -> TABLE. The title bar is content-height instead of reserving the former fixed context height, so the progress/divider consumes no unnecessary table space. Table/header/body/footer geometry logic, V22.69 TEAM/HCP and Summary typography, Scorecard, GEEK, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.72. -->
 <!-- SSHCP V22.71 LEADERBOARD HALF-GAP PROGRESS BALANCE - exact V22.70 donor.
@@ -13690,6 +13692,20 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 }
 </style>
 
+
+  <style>
+    /* V22.73 — FINAL RESULTS only: true content-height title with 0.5G on each side of the divider. */
+    #leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
+      height:auto!important;
+      min-height:0!important;
+      max-height:none!important;
+      margin:var(--v16-nav-context-gap,8px) 0 calc(var(--v16-nav-context-gap,8px) / 2)!important;
+      box-sizing:border-box!important;
+      align-items:flex-start!important;
+      padding:0 0 calc((var(--v16-nav-context-gap,8px) / 2) + 3px) 0!important;
+    }
+  </style>
+
 </head>
 
 
@@ -13824,7 +13840,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.72</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.73</span></span>
         </button>
         <script>
           (function () {
