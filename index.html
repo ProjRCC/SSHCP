@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.53-K7M4VX | BUILD KEY: 22.54-T8Q5MR -->
+<!-- SSHCP | BASE KEY: 22.54-T8Q5MR | BUILD KEY: 22.55-P7K3RM -->
+<!-- SSHCP V22.55 CENTRAL EVENT DETAILS - exact V22.54 donor.
+     Adds one simple SSHCP_EVENT configuration block at the top of the code. DETAILS owns the HOME event-details line and SHORT_NAME owns the Leaderboard top-center event name, so either can be changed in one place without hunting through presentation code. Initial HOME/Leaderboard paint and subsequent Leaderboard header refreshes all use the same configuration. Historical ROTB26 test-generator naming/data, scoring, authorization, Worker/API, GEEK/ALL TEAMS, orientation, rails, timing and CF V3.4 remain unchanged. HOME label advances to V22.55. -->
 <!-- SSHCP V22.54 ALL TEAMS LEFT VERTICAL RAIL - exact V22.53 donor.
      Moves only the ALL TEAMS vertical scroll-progress rail and its reserved gutter from the right side to the left side. The former fixed 16px right rail gutter becomes a fixed 16px left rail gutter, while the former flexible minimum-5px left presentation gap moves to the right and continues absorbing only the device-pixel divisibility remainder used by the established team-track solver. The bottom horizontal progress rail, STAT/team widths, five-row geometry, snapping, scroll positions, detail cards, GEEK data/orientation behavior, scoring, auth, Worker/API and CF V3.4 remain unchanged. HOME label advances to V22.54. -->
 <!-- SSHCP V22.53 ALL TEAMS FIRST-DETAIL ACTION MARGIN RESET - exact V22.52 donor.
@@ -54,6 +56,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+  <script>
+    /* =========================================================
+       EVENT DETAILS — EDIT THESE TWO VALUES ONLY
+       ========================================================= */
+    window.SSHCP_EVENT = {
+      DETAILS: 'ROLLING ACRES - ROTB - 27 SEP 2026',
+      SHORT_NAME: 'ROTB 2026'
+    };
+  </script>
 
   <script>
     /* =========================================================
@@ -13655,9 +13667,15 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
         </div>
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
-          <span class="home-event-info">ROLLING ACRES - ROTB - 27 SEP 2026</span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.54</span></span>
+          <span id="homeEventInfoV2255" class="home-event-info"></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.55</span></span>
         </button>
+        <script>
+          (function () {
+            var eventInfo = document.getElementById('homeEventInfoV2255');
+            if (eventInfo) eventInfo.textContent = String(window.SSHCP_EVENT.DETAILS || '');
+          })();
+        </script>
 
       </div>
 
@@ -13906,7 +13924,13 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
           <div
             id="leaderTiming"
             class="leader-test-timing header-brand"
-          >ROTB 2026</div>
+          ></div>
+          <script>
+            (function () {
+              var leaderEvent = document.getElementById('leaderTiming');
+              if (leaderEvent) leaderEvent.textContent = String(window.SSHCP_EVENT.SHORT_NAME || '');
+            })();
+          </script>
 
 
           <button
@@ -15395,9 +15419,16 @@ let scoreTimingDetail =
     }
 
 
+    function eventShortNameV2255() {
+      return String(
+        (window.SSHCP_EVENT && window.SSHCP_EVENT.SHORT_NAME) || ''
+      ).trim();
+    }
+
+
     function updateTopCenterHeadersV196() {
       if (els.scoreTiming) els.scoreTiming.textContent = scorecardHeaderTextV196();
-      if (els.leaderTiming) els.leaderTiming.textContent = "ROTB 2026";
+      if (els.leaderTiming) els.leaderTiming.textContent = eventShortNameV2255();
 
       requestAnimationFrame(() => {
         fitTopCenterHeaderV196(els.scoreTiming);
@@ -20376,7 +20407,7 @@ let scoreTimingDetail =
         if (els.scoreTiming) els.scoreTiming.textContent = scorecardHeaderTextV196();
         applyV16ShellGeometry(els.scorecardView);
       } else if (view === 'leaderboard') {
-        if (els.leaderTiming) els.leaderTiming.textContent = 'ROTB 2026';
+        if (els.leaderTiming) els.leaderTiming.textContent = eventShortNameV2255();
         applyV16ShellGeometry(els.leaderboardView);
       }
 
