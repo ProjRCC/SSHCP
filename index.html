@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.72-T4Q9MX | BUILD KEY: 22.73-R6M2QV -->
+<!-- SSHCP | BASE KEY: 22.73-R6M2QV | BUILD KEY: 22.74-K8V3MN -->
+<!-- SSHCP V22.74 LEADERBOARD EQUAL PROGRESS-GAP LOCK - exact V22.73 donor.
+     Presentation-only upper-shell correction for both LIVE LEADERBOARD and FINAL RESULTS. The already-approved nav/header/title positions remain locked. The title bar is forced to true content height after all legacy CSS, and the existing 3px progress/divider bar is centered inside one fixed visual gap: TITLE -> 0.5G -> BAR -> 0.5G -> TABLE. The two gaps are therefore generated from the same variable/expression and cannot diverge between live and completed states. Reclaimed vertical space belongs to the Leaderboard table/flex region; table/header/body/footer logic and bottom controls are otherwise unchanged. V22.69 TEAM/HCP and Summary typography, Scorecard, GEEK, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.74. -->
 <!-- SSHCP V22.73 FINAL RESULTS HALF-GAP LOCK - exact V22.72 donor.
      Presentation-only completed-Leaderboard correction. FINAL RESULTS now explicitly escapes the later legacy fixed 40px context-height rule so its title bar is true content height. Completed state therefore follows NAV BUTTONS -> G -> FINAL RESULTS -> 0.5G -> 3px progress/divider bar -> 0.5G -> TABLE. LIVE LEADERBOARD is intentionally unchanged from V22.72. Table/header/body/footer geometry, V22.69 TEAM/HCP and Summary typography, Scorecard, GEEK, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.73. -->
 <!-- SSHCP V22.72 LEADERBOARD TOP-GAP MATCH - exact V22.71 donor.
@@ -13694,7 +13696,8 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
 
   <style>
-    /* V22.73 — FINAL RESULTS only: true content-height title with 0.5G on each side of the divider. */
+    /* V22.74 — LIVE + FINAL: identical visible gap above and below the 3px divider. */
+    #leaderboardView .leader-title-bar,
     #leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar{
       height:auto!important;
       min-height:0!important;
@@ -13840,7 +13843,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.73</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.74</span></span>
         </button>
         <script>
           (function () {
