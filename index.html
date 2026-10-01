@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.75-V4N7QK | BUILD KEY: 22.76-Z4M8QK -->
+<!-- SSHCP | BASE KEY: 22.76-Z4M8QK | BUILD KEY: 22.77-L5Q8RV -->
+<!-- SSHCP V22.77 GEEK PDF DOWNLOAD + RESULT AUDIT LAST-PLACE ALIGNMENT - exact V22.76 donor.
+     Adds one presentation-only download icon to the top-right of regular portrait GEEK MODE. The icon is absolute-positioned inside the existing GEEK popup so it does not alter title/table/action geometry, is hidden during early/incomplete GEEK and FILTERS, and downloads the deployed CF V3.5 action=geekPdf response as GEEK STATS.pdf without changing GEEK/ALL TEAMS calculations or adding a second stats engine. Also fixes only the independent RESULT AUDIT expected Leaderboard place labels after V22.67 finalized standings: when the protected bottom-place resolver has already converted a worst-net tie into real final places, the cross-view verifier now expects those same resolved place labels/order instead of the stale pre-V22.67 T-place labels. Tournament ranking, tiebreak math, Summary/Final Results rendering, scoring, authorization, Worker behavior, GAME, SKINS, event config, timing and all approved GEEK geometry remain unchanged. HOME label advances to V22.77. -->
 <!-- SSHCP V22.76 LEADERBOARD TITLE +10% / BLUE - exact V22.75 donor.
      Presentation-only title refinement. LIVE LEADERBOARD and FINAL RESULTS use the exact V22.75 restored multiplier-driven title rule, increased by 10% (55% -> 60.5% of the established 40px context-height baseline through the existing global VPH×DPR multiplier). Both titles use the app Blue accent. V22.74/V22.75 upper geometry remains structurally unchanged: NAV/header/title top placement stays locked and TITLE -> equal half-gap -> 3px progress/divider -> equal half-gap -> TABLE remains intact. Because the title bar is content-height, the 10% taller title grows downward and everything below it moves down by the same added title height; the table/flex region absorbs that amount. Scorecard, GEEK, table/header/body/footer typography, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.76. -->
 <!-- SSHCP V22.75 LEADERBOARD TITLE SIZE RESTORE - exact V22.74 donor.
@@ -12529,6 +12531,46 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .modal-overlay.geek-detail-v180 .modal-actions .modal-btn{
   font-size:calc(22px * var(--v221-global-scale,1))!important;
 }
+/* V22.77 — regular portrait GEEK PDF download icon; absolute so GEEK geometry is untouched. */
+.geek-download-v2277{
+  display:none;
+}
+.modal-overlay.geek-mode-v180:not(.geek-early-v2068) .geek-download-v2277{
+  position:absolute!important;
+  top:calc(10px * var(--v221-global-scale,1))!important;
+  right:calc(12px * var(--v221-global-scale,1))!important;
+  z-index:12!important;
+  width:calc(34px * var(--v221-global-scale,1))!important;
+  height:calc(34px * var(--v221-global-scale,1))!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:0!important;
+  border-radius:calc(7px * var(--v221-global-scale,1))!important;
+  outline:none!important;
+  background:transparent!important;
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  box-shadow:none!important;
+}
+.modal-overlay.geek-mode-v180:not(.geek-early-v2068) .geek-download-v2277 svg{
+  width:calc(25px * var(--v221-global-scale,1))!important;
+  height:calc(25px * var(--v221-global-scale,1))!important;
+  display:block!important;
+  pointer-events:none!important;
+}
+.modal-overlay.geek-mode-v180 .modal-box.geek-filter-open-v1810 > .geek-download-v2277{
+  display:none!important;
+}
+.geek-download-v2277.downloading-v2277{
+  opacity:.42!important;
+  pointer-events:none!important;
+}
+
 </style>
 
 <style id="sshcp-v222-informational-typography">
@@ -13853,7 +13895,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.76</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.77</span></span>
         </button>
         <script>
           (function () {
@@ -18290,8 +18332,12 @@ let scoreTimingDetail =
         slot: team.slot
       }));
 
-      const leaderboardExpectedRows = leaderboardOrderedV2266.map((team, index) => ({
-        place: auditPlaceLabelV2266(leaderboardOrderedV2266, team, index, null),
+      /* V22.77 — V22.67 finalized standings also carry the resolved bottom-place
+         order/place labels into FINAL RESULTS. The cross-view expected Leaderboard
+         must therefore use the same independently resolved final order as Summary,
+         rather than the older V22.66 pre-finalization T-place snapshot. */
+      const leaderboardExpectedRows = ordered.map((team, index) => ({
+        place: auditPlaceLabelV2266(ordered, team, index, resolvedLastTeamV2266),
         team: normalizeAuditTextV189(team.team),
         slot: team.slot
       }));
@@ -30451,6 +30497,80 @@ let scoreTimingDetail =
     }
 
 
+    async function downloadGeekStatsPdfV2277(button) {
+      if (!button || button.disabled) return;
+      button.disabled = true;
+      button.classList.add('downloading-v2277');
+      button.setAttribute('aria-busy', 'true');
+
+      try {
+        const response = await fetch(
+          CLOUDFLARE_API_URL + '?action=geekPdf&refresh=' + Date.now(),
+          { cache:'no-store' }
+        );
+
+        if (!response.ok) {
+          let message = 'GEEK STATS PDF unavailable.';
+          try {
+            const errorData = await response.json();
+            message = String(
+              (errorData && (errorData.reason || errorData.error)) ||
+              message
+            );
+          } catch (_) {}
+          throw new Error(message);
+        }
+
+        const blob = await response.blob();
+        if (!blob || blob.type !== 'application/pdf') {
+          throw new Error('GEEK STATS PDF download returned an invalid file.');
+        }
+
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = 'GEEK STATS.pdf';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+      } catch (error) {
+        showMessageModal(
+          'GEEK STATS',
+          String(error && error.message || 'Unable to download GEEK STATS PDF.')
+        );
+      } finally {
+        button.disabled = false;
+        button.classList.remove('downloading-v2277');
+        button.removeAttribute('aria-busy');
+      }
+    }
+
+    function installGeekDownloadButtonV2277() {
+      const box = els.modalBox;
+      if (!box) return;
+
+      const existing = box.querySelector('.geek-download-v2277');
+      if (existing) existing.remove();
+
+      if (geekEarlyAccessV2068) return;
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'geek-download-v2277';
+      button.setAttribute('aria-label', 'Download GEEK STATS PDF');
+      button.setAttribute('title', 'Download GEEK STATS PDF');
+      button.innerHTML =
+        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+          '<path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3" ' +
+          'fill="none" stroke="currentColor" stroke-width="2.15" ' +
+          'stroke-linecap="round" stroke-linejoin="round"></path>' +
+        '</svg>';
+      button.addEventListener('click', () => downloadGeekStatsPdfV2277(button));
+      box.appendChild(button);
+    }
+
     function renderGeekMainShellV180() {
       document.documentElement.classList.add('sshcp-geek-regular-v2230');
       els.modalOverlay.classList.add('geek-mode-v180');
@@ -30496,6 +30616,7 @@ let scoreTimingDetail =
       }
       els.modalOverlay.classList.add('open');
       installGeekCopyButtonV180b();
+      installGeekDownloadButtonV2277();
 
       const scroll = els.modalBody.querySelector('.geek-table-scroll-v180');
       if (scroll) {
@@ -34431,6 +34552,9 @@ let scoreTimingDetail =
 
       const geekCopyV180b = els.modalBox && els.modalBox.querySelector('.geek-copy-v180b');
       if (geekCopyV180b) geekCopyV180b.remove();
+
+      const geekDownloadV2277 = els.modalBox && els.modalBox.querySelector('.geek-download-v2277');
+      if (geekDownloadV2277) geekDownloadV2277.remove();
 
       if (els.modalBox) {
         els.modalBox.querySelectorAll('.summary-home-overlay-v181,.summary-nav-overlay-v182,.summary-progress-v2116,.geek-progress-v2119,.game-progress-v2122,.geek-filter-popover-v186').forEach(node => node.remove());
