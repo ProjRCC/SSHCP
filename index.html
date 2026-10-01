@@ -1,4 +1,12 @@
-<!-- SSHCP | BASE KEY: 22.85-H7Q3MV | BUILD KEY: 22.86-M4V8QK -->
+<!-- SSHCP | BASE KEY: 22.86-M4V8QK | BUILD KEY: 22.87-J8Q4NX -->
+<!-- SSHCP V22.87 FRONTEND GEEK PRINT RENDERER - exact V22.86 donor.
+     Keeps the existing GEEK PDF SIZE chooser, recommendation logic, filename/status flow,
+     GEEK calculations, filters and all app behavior. DOWNLOAD now requests the Worker's
+     read-only print-ready GEEK data and renders the selected paper locally in the browser
+     using the real loaded Oswald font. Main stat values use one shared largest size that
+     fits all result cells; team names and every hole/detail cell fit independently against
+     their actual cell width/height. The rendered page is captured as a single high-resolution
+     image and wrapped into a one-page PDF. The prior Worker action=geekPdf remains a fallback. -->
 <!-- SSHCP V22.86 GEEK PDF SUCCESS TIMER + CLEAN SIZE TOUCH - exact V22.85 donor.
      Changes only the GEEK PDF download/selector presentation. DOWNLOAD STARTED keeps the readable success card and OK button, adds a thin Blue six-second remaining-time bar that drains to zero, and auto-dismisses at six seconds if OK is not pressed. PDF-size rows no longer use the global literal-button press flash: touching a size leaves the row surface/text unchanged, while selection is communicated only by the filled Blue checkbox and thicker Blue outer border. V22.85 recommendation labels/help copy, first recommended preselection, Gray 7 non-recommended treatment, ALL TEAMS auth header, GEEK calculations, scoring, authorization, results, Summary, SKINS, GAME, Scramble, TEST, event config and timing otherwise remain unchanged. HOME label advances to V22.86. -->
 <!-- SSHCP V22.85 GEEK PDF RECOMMENDED LABEL + GEEK GUIDE DOWNLOAD COPY - exact V22.84 donor.
@@ -14232,7 +14240,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.86</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.87</span></span>
         </button>
         <script>
           (function () {
@@ -31138,6 +31146,489 @@ let scoreTimingDetail =
       overlay.classList.add('open');
     }
 
+
+    const GEEK_PRINT_RENDER_BLUE_V2287 = '#133362';
+    const GEEK_PRINT_RENDER_DARK_V2287 = '#141414';
+    const GEEK_PRINT_RENDER_GRAY_V2287 = '#666666';
+    const GEEK_PRINT_RENDER_LIGHT_V2287 = '#f3f3f3';
+    const GEEK_PRINT_RENDER_GRID_V2287 = '#b9b9b9';
+
+    function geekPrintPaperGeometryV2287(paperV2281) {
+      const paper = normalizedGeekPdfPaperV2281(paperV2281);
+      if (paper === 'portrait11x14') {
+        return { key:paper, widthIn:11, heightIn:14, widthPt:792, heightPt:1008, horizontalUse:0.95, verticalUse:0.95 };
+      }
+      if (paper === 'landscape17x11') {
+        return { key:paper, widthIn:17, heightIn:11, widthPt:1224, heightPt:792, horizontalUse:0.98, verticalUse:0.95 };
+      }
+      return { key:'letter', widthIn:8.5, heightIn:11, widthPt:612, heightPt:792, horizontalUse:0.95, verticalUse:0.95 };
+    }
+
+    function geekPrintCanvasFontV2287(ctx, px, weight) {
+      const size = Math.max(1, Number(px) || 1);
+      ctx.font = String(weight || 500) + ' ' + size.toFixed(2) + 'px "Oswald", Arial, sans-serif';
+    }
+
+    function geekPrintMeasureRatioV2287(ctx, text, weight) {
+      geekPrintCanvasFontV2287(ctx, 100, weight);
+      return ctx.measureText(String(text == null ? '' : text)).width / 100;
+    }
+
+    function geekPrintFitIndependentPxV2287(ctx, text, maxPx, availableWidth, weight, halfCharEachSide) {
+      const value = String(text == null ? '' : text);
+      const cap = Math.max(1, Number(maxPx) || 1);
+      if (!value) return cap;
+      const textRatio = geekPrintMeasureRatioV2287(ctx, value, weight);
+      const zeroRatio = geekPrintMeasureRatioV2287(ctx, '0', weight);
+      const sideChars = halfCharEachSide === false ? 0 : 1; // 0.5 character on each side = one character total.
+      const denominator = textRatio + (zeroRatio * sideChars);
+      if (!(denominator > 0)) return cap;
+      return Math.max(1, Math.min(cap, Number(availableWidth) / denominator));
+    }
+
+    function geekPrintFitSharedPxV2287(ctx, texts, maxPx, availableWidth, weight) {
+      const cap = Math.max(1, Number(maxPx) || 1);
+      let answer = cap;
+      for (const raw of (Array.isArray(texts) ? texts : [])) {
+        const value = String(raw == null ? '' : raw);
+        if (!value) continue;
+        answer = Math.min(
+          answer,
+          geekPrintFitIndependentPxV2287(ctx, value, cap, availableWidth, weight, true)
+        );
+      }
+      return Math.max(1, answer);
+    }
+
+    function geekPrintDrawCellV2287(ctx, x, y, w, h, fill, stroke) {
+      ctx.fillStyle = fill || '#ffffff';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = stroke || GEEK_PRINT_RENDER_GRID_V2287;
+      ctx.lineWidth = Math.max(1, Math.min(2.25, w * 0.004));
+      ctx.strokeRect(x, y, w, h);
+    }
+
+    function geekPrintDrawTextV2287(ctx, text, x, y, w, h, px, options) {
+      const opts = options || {};
+      const value = String(text == null ? '' : text);
+      if (!value) return;
+      geekPrintCanvasFontV2287(ctx, px, opts.weight || 500);
+      ctx.fillStyle = opts.color || GEEK_PRINT_RENDER_DARK_V2287;
+      ctx.textAlign = opts.align || 'center';
+      ctx.textBaseline = 'middle';
+      const pad = Math.max(0, Number(opts.padPx) || 0);
+      const tx = ctx.textAlign === 'left'
+        ? x + pad
+        : ctx.textAlign === 'right'
+          ? x + w - pad
+          : x + (w / 2);
+      ctx.fillText(value, tx, y + (h / 2));
+    }
+
+    function geekPrintBuildRowsV2287(data) {
+      const stats = Array.isArray(data && data.statRows) ? data.statRows : [];
+      const statByRow = new Map(stats.map(stat => [Number(stat.row), stat]));
+      const detailByRow = new Map(
+        stats.filter(stat => Number(stat.detailRow) > 0)
+          .map(stat => [Number(stat.detailRow), stat])
+      );
+      const sections = new Map(
+        (Array.isArray(data && data.sections) ? data.sections : [])
+          .map(section => [Number(section.row), String(section.label || '')])
+      );
+      const sectionRows = new Set(
+        Array.isArray(data && data.sectionRows) ? data.sectionRows.map(Number) : []
+      );
+      let maxRow = 2;
+      stats.forEach(stat => {
+        maxRow = Math.max(maxRow, Number(stat.row) || 0, Number(stat.detailRow) || 0);
+      });
+      sectionRows.forEach(row => { maxRow = Math.max(maxRow, row); });
+
+      const rows = [];
+      for (let row = 3; row <= maxRow; row++) {
+        if (sectionRows.has(row)) {
+          rows.push({ type:'section', row, label:sections.get(row) || '' });
+        } else if (statByRow.has(row)) {
+          rows.push({ type:'stat', row, stat:statByRow.get(row) });
+        } else if (detailByRow.has(row)) {
+          rows.push({ type:'detail', row, stat:detailByRow.get(row) });
+        }
+      }
+      return rows;
+    }
+
+    async function geekPrintFetchDataV2287() {
+      const response = await fetch(
+        CLOUDFLARE_API_URL + '?action=geekPrintData&refresh=' + Date.now(),
+        { cache:'no-store' }
+      );
+      if (!response.ok) {
+        let message = 'GEEK STATS data unavailable.';
+        try {
+          const errorData = await response.json();
+          message = String(
+            (errorData && (errorData.reason || errorData.error)) ||
+            message
+          );
+        } catch (_) {}
+        const error = new Error(message);
+        error.status = response.status;
+        throw error;
+      }
+      const data = await response.json();
+      if (!data || data.ok !== true || !Array.isArray(data.teams) || !Array.isArray(data.statRows)) {
+        throw new Error('GEEK STATS data returned an invalid result.');
+      }
+      return data;
+    }
+
+    async function geekPrintRenderCanvasV2287(data, paperV2281) {
+      try {
+        if (document.fonts && document.fonts.load) {
+          await Promise.all([
+            document.fonts.load('400 16px Oswald'),
+            document.fonts.load('500 16px Oswald'),
+            document.fonts.load('600 16px Oswald'),
+            document.fonts.load('700 16px Oswald')
+          ]);
+          if (document.fonts.ready) await document.fonts.ready;
+        }
+      } catch (_) {}
+
+      const paper = geekPrintPaperGeometryV2287(paperV2281);
+      const ppi = 200;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(paper.widthIn * ppi);
+      canvas.height = Math.round(paper.heightIn * ppi);
+      const ctx = canvas.getContext('2d', { alpha:false });
+      if (!ctx) throw new Error('Unable to create GEEK STATS print surface.');
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      const tableW = canvas.width * paper.horizontalUse;
+      const tableH = canvas.height * paper.verticalUse;
+      const tableX = (canvas.width - tableW) / 2;
+      const tableY = (canvas.height - tableH) / 2;
+
+      const fixedWidthPx = 2.25 * ppi;
+      const statW = Math.min(tableW * 0.18, fixedWidthPx * (1.0 / 2.25));
+      const explainW = Math.min(tableW * 0.24, fixedWidthPx * (1.25 / 2.25));
+      const teams = Array.isArray(data.teams) ? data.teams : [];
+      const teamCount = Math.max(1, teams.length);
+      const teamAreaW = Math.max(1, tableW - statW - explainW);
+      const teamW = teamAreaW / teamCount;
+      const xTeam0 = tableX + statW + explainW;
+
+      const bodyRows = geekPrintBuildRowsV2287(data);
+      const weights = bodyRows.map(row =>
+        row.type === 'section' ? 1.20 :
+        row.type === 'detail' ? 0.95 :
+        1.55
+      );
+      const titleWeight = 2.05;
+      const headerWeight = 1.70;
+      const totalWeight = titleWeight + headerWeight +
+        weights.reduce((sum, value) => sum + value, 0);
+      const unitH = tableH / Math.max(1, totalWeight);
+      const titleH = unitH * titleWeight;
+      const headerH = unitH * headerWeight;
+
+      const rowHeights = bodyRows.map((row, index) => unitH * weights[index]);
+      const mainHeights = rowHeights.filter((height, index) => bodyRows[index].type === 'stat');
+      const detailHeights = rowHeights.filter((height, index) => bodyRows[index].type === 'detail');
+      const minMainH = mainHeights.length ? Math.min(...mainHeights) : unitH * 1.55;
+      const minDetailH = detailHeights.length ? Math.min(...detailHeights) : unitH * 0.95;
+
+      const allResultTexts = [];
+      (Array.isArray(data.statRows) ? data.statRows : []).forEach(stat => {
+        (Array.isArray(stat.values) ? stat.values : []).forEach(value => {
+          if (String(value == null ? '' : value)) allResultTexts.push(String(value));
+        });
+      });
+      const sharedResultPx = geekPrintFitSharedPxV2287(
+        ctx,
+        allResultTexts,
+        minMainH * 0.80,
+        teamW,
+        700
+      );
+
+      const teamNameSizes = teams.map(team =>
+        geekPrintFitIndependentPxV2287(
+          ctx,
+          team && team.name,
+          headerH * 0.80,
+          teamW,
+          700,
+          true
+        )
+      );
+
+      const detailSizes = new Map();
+      (Array.isArray(data.statRows) ? data.statRows : []).forEach(stat => {
+        if (!(Number(stat.detailRow) > 0)) return;
+        (Array.isArray(stat.details) ? stat.details : []).forEach((value, teamIndex) => {
+          detailSizes.set(
+            String(stat.row) + ':' + String(teamIndex),
+            geekPrintFitIndependentPxV2287(
+              ctx,
+              value,
+              minDetailH * 0.80,
+              teamW,
+              500,
+              true
+            )
+          );
+        });
+      });
+
+      // Title: full-table Blue bar, visually centered across the complete report.
+      geekPrintDrawCellV2287(ctx, tableX, tableY, tableW, titleH, GEEK_PRINT_RENDER_BLUE_V2287, GEEK_PRINT_RENDER_BLUE_V2287);
+      const titlePx = geekPrintFitIndependentPxV2287(
+        ctx,
+        String(data.title || 'SIMPLE SCRAMBLE — GEEK STATS'),
+        titleH * 0.66,
+        tableW,
+        700,
+        true
+      );
+      geekPrintDrawTextV2287(
+        ctx,
+        String(data.title || 'SIMPLE SCRAMBLE — GEEK STATS'),
+        tableX, tableY, tableW, titleH, titlePx,
+        { weight:700, color:'#ffffff', align:'center' }
+      );
+
+      let y = tableY + titleH;
+
+      // Header row.
+      geekPrintDrawCellV2287(ctx, tableX, y, statW, headerH, '#ffffff');
+      geekPrintDrawCellV2287(ctx, tableX + statW, y, explainW, headerH, '#ffffff');
+      const headerStatPx = geekPrintFitIndependentPxV2287(ctx, 'STAT', headerH * 0.55, statW, 700, true);
+      const headerExplainPx = geekPrintFitIndependentPxV2287(ctx, 'EXPLANATION / HOLES', headerH * 0.55, explainW, 700, true);
+      geekPrintDrawTextV2287(ctx, 'STAT', tableX, y, statW, headerH, headerStatPx, { weight:700 });
+      geekPrintDrawTextV2287(ctx, 'EXPLANATION / HOLES', tableX + statW, y, explainW, headerH, headerExplainPx, { weight:700 });
+
+      teams.forEach((team, index) => {
+        const x = xTeam0 + (teamW * index);
+        geekPrintDrawCellV2287(ctx, x, y, teamW, headerH, '#ffffff');
+        geekPrintDrawTextV2287(
+          ctx,
+          String(team && team.name || ''),
+          x, y, teamW, headerH, teamNameSizes[index],
+          { weight:700, color:GEEK_PRINT_RENDER_DARK_V2287 }
+        );
+      });
+      y += headerH;
+
+      const slotToIndex = new Map(teams.map((team, index) => [Number(team.slot), index]));
+
+      bodyRows.forEach((row, rowIndex) => {
+        const h = rowHeights[rowIndex];
+
+        if (row.type === 'section') {
+          geekPrintDrawCellV2287(ctx, tableX, y, tableW, h, GEEK_PRINT_RENDER_BLUE_V2287, GEEK_PRINT_RENDER_BLUE_V2287);
+          const sectionLabel = String(row.label || '');
+          const sectionPx = geekPrintFitIndependentPxV2287(ctx, sectionLabel, h * 0.58, statW, 700, true);
+          geekPrintDrawTextV2287(
+            ctx, sectionLabel, tableX, y, statW, h, sectionPx,
+            { weight:700, color:'#ffffff', align:'left', padPx:Math.max(4, h * 0.16) }
+          );
+          y += h;
+          return;
+        }
+
+        const stat = row.stat || {};
+        const ownerIndexes = new Set(
+          (Array.isArray(stat.ownerSlots) ? stat.ownerSlots : [])
+            .map(slot => slotToIndex.get(Number(slot)))
+            .filter(index => Number.isInteger(index))
+        );
+
+        if (row.type === 'stat') {
+          geekPrintDrawCellV2287(ctx, tableX, y, statW, h, '#ffffff');
+          geekPrintDrawCellV2287(ctx, tableX + statW, y, explainW, h, '#ffffff');
+
+          const label = String(stat.label || '').toUpperCase();
+          const labelPx = geekPrintFitIndependentPxV2287(ctx, label, h * 0.55, statW, 700, true);
+          geekPrintDrawTextV2287(
+            ctx, label, tableX, y, statW, h, labelPx,
+            { weight:700, align:'left', padPx:Math.max(4, h * 0.13) }
+          );
+
+          const explanationLines = String(stat.printExplanation || '').split(/\n+/);
+          const firstExplanation = explanationLines[0] || '';
+          const explanationPx = geekPrintFitIndependentPxV2287(
+            ctx, firstExplanation, h * 0.46, explainW, 500, true
+          );
+          geekPrintDrawTextV2287(
+            ctx, firstExplanation, tableX + statW, y, explainW, h, explanationPx,
+            { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287, align:'left', padPx:Math.max(4, h * 0.12) }
+          );
+
+          teams.forEach((team, teamIndex) => {
+            const x = xTeam0 + (teamW * teamIndex);
+            const owns = ownerIndexes.has(teamIndex);
+            geekPrintDrawCellV2287(
+              ctx, x, y, teamW, h,
+              owns ? GEEK_PRINT_RENDER_BLUE_V2287 : '#ffffff'
+            );
+            const value = Array.isArray(stat.values) ? stat.values[teamIndex] : '';
+            geekPrintDrawTextV2287(
+              ctx, value, x, y, teamW, h, sharedResultPx,
+              { weight:700, color:owns ? '#ffffff' : GEEK_PRINT_RENDER_DARK_V2287 }
+            );
+          });
+        } else {
+          geekPrintDrawCellV2287(ctx, tableX, y, statW, h, '#ffffff');
+          geekPrintDrawCellV2287(ctx, tableX + statW, y, explainW, h, '#ffffff');
+
+          const explanationLines = String(stat.printExplanation || '').split(/\n+/);
+          const secondExplanation = explanationLines.slice(1).join(' ').trim();
+          if (secondExplanation) {
+            const explanationPx = geekPrintFitIndependentPxV2287(
+              ctx, secondExplanation, h * 0.54, explainW, 500, true
+            );
+            geekPrintDrawTextV2287(
+              ctx, secondExplanation, tableX + statW, y, explainW, h, explanationPx,
+              { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287, align:'left', padPx:Math.max(4, h * 0.12) }
+            );
+          }
+
+          teams.forEach((team, teamIndex) => {
+            const x = xTeam0 + (teamW * teamIndex);
+            geekPrintDrawCellV2287(ctx, x, y, teamW, h, GEEK_PRINT_RENDER_LIGHT_V2287);
+            const detail = Array.isArray(stat.details) ? stat.details[teamIndex] : '';
+            const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.80);
+            geekPrintDrawTextV2287(
+              ctx, detail, x, y, teamW, h, detailPx,
+              { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287 }
+            );
+          });
+        }
+
+        y += h;
+      });
+
+      // Crisp outside border after all cells.
+      ctx.strokeStyle = GEEK_PRINT_RENDER_DARK_V2287;
+      ctx.lineWidth = Math.max(1.5, canvas.width / 1400);
+      ctx.strokeRect(tableX, tableY, tableW, tableH);
+
+      return { canvas, paper };
+    }
+
+    function geekPrintAsciiBytesV2287(text) {
+      return new TextEncoder().encode(String(text));
+    }
+
+    function geekPrintConcatBytesV2287(parts) {
+      const arrays = parts.map(part =>
+        part instanceof Uint8Array ? part : geekPrintAsciiBytesV2287(part)
+      );
+      const total = arrays.reduce((sum, part) => sum + part.length, 0);
+      const out = new Uint8Array(total);
+      let offset = 0;
+      arrays.forEach(part => {
+        out.set(part, offset);
+        offset += part.length;
+      });
+      return out;
+    }
+
+    function geekPrintCanvasPdfBlobV2287(canvas, paper) {
+      const jpegUrl = canvas.toDataURL('image/jpeg', 0.96);
+      const comma = jpegUrl.indexOf(',');
+      if (comma < 0) throw new Error('Unable to capture GEEK STATS print surface.');
+      const binary = atob(jpegUrl.slice(comma + 1));
+      const jpeg = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) jpeg[i] = binary.charCodeAt(i);
+
+      const objects = new Array(6);
+      objects[1] = geekPrintAsciiBytesV2287('<< /Type /Catalog /Pages 2 0 R >>');
+      objects[2] = geekPrintAsciiBytesV2287('<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+      objects[3] = geekPrintAsciiBytesV2287(
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' +
+        paper.widthPt + ' ' + paper.heightPt +
+        '] /Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>'
+      );
+
+      const content = geekPrintAsciiBytesV2287(
+        'q\n' + paper.widthPt + ' 0 0 ' + paper.heightPt + ' 0 0 cm\n/Im0 Do\nQ\n'
+      );
+      objects[4] = geekPrintConcatBytesV2287([
+        '<< /Length ' + content.length + ' >>\nstream\n',
+        content,
+        'endstream'
+      ]);
+      objects[5] = geekPrintConcatBytesV2287([
+        '<< /Type /XObject /Subtype /Image /Width ' + canvas.width +
+        ' /Height ' + canvas.height +
+        ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' +
+        jpeg.length + ' >>\nstream\n',
+        jpeg,
+        '\nendstream'
+      ]);
+
+      const parts = [geekPrintAsciiBytesV2287('%PDF-1.4\n%SSHCP\n')];
+      const offsets = new Array(6).fill(0);
+      let byteCount = parts[0].length;
+
+      for (let id = 1; id <= 5; id++) {
+        offsets[id] = byteCount;
+        const head = geekPrintAsciiBytesV2287(id + ' 0 obj\n');
+        const tail = geekPrintAsciiBytesV2287('\nendobj\n');
+        parts.push(head, objects[id], tail);
+        byteCount += head.length + objects[id].length + tail.length;
+      }
+
+      const xrefOffset = byteCount;
+      let xref = 'xref\n0 6\n0000000000 65535 f \n';
+      for (let id = 1; id <= 5; id++) {
+        xref += String(offsets[id]).padStart(10, '0') + ' 00000 n \n';
+      }
+      xref +=
+        'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' +
+        xrefOffset + '\n%%EOF\n';
+      parts.push(geekPrintAsciiBytesV2287(xref));
+
+      return new Blob(parts, { type:'application/pdf' });
+    }
+
+    async function geekPrintCreatePdfV2287(data, paperV2281) {
+      const rendered = await geekPrintRenderCanvasV2287(data, paperV2281);
+      return geekPrintCanvasPdfBlobV2287(rendered.canvas, rendered.paper);
+    }
+
+    async function geekPrintLegacyPdfV2287(paperV2281) {
+      const response = await fetch(
+        CLOUDFLARE_API_URL + '?action=geekPdf&paper=' +
+          encodeURIComponent(normalizedGeekPdfPaperV2281(paperV2281)) +
+          '&refresh=' + Date.now(),
+        { cache:'no-store' }
+      );
+      if (!response.ok) {
+        let message = 'GEEK STATS PDF unavailable.';
+        try {
+          const errorData = await response.json();
+          message = String(
+            (errorData && (errorData.reason || errorData.error)) ||
+            message
+          );
+        } catch (_) {}
+        throw new Error(message);
+      }
+      const blob = await response.blob();
+      if (!blob || blob.type !== 'application/pdf') {
+        throw new Error('GEEK STATS PDF download returned an invalid file.');
+      }
+      return blob;
+    }
+
     async function downloadGeekStatsPdfV2277(button, paperV2281) {
       if (!button || button.disabled) return;
       button.disabled = true;
@@ -31153,28 +31644,26 @@ let scoreTimingDetail =
       );
 
       try {
-        const response = await fetch(
-          CLOUDFLARE_API_URL + '?action=geekPdf&paper=' +
-            encodeURIComponent(normalizedGeekPdfPaperV2281(paperV2281)) +
-            '&refresh=' + Date.now(),
-          { cache:'no-store' }
-        );
+        let blob = null;
+        let printDataError = null;
 
-        if (!response.ok) {
-          let message = 'GEEK STATS PDF unavailable.';
-          try {
-            const errorData = await response.json();
-            message = String(
-              (errorData && (errorData.reason || errorData.error)) ||
-              message
-            );
-          } catch (_) {}
-          throw new Error(message);
+        try {
+          const printData = await geekPrintFetchDataV2287();
+          blob = await geekPrintCreatePdfV2287(printData, paperV2281);
+        } catch (error) {
+          printDataError = error;
+          console.warn(
+            'Frontend GEEK print renderer unavailable; using protected Worker PDF fallback:',
+            error && error.message || error
+          );
         }
 
-        const blob = await response.blob();
+        if (!blob) {
+          blob = await geekPrintLegacyPdfV2287(paperV2281);
+        }
+
         if (!blob || blob.type !== 'application/pdf') {
-          throw new Error('GEEK STATS PDF download returned an invalid file.');
+          throw printDataError || new Error('GEEK STATS PDF download returned an invalid file.');
         }
 
         const downloadFileNameV2282 = geekPdfFilenameV2282(
@@ -31212,6 +31701,7 @@ let scoreTimingDetail =
         button.removeAttribute('aria-busy');
       }
     }
+
 
     function installGeekDownloadButtonV2277() {
       const box = els.modalBox;
