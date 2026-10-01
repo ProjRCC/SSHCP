@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.80-R8M5QK | BUILD KEY: 22.81-T4N7QK -->
+<!-- SSHCP | BASE KEY: 22.81-T4N7QK | BUILD KEY: 22.82-N6R4QW -->
+<!-- SSHCP V22.82 GEEK PDF SIZE/TIME FILENAME - exact V22.81 donor.
+     Changes ONLY the downloaded GEEK PDF filename. The selected paper choice is encoded as 8.5x11, 11x14, or 17x11 and the device-local download time is encoded without a colon using lowercase am/pm, e.g. GEEKstats_17x11_151am.pdf. The exact generated filename is also shown in the existing DOWNLOAD STARTED status card. V22.81 paper selector, download/status behavior, GEEK/ALL TEAMS geometry and calculations, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.82. -->
 <!-- SSHCP V22.81 GEEK PDF PAPER SELECTOR - exact V22.80 donor.
      Changes ONLY the regular-GEEK PDF download launch: tapping the existing download icon now opens an independent Tips-style paper selector with one mutually-exclusive checked choice for 8.5 x 11 PORTRAIT, 11 x 14 PORTRAIT, or 17 x 11 LANDSCAPE. The last choice is remembered on this device; first use defaults to 8.5 x 11 PORTRAIT. DOWNLOAD sends only the selected paper key to the existing action=geekPdf endpoint, then reuses the protected V22.80 PREPARING / SUCCESS / FAILURE status overlay unchanged. GEEK table/filter/scroll geometry, ALL TEAMS, calculations, result/tiebreak, Summary, SKINS, GAME, scoring, authorization, event config and timing remain unchanged. HOME label advances to V22.81. -->
 
@@ -14130,7 +14132,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.81</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.82</span></span>
         </button>
         <script>
           (function () {
@@ -30816,6 +30818,27 @@ let scoreTimingDetail =
         : 'letter';
     }
 
+    function geekPdfSizeSlugV2282(value) {
+      const key = normalizedGeekPdfPaperV2281(value);
+      if (key === 'portrait11x14') return '11x14';
+      if (key === 'landscape17x11') return '17x11';
+      return '8.5x11';
+    }
+
+    function geekPdfTimeSlugV2282(value) {
+      const date = value instanceof Date ? value : new Date();
+      let hour = date.getHours();
+      const suffix = hour >= 12 ? 'pm' : 'am';
+      hour %= 12;
+      if (!hour) hour = 12;
+      return String(hour) + String(date.getMinutes()).padStart(2, '0') + suffix;
+    }
+
+    function geekPdfFilenameV2282(paper, value) {
+      return 'GEEKstats_' + geekPdfSizeSlugV2282(paper) + '_' +
+        geekPdfTimeSlugV2282(value) + '.pdf';
+    }
+
     function rememberedGeekPdfPaperV2281() {
       try {
         return normalizedGeekPdfPaperV2281(
@@ -30950,10 +30973,14 @@ let scoreTimingDetail =
           throw new Error('GEEK STATS PDF download returned an invalid file.');
         }
 
+        const downloadFileNameV2282 = geekPdfFilenameV2282(
+          paperV2281,
+          new Date()
+        );
         const objectUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = objectUrl;
-        link.download = 'GEEK STATS.pdf';
+        link.download = downloadFileNameV2282;
         link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
@@ -30963,7 +30990,7 @@ let scoreTimingDetail =
         showGeekDownloadStatusV2278(
           'DOWNLOAD STARTED',
           'Check Downloads folder',
-          'GEEK STATS.pdf',
+          downloadFileNameV2282,
           'success',
           0
         );
