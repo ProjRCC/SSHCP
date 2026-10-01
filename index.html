@@ -1,4 +1,7 @@
-<!-- SSHCP | BASE KEY: 22.79-P7R4VN | BUILD KEY: 22.80-R8M5QK -->
+<!-- SSHCP | BASE KEY: 22.80-R8M5QK | BUILD KEY: 22.81-T4N7QK -->
+<!-- SSHCP V22.81 GEEK PDF PAPER SELECTOR - exact V22.80 donor.
+     Changes ONLY the regular-GEEK PDF download launch: tapping the existing download icon now opens an independent Tips-style paper selector with one mutually-exclusive checked choice for 8.5 x 11 PORTRAIT, 11 x 14 PORTRAIT, or 17 x 11 LANDSCAPE. The last choice is remembered on this device; first use defaults to 8.5 x 11 PORTRAIT. DOWNLOAD sends only the selected paper key to the existing action=geekPdf endpoint, then reuses the protected V22.80 PREPARING / SUCCESS / FAILURE status overlay unchanged. GEEK table/filter/scroll geometry, ALL TEAMS, calculations, result/tiebreak, Summary, SKINS, GAME, scoring, authorization, event config and timing remain unchanged. HOME label advances to V22.81. -->
+
 <!-- SSHCP V22.80 GEEK DOWNLOAD STATUS / TIPS & TRICKS VISUAL MATCH - exact V22.79 donor.
      Changes ONLY the independent GEEK PDF download-status surface so PREPARING / SUCCESS / FAILURE visually use the established contextual Tips & Tricks presentation: Gray-3.5 blurred backdrop, wide opaque-white rounded card, Blue heavy title, readable dark copy, subtle shadow, and the same full-width Blue OK geometry on the success state. The existing V22.79 behavior remains unchanged: PREPARING has no OK and stays while CF generates, DOWNLOAD STARTED remains until OK is pressed, DOWNLOAD FAILED retains its timed dismissal, the GEEK page stays open underneath, and no table/filter/scroll geometry changes. CF V3.5 endpoint, GEEK calculations, Result Audit last-place fix, leaderboard/Summary/tiebreak, SKINS, GAME, scoring, authorization, event config and timing remain unchanged. HOME label advances to V22.80. -->
 <!-- SSHCP V22.79 GEEK PDF SUCCESS ACKNOWLEDGMENT - exact V22.78 donor.
@@ -12687,6 +12690,122 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   display:block!important;
 }
 
+
+/* V22.81 — independent GEEK PDF paper-size chooser. It intentionally mirrors
+   the V22.80 Tips-style download-status surface and does not touch GEEK geometry. */
+.geek-pdf-paper-v2281{
+  position:fixed!important;
+  inset:0!important;
+  z-index:12040!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:12px!important;
+  background:rgba(199,199,199,.90)!important;
+  -webkit-backdrop-filter:blur(6px)!important;
+  backdrop-filter:blur(6px)!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transition:opacity .30s ease,visibility 0s linear .30s!important;
+}
+.geek-pdf-paper-v2281.open{
+  display:flex!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  transition:opacity .30s ease,visibility 0s linear 0s!important;
+}
+.geek-pdf-paper-card-v2281{
+  box-sizing:border-box!important;
+  width:96vw!important;
+  max-width:min(570px,calc(100vw - 12px))!important;
+  max-height:82dvh!important;
+  overflow:auto!important;
+  padding:
+    calc(20px * var(--v2074-utility-scale,1))
+    calc(18px * var(--v2074-utility-scale,1))!important;
+  border:0!important;
+  border-radius:calc(16px * var(--v2074-utility-scale,1))!important;
+  background:#fff!important;
+  box-shadow:
+    0 calc(4px * var(--v2074-utility-scale,1))
+    calc(14px * var(--v2074-utility-scale,1))
+    rgba(0,0,0,.14)!important;
+  text-align:center!important;
+}
+.geek-pdf-paper-title-v2281{
+  margin:0 0 calc(14px * var(--v2074-utility-scale,1))!important;
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  font-size:calc(27px * var(--v221-global-scale,1))!important;
+  font-weight:900!important;
+  line-height:1.05!important;
+}
+.geek-pdf-paper-options-v2281{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:calc(9px * var(--v2074-utility-scale,1))!important;
+}
+.geek-pdf-paper-option-v2281{
+  width:100%!important;
+  min-height:calc(50px * var(--v2074-utility-scale,1))!important;
+  padding:
+    calc(8px * var(--v2074-utility-scale,1))
+    calc(12px * var(--v2074-utility-scale,1))!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:calc(11px * var(--v2074-utility-scale,1))!important;
+  border:1px solid rgba(0,0,0,.48)!important;
+  border-radius:calc(9px * var(--v2074-utility-scale,1))!important;
+  background:#fafafa!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  text-align:left!important;
+  font-size:calc(18px * var(--v221-global-scale,1))!important;
+  font-weight:700!important;
+  line-height:1.08!important;
+}
+.geek-pdf-paper-option-v2281.selected{
+  border:2px solid var(--accent)!important;
+}
+.geek-pdf-paper-check-v2281{
+  box-sizing:border-box!important;
+  width:calc(25px * var(--v2074-utility-scale,1))!important;
+  height:calc(25px * var(--v2074-utility-scale,1))!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:2px solid #555!important;
+  border-radius:calc(4px * var(--v2074-utility-scale,1))!important;
+  background:#fff!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-family:Arial,sans-serif!important;
+  font-size:calc(18px * var(--v2074-utility-scale,1))!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.geek-pdf-paper-option-v2281.selected .geek-pdf-paper-check-v2281{
+  border-color:var(--accent)!important;
+  background:var(--accent)!important;
+}
+.geek-pdf-paper-download-v2281{
+  width:100%!important;
+  min-height:calc(50px * var(--v2074-utility-scale,1))!important;
+  margin:calc(16px * var(--v2074-utility-scale,1)) 0 0!important;
+  padding:0 calc(10px * var(--v2074-utility-scale,1))!important;
+  border:2px solid var(--accent)!important;
+  border-radius:calc(9px * var(--v2074-utility-scale,1))!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  font-size:calc(18px * var(--v2074-utility-scale,1))!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+
 </style>
 
 <style id="sshcp-v222-informational-typography">
@@ -14011,7 +14130,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.80</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.81</span></span>
         </button>
         <script>
           (function () {
@@ -30681,7 +30800,118 @@ let scoreTimingDetail =
       return overlay;
     }
 
-    async function downloadGeekStatsPdfV2277(button) {
+    const GEEK_PDF_PAPER_KEY_V2281 = 'sshcpGeekPdfPaperV2281';
+    const GEEK_PDF_PAPERS_V2281 = Object.freeze([
+      { key:'letter', label:'8.5 × 11 — PORTRAIT' },
+      { key:'portrait11x14', label:'11 × 14 — PORTRAIT' },
+      { key:'landscape17x11', label:'17 × 11 — LANDSCAPE' }
+    ]);
+    let geekPdfPaperChoiceV2281 = '';
+    let geekPdfPaperSourceButtonV2281 = null;
+
+    function normalizedGeekPdfPaperV2281(value) {
+      const key = String(value || '').trim();
+      return GEEK_PDF_PAPERS_V2281.some(item => item.key === key)
+        ? key
+        : 'letter';
+    }
+
+    function rememberedGeekPdfPaperV2281() {
+      try {
+        return normalizedGeekPdfPaperV2281(
+          localStorage.getItem(GEEK_PDF_PAPER_KEY_V2281) || 'letter'
+        );
+      } catch (_) {
+        return 'letter';
+      }
+    }
+
+    function rememberGeekPdfPaperV2281(value) {
+      const key = normalizedGeekPdfPaperV2281(value);
+      try {
+        localStorage.setItem(GEEK_PDF_PAPER_KEY_V2281, key);
+      } catch (_) {}
+      return key;
+    }
+
+    function ensureGeekPdfPaperChooserV2281() {
+      let overlay = document.getElementById('geekPdfPaperV2281');
+      if (overlay) return overlay;
+
+      overlay = document.createElement('div');
+      overlay.id = 'geekPdfPaperV2281';
+      overlay.className = 'geek-pdf-paper-v2281';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-label', 'Choose GEEK STATS PDF size');
+      overlay.innerHTML =
+        '<div class="geek-pdf-paper-card-v2281">' +
+          '<div class="geek-pdf-paper-title-v2281">PDF SIZE</div>' +
+          '<div class="geek-pdf-paper-options-v2281"></div>' +
+          '<button type="button" class="geek-pdf-paper-download-v2281">DOWNLOAD</button>' +
+        '</div>';
+
+      const options = overlay.querySelector('.geek-pdf-paper-options-v2281');
+      GEEK_PDF_PAPERS_V2281.forEach(item => {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'geek-pdf-paper-option-v2281';
+        option.dataset.paper = item.key;
+        option.innerHTML =
+          '<span class="geek-pdf-paper-check-v2281" aria-hidden="true"></span>' +
+          '<span>' + item.label + '</span>';
+        option.addEventListener('click', () => {
+          geekPdfPaperChoiceV2281 = rememberGeekPdfPaperV2281(item.key);
+          syncGeekPdfPaperChooserV2281(overlay);
+        });
+        options.appendChild(option);
+      });
+
+      const download = overlay.querySelector('.geek-pdf-paper-download-v2281');
+      download.addEventListener('click', () => {
+        const sourceButton = geekPdfPaperSourceButtonV2281;
+        const paper = rememberGeekPdfPaperV2281(
+          geekPdfPaperChoiceV2281 || rememberedGeekPdfPaperV2281()
+        );
+        overlay.classList.remove('open');
+        geekPdfPaperSourceButtonV2281 = null;
+        downloadGeekStatsPdfV2277(sourceButton, paper);
+      });
+
+      overlay.addEventListener('click', event => {
+        if (event.target === overlay) {
+          overlay.classList.remove('open');
+          geekPdfPaperSourceButtonV2281 = null;
+        }
+      });
+
+      document.body.appendChild(overlay);
+      return overlay;
+    }
+
+    function syncGeekPdfPaperChooserV2281(overlay) {
+      const active = normalizedGeekPdfPaperV2281(
+        geekPdfPaperChoiceV2281 || rememberedGeekPdfPaperV2281()
+      );
+      overlay.querySelectorAll('.geek-pdf-paper-option-v2281').forEach(option => {
+        const selected = option.dataset.paper === active;
+        option.classList.toggle('selected', selected);
+        option.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        const check = option.querySelector('.geek-pdf-paper-check-v2281');
+        if (check) check.textContent = selected ? '✓' : '';
+      });
+    }
+
+    function openGeekPdfPaperChooserV2281(button) {
+      if (!button || button.disabled) return;
+      const overlay = ensureGeekPdfPaperChooserV2281();
+      geekPdfPaperSourceButtonV2281 = button;
+      geekPdfPaperChoiceV2281 = rememberedGeekPdfPaperV2281();
+      syncGeekPdfPaperChooserV2281(overlay);
+      overlay.classList.add('open');
+    }
+
+    async function downloadGeekStatsPdfV2277(button, paperV2281) {
       if (!button || button.disabled) return;
       button.disabled = true;
       button.classList.add('downloading-v2277');
@@ -30697,7 +30927,9 @@ let scoreTimingDetail =
 
       try {
         const response = await fetch(
-          CLOUDFLARE_API_URL + '?action=geekPdf&refresh=' + Date.now(),
+          CLOUDFLARE_API_URL + '?action=geekPdf&paper=' +
+            encodeURIComponent(normalizedGeekPdfPaperV2281(paperV2281)) +
+            '&refresh=' + Date.now(),
           { cache:'no-store' }
         );
 
@@ -30770,7 +31002,7 @@ let scoreTimingDetail =
           'fill="none" stroke="currentColor" stroke-width="2.15" ' +
           'stroke-linecap="round" stroke-linejoin="round"></path>' +
         '</svg>';
-      button.addEventListener('click', () => downloadGeekStatsPdfV2277(button));
+      button.addEventListener('click', () => openGeekPdfPaperChooserV2281(button));
       box.appendChild(button);
     }
 
