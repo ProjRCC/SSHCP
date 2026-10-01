@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.81-T4N7QK | BUILD KEY: 22.82-N6R4QW -->
+<!-- SSHCP | BASE KEY: 22.82-N6R4QW | BUILD KEY: 22.83-K4M7QX -->
+<!-- SSHCP V22.83 GEEK PDF RECOMMENDATIONS + ALL TEAMS AUTH HEADER - exact V22.82 donor.
+     Adds only two frontend presentation refinements. The PDF SIZE chooser now calculates recommendations from the active GEEK field size when GEEK MODE loads using each paper's real 95%-usable print width, a shared non-team table allowance and a minimum comfortable physical team-column width; the smallest comfortable size plus the next larger size may both show (RECOMMEND), and when two are recommended the larger recommendation is bold. The remembered paper selection remains independent and is never auto-changed. In GEEK MODE • ALL TEAMS, the already-detected authorized team header now uses the app Blue background with on-accent white text so TEAM AUTH is immediately visible; all other header/data geometry and winner highlighting remain unchanged. Worker/API, GEEK calculations, PDF generation, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.83. -->
 <!-- SSHCP V22.82 GEEK PDF SIZE/TIME FILENAME - exact V22.81 donor.
      Changes ONLY the downloaded GEEK PDF filename. The selected paper choice is encoded as 8.5x11, 11x14, or 17x11 and the device-local download time is encoded without a colon using lowercase am/pm, e.g. GEEKstats_17x11_151am.pdf. The exact generated filename is also shown in the existing DOWNLOAD STARTED status card. V22.81 paper selector, download/status behavior, GEEK/ALL TEAMS geometry and calculations, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.82. -->
 <!-- SSHCP V22.81 GEEK PDF PAPER SELECTOR - exact V22.80 donor.
@@ -13998,6 +14000,35 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
     }
   </style>
 
+
+<style id="sshcp-v2283-geek-recommend-auth-header">
+/* V22.83 — PDF recommendation labels are advisory only. The remembered
+   selection stays independent; the stronger recommendation is the larger of
+   the two recommended paper choices. */
+.geek-pdf-paper-recommend-v2283{
+  margin-left:.28em!important;
+  font-weight:400!important;
+}
+.geek-pdf-paper-recommend-v2283.strong-v2283{
+  font-weight:900!important;
+}
+
+/* V22.83 — ALL TEAMS already tags the currently authorized team header.
+   Restore that one header as the app Blue/white identity cue without touching
+   the STAT header, other teams, result cells, leaders, sizing, or scrolling. */
+html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
+  .geek-all-teams-team-head-v2217.authorized-v2217{
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+}
+html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
+  .geek-all-teams-team-head-v2217.authorized-v2217 .geek-all-teams-team-name-v2217{
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+}
+</style>
+
 </head>
 
 
@@ -14132,7 +14163,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.82</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.83</span></span>
         </button>
         <script>
           (function () {
@@ -30811,6 +30842,91 @@ let scoreTimingDetail =
     let geekPdfPaperChoiceV2281 = '';
     let geekPdfPaperSourceButtonV2281 = null;
 
+    /* V22.83 — advisory print-size recommendation. Use the same 95%-usable
+       paper width implied by the Worker margins, reserve one shared physical
+       allowance for the non-team STAT/label area, then ask whether the remaining
+       width gives every active team a comfortable printed column. This keeps the
+       recommendation geometry-driven instead of hard-coding team-count buckets. */
+    const GEEK_PDF_RECOMMEND_PAPERS_V2283 = Object.freeze([
+      { key:'letter', widthIn:8.5 },
+      { key:'portrait11x14', widthIn:11 },
+      { key:'landscape17x11', widthIn:17 }
+    ]);
+    const GEEK_PDF_RECOMMEND_USABLE_RATIO_V2283 = 0.95;
+    const GEEK_PDF_RECOMMEND_FIXED_IN_V2283 = 2.25;
+    const GEEK_PDF_RECOMMEND_MIN_TEAM_IN_V2283 = 0.35;
+    let geekPdfRecommendationsV2283 = {
+      recommended:new Set(),
+      strong:''
+    };
+
+    function geekPdfTeamCountV2283() {
+      if (geekEvidenceSnapshotV1921 && Array.isArray(geekEvidenceSnapshotV1921.teams)) {
+        const count = geekEvidenceSnapshotV1921.teams.filter(team =>
+          String(team && team.name || '').trim()
+        ).length;
+        if (count) return count;
+      }
+
+      const names = new Set();
+      if (geekDataV180 && Array.isArray(geekDataV180.categories)) {
+        geekDataV180.categories.forEach(category => {
+          (Array.isArray(category && category.stats) ? category.stats : []).forEach(stat => {
+            (Array.isArray(stat && stat.results) ? stat.results : []).forEach(item => {
+              const name = normalizeName(item && item.team);
+              if (name) names.add(name);
+            });
+          });
+        });
+      }
+      return names.size;
+    }
+
+    function calculateGeekPdfRecommendationsV2283(teamCount) {
+      const count = Number(teamCount);
+      if (!Number.isFinite(count) || count <= 0) {
+        return { recommended:new Set(), strong:'' };
+      }
+
+      let index = GEEK_PDF_RECOMMEND_PAPERS_V2283.findIndex(item => {
+        const usableWidth = item.widthIn * GEEK_PDF_RECOMMEND_USABLE_RATIO_V2283;
+        const teamWidth = Math.max(0, usableWidth - GEEK_PDF_RECOMMEND_FIXED_IN_V2283) / count;
+        return teamWidth >= GEEK_PDF_RECOMMEND_MIN_TEAM_IN_V2283;
+      });
+      if (index < 0) index = GEEK_PDF_RECOMMEND_PAPERS_V2283.length - 1;
+
+      const keys = [GEEK_PDF_RECOMMEND_PAPERS_V2283[index].key];
+      if (index < GEEK_PDF_RECOMMEND_PAPERS_V2283.length - 1) {
+        keys.push(GEEK_PDF_RECOMMEND_PAPERS_V2283[index + 1].key);
+      }
+
+      return {
+        recommended:new Set(keys),
+        strong:keys[keys.length - 1]
+      };
+    }
+
+    function syncGeekPdfRecommendationLabelsV2283(overlay) {
+      if (!overlay) return;
+      overlay.querySelectorAll('.geek-pdf-paper-option-v2281').forEach(option => {
+        const mark = option.querySelector('.geek-pdf-paper-recommend-v2283');
+        if (!mark) return;
+        const key = String(option.dataset.paper || '');
+        const recommended = geekPdfRecommendationsV2283.recommended.has(key);
+        mark.textContent = recommended ? ' (RECOMMEND)' : '';
+        mark.classList.toggle('strong-v2283', recommended && geekPdfRecommendationsV2283.strong === key);
+      });
+    }
+
+    function updateGeekPdfRecommendationsV2283() {
+      geekPdfRecommendationsV2283 = calculateGeekPdfRecommendationsV2283(
+        geekPdfTeamCountV2283()
+      );
+      syncGeekPdfRecommendationLabelsV2283(
+        document.getElementById('geekPdfPaperV2281')
+      );
+    }
+
     function normalizedGeekPdfPaperV2281(value) {
       const key = String(value || '').trim();
       return GEEK_PDF_PAPERS_V2281.some(item => item.key === key)
@@ -30882,7 +30998,9 @@ let scoreTimingDetail =
         option.dataset.paper = item.key;
         option.innerHTML =
           '<span class="geek-pdf-paper-check-v2281" aria-hidden="true"></span>' +
-          '<span>' + item.label + '</span>';
+          '<span class="geek-pdf-paper-label-v2283">' + item.label +
+            '<span class="geek-pdf-paper-recommend-v2283"></span>' +
+          '</span>';
         option.addEventListener('click', () => {
           geekPdfPaperChoiceV2281 = rememberGeekPdfPaperV2281(item.key);
           syncGeekPdfPaperChooserV2281(overlay);
@@ -30923,6 +31041,7 @@ let scoreTimingDetail =
         const check = option.querySelector('.geek-pdf-paper-check-v2281');
         if (check) check.textContent = selected ? '✓' : '';
       });
+      syncGeekPdfRecommendationLabelsV2283(overlay);
     }
 
     function openGeekPdfPaperChooserV2281(button) {
@@ -31137,6 +31256,7 @@ let scoreTimingDetail =
 
         geekDataV180 = data;
         geekEvidenceSnapshotV1921 = await evidencePromiseV1921;
+        updateGeekPdfRecommendationsV2283();
         geekApplyLongVsParV1926();
         geekApplyEmptyCourseCategoriesV1957();
         geekDetailAuditReadyV1932 = Boolean(
