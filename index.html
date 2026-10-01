@@ -1,4 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.87-J8Q4NX | BUILD KEY: 22.88-R5M9QK -->
+<!-- SSHCP | BASE KEY: 22.88-R5M9QK | BUILD KEY: 22.89-T7N3VX -->
+<!-- SSHCP V22.89 GEEK PRINT EXPLANATION + FULL-WIDTH CATEGORY BANDS - exact V22.88 donor.
+     Keeps V22.88 frontend-rendered PDF architecture and all existing size chooser/download behavior.
+     Category rows now use one continuous Gray 5 band across the complete active table while the
+     category label remains centered over the first two columns. Body EXPLANATION / HOLES text is
+     reduced for cleaner hierarchy. Any ALL-HOLES explanation is displayed as a two-line explanation
+     with ALL HOLES on line two (including EAGLES, BIRDIES, PARS and BOGEYS). All V22.88 stat-value,
+     STAT-name, team-name, detail/hole fitting, owner Blue semantics and H-prefix behavior remain intact. -->
 <!-- SSHCP V22.88 GEEK PRINT TYPOGRAPHY + CATEGORY SEMANTICS - exact V22.87 donor.
      Keeps the V22.87 frontend-rendered one-page GEEK PDF architecture and all existing PDF-size
      chooser/recommendation/download behavior. Print typography is now capped at 60% of each
@@ -14250,7 +14257,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.88</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.89</span></span>
         </button>
         <script>
           (function () {
@@ -31250,6 +31257,29 @@ let scoreTimingDetail =
       return geekPrintHoleTextV2288(value);
     }
 
+    function geekPrintExplanationLinesV2289(stat) {
+      const raw = String(stat && stat.printExplanation || '').trim();
+      if (!raw) return ['', ''];
+
+      const allHolesInline = raw.match(/^(.*?)\s*-\s*ALL\s+HOLES\s*$/i);
+      if (allHolesInline) {
+        return [String(allHolesInline[1] || '').trim(), 'ALL HOLES'];
+      }
+
+      const lines = raw.split(/\n+/).map(part => String(part || '').trim()).filter(Boolean);
+      if (lines.length >= 2) {
+        const first = lines[0];
+        const secondRaw = lines.slice(1).join(' ').trim();
+        const second = /^(?:H)?1-18$/i.test(secondRaw) || /^ALL\s+HOLES$/i.test(secondRaw)
+          ? 'ALL HOLES'
+          : geekPrintHoleTextV2288(secondRaw);
+        return [first, second];
+      }
+
+      if (/^(?:H)?1-18$/i.test(lines[0] || '')) return ['', 'ALL HOLES'];
+      return [lines[0] || '', ''];
+    }
+
     function geekPrintBuildRowsV2287(data) {
       const stats = Array.isArray(data && data.statRows) ? data.statRows : [];
       const statByRow = new Map(stats.map(stat => [Number(stat.row), stat]));
@@ -31457,11 +31487,13 @@ let scoreTimingDetail =
 
         if (row.type === 'section') {
           const firstTwoW = statW + explainW;
-          geekPrintDrawCellV2287(ctx, tableX, y, firstTwoW, h, GEEK_PRINT_RENDER_GRAY5_V2288, GEEK_PRINT_RENDER_GRAY5_V2288);
-          teams.forEach((team, teamIndex) => {
-            const x = xTeam0 + (teamW * teamIndex);
-            geekPrintDrawCellV2287(ctx, x, y, teamW, h, '#ffffff');
-          });
+          // V22.89: one continuous Gray 5 category band across the complete active table.
+          // The label itself remains centered over only the first two columns.
+          geekPrintDrawCellV2287(
+            ctx, tableX, y, tableW, h,
+            GEEK_PRINT_RENDER_GRAY5_V2288,
+            GEEK_PRINT_RENDER_GRAY5_V2288
+          );
           const sectionLabel = String(row.label || '');
           const sectionPx = geekPrintFitIndependentPxV2287(ctx, sectionLabel, h * 0.60, firstTwoW, 700, true);
           geekPrintDrawTextV2287(
@@ -31490,15 +31522,41 @@ let scoreTimingDetail =
             { weight:700, align:'left', padPx:Math.max(4, h * 0.13) }
           );
 
-          const explanationLines = String(stat.printExplanation || '').split(/\n+/);
+          const explanationLines = geekPrintExplanationLinesV2289(stat);
           const firstExplanation = explanationLines[0] || '';
+          const secondExplanationInline = explanationLines[1] || '';
+          const explanationCapPx = h * 0.40;
           const explanationPx = geekPrintFitIndependentPxV2287(
-            ctx, firstExplanation, h * 0.46, explainW, 500, true
+            ctx,
+            firstExplanation,
+            explanationCapPx,
+            explainW,
+            500,
+            true
           );
-          geekPrintDrawTextV2287(
-            ctx, firstExplanation, tableX + statW, y, explainW, h, explanationPx,
-            { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287, align:'left', padPx:Math.max(4, h * 0.12) }
-          );
+          if (secondExplanationInline) {
+            const secondPx = geekPrintFitIndependentPxV2287(
+              ctx,
+              secondExplanationInline,
+              explanationCapPx,
+              explainW,
+              500,
+              true
+            );
+            geekPrintDrawTextV2287(
+              ctx, firstExplanation, tableX + statW, y + (h * 0.02), explainW, h * 0.50, explanationPx,
+              { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287, align:'left', padPx:Math.max(4, h * 0.12) }
+            );
+            geekPrintDrawTextV2287(
+              ctx, secondExplanationInline, tableX + statW, y + (h * 0.48), explainW, h * 0.50, secondPx,
+              { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287, align:'left', padPx:Math.max(4, h * 0.12) }
+            );
+          } else {
+            geekPrintDrawTextV2287(
+              ctx, firstExplanation, tableX + statW, y, explainW, h, explanationPx,
+              { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287, align:'left', padPx:Math.max(4, h * 0.12) }
+            );
+          }
 
           teams.forEach((team, teamIndex) => {
             const x = xTeam0 + (teamW * teamIndex);
@@ -31517,11 +31575,12 @@ let scoreTimingDetail =
           geekPrintDrawCellV2287(ctx, tableX, y, statW, h, '#ffffff');
           geekPrintDrawCellV2287(ctx, tableX + statW, y, explainW, h, '#ffffff');
 
-          const explanationLines = String(stat.printExplanation || '').split(/\n+/);
-          const secondExplanation = geekPrintHoleTextV2288(explanationLines.slice(1).join(' ').trim());
-          if (secondExplanation) {
+          const explanationLines = geekPrintExplanationLinesV2289(stat);
+          const secondExplanation = explanationLines[1] || '';
+          const mainExplanationWasAllHoles = secondExplanation === 'ALL HOLES';
+          if (secondExplanation && !mainExplanationWasAllHoles) {
             const explanationPx = geekPrintFitIndependentPxV2287(
-              ctx, secondExplanation, h * 0.54, explainW, 500, true
+              ctx, secondExplanation, h * 0.40, explainW, 500, true
             );
             geekPrintDrawTextV2287(
               ctx, secondExplanation, tableX + statW, y, explainW, h, explanationPx,
