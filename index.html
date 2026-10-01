@@ -1,4 +1,9 @@
-<!-- SSHCP | BASE KEY: 22.91-H6Q3MV | BUILD KEY: 22.93-K5R8VN -->
+<!-- SSHCP | BASE KEY: 22.93-K5R8VN | BUILD KEY: 22.94-N7Q4VL -->
+<!-- SSHCP V22.94 SHORT/LONG DEFINITIONS - exact V22.93 donor.
+     Keeps V22.93 print geometry, true glyph centering, STAT>=team width floor, 60% STAT target and
+     55% detail/scope target unchanged. SHORT VS PAR and LONG VS PAR keep their real second rows but
+     now show only the fixed definitions `P3<150 P4<350 P5<500` and `P3≥180 P4≥420 P5≥550`; no
+     qualifying-hole list is printed. CF3.30 remains unchanged. -->
 <!-- SSHCP V22.93 GEEK PRINT TRUE TEXT CENTERING + WIDTH FLOOR - exact V22.91 donor.
      V22.92 is abandoned. Keeps V22.91 architecture and CF3.30 unchanged. The print STAT column
      retains its original preferred width but can never be narrower than one team column. Team and
@@ -14275,7 +14280,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.93</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.94</span></span>
         </button>
         <script>
           (function () {
@@ -31333,26 +31338,8 @@ let scoreTimingDetail =
       if (key === 'p5 birdies' || key === 'par-5 birdies') {
         return geekPrintCourseHoleListV2291(data, hole => Number(hole && hole.par) === 5, false);
       }
-      if (key === 'short vs par') {
-        return geekPrintCourseHoleListV2291(data, hole => {
-          const par = Number(hole && hole.par);
-          const white = Number(hole && hole.white);
-          if (!Number.isFinite(white)) return false;
-          return (par === 3 && white < 150) ||
-                 (par === 4 && white < 350) ||
-                 (par === 5 && white < 500);
-        }, true);
-      }
-      if (key === 'long vs par') {
-        return geekPrintCourseHoleListV2291(data, hole => {
-          const par = Number(hole && hole.par);
-          const white = Number(hole && hole.white);
-          if (!Number.isFinite(white)) return false;
-          return (par === 3 && white >= 180) ||
-                 (par === 4 && white >= 420) ||
-                 (par === 5 && white >= 550);
-        }, true);
-      }
+      if (key === 'short vs par') return 'P3<150 P4<350 P5<500';
+      if (key === 'long vs par') return 'P3≥180 P4≥420 P5≥550';
       if (key === 'drivable p4 birdies' || key === 'drivable par-4 birdies') {
         return geekPrintCourseHoleListV2291(data, hole =>
           Number(hole && hole.par) === 4 &&
