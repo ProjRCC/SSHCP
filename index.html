@@ -1,15 +1,14 @@
-<!-- SSHCP | BASE KEY: 22.89-T7N3VX | BUILD KEY: 22.90-V4K8RM -->
-<!-- SSHCP V22.90 GEEK PRINT SINGLE LABEL COLUMN + 50% TYPOGRAPHY - exact V22.89 donor.
-     Keeps the V22.89 frontend-rendered one-page GEEK PDF architecture, PDF-size chooser,
-     recommendation logic and download flow. The print table no longer has a separate
-     EXPLANATION / HOLES column: the prior first two columns are one left label block.
-     STAT names target the shared main-result size and may shrink only to stay on one line;
-     common hole scopes sit directly under the STAT name, and only SHORT VS PAR / LONG VS PAR
-     retain their threshold explanations. For stats with a physical detail row, the left label
-     block spans the main+detail rows while team main/detail cells remain separate. All
-     row-height-driven print typography is capped at 50%. Gray 5 category bands remain full
-     width with their labels centered in the left label block. Existing owner Blue semantics,
-     per-cell detail fitting and H-prefix behavior remain intact. -->
+<!-- SSHCP | BASE KEY: 22.89-T7N3VX | BUILD KEY: 22.91-H6Q3MV -->
+<!-- SSHCP V22.91 GEEK PRINT SINGLE STAT COLUMN - exact V22.89 donor.
+     V22.90 is abandoned. Removes only the separate print EXPLANATION / HOLES column while
+     preserving the original STAT column width, borders, row geometry and alignment. Team columns
+     begin immediately after the unchanged STAT column. The left STAT name targets 60% of its main
+     row height. A real second/detail row carries the scope or short clarification at a 50% target.
+     EAGLES/BIRDIES/BOGEYS use ALL HOLES; PARS gets no manufactured second row. P3/P4/P5 BIRDIES
+     show their course hole set. SHORT/LONG VS PAR receive a real second print row with exact
+     qualifying H#P# pairs from CF3.30 course metadata. Team headers, main values and detail values
+     remain capped at 50% row height. Gray 5 category bands stay full width. No column widening,
+     stat centering, border removal or scoring/GEEK/filter behavior changes. -->
 <!-- SSHCP V22.89 GEEK PRINT EXPLANATION + FULL-WIDTH CATEGORY BANDS - exact V22.88 donor.
      Keeps V22.88 frontend-rendered PDF architecture and all existing size chooser/download behavior.
      Category rows now use one continuous Gray 5 band across the complete active table while the
@@ -14268,7 +14267,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.90</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.91</span></span>
         </button>
         <script>
           (function () {
@@ -31268,6 +31267,112 @@ let scoreTimingDetail =
       return geekPrintHoleTextV2288(value);
     }
 
+    function geekPrintNormalizeKeyV2291(value) {
+      return String(value == null ? '' : value)
+        .trim()
+        .toLowerCase()
+        .replace(/[–—]/g, '-')
+        .replace(/\s+/g, ' ');
+    }
+
+    function geekPrintHoleNumberV2291(hole, index) {
+      const raw = String(hole && hole.hole != null ? hole.hole : '').trim();
+      const n = Number(raw);
+      return Number.isFinite(n) && n > 0 ? String(Math.round(n)) : String(index + 1);
+    }
+
+    function geekPrintCourseHoleListV2291(data, predicate, withPar) {
+      const holes = Array.isArray(data && data.courseHoles) ? data.courseHoles : [];
+      const out = [];
+      holes.forEach((hole, index) => {
+        if (!predicate(hole)) return;
+        const h = geekPrintHoleNumberV2291(hole, index);
+        if (withPar) {
+          const p = Number(hole && hole.par);
+          if (Number.isFinite(p) && p > 0) out.push('H' + h + 'P' + Math.round(p));
+        } else {
+          out.push(h);
+        }
+      });
+      if (!out.length) return '';
+      if (withPar) return out.join(', ');
+      return 'H' + out.join(',');
+    }
+
+    function geekPrintLeftDetailTextV2291(stat, data) {
+      const key = geekPrintNormalizeKeyV2291(stat && stat.label);
+
+      if (key === 'eagles' || key === 'birdies' || key === 'bogeys') return 'ALL HOLES';
+
+      if (key === 'p3 birdies' || key === 'par-3 birdies') {
+        return geekPrintCourseHoleListV2291(data, hole => Number(hole && hole.par) === 3, false);
+      }
+      if (key === 'p4 birdies' || key === 'par-4 birdies') {
+        return geekPrintCourseHoleListV2291(data, hole => Number(hole && hole.par) === 4, false);
+      }
+      if (key === 'p5 birdies' || key === 'par-5 birdies') {
+        return geekPrintCourseHoleListV2291(data, hole => Number(hole && hole.par) === 5, false);
+      }
+      if (key === 'short vs par') {
+        return geekPrintCourseHoleListV2291(data, hole => {
+          const par = Number(hole && hole.par);
+          const white = Number(hole && hole.white);
+          if (!Number.isFinite(white)) return false;
+          return (par === 3 && white < 150) ||
+                 (par === 4 && white < 350) ||
+                 (par === 5 && white < 500);
+        }, true);
+      }
+      if (key === 'long vs par') {
+        return geekPrintCourseHoleListV2291(data, hole => {
+          const par = Number(hole && hole.par);
+          const white = Number(hole && hole.white);
+          if (!Number.isFinite(white)) return false;
+          return (par === 3 && white >= 180) ||
+                 (par === 4 && white >= 420) ||
+                 (par === 5 && white >= 550);
+        }, true);
+      }
+      if (key === 'drivable p4 birdies' || key === 'drivable par-4 birdies') {
+        return geekPrintCourseHoleListV2291(data, hole =>
+          Number(hole && hole.par) === 4 &&
+          Number.isFinite(Number(hole && hole.white)) &&
+          Number(hole.white) < 300,
+          false
+        );
+      }
+
+      const textByKey = {
+        'best vs field': 'Best hole vs field',
+        'best hole vs field': 'Best hole vs field',
+        'worst vs field': 'Worst hole vs field',
+        'worst hole vs field': 'Worst hole vs field',
+        'best 9 stretch': 'Best 9 consecutive holes',
+        'best 9-hole stretch': 'Best 9 consecutive holes',
+        'worst 9 stretch': 'Worst 9 consecutive holes',
+        'worst 9-hole stretch': 'Worst 9 consecutive holes',
+        'birdie streak': 'Longest birdie run',
+        'longest birdie streak': 'Longest birdie run',
+        'closing birdies': 'Final holes streak',
+        'closing birdie streak': 'Final holes streak',
+        'back 9 comeback': 'Front 9 vs Back 9',
+        'back-9 comeback': 'Front 9 vs Back 9',
+        'par/under streak': 'Longest par-or-better streak',
+        'longest par/under streak': 'Longest par-or-better streak',
+        'high hole score': 'Highest raw score',
+        'highest hole score': 'Highest raw score',
+        'low hole score': 'Lowest raw score',
+        'lowest hole score': 'Lowest raw score',
+        'score range': 'Highest score − lowest score'
+      };
+      return textByKey[key] || '';
+    }
+
+    function geekPrintNeedsVirtualDetailV2291(stat) {
+      const key = geekPrintNormalizeKeyV2291(stat && stat.label);
+      return (key === 'short vs par' || key === 'long vs par') && !(Number(stat && stat.detailRow) > 0);
+    }
+
     function geekPrintExplanationLinesV2289(stat) {
       const raw = String(stat && stat.printExplanation || '').trim();
       if (!raw) return ['', ''];
@@ -31349,39 +31454,7 @@ let scoreTimingDetail =
       return data;
     }
 
-    function geekPrintLeftMetaV2290(stat) {
-      const label = String(stat && stat.label || '').trim().toUpperCase();
-      const raw = String(stat && stat.printExplanation || '').trim();
-      if (!raw) return '';
-
-      // V22.90: SHORT/LONG are the only retained explanatory thresholds.
-      if (label === 'SHORT VS PAR' || label === 'LONG VS PAR') {
-        return raw.replace(/\n+/g, ' ').trim();
-      }
-
-      // All-hole scope is useful context; explanatory prose is not.
-      if (/ALL\s+HOLES/i.test(raw) || /(?:^|\n)\s*H?1-18\s*$/i.test(raw)) {
-        return 'ALL HOLES';
-      }
-
-      const lines = raw.split(/\n+/).map(part => String(part || '').trim()).filter(Boolean);
-      if (lines.length >= 2) {
-        const candidate = lines[lines.length - 1];
-        if (/^H?\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*$/i.test(candidate)) {
-          return geekPrintHoleTextV2288(candidate);
-        }
-      }
-
-      // Single-line hole scopes / hole group definitions stay under the STAT name.
-      if (/^H?\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*$/i.test(raw)) {
-        return geekPrintHoleTextV2288(raw);
-      }
-      if (/^HCP\s+\d+(?:-\d+)?$/i.test(raw)) return raw;
-
-      return '';
-    }
-
-    async function geekPrintRenderCanvasV2290(data, paperV2281) {
+    async function geekPrintRenderCanvasV2287(data, paperV2281) {
       try {
         if (document.fonts && document.fonts.load) {
           await Promise.all([
@@ -31412,22 +31485,28 @@ let scoreTimingDetail =
       const tableX = (canvas.width - tableW) / 2;
       const tableY = (canvas.height - tableH) / 2;
 
-      // Preserve the successful V22.89 overall geometry, but visually merge the old
-      // STAT + EXPLANATION/HOLES widths into one left label block.
+      // V22.91: preserve V22.89's original STAT-column width exactly.
+      // Column B is gone; it is NOT merged into or added onto column A.
       const fixedWidthPx = 2.25 * ppi;
-      const oldStatW = Math.min(tableW * 0.18, fixedWidthPx * (1.0 / 2.25));
-      const oldExplainW = Math.min(tableW * 0.24, fixedWidthPx * (1.25 / 2.25));
-      const leftW = oldStatW + oldExplainW;
+      const statW = Math.min(tableW * 0.18, fixedWidthPx * (1.0 / 2.25));
       const teams = Array.isArray(data.teams) ? data.teams : [];
       const teamCount = Math.max(1, teams.length);
-      const teamAreaW = Math.max(1, tableW - leftW);
+      const teamAreaW = Math.max(1, tableW - statW);
       const teamW = teamAreaW / teamCount;
-      const xTeam0 = tableX + leftW;
+      const xTeam0 = tableX + statW;
 
-      const bodyRows = geekPrintBuildRowsV2287(data);
+      const baseRows = geekPrintBuildRowsV2287(data);
+      const bodyRows = [];
+      baseRows.forEach(row => {
+        bodyRows.push(row);
+        if (row.type === 'stat' && geekPrintNeedsVirtualDetailV2291(row.stat)) {
+          bodyRows.push({ type:'scope', row:Number(row.row) + 0.5, stat:row.stat });
+        }
+      });
+
       const weights = bodyRows.map(row =>
         row.type === 'section' ? 1.20 :
-        row.type === 'detail' ? 0.95 :
+        (row.type === 'detail' || row.type === 'scope') ? 0.95 :
         1.55
       );
       const titleWeight = 2.05;
@@ -31438,20 +31517,20 @@ let scoreTimingDetail =
       const titleH = unitH * titleWeight;
       const headerH = unitH * headerWeight;
       const rowHeights = bodyRows.map((row, index) => unitH * weights[index]);
-
       const mainHeights = rowHeights.filter((height, index) => bodyRows[index].type === 'stat');
+      const detailHeights = rowHeights.filter((height, index) =>
+        bodyRows[index].type === 'detail' || bodyRows[index].type === 'scope'
+      );
       const minMainH = mainHeights.length ? Math.min(...mainHeights) : unitH * 1.55;
+      const minDetailH = detailHeights.length ? Math.min(...detailHeights) : unitH * 0.95;
 
-      const rowIndexBySheetRow = new Map(bodyRows.map((row, index) => [Number(row.row), index]));
-
+      // Team main values stay one shared size, capped at 50% row height.
       const allResultTexts = [];
       (Array.isArray(data.statRows) ? data.statRows : []).forEach(stat => {
         (Array.isArray(stat.values) ? stat.values : []).forEach(value => {
           if (String(value == null ? '' : value)) allResultTexts.push(String(value));
         });
       });
-
-      // V22.90: every row-height-driven font has a hard visual ceiling of 50%.
       const sharedResultPx = geekPrintFitSharedPxV2287(
         ctx,
         allResultTexts,
@@ -31460,6 +31539,7 @@ let scoreTimingDetail =
         700
       );
 
+      // Team names and team detail evidence are independently fitted, capped at 50% row height.
       const teamNameSizes = teams.map(team =>
         geekPrintFitIndependentPxV2287(
           ctx,
@@ -31473,17 +31553,14 @@ let scoreTimingDetail =
 
       const detailSizes = new Map();
       (Array.isArray(data.statRows) ? data.statRows : []).forEach(stat => {
-        const detailRow = Number(stat.detailRow) || 0;
-        if (!(detailRow > 0)) return;
-        const detailIndex = rowIndexBySheetRow.get(detailRow);
-        const detailH = Number.isInteger(detailIndex) ? rowHeights[detailIndex] : (unitH * 0.95);
+        if (!(Number(stat.detailRow) > 0)) return;
         (Array.isArray(stat.details) ? stat.details : []).forEach((value, teamIndex) => {
           detailSizes.set(
             String(stat.row) + ':' + String(teamIndex),
             geekPrintFitIndependentPxV2287(
               ctx,
               geekPrintDetailDisplayV2288(stat, value),
-              detailH * 0.50,
+              minDetailH * 0.50,
               teamW,
               500,
               true
@@ -31492,12 +31569,16 @@ let scoreTimingDetail =
         });
       });
 
-      // Title.
-      geekPrintDrawCellV2287(ctx, tableX, tableY, tableW, titleH, GEEK_PRINT_RENDER_BLUE_V2287, GEEK_PRINT_RENDER_BLUE_V2287);
+      // Title remains full-width and centered.
+      geekPrintDrawCellV2287(
+        ctx, tableX, tableY, tableW, titleH,
+        GEEK_PRINT_RENDER_BLUE_V2287,
+        GEEK_PRINT_RENDER_BLUE_V2287
+      );
       const titlePx = geekPrintFitIndependentPxV2287(
         ctx,
         String(data.title || 'SIMPLE SCRAMBLE — GEEK STATS'),
-        titleH * 0.50,
+        titleH * 0.60,
         tableW,
         700,
         true
@@ -31511,10 +31592,15 @@ let scoreTimingDetail =
 
       let y = tableY + titleH;
 
-      // Header row: one left label column + team columns.
-      geekPrintDrawCellV2287(ctx, tableX, y, leftW, headerH, '#ffffff');
-      const headerStatPx = geekPrintFitIndependentPxV2287(ctx, 'STAT', headerH * 0.50, leftW, 700, true);
-      geekPrintDrawTextV2287(ctx, 'STAT', tableX, y, leftW, headerH, headerStatPx, { weight:700 });
+      // Header row: same STAT width as V22.89; no EXPLANATION / HOLES column.
+      geekPrintDrawCellV2287(ctx, tableX, y, statW, headerH, '#ffffff');
+      const headerStatPx = geekPrintFitIndependentPxV2287(
+        ctx, 'STAT', headerH * 0.60, statW, 700, true
+      );
+      geekPrintDrawTextV2287(
+        ctx, 'STAT', tableX, y, statW, headerH, headerStatPx,
+        { weight:700 }
+      );
 
       teams.forEach((team, index) => {
         const x = xTeam0 + (teamW * index);
@@ -31529,21 +31615,23 @@ let scoreTimingDetail =
       y += headerH;
 
       const slotToIndex = new Map(teams.map((team, index) => [Number(team.slot), index]));
-      const skipLeftOnDetailRows = new Set();
 
       bodyRows.forEach((row, rowIndex) => {
         const h = rowHeights[rowIndex];
 
         if (row.type === 'section') {
+          // Gray 5 remains one continuous band all the way across the active table.
           geekPrintDrawCellV2287(
             ctx, tableX, y, tableW, h,
             GEEK_PRINT_RENDER_GRAY5_V2288,
             GEEK_PRINT_RENDER_GRAY5_V2288
           );
           const sectionLabel = String(row.label || '');
-          const sectionPx = geekPrintFitIndependentPxV2287(ctx, sectionLabel, h * 0.50, leftW, 700, true);
+          const sectionPx = geekPrintFitIndependentPxV2287(
+            ctx, sectionLabel, h * 0.60, statW, 700, true
+          );
           geekPrintDrawTextV2287(
-            ctx, sectionLabel, tableX, y, leftW, h, sectionPx,
+            ctx, sectionLabel, tableX, y, statW, h, sectionPx,
             { weight:700, color:'#ffffff', align:'center' }
           );
           y += h;
@@ -31558,53 +31646,22 @@ let scoreTimingDetail =
         );
 
         if (row.type === 'stat') {
-          const detailRow = Number(stat.detailRow) || 0;
-          const detailIndex = detailRow > 0 ? rowIndexBySheetRow.get(detailRow) : undefined;
-          const detailImmediatelyFollows = Number.isInteger(detailIndex) && detailIndex === rowIndex + 1;
-          const leftSpanH = h + (detailImmediatelyFollows ? rowHeights[detailIndex] : 0);
-          if (detailImmediatelyFollows) skipLeftOnDetailRows.add(detailRow);
-
-          // One merged left block: STAT name plus only useful scope/threshold beneath it.
-          geekPrintDrawCellV2287(ctx, tableX, y, leftW, leftSpanH, '#ffffff');
+          // Preserve the normal bordered STAT cell and original left alignment.
+          geekPrintDrawCellV2287(ctx, tableX, y, statW, h, '#ffffff');
           const label = String(stat.label || '').toUpperCase();
           const labelPx = geekPrintFitIndependentPxV2287(
             ctx,
             label,
-            Math.min(sharedResultPx, h * 0.50),
-            leftW,
+            h * 0.60,
+            statW,
             700,
             true
           );
-          const meta = geekPrintLeftMetaV2290(stat);
+          geekPrintDrawTextV2287(
+            ctx, label, tableX, y, statW, h, labelPx,
+            { weight:700, align:'left', padPx:Math.max(4, h * 0.13) }
+          );
 
-          if (meta) {
-            const labelBoxH = leftSpanH * 0.56;
-            const metaBoxY = y + (leftSpanH * 0.54);
-            const metaBoxH = leftSpanH * 0.36;
-            geekPrintDrawTextV2287(
-              ctx, label, tableX, y + (leftSpanH * 0.06), leftW, labelBoxH, labelPx,
-              { weight:700, align:'center' }
-            );
-            const metaPx = geekPrintFitIndependentPxV2287(
-              ctx,
-              meta,
-              Math.min(h * 0.30, leftSpanH * 0.24),
-              leftW,
-              500,
-              true
-            );
-            geekPrintDrawTextV2287(
-              ctx, meta, tableX, metaBoxY, leftW, metaBoxH, metaPx,
-              { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287, align:'center' }
-            );
-          } else {
-            geekPrintDrawTextV2287(
-              ctx, label, tableX, y, leftW, leftSpanH, labelPx,
-              { weight:700, align:'center' }
-            );
-          }
-
-          // Team main-result row remains physically separate.
           teams.forEach((team, teamIndex) => {
             const x = xTeam0 + (teamW * teamIndex);
             const owns = ownerIndexes.has(teamIndex);
@@ -31619,26 +31676,46 @@ let scoreTimingDetail =
             );
           });
         } else {
-          // The left block was already drawn by the owning STAT row when a real detail row exists.
-          if (!skipLeftOnDetailRows.has(Number(row.row))) {
-            geekPrintDrawCellV2287(ctx, tableX, y, leftW, h, '#ffffff');
+          // Existing physical detail row (or SHORT/LONG virtual detail row):
+          // bordered left cell + bordered team cells, with the left clarification at 50% target.
+          geekPrintDrawCellV2287(ctx, tableX, y, statW, h, '#ffffff');
+          const leftDetail = geekPrintLeftDetailTextV2291(stat, data);
+          if (leftDetail) {
+            const leftDetailPx = geekPrintFitIndependentPxV2287(
+              ctx,
+              leftDetail,
+              h * 0.50,
+              statW,
+              500,
+              true
+            );
+            geekPrintDrawTextV2287(
+              ctx, leftDetail, tableX, y, statW, h, leftDetailPx,
+              { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287, align:'left', padPx:Math.max(4, h * 0.13) }
+            );
           }
 
           teams.forEach((team, teamIndex) => {
             const x = xTeam0 + (teamW * teamIndex);
             geekPrintDrawCellV2287(ctx, x, y, teamW, h, GEEK_PRINT_RENDER_LIGHT_V2287);
-            const detail = geekPrintDetailDisplayV2288(stat, Array.isArray(stat.details) ? stat.details[teamIndex] : '');
-            const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.50);
-            geekPrintDrawTextV2287(
-              ctx, detail, x, y, teamW, h, detailPx,
-              { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287 }
-            );
+            if (row.type === 'detail') {
+              const detail = geekPrintDetailDisplayV2288(
+                stat,
+                Array.isArray(stat.details) ? stat.details[teamIndex] : ''
+              );
+              const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.50);
+              geekPrintDrawTextV2287(
+                ctx, detail, x, y, teamW, h, detailPx,
+                { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287 }
+              );
+            }
           });
         }
 
         y += h;
       });
 
+      // Crisp outside border after all cells.
       ctx.strokeStyle = GEEK_PRINT_RENDER_DARK_V2287;
       ctx.lineWidth = Math.max(1.5, canvas.width / 1400);
       ctx.strokeRect(tableX, tableY, tableW, tableH);
@@ -31724,7 +31801,7 @@ let scoreTimingDetail =
     }
 
     async function geekPrintCreatePdfV2287(data, paperV2281) {
-      const rendered = await geekPrintRenderCanvasV2290(data, paperV2281);
+      const rendered = await geekPrintRenderCanvasV2287(data, paperV2281);
       return geekPrintCanvasPdfBlobV2287(rendered.canvas, rendered.paper);
     }
 
