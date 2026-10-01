@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.73-R6M2QV | BUILD KEY: 22.74-K8V3MN -->
+<!-- SSHCP | BASE KEY: 22.74-K8V3MN | BUILD KEY: 22.75-V4N7QK -->
+<!-- SSHCP V22.75 LEADERBOARD TITLE SIZE RESTORE - exact V22.74 donor.
+     Presentation-only correction. V22.74's approved LIVE LEADERBOARD / FINAL RESULTS upper geometry stays locked: NAV/header/title placement unchanged, TITLE -> equal half-gap -> 3px progress/divider -> equal half-gap -> TABLE unchanged, and table/footer flex geometry unchanged. Only the title fitter is corrected so removing the old fixed title-bar height can no longer shrink the title against its own content-height box. The title target is restored to the exact historical rule (55% of the established 40px context-height baseline), using the same global VPH×DPR multiplier through --v16-context-h; height is ignored while fitting so only width can reduce it. LIVE LEADERBOARD and FINAL RESULTS therefore return to their pre-V22.74 visual size while retaining V22.74 spacing. Scorecard, GEEK, table typography, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.75. -->
 <!-- SSHCP V22.74 LEADERBOARD EQUAL PROGRESS-GAP LOCK - exact V22.73 donor.
      Presentation-only upper-shell correction for both LIVE LEADERBOARD and FINAL RESULTS. The already-approved nav/header/title positions remain locked. The title bar is forced to true content height after all legacy CSS, and the existing 3px progress/divider bar is centered inside one fixed visual gap: TITLE -> 0.5G -> BAR -> 0.5G -> TABLE. The two gaps are therefore generated from the same variable/expression and cannot diverge between live and completed states. Reclaimed vertical space belongs to the Leaderboard table/flex region; table/header/body/footer logic and bottom controls are otherwise unchanged. V22.69 TEAM/HCP and Summary typography, Scorecard, GEEK, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.74. -->
 <!-- SSHCP V22.73 FINAL RESULTS HALF-GAP LOCK - exact V22.72 donor.
@@ -13843,7 +13845,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.74</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.75</span></span>
         </button>
         <script>
           (function () {
@@ -32849,12 +32851,24 @@ let scoreTimingDetail =
       const titleBar = els.leaderboardView.querySelector('.leader-title-bar');
       const title = els.leaderboardView.querySelector('.leader-title');
       if (titleBar && title) {
-        fitTextToBoxV5(titleBar, title, titleBar.clientHeight * 0.55, 14, {
-          horizontalPad: 10,
-          verticalPad: 5,
-          wrap: false,
-          lineHeight: 1
-        });
+        const historicalLeaderTitleTargetV2275 = Math.max(
+          1,
+          (Number(geometry.vars && geometry.vars['--v16-context-h']) || (40 * geometry.sy)) * 0.55
+        );
+        const historicalLeaderTitleMinV2275 = Math.max(0.001, 14 * geometry.sy);
+        fitTextToBoxV5(
+          titleBar,
+          title,
+          historicalLeaderTitleTargetV2275,
+          historicalLeaderTitleMinV2275,
+          {
+            horizontalPad: 10,
+            verticalPad: 0,
+            wrap: false,
+            lineHeight: 1,
+            ignoreHeight: true
+          }
+        );
       }
 
       const headerRect = header.getBoundingClientRect();
