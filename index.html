@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.76-Z4M8QK | BUILD KEY: 22.77-L5Q8RV -->
+<!-- SSHCP | BASE KEY: 22.77-L5Q8RV | BUILD KEY: 22.78-N6Q3MX -->
+<!-- SSHCP V22.78 GEEK PDF DOWNLOAD STATUS FEEDBACK - exact V22.77 donor.
+     Keeps the V22.77 CF V3.5 GEEK STATS download path and Result Audit last-place cross-view fix unchanged. Adds only a dedicated download-status overlay above regular GEEK: tap DOWNLOAD shows PREPARING GEEK STATS / Creating your PDF… while CF generates and returns the file; after the browser download is triggered it changes to DOWNLOAD STARTED / Check Downloads folder / GEEK STATS.pdf and dismisses automatically after 2 seconds. A failed request shows DOWNLOAD FAILED with the Worker/browser error and dismisses automatically after 3 seconds. The status overlay is independent of the shared SSHCP modal, so GEEK stays open and its table, filters, scroll position, ALL TEAMS behavior and geometry are unchanged. Worker/API, GEEK calculations, ranking/tiebreak, Summary, SKINS, GAME, scoring, authorization, event config and timing remain unchanged. HOME label advances to V22.78. -->
 <!-- SSHCP V22.77 GEEK PDF DOWNLOAD + RESULT AUDIT LAST-PLACE ALIGNMENT - exact V22.76 donor.
      Adds one presentation-only download icon to the top-right of regular portrait GEEK MODE. The icon is absolute-positioned inside the existing GEEK popup so it does not alter title/table/action geometry, is hidden during early/incomplete GEEK and FILTERS, and downloads the deployed CF V3.5 action=geekPdf response as GEEK STATS.pdf without changing GEEK/ALL TEAMS calculations or adding a second stats engine. Also fixes only the independent RESULT AUDIT expected Leaderboard place labels after V22.67 finalized standings: when the protected bottom-place resolver has already converted a worst-net tie into real final places, the cross-view verifier now expects those same resolved place labels/order instead of the stale pre-V22.67 T-place labels. Tournament ranking, tiebreak math, Summary/Final Results rendering, scoring, authorization, Worker behavior, GAME, SKINS, event config, timing and all approved GEEK geometry remain unchanged. HOME label advances to V22.77. -->
 <!-- SSHCP V22.76 LEADERBOARD TITLE +10% / BLUE - exact V22.75 donor.
@@ -12571,6 +12573,67 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   pointer-events:none!important;
 }
 
+/* V22.78 — independent GEEK PDF status overlay; never alters shared modal geometry. */
+.geek-download-status-v2278{
+  position:fixed;
+  inset:0;
+  z-index:12050;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:calc(18px * var(--v221-global-scale,1));
+  background:rgba(255,255,255,.46);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+.geek-download-status-v2278.open{
+  display:flex;
+}
+.geek-download-status-card-v2278{
+  width:min(
+    calc(330px * var(--v221-global-scale,1)),
+    calc(100vw - (36px * var(--v221-global-scale,1)))
+  );
+  min-height:calc(122px * var(--v221-global-scale,1));
+  padding:
+    calc(20px * var(--v221-global-scale,1))
+    calc(18px * var(--v221-global-scale,1));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:calc(9px * var(--v221-global-scale,1));
+  border:1px solid rgba(0,0,0,.72);
+  border-radius:calc(14px * var(--v221-global-scale,1));
+  background:#fafafa;
+  box-shadow:0 calc(8px * var(--v221-global-scale,1)) calc(26px * var(--v221-global-scale,1)) rgba(0,0,0,.16);
+  text-align:center;
+}
+.geek-download-status-title-v2278{
+  color:var(--accent);
+  -webkit-text-fill-color:var(--accent);
+  font-size:calc(22px * var(--v221-global-scale,1));
+  font-weight:700;
+  line-height:1.05;
+  letter-spacing:.25px;
+}
+.geek-download-status-text-v2278{
+  color:#222;
+  font-size:calc(16px * var(--v221-global-scale,1));
+  font-weight:600;
+  line-height:1.18;
+}
+.geek-download-status-file-v2278{
+  color:#666;
+  font-size:calc(12px * var(--v221-global-scale,1));
+  font-weight:500;
+  line-height:1.1;
+}
+.geek-download-status-v2278.failed .geek-download-status-title-v2278{
+  color:var(--red);
+  -webkit-text-fill-color:var(--red);
+}
+
 </style>
 
 <style id="sshcp-v222-informational-typography">
@@ -13895,7 +13958,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.77</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.78</span></span>
         </button>
         <script>
           (function () {
@@ -30497,11 +30560,73 @@ let scoreTimingDetail =
     }
 
 
+    let geekDownloadStatusTimerV2278 = 0;
+
+    function ensureGeekDownloadStatusV2278() {
+      let overlay = document.getElementById('geekDownloadStatusV2278');
+      if (overlay) return overlay;
+
+      overlay = document.createElement('div');
+      overlay.id = 'geekDownloadStatusV2278';
+      overlay.className = 'geek-download-status-v2278';
+      overlay.setAttribute('role', 'status');
+      overlay.setAttribute('aria-live', 'polite');
+      overlay.setAttribute('aria-atomic', 'true');
+      overlay.innerHTML =
+        '<div class="geek-download-status-card-v2278">' +
+          '<div class="geek-download-status-title-v2278"></div>' +
+          '<div class="geek-download-status-text-v2278"></div>' +
+          '<div class="geek-download-status-file-v2278"></div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      return overlay;
+    }
+
+    function showGeekDownloadStatusV2278(title, text, file, mode, autoHideMs) {
+      const overlay = ensureGeekDownloadStatusV2278();
+      if (geekDownloadStatusTimerV2278) {
+        clearTimeout(geekDownloadStatusTimerV2278);
+        geekDownloadStatusTimerV2278 = 0;
+      }
+
+      overlay.classList.toggle('failed', mode === 'failed');
+      const titleEl = overlay.querySelector('.geek-download-status-title-v2278');
+      const textEl = overlay.querySelector('.geek-download-status-text-v2278');
+      const fileEl = overlay.querySelector('.geek-download-status-file-v2278');
+
+      if (titleEl) titleEl.textContent = String(title || '');
+      if (textEl) textEl.textContent = String(text || '');
+      if (fileEl) {
+        fileEl.textContent = String(file || '');
+        fileEl.style.display = file ? '' : 'none';
+      }
+
+      overlay.classList.add('open');
+
+      const delay = Number(autoHideMs);
+      if (Number.isFinite(delay) && delay > 0) {
+        geekDownloadStatusTimerV2278 = window.setTimeout(() => {
+          overlay.classList.remove('open', 'failed');
+          geekDownloadStatusTimerV2278 = 0;
+        }, delay);
+      }
+
+      return overlay;
+    }
+
     async function downloadGeekStatsPdfV2277(button) {
       if (!button || button.disabled) return;
       button.disabled = true;
       button.classList.add('downloading-v2277');
       button.setAttribute('aria-busy', 'true');
+
+      showGeekDownloadStatusV2278(
+        'PREPARING GEEK STATS',
+        'Creating your PDF…',
+        '',
+        'preparing',
+        0
+      );
 
       try {
         const response = await fetch(
@@ -30535,10 +30660,21 @@ let scoreTimingDetail =
         link.click();
         link.remove();
         setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+
+        showGeekDownloadStatusV2278(
+          'DOWNLOAD STARTED',
+          'Check Downloads folder',
+          'GEEK STATS.pdf',
+          'success',
+          2000
+        );
       } catch (error) {
-        showMessageModal(
-          'GEEK STATS',
-          String(error && error.message || 'Unable to download GEEK STATS PDF.')
+        showGeekDownloadStatusV2278(
+          'DOWNLOAD FAILED',
+          String(error && error.message || 'Unable to create GEEK STATS.pdf'),
+          '',
+          'failed',
+          3000
         );
       } finally {
         button.disabled = false;
