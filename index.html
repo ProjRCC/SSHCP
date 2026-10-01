@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.84-P5R8VN | BUILD KEY: 22.85-H7Q3MV -->
+<!-- SSHCP | BASE KEY: 22.85-H7Q3MV | BUILD KEY: 22.86-M4V8QK -->
+<!-- SSHCP V22.86 GEEK PDF SUCCESS TIMER + CLEAN SIZE TOUCH - exact V22.85 donor.
+     Changes only the GEEK PDF download/selector presentation. DOWNLOAD STARTED keeps the readable success card and OK button, adds a thin Blue six-second remaining-time bar that drains to zero, and auto-dismisses at six seconds if OK is not pressed. PDF-size rows no longer use the global literal-button press flash: touching a size leaves the row surface/text unchanged, while selection is communicated only by the filled Blue checkbox and thicker Blue outer border. V22.85 recommendation labels/help copy, first recommended preselection, Gray 7 non-recommended treatment, ALL TEAMS auth header, GEEK calculations, scoring, authorization, results, Summary, SKINS, GAME, Scramble, TEST, event config and timing otherwise remain unchanged. HOME label advances to V22.86. -->
 <!-- SSHCP V22.85 GEEK PDF RECOMMENDED LABEL + GEEK GUIDE DOWNLOAD COPY - exact V22.84 donor.
      Changes only the existing GEEK PDF SIZE recommendation label presentation and player-facing GEEK help copy. Recommended markers now read (RECOMMENDED), sit with only normal word spacing after the paper label, render at 80% of the option font and in italics, while the stronger/larger recommendation remains bold. The existing recommendation math, Gray 7 non-recommended treatment and first/topmost recommended preselection remain unchanged. GEEK Tips & Tricks and the Quick Guide GEEK MODE section now tell players that complete tournament stats can be downloaded by tapping the icon in the top right. V22.84 ALL TEAMS authorized-team Blue/white header remains unchanged. Worker/API, PDF generation, GEEK calculations, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.85. -->
 <!-- SSHCP V22.84 GEEK PDF RECOMMENDATION POLISH - exact V22.83 donor.
@@ -12696,6 +12698,37 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   display:block!important;
 }
 
+/* V22.86 — six-second readable success hold. The Blue bar represents time
+   remaining, so it drains from full width to zero while OK remains live. */
+.geek-download-status-countdown-v2286{
+  display:none!important;
+  width:100%!important;
+  height:calc(4px * var(--v2074-utility-scale,1))!important;
+  margin:calc(14px * var(--v2074-utility-scale,1)) 0 0!important;
+  overflow:hidden!important;
+  border-radius:999px!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+}
+.geek-download-status-v2278.success .geek-download-status-countdown-v2286{
+  display:block!important;
+}
+.geek-download-status-countdown-bar-v2286{
+  width:100%!important;
+  height:100%!important;
+  background:var(--accent)!important;
+  transform-origin:left center!important;
+}
+.geek-download-status-v2278.success .geek-download-status-countdown-bar-v2286{
+  animation:geekDownloadCountdownV2286 6s linear forwards!important;
+}
+@keyframes geekDownloadCountdownV2286{
+  from{transform:scaleX(1);}
+  to{transform:scaleX(0);}
+}
+.geek-download-status-v2278.success .geek-download-status-ok-v2279{
+  margin-top:calc(8px * var(--v2074-utility-scale,1))!important;
+}
+
 
 /* V22.81 — independent GEEK PDF paper-size chooser. It intentionally mirrors
    the V22.80 Tips-style download-status surface and does not touch GEEK geometry. */
@@ -14030,6 +14063,25 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
   font-weight:900!important;
 }
 
+/* V22.86 — paper choice touch is deliberately quiet. Selection itself is shown
+   only by the existing Blue checkbox and thicker Blue border. */
+.geek-pdf-paper-option-v2281:active:not(:disabled),
+.geek-pdf-paper-option-v2281.sshcp-button-pressed-v172{
+  background:#fafafa!important;
+  color:inherit!important;
+  -webkit-text-fill-color:currentColor!important;
+  filter:none!important;
+  box-shadow:none!important;
+}
+.geek-pdf-paper-option-v2281:not(.selected):active:not(:disabled),
+.geek-pdf-paper-option-v2281:not(.selected).sshcp-button-pressed-v172{
+  border:1px solid rgba(0,0,0,.48)!important;
+}
+.geek-pdf-paper-option-v2281.selected:active:not(:disabled),
+.geek-pdf-paper-option-v2281.selected.sshcp-button-pressed-v172{
+  border:2px solid var(--accent)!important;
+}
+
 /* V22.83 — ALL TEAMS already tags the currently authorized team header.
    Restore that one header as the app Blue/white identity cue without touching
    the STAT header, other teams, result cells, leaders, sizing, or scrolling. */
@@ -14180,7 +14232,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.85</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.86</span></span>
         </button>
         <script>
           (function () {
@@ -30800,6 +30852,9 @@ let scoreTimingDetail =
           '<div class="geek-download-status-title-v2278"></div>' +
           '<div class="geek-download-status-text-v2278"></div>' +
           '<div class="geek-download-status-file-v2278"></div>' +
+          '<div class="geek-download-status-countdown-v2286" aria-hidden="true">' +
+            '<div class="geek-download-status-countdown-bar-v2286"></div>' +
+          '</div>' +
           '<button type="button" class="geek-download-status-ok-v2279">OK</button>' +
         '</div>';
 
@@ -31141,7 +31196,7 @@ let scoreTimingDetail =
           'Check Downloads folder',
           downloadFileNameV2282,
           'success',
-          0
+          6000
         );
       } catch (error) {
         showGeekDownloadStatusV2278(
@@ -35225,6 +35280,9 @@ let scoreTimingDetail =
       /* V18.51: GEEK table buttons live inside a touch-scroll surface. A
          pointerdown there may become a scroll gesture, so never flash Gray 9. */
       if (button.closest && button.closest('.geek-table-scroll-v180')) return true;
+      /* V22.86 — PDF paper options own a checkbox + border selection cue. Do not
+         let the global literal-button press system paint the entire row black/white. */
+      if (button.matches && button.matches('.geek-pdf-paper-option-v2281')) return true;
       return false;
     }
 
