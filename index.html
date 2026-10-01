@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.78-N6Q3MX | BUILD KEY: 22.79-P7R4VN -->
+<!-- SSHCP | BASE KEY: 22.79-P7R4VN | BUILD KEY: 22.80-R8M5QK -->
+<!-- SSHCP V22.80 GEEK DOWNLOAD STATUS / TIPS & TRICKS VISUAL MATCH - exact V22.79 donor.
+     Changes ONLY the independent GEEK PDF download-status surface so PREPARING / SUCCESS / FAILURE visually use the established contextual Tips & Tricks presentation: Gray-3.5 blurred backdrop, wide opaque-white rounded card, Blue heavy title, readable dark copy, subtle shadow, and the same full-width Blue OK geometry on the success state. The existing V22.79 behavior remains unchanged: PREPARING has no OK and stays while CF generates, DOWNLOAD STARTED remains until OK is pressed, DOWNLOAD FAILED retains its timed dismissal, the GEEK page stays open underneath, and no table/filter/scroll geometry changes. CF V3.5 endpoint, GEEK calculations, Result Audit last-place fix, leaderboard/Summary/tiebreak, SKINS, GAME, scoring, authorization, event config and timing remain unchanged. HOME label advances to V22.80. -->
 <!-- SSHCP V22.79 GEEK PDF SUCCESS ACKNOWLEDGMENT - exact V22.78 donor.
      Keeps the V22.78 GEEK PDF download-status workflow, CF V3.5 endpoint, V22.77 Result Audit last-place fix, and all approved GEEK geometry unchanged. PREPARING GEEK STATS remains a blocking progress state while the PDF is generated. After the browser download is triggered, DOWNLOAD STARTED / Check Downloads folder / GEEK STATS.pdf now remains visible until the player explicitly presses OK instead of auto-dismissing after 2 seconds. DOWNLOAD FAILED retains the V22.78 timed failure behavior. No GEEK data/math, ALL TEAMS behavior, filters, scrolling, leaderboard/Summary/tiebreak, SKINS, GAME, scoring, authorization, Worker/API, event config or timing changes. HOME label advances to V22.79. -->
 <!-- SSHCP V22.78 GEEK PDF DOWNLOAD STATUS FEEDBACK - exact V22.77 donor.
@@ -12575,87 +12577,114 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   pointer-events:none!important;
 }
 
-/* V22.78 — independent GEEK PDF status overlay; never alters shared modal geometry. */
+/* V22.80 — GEEK PDF status now mirrors the established contextual Tips & Tricks
+   surface while remaining an independent overlay that cannot alter GEEK geometry. */
 .geek-download-status-v2278{
-  position:fixed;
-  inset:0;
-  z-index:12050;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:calc(18px * var(--v221-global-scale,1));
-  background:rgba(255,255,255,.46);
-  backdrop-filter:blur(3px);
-  -webkit-backdrop-filter:blur(3px);
+  position:fixed!important;
+  inset:0!important;
+  z-index:12050!important;
+  display:none!important;
+  background:rgba(199,199,199,.90)!important;
+  -webkit-backdrop-filter:blur(6px)!important;
+  backdrop-filter:blur(6px)!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transition:opacity .30s ease,visibility 0s linear .30s!important;
 }
 .geek-download-status-v2278.open{
-  display:flex;
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  transition:opacity .30s ease,visibility 0s linear 0s!important;
 }
 .geek-download-status-card-v2278{
-  width:min(
-    calc(330px * var(--v221-global-scale,1)),
-    calc(100vw - (36px * var(--v221-global-scale,1)))
-  );
-  min-height:calc(122px * var(--v221-global-scale,1));
+  position:absolute!important;
+  left:50%!important;
+  top:58%!important;
+  transform:translate(-50%,-50%)!important;
+  box-sizing:border-box!important;
+  width:96vw!important;
+  max-width:min(570px,calc(100vw - 12px))!important;
+  max-height:72dvh!important;
+  overflow:auto!important;
   padding:
-    calc(20px * var(--v221-global-scale,1))
-    calc(18px * var(--v221-global-scale,1));
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:calc(9px * var(--v221-global-scale,1));
-  border:1px solid rgba(0,0,0,.72);
-  border-radius:calc(14px * var(--v221-global-scale,1));
-  background:#fafafa;
-  box-shadow:0 calc(8px * var(--v221-global-scale,1)) calc(26px * var(--v221-global-scale,1)) rgba(0,0,0,.16);
-  text-align:center;
+    calc(20px * var(--v2074-utility-scale,1))
+    calc(18px * var(--v2074-utility-scale,1))!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  border:0!important;
+  border-radius:calc(16px * var(--v2074-utility-scale,1))!important;
+  background:#fff!important;
+  box-shadow:
+    0 calc(4px * var(--v2074-utility-scale,1))
+    calc(14px * var(--v2074-utility-scale,1))
+    rgba(0,0,0,.14)!important;
+  text-align:center!important;
 }
 .geek-download-status-title-v2278{
-  color:var(--accent);
-  -webkit-text-fill-color:var(--accent);
-  font-size:calc(22px * var(--v221-global-scale,1));
-  font-weight:700;
-  line-height:1.05;
-  letter-spacing:.25px;
+  margin:0 0 calc(12px * var(--v2074-utility-scale,1))!important;
+  color:var(--accent)!important;
+  -webkit-text-fill-color:var(--accent)!important;
+  font-size:calc(27px * var(--v221-global-scale,1))!important;
+  font-weight:900!important;
+  line-height:1.05!important;
+  letter-spacing:0!important;
+  text-align:center!important;
 }
 .geek-download-status-text-v2278{
-  color:#222;
-  font-size:calc(16px * var(--v221-global-scale,1));
-  font-weight:600;
-  line-height:1.18;
+  margin:0!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  font-size:calc(21px * var(--v221-global-scale,1))!important;
+  font-weight:400!important;
+  line-height:1.24!important;
+  text-align:center!important;
 }
 .geek-download-status-file-v2278{
-  color:#666;
-  font-size:calc(12px * var(--v221-global-scale,1));
-  font-weight:500;
-  line-height:1.1;
+  margin:calc(8px * var(--v2074-utility-scale,1)) 0 0!important;
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
+  font-size:calc(16px * var(--v221-global-scale,1))!important;
+  font-weight:800!important;
+  line-height:1.1!important;
+  text-align:center!important;
 }
 .geek-download-status-v2278.failed .geek-download-status-title-v2278{
-  color:var(--red);
-  -webkit-text-fill-color:var(--red);
+  color:var(--red)!important;
+  -webkit-text-fill-color:var(--red)!important;
 }
 .geek-download-status-ok-v2279{
-  display:none;
-  width:min(
-    calc(155px * var(--v221-global-scale,1)),
-    62%
-  );
-  min-height:calc(42px * var(--v221-global-scale,1));
-  margin-top:calc(5px * var(--v221-global-scale,1));
-  padding:0 calc(14px * var(--v221-global-scale,1));
-  border:0;
-  border-radius:calc(8px * var(--v221-global-scale,1));
-  background:var(--accent);
-  color:var(--on-accent);
-  -webkit-text-fill-color:var(--on-accent);
-  font-size:calc(17px * var(--v221-global-scale,1));
-  font-weight:800;
-  line-height:1;
-  letter-spacing:.2px;
+  display:none!important;
+  width:100%!important;
+  min-height:calc(48px * var(--v2074-utility-scale,1))!important;
+  margin:calc(16px * var(--v2074-utility-scale,1)) 0 0!important;
+  padding:0 calc(10px * var(--v2074-utility-scale,1))!important;
+  border:2px solid var(--accent)!important;
+  border-radius:calc(9px * var(--v2074-utility-scale,1))!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  font-size:calc(18px * var(--v2074-utility-scale,1))!important;
+  font-weight:900!important;
+  line-height:1!important;
+  box-shadow:none!important;
+}
+.geek-download-status-ok-v2279:active:not(:disabled),
+.geek-download-status-ok-v2279.sshcp-button-pressed-v172{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  filter:brightness(.92)!important;
+  box-shadow:none!important;
 }
 .geek-download-status-v2278.success .geek-download-status-ok-v2279{
-  display:block;
+  display:block!important;
 }
 
 </style>
@@ -13982,7 +14011,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.79</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.80</span></span>
         </button>
         <script>
           (function () {
