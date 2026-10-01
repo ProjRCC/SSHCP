@@ -1,6 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.82-N6R4QW | BUILD KEY: 22.83-K4M7QX -->
-<!-- SSHCP V22.83 GEEK PDF RECOMMENDATIONS + ALL TEAMS AUTH HEADER - exact V22.82 donor.
-     Adds only two frontend presentation refinements. The PDF SIZE chooser now calculates recommendations from the active GEEK field size when GEEK MODE loads using each paper's real 95%-usable print width, a shared non-team table allowance and a minimum comfortable physical team-column width; the smallest comfortable size plus the next larger size may both show (RECOMMEND), and when two are recommended the larger recommendation is bold. The remembered paper selection remains independent and is never auto-changed. In GEEK MODE • ALL TEAMS, the already-detected authorized team header now uses the app Blue background with on-accent white text so TEAM AUTH is immediately visible; all other header/data geometry and winner highlighting remain unchanged. Worker/API, GEEK calculations, PDF generation, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.83. -->
+<!-- SSHCP | BASE KEY: 22.83-K4M7QX | BUILD KEY: 22.84-P5R8VN -->
+<!-- SSHCP V22.84 GEEK PDF RECOMMENDATION POLISH - exact V22.83 donor.
+     Changes ONLY the existing GEEK PDF SIZE chooser presentation/selection behavior. Paper labels compact to 8.5×11 PORTRAIT / 11×14 PORTRAIT / 17×11 LANDSCAPE (no em dash and no spaces around ×) so recommendation text stays on one line. Non-recommended paper labels use Gray 7 while recommended labels remain black; the stronger/larger recommendation keeps bold (RECOMMEND). Each time the chooser opens, the first/topmost current recommendation is preselected instead of restoring a prior paper choice, while a manual tap still selects normally and DOWNLOAD still records the chosen paper through the existing path. V22.83 ALL TEAMS authorized-team Blue/white header remains unchanged. Worker/API, recommendation math, GEEK calculations, PDF generation, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.84. -->
 <!-- SSHCP V22.82 GEEK PDF SIZE/TIME FILENAME - exact V22.81 donor.
      Changes ONLY the downloaded GEEK PDF filename. The selected paper choice is encoded as 8.5x11, 11x14, or 17x11 and the device-local download time is encoded without a colon using lowercase am/pm, e.g. GEEKstats_17x11_151am.pdf. The exact generated filename is also shown in the existing DOWNLOAD STARTED status card. V22.81 paper selector, download/status behavior, GEEK/ALL TEAMS geometry and calculations, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.82. -->
 <!-- SSHCP V22.81 GEEK PDF PAPER SELECTOR - exact V22.80 donor.
@@ -14002,9 +14002,22 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
 
 <style id="sshcp-v2283-geek-recommend-auth-header">
-/* V22.83 — PDF recommendation labels are advisory only. The remembered
-   selection stays independent; the stronger recommendation is the larger of
-   the two recommended paper choices. */
+/* V22.84 — keep each compact paper label + recommendation on one line.
+   Recommended labels stay black; non-recommended choices use the established
+   Gray 7 text treatment. The larger/stronger recommendation remains bold. */
+.geek-pdf-paper-label-v2283{
+  display:block!important;
+  min-width:0!important;
+  white-space:nowrap!important;
+}
+.geek-pdf-paper-option-v2281:not(.recommended-v2284) .geek-pdf-paper-label-v2283{
+  color:var(--sshcp-gray-7-v1851,#444444)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
+}
+.geek-pdf-paper-option-v2281.recommended-v2284 .geek-pdf-paper-label-v2283{
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
 .geek-pdf-paper-recommend-v2283{
   margin-left:.28em!important;
   font-weight:400!important;
@@ -14163,7 +14176,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.83</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.84</span></span>
         </button>
         <script>
           (function () {
@@ -30835,9 +30848,9 @@ let scoreTimingDetail =
 
     const GEEK_PDF_PAPER_KEY_V2281 = 'sshcpGeekPdfPaperV2281';
     const GEEK_PDF_PAPERS_V2281 = Object.freeze([
-      { key:'letter', label:'8.5 × 11 — PORTRAIT' },
-      { key:'portrait11x14', label:'11 × 14 — PORTRAIT' },
-      { key:'landscape17x11', label:'17 × 11 — LANDSCAPE' }
+      { key:'letter', label:'8.5×11 PORTRAIT' },
+      { key:'portrait11x14', label:'11×14 PORTRAIT' },
+      { key:'landscape17x11', label:'17×11 LANDSCAPE' }
     ]);
     let geekPdfPaperChoiceV2281 = '';
     let geekPdfPaperSourceButtonV2281 = null;
@@ -30913,6 +30926,7 @@ let scoreTimingDetail =
         if (!mark) return;
         const key = String(option.dataset.paper || '');
         const recommended = geekPdfRecommendationsV2283.recommended.has(key);
+        option.classList.toggle('recommended-v2284', recommended);
         mark.textContent = recommended ? ' (RECOMMEND)' : '';
         mark.classList.toggle('strong-v2283', recommended && geekPdfRecommendationsV2283.strong === key);
       });
@@ -31048,7 +31062,18 @@ let scoreTimingDetail =
       if (!button || button.disabled) return;
       const overlay = ensureGeekPdfPaperChooserV2281();
       geekPdfPaperSourceButtonV2281 = button;
-      geekPdfPaperChoiceV2281 = rememberedGeekPdfPaperV2281();
+
+      /* V22.84 — recommendations are resolved when GEEK MODE loads. Open the
+         chooser on the first/topmost recommended size so the default action
+         follows the current field rather than a stale remembered paper choice.
+         Manual taps and DOWNLOAD continue through the existing selection path. */
+      const firstRecommendedV2284 = GEEK_PDF_RECOMMEND_PAPERS_V2283.find(item =>
+        geekPdfRecommendationsV2283.recommended.has(item.key)
+      );
+      geekPdfPaperChoiceV2281 = firstRecommendedV2284
+        ? firstRecommendedV2284.key
+        : rememberedGeekPdfPaperV2281();
+
       syncGeekPdfPaperChooserV2281(overlay);
       overlay.classList.add('open');
     }
