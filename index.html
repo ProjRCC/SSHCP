@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.83-K4M7QX | BUILD KEY: 22.84-P5R8VN -->
+<!-- SSHCP | BASE KEY: 22.84-P5R8VN | BUILD KEY: 22.85-H7Q3MV -->
+<!-- SSHCP V22.85 GEEK PDF RECOMMENDED LABEL + GEEK GUIDE DOWNLOAD COPY - exact V22.84 donor.
+     Changes only the existing GEEK PDF SIZE recommendation label presentation and player-facing GEEK help copy. Recommended markers now read (RECOMMENDED), sit with only normal word spacing after the paper label, render at 80% of the option font and in italics, while the stronger/larger recommendation remains bold. The existing recommendation math, Gray 7 non-recommended treatment and first/topmost recommended preselection remain unchanged. GEEK Tips & Tricks and the Quick Guide GEEK MODE section now tell players that complete tournament stats can be downloaded by tapping the icon in the top right. V22.84 ALL TEAMS authorized-team Blue/white header remains unchanged. Worker/API, PDF generation, GEEK calculations, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.85. -->
 <!-- SSHCP V22.84 GEEK PDF RECOMMENDATION POLISH - exact V22.83 donor.
      Changes ONLY the existing GEEK PDF SIZE chooser presentation/selection behavior. Paper labels compact to 8.5×11 PORTRAIT / 11×14 PORTRAIT / 17×11 LANDSCAPE (no em dash and no spaces around ×) so recommendation text stays on one line. Non-recommended paper labels use Gray 7 while recommended labels remain black; the stronger/larger recommendation keeps bold (RECOMMEND). Each time the chooser opens, the first/topmost current recommendation is preselected instead of restoring a prior paper choice, while a manual tap still selects normally and DOWNLOAD still records the chosen paper through the existing path. V22.83 ALL TEAMS authorized-team Blue/white header remains unchanged. Worker/API, recommendation math, GEEK calculations, PDF generation, scoring, authorization, result/tiebreak, Summary, SKINS, GAME, Scramble, TEST, event config and timing remain unchanged. HOME label advances to V22.84. -->
 <!-- SSHCP V22.82 GEEK PDF SIZE/TIME FILENAME - exact V22.81 donor.
@@ -14019,7 +14021,9 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
   -webkit-text-fill-color:#000!important;
 }
 .geek-pdf-paper-recommend-v2283{
-  margin-left:.28em!important;
+  margin-left:0!important;
+  font-size:80%!important;
+  font-style:italic!important;
   font-weight:400!important;
 }
 .geek-pdf-paper-recommend-v2283.strong-v2283{
@@ -14176,7 +14180,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.84</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.85</span></span>
         </button>
         <script>
           (function () {
@@ -21649,7 +21653,8 @@ let scoreTimingDetail =
             'Tap a <strong>STAT</strong> for more detail.',
             'Use <strong>FILTERS</strong> to filter stat categories.',
             '<strong>ROTATE</strong> to view <strong>ALL TEAMS</strong> stats.',
-            'Tap an individual <strong>RESULT</strong> for more detail.'
+            'Tap an individual <strong>RESULT</strong> for more detail.',
+            'Download complete tournament stats by tapping the icon in the top right.'
           ]
         };
       }
@@ -30927,7 +30932,7 @@ let scoreTimingDetail =
         const key = String(option.dataset.paper || '');
         const recommended = geekPdfRecommendationsV2283.recommended.has(key);
         option.classList.toggle('recommended-v2284', recommended);
-        mark.textContent = recommended ? ' (RECOMMEND)' : '';
+        mark.textContent = recommended ? ' (RECOMMENDED)' : '';
         mark.classList.toggle('strong-v2283', recommended && geekPdfRecommendationsV2283.strong === key);
       });
     }
@@ -34930,6 +34935,7 @@ let scoreTimingDetail =
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Use <strong>FILTERS</strong> to filter stat categories.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>ROTATE</strong> to view <strong>ALL TEAMS</strong> stats.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap an individual <strong>RESULT</strong> for more detail.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Download complete tournament stats by tapping the icon in the top right.</div>' +
             '<div class="quick-guide-section-heading-v2161 quick-guide-screen-divider-v2258">SKINS / GAME MODE</div>' +
             '<div class="quick-guide-line-v172 quick-guide-note-v2161">Review final game results and additional game-specific details after play.</div>' +
           '</div>' +
