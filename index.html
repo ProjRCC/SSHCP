@@ -1,4 +1,14 @@
-<!-- SSHCP | BASE KEY: 22.86-M4V8QK | BUILD KEY: 22.87-J8Q4NX -->
+<!-- SSHCP | BASE KEY: 22.87-J8Q4NX | BUILD KEY: 22.88-R5M9QK -->
+<!-- SSHCP V22.88 GEEK PRINT TYPOGRAPHY + CATEGORY SEMANTICS - exact V22.87 donor.
+     Keeps the V22.87 frontend-rendered one-page GEEK PDF architecture and all existing PDF-size
+     chooser/recommendation/download behavior. Print typography is now capped at 60% of each
+     physical row height: all main stat values share one largest-fitting size; each STAT name
+     targets that same shared size but may shrink independently only enough to stay on one line;
+     team names and detail/hole cells fit independently. Category bands SCORES/FIELD/RUN/STEADY/
+     SETUP are no longer Blue: they are Gray 5, centered across only the first two columns, with
+     the team area left neutral. Hole-location cells display a leading H even for comma lists
+     (H2,17 / H3-4,7,11,14); non-hole detail such as SCORE RANGE and BACK 9 COMEBACK is unchanged.
+     Blue remains reserved for semantic owner/result highlighting. -->
 <!-- SSHCP V22.87 FRONTEND GEEK PRINT RENDERER - exact V22.86 donor.
      Keeps the existing GEEK PDF SIZE chooser, recommendation logic, filename/status flow,
      GEEK calculations, filters and all app behavior. DOWNLOAD now requests the Worker's
@@ -14240,7 +14250,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.87</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.88</span></span>
         </button>
         <script>
           (function () {
@@ -31152,6 +31162,7 @@ let scoreTimingDetail =
     const GEEK_PRINT_RENDER_GRAY_V2287 = '#666666';
     const GEEK_PRINT_RENDER_LIGHT_V2287 = '#f3f3f3';
     const GEEK_PRINT_RENDER_GRID_V2287 = '#b9b9b9';
+    const GEEK_PRINT_RENDER_GRAY5_V2288 = '#666666';
 
     function geekPrintPaperGeometryV2287(paperV2281) {
       const paper = normalizedGeekPdfPaperV2281(paperV2281);
@@ -31223,6 +31234,20 @@ let scoreTimingDetail =
           ? x + w - pad
           : x + (w / 2);
       ctx.fillText(value, tx, y + (h / 2));
+    }
+
+    function geekPrintHoleTextV2288(value) {
+      const text = String(value == null ? '' : value).trim();
+      if (!text || /^H/i.test(text)) return text;
+      return /^\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*$/.test(text) ? ('H' + text) : text;
+    }
+
+    function geekPrintDetailDisplayV2288(stat, value) {
+      const label = String(stat && stat.label || '').trim().toUpperCase();
+      if (label === 'BACK 9 COMEBACK' || label === 'SCORE RANGE') {
+        return String(value == null ? '' : value);
+      }
+      return geekPrintHoleTextV2288(value);
     }
 
     function geekPrintBuildRowsV2287(data) {
@@ -31352,7 +31377,7 @@ let scoreTimingDetail =
       const sharedResultPx = geekPrintFitSharedPxV2287(
         ctx,
         allResultTexts,
-        minMainH * 0.80,
+        minMainH * 0.60,
         teamW,
         700
       );
@@ -31361,7 +31386,7 @@ let scoreTimingDetail =
         geekPrintFitIndependentPxV2287(
           ctx,
           team && team.name,
-          headerH * 0.80,
+          headerH * 0.60,
           teamW,
           700,
           true
@@ -31376,8 +31401,8 @@ let scoreTimingDetail =
             String(stat.row) + ':' + String(teamIndex),
             geekPrintFitIndependentPxV2287(
               ctx,
-              value,
-              minDetailH * 0.80,
+              geekPrintDetailDisplayV2288(stat, value),
+              minDetailH * 0.60,
               teamW,
               500,
               true
@@ -31391,7 +31416,7 @@ let scoreTimingDetail =
       const titlePx = geekPrintFitIndependentPxV2287(
         ctx,
         String(data.title || 'SIMPLE SCRAMBLE — GEEK STATS'),
-        titleH * 0.66,
+        titleH * 0.60,
         tableW,
         700,
         true
@@ -31408,8 +31433,8 @@ let scoreTimingDetail =
       // Header row.
       geekPrintDrawCellV2287(ctx, tableX, y, statW, headerH, '#ffffff');
       geekPrintDrawCellV2287(ctx, tableX + statW, y, explainW, headerH, '#ffffff');
-      const headerStatPx = geekPrintFitIndependentPxV2287(ctx, 'STAT', headerH * 0.55, statW, 700, true);
-      const headerExplainPx = geekPrintFitIndependentPxV2287(ctx, 'EXPLANATION / HOLES', headerH * 0.55, explainW, 700, true);
+      const headerStatPx = geekPrintFitIndependentPxV2287(ctx, 'STAT', headerH * 0.60, statW, 700, true);
+      const headerExplainPx = geekPrintFitIndependentPxV2287(ctx, 'EXPLANATION / HOLES', headerH * 0.60, explainW, 700, true);
       geekPrintDrawTextV2287(ctx, 'STAT', tableX, y, statW, headerH, headerStatPx, { weight:700 });
       geekPrintDrawTextV2287(ctx, 'EXPLANATION / HOLES', tableX + statW, y, explainW, headerH, headerExplainPx, { weight:700 });
 
@@ -31431,12 +31456,17 @@ let scoreTimingDetail =
         const h = rowHeights[rowIndex];
 
         if (row.type === 'section') {
-          geekPrintDrawCellV2287(ctx, tableX, y, tableW, h, GEEK_PRINT_RENDER_BLUE_V2287, GEEK_PRINT_RENDER_BLUE_V2287);
+          const firstTwoW = statW + explainW;
+          geekPrintDrawCellV2287(ctx, tableX, y, firstTwoW, h, GEEK_PRINT_RENDER_GRAY5_V2288, GEEK_PRINT_RENDER_GRAY5_V2288);
+          teams.forEach((team, teamIndex) => {
+            const x = xTeam0 + (teamW * teamIndex);
+            geekPrintDrawCellV2287(ctx, x, y, teamW, h, '#ffffff');
+          });
           const sectionLabel = String(row.label || '');
-          const sectionPx = geekPrintFitIndependentPxV2287(ctx, sectionLabel, h * 0.58, statW, 700, true);
+          const sectionPx = geekPrintFitIndependentPxV2287(ctx, sectionLabel, h * 0.60, firstTwoW, 700, true);
           geekPrintDrawTextV2287(
-            ctx, sectionLabel, tableX, y, statW, h, sectionPx,
-            { weight:700, color:'#ffffff', align:'left', padPx:Math.max(4, h * 0.16) }
+            ctx, sectionLabel, tableX, y, firstTwoW, h, sectionPx,
+            { weight:700, color:'#ffffff', align:'center' }
           );
           y += h;
           return;
@@ -31454,7 +31484,7 @@ let scoreTimingDetail =
           geekPrintDrawCellV2287(ctx, tableX + statW, y, explainW, h, '#ffffff');
 
           const label = String(stat.label || '').toUpperCase();
-          const labelPx = geekPrintFitIndependentPxV2287(ctx, label, h * 0.55, statW, 700, true);
+          const labelPx = geekPrintFitIndependentPxV2287(ctx, label, Math.min(sharedResultPx, h * 0.60), statW, 700, true);
           geekPrintDrawTextV2287(
             ctx, label, tableX, y, statW, h, labelPx,
             { weight:700, align:'left', padPx:Math.max(4, h * 0.13) }
@@ -31488,7 +31518,7 @@ let scoreTimingDetail =
           geekPrintDrawCellV2287(ctx, tableX + statW, y, explainW, h, '#ffffff');
 
           const explanationLines = String(stat.printExplanation || '').split(/\n+/);
-          const secondExplanation = explanationLines.slice(1).join(' ').trim();
+          const secondExplanation = geekPrintHoleTextV2288(explanationLines.slice(1).join(' ').trim());
           if (secondExplanation) {
             const explanationPx = geekPrintFitIndependentPxV2287(
               ctx, secondExplanation, h * 0.54, explainW, 500, true
@@ -31502,8 +31532,8 @@ let scoreTimingDetail =
           teams.forEach((team, teamIndex) => {
             const x = xTeam0 + (teamW * teamIndex);
             geekPrintDrawCellV2287(ctx, x, y, teamW, h, GEEK_PRINT_RENDER_LIGHT_V2287);
-            const detail = Array.isArray(stat.details) ? stat.details[teamIndex] : '';
-            const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.80);
+            const detail = geekPrintDetailDisplayV2288(stat, Array.isArray(stat.details) ? stat.details[teamIndex] : '');
+            const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.60);
             geekPrintDrawTextV2287(
               ctx, detail, x, y, teamW, h, detailPx,
               { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287 }
