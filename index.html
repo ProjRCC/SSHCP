@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.74-K8V3MN | BUILD KEY: 22.75-V4N7QK -->
+<!-- SSHCP | BASE KEY: 22.75-V4N7QK | BUILD KEY: 22.76-Z4M8QK -->
+<!-- SSHCP V22.76 LEADERBOARD TITLE +10% / BLUE - exact V22.75 donor.
+     Presentation-only title refinement. LIVE LEADERBOARD and FINAL RESULTS use the exact V22.75 restored multiplier-driven title rule, increased by 10% (55% -> 60.5% of the established 40px context-height baseline through the existing global VPH×DPR multiplier). Both titles use the app Blue accent. V22.74/V22.75 upper geometry remains structurally unchanged: NAV/header/title top placement stays locked and TITLE -> equal half-gap -> 3px progress/divider -> equal half-gap -> TABLE remains intact. Because the title bar is content-height, the 10% taller title grows downward and everything below it moves down by the same added title height; the table/flex region absorbs that amount. Scorecard, GEEK, table/header/body/footer typography, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.76. -->
 <!-- SSHCP V22.75 LEADERBOARD TITLE SIZE RESTORE - exact V22.74 donor.
      Presentation-only correction. V22.74's approved LIVE LEADERBOARD / FINAL RESULTS upper geometry stays locked: NAV/header/title placement unchanged, TITLE -> equal half-gap -> 3px progress/divider -> equal half-gap -> TABLE unchanged, and table/footer flex geometry unchanged. Only the title fitter is corrected so removing the old fixed title-bar height can no longer shrink the title against its own content-height box. The title target is restored to the exact historical rule (55% of the established 40px context-height baseline), using the same global VPH×DPR multiplier through --v16-context-h; height is ignored while fitting so only width can reduce it. LIVE LEADERBOARD and FINAL RESULTS therefore return to their pre-V22.74 visual size while retaining V22.74 spacing. Scorecard, GEEK, table typography, ranking/tiebreaks, scoring, authorization, Worker/API, GAME, SKINS, event config and timing remain unchanged. HOME label advances to V22.75. -->
 <!-- SSHCP V22.74 LEADERBOARD EQUAL PROGRESS-GAP LOCK - exact V22.73 donor.
@@ -13709,6 +13711,12 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
       align-items:flex-start!important;
       padding:0 0 calc((var(--v16-nav-context-gap,8px) / 2) + 3px) 0!important;
     }
+
+    /* V22.76 — title styling only; content-height growth pushes the existing stack downward. */
+    #leaderboardView .leader-title{
+      color:var(--accent)!important;
+      -webkit-text-fill-color:var(--accent)!important;
+    }
   </style>
 
 </head>
@@ -13845,7 +13853,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.75</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.76</span></span>
         </button>
         <script>
           (function () {
@@ -32853,7 +32861,7 @@ let scoreTimingDetail =
       if (titleBar && title) {
         const historicalLeaderTitleTargetV2275 = Math.max(
           1,
-          (Number(geometry.vars && geometry.vars['--v16-context-h']) || (40 * geometry.sy)) * 0.55
+          (Number(geometry.vars && geometry.vars['--v16-context-h']) || (40 * geometry.sy)) * 0.605
         );
         const historicalLeaderTitleMinV2275 = Math.max(0.001, 14 * geometry.sy);
         fitTextToBoxV5(
