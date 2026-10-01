@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.77-L5Q8RV | BUILD KEY: 22.78-N6Q3MX -->
+<!-- SSHCP | BASE KEY: 22.78-N6Q3MX | BUILD KEY: 22.79-P7R4VN -->
+<!-- SSHCP V22.79 GEEK PDF SUCCESS ACKNOWLEDGMENT - exact V22.78 donor.
+     Keeps the V22.78 GEEK PDF download-status workflow, CF V3.5 endpoint, V22.77 Result Audit last-place fix, and all approved GEEK geometry unchanged. PREPARING GEEK STATS remains a blocking progress state while the PDF is generated. After the browser download is triggered, DOWNLOAD STARTED / Check Downloads folder / GEEK STATS.pdf now remains visible until the player explicitly presses OK instead of auto-dismissing after 2 seconds. DOWNLOAD FAILED retains the V22.78 timed failure behavior. No GEEK data/math, ALL TEAMS behavior, filters, scrolling, leaderboard/Summary/tiebreak, SKINS, GAME, scoring, authorization, Worker/API, event config or timing changes. HOME label advances to V22.79. -->
 <!-- SSHCP V22.78 GEEK PDF DOWNLOAD STATUS FEEDBACK - exact V22.77 donor.
      Keeps the V22.77 CF V3.5 GEEK STATS download path and Result Audit last-place cross-view fix unchanged. Adds only a dedicated download-status overlay above regular GEEK: tap DOWNLOAD shows PREPARING GEEK STATS / Creating your PDF… while CF generates and returns the file; after the browser download is triggered it changes to DOWNLOAD STARTED / Check Downloads folder / GEEK STATS.pdf and dismisses automatically after 2 seconds. A failed request shows DOWNLOAD FAILED with the Worker/browser error and dismisses automatically after 3 seconds. The status overlay is independent of the shared SSHCP modal, so GEEK stays open and its table, filters, scroll position, ALL TEAMS behavior and geometry are unchanged. Worker/API, GEEK calculations, ranking/tiebreak, Summary, SKINS, GAME, scoring, authorization, event config and timing remain unchanged. HOME label advances to V22.78. -->
 <!-- SSHCP V22.77 GEEK PDF DOWNLOAD + RESULT AUDIT LAST-PLACE ALIGNMENT - exact V22.76 donor.
@@ -12633,6 +12635,28 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   color:var(--red);
   -webkit-text-fill-color:var(--red);
 }
+.geek-download-status-ok-v2279{
+  display:none;
+  width:min(
+    calc(155px * var(--v221-global-scale,1)),
+    62%
+  );
+  min-height:calc(42px * var(--v221-global-scale,1));
+  margin-top:calc(5px * var(--v221-global-scale,1));
+  padding:0 calc(14px * var(--v221-global-scale,1));
+  border:0;
+  border-radius:calc(8px * var(--v221-global-scale,1));
+  background:var(--accent);
+  color:var(--on-accent);
+  -webkit-text-fill-color:var(--on-accent);
+  font-size:calc(17px * var(--v221-global-scale,1));
+  font-weight:800;
+  line-height:1;
+  letter-spacing:.2px;
+}
+.geek-download-status-v2278.success .geek-download-status-ok-v2279{
+  display:block;
+}
 
 </style>
 
@@ -13958,7 +13982,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.78</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.79</span></span>
         </button>
         <script>
           (function () {
@@ -30577,7 +30601,20 @@ let scoreTimingDetail =
           '<div class="geek-download-status-title-v2278"></div>' +
           '<div class="geek-download-status-text-v2278"></div>' +
           '<div class="geek-download-status-file-v2278"></div>' +
+          '<button type="button" class="geek-download-status-ok-v2279">OK</button>' +
         '</div>';
+
+      const okButton = overlay.querySelector('.geek-download-status-ok-v2279');
+      if (okButton) {
+        okButton.addEventListener('click', () => {
+          if (geekDownloadStatusTimerV2278) {
+            clearTimeout(geekDownloadStatusTimerV2278);
+            geekDownloadStatusTimerV2278 = 0;
+          }
+          overlay.classList.remove('open', 'failed', 'success');
+        });
+      }
+
       document.body.appendChild(overlay);
       return overlay;
     }
@@ -30590,6 +30627,7 @@ let scoreTimingDetail =
       }
 
       overlay.classList.toggle('failed', mode === 'failed');
+      overlay.classList.toggle('success', mode === 'success');
       const titleEl = overlay.querySelector('.geek-download-status-title-v2278');
       const textEl = overlay.querySelector('.geek-download-status-text-v2278');
       const fileEl = overlay.querySelector('.geek-download-status-file-v2278');
@@ -30606,7 +30644,7 @@ let scoreTimingDetail =
       const delay = Number(autoHideMs);
       if (Number.isFinite(delay) && delay > 0) {
         geekDownloadStatusTimerV2278 = window.setTimeout(() => {
-          overlay.classList.remove('open', 'failed');
+          overlay.classList.remove('open', 'failed', 'success');
           geekDownloadStatusTimerV2278 = 0;
         }, delay);
       }
@@ -30666,7 +30704,7 @@ let scoreTimingDetail =
           'Check Downloads folder',
           'GEEK STATS.pdf',
           'success',
-          2000
+          0
         );
       } catch (error) {
         showGeekDownloadStatusV2278(
