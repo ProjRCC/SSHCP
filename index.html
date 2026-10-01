@@ -1,4 +1,12 @@
-<!-- SSHCP | BASE KEY: 22.89-T7N3VX | BUILD KEY: 22.91-H6Q3MV -->
+<!-- SSHCP | BASE KEY: 22.91-H6Q3MV | BUILD KEY: 22.93-K5R8VN -->
+<!-- SSHCP V22.93 GEEK PRINT TRUE TEXT CENTERING + WIDTH FLOOR - exact V22.91 donor.
+     V22.92 is abandoned. Keeps V22.91 architecture and CF3.30 unchanged. The print STAT column
+     retains its original preferred width but can never be narrower than one team column. Team and
+     left-side detail/scope text target 55% of their physical detail-row height, shrinking only when
+     width requires it. Canvas text is vertically centered from each string's real rendered glyph
+     bounds (actualBoundingBoxAscent/Descent) instead of the em-box `middle` baseline, eliminating
+     artificial y-offsets. No border, alignment, row, category, scoring, GEEK, filter, PDF-size or
+     download behavior changes. -->
 <!-- SSHCP V22.91 GEEK PRINT SINGLE STAT COLUMN - exact V22.89 donor.
      V22.90 is abandoned. Removes only the separate print EXPLANATION / HOLES column while
      preserving the original STAT column width, borders, row geometry and alignment. Team columns
@@ -14267,7 +14275,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.91</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.93</span></span>
         </button>
         <script>
           (function () {
@@ -31243,14 +31251,26 @@ let scoreTimingDetail =
       geekPrintCanvasFontV2287(ctx, px, opts.weight || 500);
       ctx.fillStyle = opts.color || GEEK_PRINT_RENDER_DARK_V2287;
       ctx.textAlign = opts.align || 'center';
-      ctx.textBaseline = 'middle';
       const pad = Math.max(0, Number(opts.padPx) || 0);
       const tx = ctx.textAlign === 'left'
         ? x + pad
         : ctx.textAlign === 'right'
           ? x + w - pad
           : x + (w / 2);
-      ctx.fillText(value, tx, y + (h / 2));
+
+      // V22.93: center the visible glyphs, not the font em box.
+      // This avoids compensating y-offsets and works at every Oswald size.
+      const metrics = ctx.measureText(value);
+      const ascent = Number(metrics.actualBoundingBoxAscent);
+      const descent = Number(metrics.actualBoundingBoxDescent);
+      if (Number.isFinite(ascent) && Number.isFinite(descent) && (ascent + descent) > 0) {
+        ctx.textBaseline = 'alphabetic';
+        const baselineY = y + (h / 2) + ((ascent - descent) / 2);
+        ctx.fillText(value, tx, baselineY);
+      } else {
+        ctx.textBaseline = 'middle';
+        ctx.fillText(value, tx, y + (h / 2));
+      }
     }
 
     function geekPrintHoleTextV2288(value) {
@@ -31485,12 +31505,14 @@ let scoreTimingDetail =
       const tableX = (canvas.width - tableW) / 2;
       const tableY = (canvas.height - tableH) / 2;
 
-      // V22.91: preserve V22.89's original STAT-column width exactly.
-      // Column B is gone; it is NOT merged into or added onto column A.
+      // V22.93: preserve V22.91's preferred STAT width, but never let STAT be narrower
+      // than a team column. This is the exact parity floor: tableW / (teamCount + 1).
       const fixedWidthPx = 2.25 * ppi;
-      const statW = Math.min(tableW * 0.18, fixedWidthPx * (1.0 / 2.25));
+      const preservedStatW = Math.min(tableW * 0.18, fixedWidthPx * (1.0 / 2.25));
       const teams = Array.isArray(data.teams) ? data.teams : [];
       const teamCount = Math.max(1, teams.length);
+      const parityStatW = tableW / (teamCount + 1);
+      const statW = Math.max(preservedStatW, parityStatW);
       const teamAreaW = Math.max(1, tableW - statW);
       const teamW = teamAreaW / teamCount;
       const xTeam0 = tableX + statW;
@@ -31560,7 +31582,7 @@ let scoreTimingDetail =
             geekPrintFitIndependentPxV2287(
               ctx,
               geekPrintDetailDisplayV2288(stat, value),
-              minDetailH * 0.50,
+              minDetailH * 0.55,
               teamW,
               500,
               true
@@ -31684,7 +31706,7 @@ let scoreTimingDetail =
             const leftDetailPx = geekPrintFitIndependentPxV2287(
               ctx,
               leftDetail,
-              h * 0.50,
+              h * 0.55,
               statW,
               500,
               true
@@ -31703,7 +31725,7 @@ let scoreTimingDetail =
                 stat,
                 Array.isArray(stat.details) ? stat.details[teamIndex] : ''
               );
-              const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.50);
+              const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.55);
               geekPrintDrawTextV2287(
                 ctx, detail, x, y, teamW, h, detailPx,
                 { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287 }
