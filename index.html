@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.1-P8M4QV | BUILD KEY: 23.7-K8M4QX -->
+<!-- SSHCP | BASE KEY: 23.7-K8M4QX | BUILD KEY: 23.8-N4Q7VX -->
+<!-- SSHCP V23.8 SCREEN LAYOUT LOGGER + MASTER LOWER-GAP CORRECTION - exact V23.7 donor.
+     Adds an isolated, opt-in SCREEN LOG diagnostic recorder in Control Center. START clears/starts one debugging session and turns gray while active; only while active, each actually visited/visible screen or after-play surface is measured after layout settles. The readable top-to-bottom log records state, viewport/VPH/DPR/global scale inputs, actual bounds/gaps/row heights, governing multiplier/floor annotations, and selected width/max constraints. COPY copies the accumulated SCREEN LAYOUT LOG, stops logging, clears that diagnostic session, and restores START. Control Center's visible screen-info strip is reduced to global scale inputs only. Also corrects V23.7's known MASTER/preauth lower-shell bug: when the Scorecard selector is visible, the shared Scorecard/Leaderboard table-to-footer target uses the immediate selector-to-table gap, not nav gap + the full selector row + table gap. TEAM/QR V23.7 geometry therefore remains unchanged; MASTER no longer reproduces the selector height as blank lower space. Seven CSS px remains only the absolute floor. Worker/API, scoring, ranking/tiebreak, Summary, GEEK/PDF, SKINS, GAME and CF3.30 remain unchanged. HOME label advances to V23.8. -->
 <!-- SSHCP V23.7 SHARED FRACTIONAL LOWER BOUNDARY + LEADER BAR RADIUS INSET - exact V23.1 donor.
      V23.2-V23.6 lower-shell experiments are abandoned and are not donors. Bottom navigation remains the exact V23.1 geometry: button height, bottom inset and vertical anchor never participate in the row calculation. A deterministic Scorecard reference gap is derived from the current viewport/auth layout as the actual vertical distance from the bottom of HOME to the top of the Scorecard table, with 7 CSS px only as the absolute floor. That same gap is applied above the fixed bottom controls on both Scorecard and Leaderboard, creating one shared table-bottom line without requiring either screen to be visited first. Scorecard divides its live row viewport into exactly nine equal fractional-pixel rows. Leaderboard divides its live row viewport into the actual team count through 8, or exactly eight visible fractional-pixel rows for 9+, while preserving scrolling/auto-position behavior. No whole-pixel remainder or feedback loop is used. The accepted V23.2 LIVE LEADERBOARD / FINAL RESULTS radius-tangent bar inset is retained. V23.1 GUIDE/Quick Guide copy, V23.0 completion-to-Summary handoff, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.7. -->
 <!-- SSHCP V23.1 GUIDE LABEL + QUICK GUIDE COPY - exact V23.0 donor.
@@ -14190,6 +14192,68 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 }
 </style>
 
+<style id="sshcp-v238-screen-layout-log">
+/* V23.8 — debugging-only Screen Log controls. This block has no authority over
+   Scorecard/Leaderboard/after-play geometry; it styles only the Control Center
+   diagnostic strip. */
+#testLogView .control-center-viewport-v188{
+  display:grid!important;
+  grid-template-columns:minmax(0,.78fr) minmax(0,3.44fr) minmax(0,.78fr)!important;
+  align-items:center!important;
+  column-gap:1.1%!important;
+  padding:calc(4px * var(--cc-mult-v1824,1)) 1.1%!important;
+  white-space:normal!important;
+}
+#testLogView .screen-log-button-v238{
+  width:100%!important;
+  height:calc(31px * var(--cc-mult-v1824,1))!important;
+  min-height:0!important;
+  max-height:100%!important;
+  margin:0!important;
+  padding:0 2px!important;
+  border:1px solid #777!important;
+  border-radius:calc(6px * var(--cc-mult-v1824,1))!important;
+  background:#fff!important;
+  color:#333!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  font-size:calc(8.5px * var(--cc-mult-v1824,1))!important;
+  font-weight:800!important;
+  line-height:1!important;
+  letter-spacing:.05px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+#testLogView .screen-log-button-v238.logging-v238{
+  background:#cfcfcf!important;
+  border-color:#aaa!important;
+  color:#777!important;
+  -webkit-text-fill-color:#777!important;
+}
+#testLogView .screen-log-button-v238:active:not(:disabled),
+#testLogView .screen-log-button-v238.sshcp-button-pressed-v172{
+  background:#d9d9d9!important;
+  border-color:#999!important;
+  color:#555!important;
+  -webkit-text-fill-color:#555!important;
+}
+#testLogView .screen-log-scale-info-v238{
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:#222!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  font-size:calc(8px * var(--cc-mult-v1824,1))!important;
+  font-weight:700!important;
+  line-height:1.08!important;
+  letter-spacing:0!important;
+  text-align:center!important;
+  white-space:pre-line!important;
+  overflow:hidden!important;
+}
+</style>
+
 </head>
 
 
@@ -14319,7 +14383,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.7</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.8</span></span>
         </button>
         <script>
           (function () {
@@ -14756,8 +14820,10 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
           <button id="controlCenterResultsCheckButtonV188" class="control-center-check-v188" type="button">COPY LOG - 0 RESULTS</button>
         </div>
 
-        <div id="controlCenterViewportMetricsV188" class="control-center-viewport-v188">
-          VIEWPORT METRICS
+        <div id="controlCenterViewportMetricsV188" class="control-center-viewport-v188" aria-label="Screen layout diagnostics">
+          <button id="screenLogStartButtonV238" class="screen-log-button-v238" type="button">START</button>
+          <div id="screenLogScaleInfoV238" class="screen-log-scale-info-v238">SCALE INFO</div>
+          <button id="screenLogCopyButtonV238" class="screen-log-button-v238" type="button">COPY</button>
         </div>
 
         <div class="test-score-controls">
@@ -15100,6 +15166,15 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
       controlCenterViewportMetricsV188:
         document.getElementById('controlCenterViewportMetricsV188'),
+
+      screenLogStartButtonV238:
+        document.getElementById('screenLogStartButtonV238'),
+
+      screenLogScaleInfoV238:
+        document.getElementById('screenLogScaleInfoV238'),
+
+      screenLogCopyButtonV238:
+        document.getElementById('screenLogCopyButtonV238'),
 
       controlCenterGeekCheckButtonV188:
         document.getElementById('controlCenterGeekCheckButtonV188'),
@@ -17739,6 +17814,9 @@ let scoreTimingDetail =
         mode: standalone ? 'PWA' : 'WEB',
         innerWidth: Math.round(metrics.innerWidth),
         innerHeight: Math.round(metrics.innerHeight),
+        visualWidth: Number(metrics.visualWidth) || Number(metrics.innerWidth) || 0,
+        visualHeight: Number(metrics.visualHeight) || Number(metrics.innerHeight) || 0,
+        effectiveHeight: Number(metrics.effectiveHeight) || ((Number(metrics.visualHeight) || 0) * (Number(metrics.dpr) || 1)),
         dpr: Number(metrics.dpr) || 1,
         viewScale,
         shellScale,
@@ -17767,6 +17845,7 @@ let scoreTimingDetail =
         buildControlCenterViewportSnapshotV2128(false);
       return (
         'VIEW ' + snap.innerWidth + '×' + snap.innerHeight +
+        ' • VPH ' + Math.round(snap.visualHeight || snap.innerHeight) +
         ' • DPR ' + snap.dpr.toFixed(2) +
         ' • ' + snap.mode +
         ' • ' + (snap.settled ? 'SETTLED' : 'SETTLING')
@@ -17776,39 +17855,22 @@ let scoreTimingDetail =
     function controlCenterGeometryLineV188() {
       const snap = controlCenterViewportSnapshotV2128 ||
         buildControlCenterViewportSnapshotV2128(false);
-
-      const scaleText = Math.abs(snap.viewScale - snap.shellScale) <= 0.002
-        ? ('SCALE ×' + snap.shellScale.toFixed(3))
-        : (
-            'SCALE V×' + snap.viewScale.toFixed(3) +
-            '/S×' + snap.shellScale.toFixed(3)
-          );
-
-      const rowText =
-        'S' + (snap.scoreRow ?? '—') +
-        '/L' + (snap.leaderRow ?? '—');
-
-      return [
-        scaleText +
-          ' • NAV ' + snap.nav +
-          ' • CTX ' + snap.context +
-          ' • HEAD ' + snap.header +
-          ' • FOOT ' + snap.footer,
-        'SPACE T→F ' + snap.tableFooterGap +
-          ' • BOTTOM ' + snap.bottomGap +
-          ' • GUTTER ' + snap.gutter +
-          ' • ROW ' + rowText,
-        'WIDTH WHP ' + controlCenterWidthTextV2128(snap.homeWidth, 760) +
-          ' • WSC ' + controlCenterWidthTextV2128(snap.scorecardWidth, 760) +
-          ' • WLB ' + controlCenterWidthTextV2128(snap.leaderboardWidth, 760) +
-          ' • WPUAP ' + controlCenterWidthTextV2128(snap.popupWidth, 744.8)
-      ].join('\n');
+      const effectiveHeight = Number(snap.effectiveHeight) ||
+        ((Number(snap.visualHeight) || Number(snap.innerHeight) || 0) * (Number(snap.dpr) || 1));
+      return (
+        'EFFECTIVE ' + Math.round(effectiveHeight) +
+        ' = VPH×DPR • BASE ' + V220_EFFECTIVE_HEIGHT_BASELINE +
+        ' • SCALE ×' + snap.viewScale.toFixed(3)
+      );
     }
 
     function updateControlCenterViewportMetricsV188() {
-      if (!els.controlCenterViewportMetricsV188) return;
-      els.controlCenterViewportMetricsV188.textContent =
+      if (!els.screenLogScaleInfoV238) return;
+      els.screenLogScaleInfoV238.textContent =
         controlCenterViewportLineV188() + '\n' + controlCenterGeometryLineV188();
+      if (typeof syncScreenLayoutLogControlsV238 === 'function') {
+        syncScreenLayoutLogControlsV238();
+      }
     }
 
     function scheduleControlCenterViewportSnapshotV2128() {
@@ -17843,6 +17905,605 @@ let scoreTimingDetail =
         }
       }, 260);
     }
+
+
+    /* =========================================================
+       SSHCP V23.8 — OPT-IN SCREEN LAYOUT LOG
+       Diagnostic/read-only. No function in this block writes application
+       geometry. START enables observation for the current debug session;
+       COPY stops and clears it after a successful clipboard copy.
+       ========================================================= */
+    const SSHCP_SCREEN_LAYOUT_LOG_KEY_V238 = 'sshcpScreenLayoutLogV238';
+    const SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238 = 'sshcpScreenLayoutActiveV238';
+    let screenLayoutLogActiveV238 = false;
+    let screenLayoutLogEntriesV238 = [];
+    let screenLayoutLogStartedAtV238 = '';
+    let screenLayoutLogTimerV238 = 0;
+    let screenLayoutLogObserverV238 = null;
+    let screenLayoutResizeHandlerV238 = null;
+    let screenLayoutCaptureTokenV238 = 0;
+
+    function loadScreenLayoutLogStateV238() {
+      try {
+        screenLayoutLogActiveV238 = sessionStorage.getItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238) === '1';
+        const parsed = JSON.parse(sessionStorage.getItem(SSHCP_SCREEN_LAYOUT_LOG_KEY_V238) || 'null');
+        if (parsed && typeof parsed === 'object') {
+          screenLayoutLogStartedAtV238 = String(parsed.startedAt || '');
+          screenLayoutLogEntriesV238 = Array.isArray(parsed.entries) ? parsed.entries : [];
+        }
+      } catch (_) {
+        screenLayoutLogActiveV238 = false;
+        screenLayoutLogEntriesV238 = [];
+        screenLayoutLogStartedAtV238 = '';
+      }
+    }
+
+    function persistScreenLayoutLogV238() {
+      try {
+        if (screenLayoutLogActiveV238) {
+          sessionStorage.setItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238, '1');
+          sessionStorage.setItem(
+            SSHCP_SCREEN_LAYOUT_LOG_KEY_V238,
+            JSON.stringify({
+              startedAt: screenLayoutLogStartedAtV238,
+              entries: screenLayoutLogEntriesV238
+            })
+          );
+        } else {
+          sessionStorage.removeItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238);
+          sessionStorage.removeItem(SSHCP_SCREEN_LAYOUT_LOG_KEY_V238);
+        }
+      } catch (_) {}
+    }
+
+    function syncScreenLayoutLogControlsV238() {
+      if (els.screenLogStartButtonV238) {
+        els.screenLogStartButtonV238.classList.toggle('logging-v238', screenLayoutLogActiveV238);
+        els.screenLogStartButtonV238.setAttribute('aria-pressed', screenLayoutLogActiveV238 ? 'true' : 'false');
+      }
+    }
+
+    function screenLayoutRoundV238(value, digits = 1) {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return '—';
+      const fixed = numeric.toFixed(digits);
+      return fixed.replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+    }
+
+    function screenLayoutPxV238(value, digits = 1) {
+      const rounded = screenLayoutRoundV238(value, digits);
+      return rounded === '—' ? rounded : rounded + 'px';
+    }
+
+    function screenLayoutRectV238(element) {
+      if (!(element instanceof Element)) return null;
+      const style = getComputedStyle(element);
+      if (style.display === 'none' || style.visibility === 'hidden') return null;
+      const rect = element.getBoundingClientRect();
+      if (!(rect.width > 0) && !(rect.height > 0)) return null;
+      return {
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        right: rect.right,
+        width: rect.width,
+        height: rect.height
+      };
+    }
+
+    function screenLayoutGapV238(upperRect, lowerRect) {
+      if (!upperRect || !lowerRect) return NaN;
+      return lowerRect.top - upperRect.bottom;
+    }
+
+    function screenLayoutComputedPxV238(element, property) {
+      if (!(element instanceof Element)) return NaN;
+      const value = parseFloat(getComputedStyle(element).getPropertyValue(property));
+      return Number.isFinite(value) ? value : NaN;
+    }
+
+    function screenLayoutWidthConstraintV238(actualWidth, maxWidth) {
+      const actual = Number(actualWidth);
+      const maximum = Number(maxWidth);
+      if (!(actual > 0) || !(maximum > 0)) return screenLayoutPxV238(actual);
+      const state = Math.abs(actual - maximum) <= 0.75 ? 'MAX REACHED' : 'BELOW MAX';
+      return screenLayoutPxV238(actual) + ' (MAX ' + screenLayoutRoundV238(maximum, 1) + ' • ' + state + ')';
+    }
+
+    function screenLayoutAuthStateV238() {
+      const role = String(getQrRole() || 'NONE').toUpperCase();
+      const qrTeam = String(getQrTeam() || '').trim();
+      const authorized = String(getAuthorizedTeam() || '').trim();
+      const selected = selectedTeam && selectedTeam.name ? String(selectedTeam.name).trim() : '';
+      if (role === 'MASTER') {
+        return 'AUTH MASTER' + (authorized ? ' • AUTH TEAM ' + authorized : '') + (selected ? ' • SELECTED ' + selected : '');
+      }
+      if (role === 'QR') {
+        return 'AUTH TEAM' + (qrTeam ? ' ' + qrTeam : '') + (selected && normalizeName(selected) !== normalizeName(qrTeam) ? ' • SELECTED ' + selected : '');
+      }
+      return 'AUTH NONE' + (authorized ? ' • LOCAL TEAM ' + authorized : '') + (selected ? ' • SELECTED ' + selected : '');
+    }
+
+    function screenLayoutScaleStateV238() {
+      const metrics = getVerticalMetricsV188();
+      const standalone = controlCenterStandaloneV2128();
+      const stableSvh = standalone ? getStandaloneSmallViewportHeightV2066() : 0;
+      const globalScale = Math.max(V220_MIN_GLOBAL_MULTIPLIER, Number(metrics.multiplier) || 1);
+      const shellScale = stableSvh > 0
+        ? globalViewportDprScaleV220(stableSvh, metrics.dpr)
+        : globalScale;
+      const shellWidth = Math.max(1, Math.min(760, Number(window.innerWidth) || 1));
+      const widthScale = Math.max(0.38, Math.min(1.00, shellWidth / 756));
+      const vph = Number(metrics.visualHeight) || Number(metrics.innerHeight) || 0;
+      const effective = vph * (Number(metrics.dpr) || 1);
+      return { metrics, standalone, stableSvh, globalScale, shellScale, widthScale, vph, effective };
+    }
+
+    function screenLayoutBaseLinesV238(surface, extraState) {
+      const scale = screenLayoutScaleStateV238();
+      const m = scale.metrics;
+      const lines = [
+        'SCREEN: ' + surface,
+        'STATE: ' + screenLayoutAuthStateV238() + (extraState ? ' • ' + extraState : ''),
+        'CAPTURED: ' + new Date().toISOString(),
+        '',
+        'DEVICE / SCALE',
+        'View: ' + Math.round(m.innerWidth) + '×' + Math.round(m.innerHeight) +
+          ' • Visual: ' + screenLayoutRoundV238(m.visualWidth, 1) + '×' + screenLayoutRoundV238(scale.vph, 1) +
+          ' • DPR ' + screenLayoutRoundV238(m.dpr, 2) +
+          ' • ' + (scale.standalone ? 'PWA' : 'WEB'),
+        'Effective height: ' + screenLayoutRoundV238(scale.effective, 1) +
+          ' (' + screenLayoutRoundV238(scale.vph, 1) + ' VPH × ' + screenLayoutRoundV238(m.dpr, 2) + ' DPR)',
+        'Global scale: ×' + screenLayoutRoundV238(scale.globalScale, 4) +
+          ' (max 0.70, effective ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
+        'Shell scale: ×' + screenLayoutRoundV238(scale.shellScale, 4) +
+          (Math.abs(scale.shellScale - scale.globalScale) <= 0.002 ? ' (same as global)' : ' (stable shell viewport)'),
+        'Width scale: ×' + screenLayoutRoundV238(scale.widthScale, 4) + ' (shell ÷ 756, capped at 1.00)'
+      ];
+      return { lines, scale };
+    }
+
+    function screenLayoutCommonShellWidthV238(lines, shellRect, tableRect) {
+      if (shellRect) {
+        lines.push('');
+        lines.push('WIDTHS / LIMITS');
+        lines.push('Shell width: ' + screenLayoutWidthConstraintV238(shellRect.width, 760));
+      }
+      if (tableRect) lines.push('Table/content width: ' + screenLayoutPxV238(tableRect.width));
+    }
+
+    function screenLayoutScorecardV238() {
+      const screen = els.scorecardView && els.scorecardView.querySelector('.scorecard-screen');
+      const nav = els.scorecardView && els.scorecardView.querySelector('.score-nav');
+      const selector = els.scorecardView && els.scorecardView.querySelector('.team-select-wrap');
+      const tableHead = els.scorecardView && els.scorecardView.querySelector('.score-table-head');
+      const tableBody = els.scoreScroll;
+      const footer = els.scorecardView && els.scorecardView.querySelector('.score-fixed-bottom');
+      const footerButton = footer && footer.querySelector('.leaderboard-button');
+      const shellRect = screenLayoutRectV238(screen);
+      const navRect = screenLayoutRectV238(nav);
+      const selectorRect = screenLayoutRectV238(selector);
+      const headRect = screenLayoutRectV238(tableHead);
+      const bodyRect = screenLayoutRectV238(tableBody);
+      const footerRect = screenLayoutRectV238(footer);
+      const buttonRect = screenLayoutRectV238(footerButton);
+      const { lines, scale } = screenLayoutBaseLinesV238('SCORECARD', 'DURING PLAY');
+
+      lines.push('', 'TOP → TABLE');
+      if (navRect) {
+        lines.push('Nav: top ' + screenLayoutPxV238(navRect.top) + ' • h ' + screenLayoutPxV238(navRect.height) +
+          ' (35 × SHELL ×' + screenLayoutRoundV238(scale.shellScale, 4) + ', rounded) • bottom ' + screenLayoutPxV238(navRect.bottom));
+      }
+      if (selectorRect) {
+        lines.push('Nav → selector: ' + screenLayoutPxV238(screenLayoutGapV238(navRect, selectorRect)) +
+          ' (8.16 × SHELL, rounded)');
+        lines.push('MASTER/team selector: top ' + screenLayoutPxV238(selectorRect.top) + ' • h ' + screenLayoutPxV238(selectorRect.height) +
+          ' (40 × SHELL, rounded) • bottom ' + screenLayoutPxV238(selectorRect.bottom));
+        lines.push('Selector → table header: ' + screenLayoutPxV238(screenLayoutGapV238(selectorRect, headRect)) +
+          ' (8.16 × SHELL, rounded)');
+      } else if (navRect && headRect) {
+        lines.push('Nav → table header: ' + screenLayoutPxV238(screenLayoutGapV238(navRect, headRect)) +
+          ' (8.16 × SHELL, rounded)');
+      }
+      if (headRect) {
+        lines.push('Table header: top ' + screenLayoutPxV238(headRect.top) + ' • h ' + screenLayoutPxV238(headRect.height) +
+          ' (46 × SHELL, rounded) • bottom ' + screenLayoutPxV238(headRect.bottom));
+      }
+
+      lines.push('', 'TABLE');
+      if (bodyRect) {
+        const row = els.scoreRows && els.scoreRows.querySelector('.score-row');
+        const rowRect = screenLayoutRectV238(row);
+        lines.push('Rows viewport: top ' + screenLayoutPxV238(bodyRect.top) + ' • h ' + screenLayoutPxV238(bodyRect.height) +
+          ' • bottom ' + screenLayoutPxV238(bodyRect.bottom));
+        lines.push('Visible rows: 9 • row h ' + screenLayoutPxV238(rowRect ? rowRect.height : (bodyRect.height / 9), 2) +
+          ' (ROWS VIEWPORT ÷ 9)');
+        lines.push('Score rows in DOM: ' + (els.scoreRows ? els.scoreRows.querySelectorAll('.score-row').length : 0) +
+          ' • scroll content ' + screenLayoutPxV238(tableBody ? tableBody.scrollHeight : NaN));
+      }
+
+      lines.push('', 'LOWER AREA');
+      const actualGap = screenLayoutGapV238(bodyRect, buttonRect);
+      const navGapTarget = screenLayoutComputedPxV238(els.scorecardView, '--v16-nav-context-gap');
+      const selectorGapTarget = screenLayoutComputedPxV238(els.scorecardView, '--v16-context-table-gap');
+      const targetGap = Math.max(7, selectorRect ? selectorGapTarget : navGapTarget);
+      lines.push('Table → button: ' + screenLayoutPxV238(actualGap, 2) + ' (MEASURED)');
+      lines.push('Target table → footer: ' + screenLayoutPxV238(targetGap) +
+        ' (8.16 × SHELL, rounded • MIN 7)');
+      if (footerRect) {
+        lines.push('Footer shell: top ' + screenLayoutPxV238(footerRect.top) + ' • h ' + screenLayoutPxV238(footerRect.height));
+      }
+      if (buttonRect) {
+        lines.push('LEADERBOARD button: top ' + screenLayoutPxV238(buttonRect.top) + ' • h ' + screenLayoutPxV238(buttonRect.height) +
+          ' (50 × SHELL, rounded) • bottom ' + screenLayoutPxV238(buttonRect.bottom));
+      }
+
+      screenLayoutCommonShellWidthV238(lines, shellRect, bodyRect || headRect);
+      if (bodyRect) {
+        lines.push('Scorecard tracks: HOLE 20% • PAR 15% • YARDAGE 30% • SCORE 35%');
+      }
+      return { surface: 'SCORECARD', lines, signatureParts: [actualGap, bodyRect && bodyRect.height, buttonRect && buttonRect.top, !!selectorRect] };
+    }
+
+    function screenLayoutLeaderboardV238() {
+      const screen = els.leaderboardView && els.leaderboardView.querySelector('.leaderboard-screen');
+      const nav = els.leaderboardView && els.leaderboardView.querySelector('.leader-nav');
+      const titleBar = els.leaderboardView && els.leaderboardView.querySelector('.leader-title-bar');
+      const title = els.leaderboardView && els.leaderboardView.querySelector('.leader-title');
+      const tableHead = els.leaderboardView && els.leaderboardView.querySelector('.leader-table-head');
+      const tableBody = els.leaderContent;
+      const footer = els.leaderboardView && els.leaderboardView.querySelector('.leader-bottom');
+      const firstFooterButton = footer && footer.querySelector('.access-scorecard');
+      const finalAction = els.leaderboardView && els.leaderboardView.querySelector('.leader-final-action');
+      const complete = !!(screen && screen.classList.contains('tournament-complete'));
+      const surface = complete ? 'FINAL RESULTS' : 'LIVE LEADERBOARD';
+      const shellRect = screenLayoutRectV238(screen);
+      const navRect = screenLayoutRectV238(nav);
+      const titleBarRect = screenLayoutRectV238(titleBar);
+      const titleRect = screenLayoutRectV238(title);
+      const headRect = screenLayoutRectV238(tableHead);
+      const bodyRect = screenLayoutRectV238(tableBody);
+      const footerRect = screenLayoutRectV238(footer);
+      const buttonRect = screenLayoutRectV238(firstFooterButton);
+      const finalActionRect = screenLayoutRectV238(finalAction);
+      const { lines, scale } = screenLayoutBaseLinesV238(surface, complete ? 'COMPLETE' : 'DURING PLAY');
+
+      lines.push('', 'TOP → TABLE');
+      if (navRect) {
+        lines.push('Nav: top ' + screenLayoutPxV238(navRect.top) + ' • h ' + screenLayoutPxV238(navRect.height) +
+          ' (35 × SHELL ×' + screenLayoutRoundV238(scale.shellScale, 4) + ', rounded) • bottom ' + screenLayoutPxV238(navRect.bottom));
+      }
+      if (titleBarRect) {
+        lines.push('Nav → title bar: ' + screenLayoutPxV238(screenLayoutGapV238(navRect, titleBarRect)) +
+          ' (8.16 × SHELL, rounded)');
+        lines.push('Title bar: top ' + screenLayoutPxV238(titleBarRect.top) + ' • h ' + screenLayoutPxV238(titleBarRect.height) +
+          ' • bottom ' + screenLayoutPxV238(titleBarRect.bottom));
+      }
+      if (titleRect) {
+        lines.push('Title text: top ' + screenLayoutPxV238(titleRect.top) + ' • h ' + screenLayoutPxV238(titleRect.height) +
+          ' • bottom ' + screenLayoutPxV238(titleRect.bottom));
+      }
+      if (headRect) {
+        lines.push('Title text → table header: ' + screenLayoutPxV238(screenLayoutGapV238(titleRect, headRect)) + ' (MEASURED)');
+        lines.push('Title bar → table header: ' + screenLayoutPxV238(screenLayoutGapV238(titleBarRect, headRect)) + ' (MEASURED; divider lives inside title bar)');
+        lines.push('Progress/divider: 3px (inside title bar)');
+        lines.push('Table header: top ' + screenLayoutPxV238(headRect.top) + ' • h ' + screenLayoutPxV238(headRect.height) +
+          ' (46 × SHELL, rounded) • bottom ' + screenLayoutPxV238(headRect.bottom));
+      }
+
+      lines.push('', 'TABLE');
+      const rows = els.leaderRows ? Array.from(els.leaderRows.querySelectorAll('.leader-row')) : [];
+      const rowRect = rows.length ? screenLayoutRectV238(rows[0]) : null;
+      const visibleRows = Math.max(1, Math.min(8, rows.length || 1));
+      if (bodyRect) {
+        lines.push('Rows viewport: top ' + screenLayoutPxV238(bodyRect.top) + ' • h ' + screenLayoutPxV238(bodyRect.height) +
+          ' • bottom ' + screenLayoutPxV238(bodyRect.bottom));
+        lines.push('Teams/rows: ' + rows.length + ' • visible row target ' + visibleRows +
+          ' • row h ' + screenLayoutPxV238(rowRect ? rowRect.height : (bodyRect.height / visibleRows), 2) +
+          ' (ROWS VIEWPORT ÷ ' + visibleRows + ')');
+        lines.push('Scroll content: ' + screenLayoutPxV238(tableBody ? tableBody.scrollHeight : NaN) +
+          ' • scrollTop ' + screenLayoutPxV238(tableBody ? tableBody.scrollTop : NaN));
+      }
+
+      lines.push('', 'LOWER AREA');
+      const actionTopRect = finalActionRect || buttonRect;
+      const actualGap = screenLayoutGapV238(bodyRect, actionTopRect);
+      const navGapTarget = screenLayoutComputedPxV238(els.leaderboardView, '--v16-nav-context-gap');
+      const selectorGapTarget = screenLayoutComputedPxV238(els.leaderboardView, '--v16-context-table-gap');
+      const targetGap = Math.max(7, document.body.classList.contains('team-qr-locked') ? navGapTarget : selectorGapTarget);
+      lines.push('Table → button/action: ' + screenLayoutPxV238(actualGap, 2) + ' (MEASURED)');
+      lines.push('Target table → footer: ' + screenLayoutPxV238(targetGap) +
+        ' (8.16 × SHELL, rounded • MIN 7)');
+      if (footerRect) lines.push('Footer shell: top ' + screenLayoutPxV238(footerRect.top) + ' • h ' + screenLayoutPxV238(footerRect.height));
+      if (buttonRect) {
+        lines.push('SCORECARD button: top ' + screenLayoutPxV238(buttonRect.top) + ' • h ' + screenLayoutPxV238(buttonRect.height) +
+          ' (50 × SHELL, rounded) • bottom ' + screenLayoutPxV238(buttonRect.bottom));
+      }
+      if (finalActionRect) {
+        lines.push('Final action: top ' + screenLayoutPxV238(finalActionRect.top) + ' • h ' + screenLayoutPxV238(finalActionRect.height) +
+          ' • bottom ' + screenLayoutPxV238(finalActionRect.bottom));
+      }
+
+      screenLayoutCommonShellWidthV238(lines, shellRect, bodyRect || headRect);
+      lines.push('Leaderboard tracks: PLACE 9% • TEAM 40% • HCP 9% • ROUND 20% • TOTAL 22%');
+      if (rows.length) {
+        const cells = Array.from(rows[0].children).map(cell => screenLayoutRectV238(cell)).filter(Boolean);
+        if (cells.length) lines.push('First-row cell widths: ' + cells.map(rect => screenLayoutPxV238(rect.width)).join(' / '));
+      }
+      return { surface, lines, signatureParts: [actualGap, bodyRect && bodyRect.height, buttonRect && buttonRect.top, rows.length, complete] };
+    }
+
+    function screenLayoutModalNameV238() {
+      if (!els.modalOverlay || !els.modalOverlay.classList.contains('open')) return '';
+      const c = els.modalOverlay.classList;
+      if (c.contains('tournament-summary')) return 'SCRAMBLE SUMMARY';
+      if (c.contains('tournament-result')) return 'TIE BREAK / RESULT';
+      if (c.contains('skins-results-v1627')) return 'SKINS';
+      if (c.contains('game-mode-results-v2026')) return 'GAME MODE';
+      if (c.contains('game-hole-info-v2026')) return 'GAME DETAIL';
+      if (c.contains('geek-all-teams-detail-v2238')) return 'GEEK ALL TEAMS DETAIL';
+      if (c.contains('geek-detail-v180')) return 'GEEK DETAIL';
+      if (c.contains('geek-mode-v180')) return c.contains('geek-filter-screen-v2234') ? 'GEEK FILTERS' : 'GEEK MODE';
+      if (c.contains('quick-guide')) return 'QUICK GUIDE';
+      if (c.contains('authorization')) return 'AUTHORIZATION';
+      if (c.contains('switch-authorization')) return 'SWITCH AUTH';
+      if (c.contains('reset-authorization')) return 'CONFIRMATION';
+      return 'POPUP';
+    }
+
+    function screenLayoutModalV238(surface) {
+      const overlayRect = screenLayoutRectV238(els.modalOverlay);
+      const box = els.modalOverlay && els.modalOverlay.querySelector('.modal-box');
+      const title = els.modalTitle;
+      const body = els.modalBody;
+      const actions = els.modalActions;
+      const boxRect = screenLayoutRectV238(box);
+      const titleRect = screenLayoutRectV238(title);
+      const bodyRect = screenLayoutRectV238(body);
+      const actionsRect = screenLayoutRectV238(actions);
+      const { lines, scale } = screenLayoutBaseLinesV238(surface, 'AFTER-PLAY / POPUP');
+
+      lines.push('', 'POPUP TOP → BOTTOM');
+      if (overlayRect) lines.push('Overlay: top ' + screenLayoutPxV238(overlayRect.top) + ' • h ' + screenLayoutPxV238(overlayRect.height));
+      if (boxRect) {
+        lines.push('Card: top ' + screenLayoutPxV238(boxRect.top) + ' • h ' + screenLayoutPxV238(boxRect.height) +
+          ' • bottom ' + screenLayoutPxV238(boxRect.bottom));
+      }
+      if (titleRect) {
+        lines.push('Title: top ' + screenLayoutPxV238(titleRect.top) + ' • h ' + screenLayoutPxV238(titleRect.height) +
+          ' • bottom ' + screenLayoutPxV238(titleRect.bottom));
+      }
+      if (bodyRect) {
+        lines.push('Body: top ' + screenLayoutPxV238(bodyRect.top) + ' • h ' + screenLayoutPxV238(bodyRect.height) +
+          ' • bottom ' + screenLayoutPxV238(bodyRect.bottom));
+        if (titleRect) lines.push('Title → body: ' + screenLayoutPxV238(screenLayoutGapV238(titleRect, bodyRect)) + ' (MEASURED)');
+      }
+      if (actionsRect) {
+        lines.push('Actions: top ' + screenLayoutPxV238(actionsRect.top) + ' • h ' + screenLayoutPxV238(actionsRect.height) +
+          ' • bottom ' + screenLayoutPxV238(actionsRect.bottom));
+        if (bodyRect) lines.push('Body → actions: ' + screenLayoutPxV238(screenLayoutGapV238(bodyRect, actionsRect)) + ' (MEASURED)');
+      }
+
+      const summaryGrid = els.modalOverlay && els.modalOverlay.querySelector('.tournament-summary-grid');
+      const summaryLower = els.modalOverlay && els.modalOverlay.querySelector('.tournament-summary-remaining');
+      const geekScroll = els.modalOverlay && els.modalOverlay.querySelector('.geek-table-scroll-v180');
+      const skinsTable = els.modalOverlay && els.modalOverlay.querySelector('.skins-table-v1627');
+      const gameTable = els.modalOverlay && els.modalOverlay.querySelector('.game-mode-table-v2026');
+      [
+        ['Summary top table', summaryGrid],
+        ['Summary lower table', summaryLower],
+        ['GEEK table viewport', geekScroll],
+        ['SKINS table', skinsTable],
+        ['GAME table', gameTable]
+      ].forEach(([label, element]) => {
+        const rect = screenLayoutRectV238(element);
+        if (rect) lines.push(label + ': top ' + screenLayoutPxV238(rect.top) + ' • h ' + screenLayoutPxV238(rect.height) + ' • bottom ' + screenLayoutPxV238(rect.bottom));
+      });
+
+      lines.push('', 'WIDTHS / LIMITS');
+      if (boxRect) {
+        const maxWidth = screenLayoutComputedPxV238(box, 'max-width');
+        lines.push('Card width: ' + (maxWidth > 0 ? screenLayoutWidthConstraintV238(boxRect.width, maxWidth) : screenLayoutPxV238(boxRect.width)));
+      }
+      const contentRect = screenLayoutRectV238(summaryGrid || geekScroll || skinsTable || gameTable || body);
+      if (contentRect) lines.push('Primary content width: ' + screenLayoutPxV238(contentRect.width));
+      lines.push('Global multiplier on this surface: ×' + screenLayoutRoundV238(scale.globalScale, 4));
+      return { surface, lines, signatureParts: [boxRect && boxRect.top, boxRect && boxRect.height, boxRect && boxRect.width, bodyRect && bodyRect.height, actionsRect && actionsRect.top] };
+    }
+
+    function screenLayoutSimpleViewV238(surface) {
+      const activeView = currentView === 'testlog'
+        ? (els.testLogView && els.testLogView.querySelector('.test-log-screen'))
+        : (currentView === 'scramble'
+            ? (els.scrambleModeView && els.scrambleModeView.querySelector('.test-log-screen'))
+            : (els.homeView && els.homeView.querySelector('.home-shell')));
+      const rect = screenLayoutRectV238(activeView);
+      const { lines, scale } = screenLayoutBaseLinesV238(surface, 'PAGE');
+      lines.push('', 'PAGE');
+      if (rect) lines.push('Page: top ' + screenLayoutPxV238(rect.top) + ' • h ' + screenLayoutPxV238(rect.height) + ' • width ' + screenLayoutPxV238(rect.width));
+      if (currentView === 'testlog') {
+        const logRect = screenLayoutRectV238(els.testLogView && els.testLogView.querySelector('.test-log-table'));
+        const stackRect = screenLayoutRectV238(els.testLogView && els.testLogView.querySelector('.control-center-bottom-stack'));
+        if (logRect) lines.push('Control log: top ' + screenLayoutPxV238(logRect.top) + ' • h ' + screenLayoutPxV238(logRect.height) + ' • bottom ' + screenLayoutPxV238(logRect.bottom));
+        if (stackRect) lines.push('Control stack: top ' + screenLayoutPxV238(stackRect.top) + ' • h ' + screenLayoutPxV238(stackRect.height) + ' • bottom ' + screenLayoutPxV238(stackRect.bottom));
+      }
+      lines.push('', 'WIDTHS / LIMITS');
+      if (rect) lines.push('Page width: ' + screenLayoutWidthConstraintV238(rect.width, 760));
+      lines.push('Global multiplier: ×' + screenLayoutRoundV238(scale.globalScale, 4));
+      return { surface, lines, signatureParts: [rect && rect.width, rect && rect.height] };
+    }
+
+    function buildCurrentScreenLayoutSnapshotV238() {
+      const modalSurface = screenLayoutModalNameV238();
+      if (modalSurface) return screenLayoutModalV238(modalSurface);
+      if (currentView === 'scorecard') return screenLayoutScorecardV238();
+      if (currentView === 'leaderboard') return screenLayoutLeaderboardV238();
+      if (currentView === 'testlog') return screenLayoutSimpleViewV238('CONTROL CENTER');
+      if (currentView === 'scramble') return screenLayoutSimpleViewV238('SCRAMBLE MODE');
+      return screenLayoutSimpleViewV238('HOME');
+    }
+
+    function screenLayoutSnapshotSignatureV238(snapshot) {
+      const scale = screenLayoutScaleStateV238();
+      return [
+        snapshot.surface,
+        screenLayoutAuthStateV238(),
+        Math.round(scale.metrics.innerWidth || 0),
+        Math.round(scale.metrics.innerHeight || 0),
+        Math.round(scale.vph || 0),
+        ...(snapshot.signatureParts || []).map(value => Number.isFinite(Number(value)) ? Number(value).toFixed(1) : String(value))
+      ].join('|');
+    }
+
+    function appendScreenLayoutSnapshotV238() {
+      if (!screenLayoutLogActiveV238) return;
+      const snapshot = buildCurrentScreenLayoutSnapshotV238();
+      if (!snapshot || !snapshot.lines || !snapshot.lines.length) return;
+      const signature = screenLayoutSnapshotSignatureV238(snapshot);
+      const last = screenLayoutLogEntriesV238.length
+        ? screenLayoutLogEntriesV238[screenLayoutLogEntriesV238.length - 1]
+        : null;
+      if (last && last.signature === signature) return;
+      screenLayoutLogEntriesV238.push({
+        surface: snapshot.surface,
+        signature,
+        capturedAt: new Date().toISOString(),
+        text: snapshot.lines.join('\n')
+      });
+      persistScreenLayoutLogV238();
+    }
+
+    function scheduleScreenLayoutLogCaptureV238(reason = '') {
+      if (!screenLayoutLogActiveV238) return;
+      const token = ++screenLayoutCaptureTokenV238;
+      window.clearTimeout(screenLayoutLogTimerV238);
+      screenLayoutLogTimerV238 = window.setTimeout(() => {
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (!screenLayoutLogActiveV238 || token !== screenLayoutCaptureTokenV238) return;
+          appendScreenLayoutSnapshotV238();
+        }));
+      }, 220);
+    }
+
+    function installScreenLayoutLogObserverV238() {
+      if (!screenLayoutLogActiveV238) return;
+      if (screenLayoutLogObserverV238) screenLayoutLogObserverV238.disconnect();
+      screenLayoutLogObserverV238 = new MutationObserver(() => {
+        scheduleScreenLayoutLogCaptureV238('DOM');
+      });
+      [els.scorecardView, els.leaderboardView, els.modalOverlay].filter(Boolean).forEach(target => {
+        if (target === els.modalOverlay) {
+          screenLayoutLogObserverV238.observe(target, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class']
+          });
+        } else {
+          screenLayoutLogObserverV238.observe(target, {
+            childList: true,
+            subtree: true
+          });
+        }
+      });
+      screenLayoutResizeHandlerV238 = () => scheduleScreenLayoutLogCaptureV238('RESIZE');
+      window.addEventListener('resize', screenLayoutResizeHandlerV238, { passive:true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', screenLayoutResizeHandlerV238, { passive:true });
+      }
+    }
+
+    function stopScreenLayoutLogObserverV238() {
+      window.clearTimeout(screenLayoutLogTimerV238);
+      screenLayoutCaptureTokenV238 += 1;
+      if (screenLayoutLogObserverV238) {
+        screenLayoutLogObserverV238.disconnect();
+        screenLayoutLogObserverV238 = null;
+      }
+      if (screenLayoutResizeHandlerV238) {
+        window.removeEventListener('resize', screenLayoutResizeHandlerV238);
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener('resize', screenLayoutResizeHandlerV238);
+        }
+        screenLayoutResizeHandlerV238 = null;
+      }
+    }
+
+    function startScreenLayoutLogV238() {
+      stopScreenLayoutLogObserverV238();
+      screenLayoutLogEntriesV238 = [];
+      screenLayoutLogStartedAtV238 = new Date().toISOString();
+      screenLayoutLogActiveV238 = true;
+      persistScreenLayoutLogV238();
+      syncScreenLayoutLogControlsV238();
+      installScreenLayoutLogObserverV238();
+      scheduleScreenLayoutLogCaptureV238('START');
+    }
+
+    function buildScreenLayoutLogReportV238() {
+      const lines = [
+        'SSHCP ' + currentFrontendVersionLabelV1955() + ' SCREEN LAYOUT LOG',
+        'Started: ' + (screenLayoutLogStartedAtV238 || '—'),
+        'Copied: ' + new Date().toISOString(),
+        'Entries: ' + screenLayoutLogEntriesV238.length,
+        'Units: actual CSS pixels unless noted.',
+        'Global scale formula: max(0.70, VPH × DPR ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
+        ''
+      ];
+      screenLayoutLogEntriesV238.forEach((entry, index) => {
+        lines.push('============================================================');
+        lines.push('ENTRY ' + (index + 1) + ' / ' + screenLayoutLogEntriesV238.length);
+        lines.push(entry.text || '');
+        lines.push('');
+      });
+      return lines.join('\n');
+    }
+
+    async function copyScreenLayoutLogV238() {
+      if (screenLayoutLogActiveV238) appendScreenLayoutSnapshotV238();
+      const report = buildScreenLayoutLogReportV238();
+      let copied = false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(report);
+          copied = true;
+        }
+      } catch (_) {}
+      if (!copied) {
+        const textarea = document.createElement('textarea');
+        textarea.value = report;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try { copied = document.execCommand('copy'); } catch (_) { copied = false; }
+        textarea.remove();
+      }
+      if (copied) {
+        stopScreenLayoutLogObserverV238();
+        screenLayoutLogActiveV238 = false;
+        screenLayoutLogEntriesV238 = [];
+        screenLayoutLogStartedAtV238 = '';
+        persistScreenLayoutLogV238();
+        syncScreenLayoutLogControlsV238();
+        if (els.screenLogCopyButtonV238) {
+          els.screenLogCopyButtonV238.textContent = 'COPIED';
+          window.setTimeout(() => {
+            if (els.screenLogCopyButtonV238) els.screenLogCopyButtonV238.textContent = 'COPY';
+          }, 900);
+        }
+      } else if (els.screenLogCopyButtonV238) {
+        els.screenLogCopyButtonV238.textContent = 'FAILED';
+        window.setTimeout(() => {
+          if (els.screenLogCopyButtonV238) els.screenLogCopyButtonV238.textContent = 'COPY';
+        }, 1200);
+      }
+    }
+
+    loadScreenLayoutLogStateV238();
+    syncScreenLayoutLogControlsV238();
+    if (screenLayoutLogActiveV238) installScreenLayoutLogObserverV238();
 
 
     /* =========================================================
@@ -19455,7 +20116,7 @@ let scoreTimingDetail =
         'SSHCP ' + currentFrontendVersionLabelV1955() + ' CONTROL CENTER LOG',
         'Generated: ' + new Date().toISOString(),
         'Viewport: ' + controlCenterViewportLineV188(),
-        'Geometry: ' + controlCenterGeometryLineV188(),
+        'Scale: ' + controlCenterGeometryLineV188(),
         'Worker: ' + CLOUDFLARE_API_URL,
         'Authorization: ' + getQrRole() +
           (getQrTeam() ? ' / ' + getQrTeam() : ''),
@@ -19624,6 +20285,10 @@ let scoreTimingDetail =
       syncScrambleProtectionUiV2136();
       scheduleControlCenterViewportSnapshotV2128();
       updateControlCenterViewportMetricsV188();
+      if (screenLayoutLogActiveV238) {
+        installScreenLayoutLogObserverV238();
+        scheduleScreenLayoutLogCaptureV238('CONTROL CENTER ENTRY');
+      }
       /* TEST PAGE opening refreshes the CF QR directory once. Existing cached
          data remains immediately usable until the fresh result succeeds. */
       runAssignedPasskeyLoad();
@@ -21198,6 +21863,10 @@ let scoreTimingDetail =
       rememberCurrentView(
         view
       );
+
+      if (typeof scheduleScreenLayoutLogCaptureV238 === 'function') {
+        scheduleScreenLayoutLogCaptureV238('VIEW ' + view);
+      }
 
       if (view !== 'scramble' && view !== 'testlog') {
         stopScrambleStatusPollV1939();
@@ -23595,23 +24264,20 @@ let scoreTimingDetail =
       };
     }
 
-    /* SSHCP V23.7 — one deterministic lower-shell gap for both screens.
-       This is the actual Scorecard reference space from the bottom of HOME to
-       the top of the Scorecard table on the current auth/layout state. Team QR
-       hides the team selector, so only the nav->table gap remains; other roles
-       include the visible selector row and its two established gaps. Seven CSS
-       pixels is only the absolute floor. Because this is derived from shared
-       shell variables + auth state, Leaderboard may be opened first. */
+    /* SSHCP V23.8 — V23.7 incorrectly treated the entire visible MASTER/team
+       selector region as a lower-shell whitespace target. That reproduced the
+       selector's own height below the table. Preserve the accepted TEAM/QR
+       result exactly, but when the selector is visible use only the immediate
+       selector->table gap. Seven CSS pixels remains only the absolute floor. */
     function sharedLowerShellGapV237(geometry) {
       const vars = geometry && geometry.vars ? geometry.vars : {};
       const navContextGap = Math.max(0, Number(vars['--v16-nav-context-gap']) || 0);
-      const contextHeight = Math.max(0, Number(vars['--v16-context-h']) || 0);
       const contextTableGap = Math.max(0, Number(vars['--v16-context-table-gap']) || 0);
       const teamSelectorHidden = document.body.classList.contains('team-qr-locked');
-      const scorecardReferenceGap = teamSelectorHidden
+      const immediateTableGap = teamSelectorHidden
         ? navContextGap
-        : (navContextGap + contextHeight + contextTableGap);
-      return Math.max(7, scorecardReferenceGap);
+        : contextTableGap;
+      return Math.max(7, immediateTableGap);
     }
 
     function geekViewportUnitsV220(metricsValue) {
@@ -36042,6 +36708,8 @@ let scoreTimingDetail =
     if (els.testLogScorecardButton) els.testLogScorecardButton.addEventListener('click', showScorecard);
     els.testLogResetButton.addEventListener('click', resetTestLog);
     if (els.testCopyLogButton) els.testCopyLogButton.addEventListener('click', copyTestLog);
+    if (els.screenLogStartButtonV238) els.screenLogStartButtonV238.addEventListener('click', startScreenLayoutLogV238);
+    if (els.screenLogCopyButtonV238) els.screenLogCopyButtonV238.addEventListener('click', copyScreenLayoutLogV238);
     updateResultCopyButtonLabelV2082();
     if (els.controlCenterResultsCheckButtonV188) els.controlCenterResultsCheckButtonV188.addEventListener('click', copyResultAuditLogV189);
     if (els.controlCenterTeamsButton) els.controlCenterTeamsButton.addEventListener('click', openTeamsPopup);
