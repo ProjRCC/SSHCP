@@ -1,4 +1,13 @@
-<!-- SSHCP | BASE KEY: 22.93-K5R8VN | BUILD KEY: 22.94-N7Q4VL -->
+<!-- SSHCP | BASE KEY: 22.94-N7Q4VL | BUILD KEY: 22.95-P6M3QX -->
+<!-- SSHCP V22.95 GEEK RESULT 70% + DETAIL 60% - exact V22.94 donor.
+     Keeps V22.94 geometry, true glyph centering, STAT>=team width floor, SHORT/LONG definitions,
+     category bands and all app behavior unchanged. All MAIN GEEK result values still use one single
+     shared font size across the entire report, but their row-height target rises from 50% to 70%;
+     if any main result would not fit horizontally, the one shared result size is reduced for every
+     main result. Left scope/explanation rows and team hole/detail rows rise from 55% to a 60%
+     row-height target and still shrink independently only when width requires it. STAT labels remain
+     at their existing 60% target and team-name headers remain at their existing 50% target.
+     CF3.30 remains unchanged. -->
 <!-- SSHCP V22.94 SHORT/LONG DEFINITIONS - exact V22.93 donor.
      Keeps V22.93 print geometry, true glyph centering, STAT>=team width floor, 60% STAT target and
      55% detail/scope target unchanged. SHORT VS PAR and LONG VS PAR keep their real second rows but
@@ -14280,7 +14289,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.94</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.95</span></span>
         </button>
         <script>
           (function () {
@@ -31533,7 +31542,7 @@ let scoreTimingDetail =
       const minMainH = mainHeights.length ? Math.min(...mainHeights) : unitH * 1.55;
       const minDetailH = detailHeights.length ? Math.min(...detailHeights) : unitH * 0.95;
 
-      // Team main values stay one shared size, capped at 50% row height.
+      // Team main values stay one shared size, now targeting 70% row height.
       const allResultTexts = [];
       (Array.isArray(data.statRows) ? data.statRows : []).forEach(stat => {
         (Array.isArray(stat.values) ? stat.values : []).forEach(value => {
@@ -31543,12 +31552,12 @@ let scoreTimingDetail =
       const sharedResultPx = geekPrintFitSharedPxV2287(
         ctx,
         allResultTexts,
-        minMainH * 0.50,
+        minMainH * 0.70,
         teamW,
         700
       );
 
-      // Team names and team detail evidence are independently fitted, capped at 50% row height.
+      // Team names remain capped at 50%; team detail evidence now targets 60% row height.
       const teamNameSizes = teams.map(team =>
         geekPrintFitIndependentPxV2287(
           ctx,
@@ -31569,7 +31578,7 @@ let scoreTimingDetail =
             geekPrintFitIndependentPxV2287(
               ctx,
               geekPrintDetailDisplayV2288(stat, value),
-              minDetailH * 0.55,
+              minDetailH * 0.60,
               teamW,
               500,
               true
@@ -31686,14 +31695,14 @@ let scoreTimingDetail =
           });
         } else {
           // Existing physical detail row (or SHORT/LONG virtual detail row):
-          // bordered left cell + bordered team cells, with the left clarification at 50% target.
+          // bordered left cell + bordered team cells, with the left clarification at 60% target.
           geekPrintDrawCellV2287(ctx, tableX, y, statW, h, '#ffffff');
           const leftDetail = geekPrintLeftDetailTextV2291(stat, data);
           if (leftDetail) {
             const leftDetailPx = geekPrintFitIndependentPxV2287(
               ctx,
               leftDetail,
-              h * 0.55,
+              h * 0.60,
               statW,
               500,
               true
@@ -31712,7 +31721,7 @@ let scoreTimingDetail =
                 stat,
                 Array.isArray(stat.details) ? stat.details[teamIndex] : ''
               );
-              const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.55);
+              const detailPx = detailSizes.get(String(stat.row) + ':' + String(teamIndex)) || (h * 0.60);
               geekPrintDrawTextV2287(
                 ctx, detail, x, y, teamW, h, detailPx,
                 { weight:500, color:GEEK_PRINT_RENDER_GRAY_V2287 }
