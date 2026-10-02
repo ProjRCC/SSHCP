@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.97-N6Q4RM | BUILD KEY: 22.98-H7M4QX -->
+<!-- SSHCP | BASE KEY: 22.98-H7M4QX | BUILD KEY: 22.99-Q8M4RV -->
+<!-- SSHCP V22.99 QUICK GUIDE ONLY / TIPS & TRICKS REMOVAL - exact V22.98 donor.
+     Removes the player-facing Tips & Tricks system entirely: no Welcome toggle, no Quick Guide toggle, and no contextual HOME / SCORECARD / LIVE LEADERBOARD / SCRAMBLE SUMMARY / GEEK popups. Scorecard, live Leaderboard, Summary and GEEK return to their normal established curtain/reveal sequencing with no Tips gate. The separate first SCRAMBLE COMPLETE completion card is retained because it is tournament-state navigation, not a Tips & Tricks prompt; its V22.98 completed-Leaderboard curtain behavior remains unchanged. Quick Guide content itself remains intact and becomes the single player-help surface. 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V22.99. -->
 <!-- SSHCP V22.98 AFTER-PLAY TIPS CURTAIN GATE - exact V22.97 donor.
      Extends V22.97's approved Tips/curtain sequencing to the two after-play surfaces seen in testing. The first SCRAMBLE COMPLETE card on FINAL RESULTS now opens over the still-opaque Leaderboard white curtain; its close start releases the existing 0.30s Leaderboard curtain fade and any held authorized-team auto-positioning while the card itself keeps the approved 0.10s fade. SCRAMBLE SUMMARY's enabled unseen contextual tip now opens over its still-opaque after-play white curtain as soon as the fresh completed-round rows are available; Summary continues building underneath, and when the tip closes the curtain begins its existing 0.30s reveal as soon as Summary is ready. If either card is not due, V22.97 behavior is preserved. Scorecard/live-Leaderboard gating, 350 PPI GEEK PDF rendering, GEEK/Summary/Leaderboard calculations, tiebreak, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V22.98. -->
 <!-- SSHCP V22.96 GEEK TEAM HEADER 60% - exact V22.95 donor.
@@ -14177,11 +14179,6 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
       <div class="qr-welcome-actions-v170">
         <button id="qrWelcomeGuideV170" class="qr-welcome-button-v170 qr-welcome-guide-v170" type="button">QUICK GUIDE</button>
         <button id="qrWelcomeEnterV170" class="qr-welcome-button-v170 qr-welcome-enter-v170" type="button">ENTER</button>
-        <label id="qrWelcomeTipsToggleV2154" class="qr-welcome-tips-toggle-v2154">
-          <input id="qrWelcomeTipsCheckV2154" type="checkbox">
-          <span class="tips-check-box-v2154" aria-hidden="true">✓</span>
-          <span>TIPS &amp; TRICKS</span>
-        </label>
       </div>
     </div>
   </div>
@@ -14298,7 +14295,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.98</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.99</span></span>
         </button>
         <script>
           (function () {
@@ -14821,15 +14818,10 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
   </div>
 
 
-  <!-- SSHCP V21.54 — optional contextual Tips & Tricks overlay. -->
+  <!-- SSHCP V22.99 — SCRAMBLE COMPLETE completion overlay only. -->
   <div id="tipsOverlayV2154" class="tips-overlay-v2154" aria-hidden="true">
     <div class="tips-card-v2154" role="dialog" aria-modal="true" aria-labelledby="tipsTitleV2154">
       <div id="tipsTitleV2154" class="tips-title-v2154"></div>
-      <label id="tipsCardToggleV2161" class="tips-card-toggle-v2161">
-        <input id="tipsCardCheckV2161" type="checkbox">
-        <span class="tips-check-box-v2154" aria-hidden="true">✓</span>
-        <span>TIPS &amp; TRICKS</span>
-      </label>
       <div id="tipsBodyV2154" class="tips-body-v2154"></div>
       <button id="tipsSummaryButtonV2215" class="tips-summary-v2215" type="button">SCRAMBLE SUMMARY</button>
       <button id="tipsOkButtonV2154" class="tips-ok-v2154" type="button">OK</button>
@@ -16355,7 +16347,6 @@ let scoreTimingDetail =
       return true;
     }
     function clearQrAuthorization(){
-      const priorTipsFingerprintV2154 = qrAuthorizationFingerprintV1979();
       const hadQrAuthorizationV2135 = !!(
         localStorage.getItem(SSHCP_QR_PASSKEY_KEY) ||
         localStorage.getItem(SSHCP_QR_ROLE_KEY) ||
@@ -16365,9 +16356,7 @@ let scoreTimingDetail =
       );
       [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
       if (hadQrAuthorizationV2135) resetControlCenterUnlockedV2135();
-      if (priorTipsFingerprintV2154) resetTipsForFingerprintV2154(priorTipsFingerprintV2154, true);
       clearFirstScorecardAfterAuthorizationV1979();
-      syncTipsTogglesV2154();
       syncTeamQrLockedUi();
     }
     function removeQrAuthorization(){
@@ -16398,11 +16387,9 @@ let scoreTimingDetail =
       const nextFingerprintV1979 = qrAuthorizationFingerprintV1979();
       if (nextFingerprintV1979 && nextFingerprintV1979 !== priorFingerprintV1979) {
         resetControlCenterUnlockedV2135();
-        resetTipsForFingerprintV2154(nextFingerprintV1979, true);
         armFirstScorecardAfterAuthorizationV1979(nextFingerprintV1979);
       }
 
-      syncTipsTogglesV2154();
       syncTeamQrLockedUi();
     }
     function showInvalidQrPasskey(){
@@ -17246,7 +17233,6 @@ let scoreTimingDetail =
            owns a 0.15s post-position Blue-cue reveal. Only after that reveal
            paints does the existing V19.80 shotgun popup hold begin. */
         releaseScorecardEntryCuesAfterPositionV1981(() => {
-          showTipsAfterSettledV2155('scorecard');
           requestAnimationFrame(() => {
             if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
             if (!selectedTeam || currentView !== 'scorecard') return;
@@ -17291,25 +17277,6 @@ let scoreTimingDetail =
                 !latestRowV1978.querySelector('.hole-cell.next-hole-cell') ||
                 !latestRowV1978.querySelector('.score-button.active-hole-score')
               ) {
-                return;
-              }
-
-              const tipsOverlayV2155 = document.getElementById('tipsOverlayV2154');
-              if (
-                tipsOverlayV2155 &&
-                tipsOverlayV2155.classList.contains('open-v2154') &&
-                activeTipsIdV2154 === 'scorecard'
-              ) {
-                pendingAfterTipsActionV2155 = () => {
-                  if (sequenceV1978 !== startingHoleIntroSequenceV1978) return;
-                  if (!selectedTeam || currentView !== 'scorecard') return;
-                  const deferredTeamKeyV2155 =
-                    String(selectedTeam.slot || '') + '|' + normalizeName(selectedTeam.name);
-                  if (deferredTeamKeyV2155 !== teamKeyV1978) return;
-                  if (!scorecardIsCompletelyBlankV1613(localScores)) return;
-                  if (!tournamentUsesShotgunStartV1613()) return;
-                  showStartingHoleIntroV1613();
-                };
                 return;
               }
 
@@ -19623,7 +19590,6 @@ let scoreTimingDetail =
       setActiveView('testlog');
       renderTestLog();
       syncTestAuthorizationToggle();
-      syncTipsTogglesV2154();
       /* V21.42 — server status remains authoritative, but there is NO background
          polling. A normal CC entry/return performs one state-only read. START
          success may skip that redundant read because the change response itself
@@ -21474,156 +21440,17 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V21.64 — OPTIONAL TIPS & TRICKS
-       One player-facing setting shared by Welcome, Quick Guide and each popup.
-       Contextual tips remain once per authorization unless the setting is re-armed.
+       SSHCP V22.99 — SCRAMBLE COMPLETE CARD ONLY
+       Tips & Tricks has been removed. This separate completion card remains
+       because it communicates completed-tournament state and final navigation.
        ========================================================= */
-    const SSHCP_TIPS_ENABLED_PREFIX_V2154 = 'sshcpTipsEnabledV2154|';
-    const SSHCP_TIPS_SEEN_PREFIX_V2154 = 'sshcpTipsSeenV2154|';
     const SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215 = 'sshcpScrambleCompleteSeenV2215';
-    let activeTipsIdV2154 = '';
-    let pendingAfterTipsActionV2155 = null;
-    let tipsCloseStartActionV2297 = null;
-    let tipsCloseTimerV2162 = null;
-    const TIPS_POPUP_FADE_MS_V2162 = 100;
+    let pendingAfterScrambleCompleteActionV2299 = null;
+    let scrambleCompleteCloseStartActionV2299 = null;
+    let scrambleCompleteCloseTimerV2299 = null;
+    const SCRAMBLE_COMPLETE_FADE_MS_V2299 = 100;
 
-    function showTipsAfterSettledV2155(tipId) {
-      window.setTimeout(() => {
-        maybeShowTipsV2154(tipId);
-      }, 100);
-    }
-
-    function waitForLeaderboardSettledV2155() {
-      return new Promise(resolve => {
-        const startedV2155 = performance.now();
-        let lastTopV2155 = els.leaderContent ? Number(els.leaderContent.scrollTop) || 0 : 0;
-        let stableSinceV2155 = performance.now();
-
-        const stepV2155 = nowV2155 => {
-          if (currentView !== 'leaderboard' || !els.leaderContent) {
-            resolve();
-            return;
-          }
-
-          const currentTopV2155 = Number(els.leaderContent.scrollTop) || 0;
-          if (Math.abs(currentTopV2155 - lastTopV2155) > 0.5) {
-            lastTopV2155 = currentTopV2155;
-            stableSinceV2155 = nowV2155;
-          }
-
-          const timerPendingV2155 = !!leaderboardAutoScrollTimer;
-          const scrollStableV2155 = (nowV2155 - stableSinceV2155) >= 120;
-          const safetyExpiredV2155 = (nowV2155 - startedV2155) >= 2800;
-
-          if ((!timerPendingV2155 && scrollStableV2155) || safetyExpiredV2155) {
-            resolve();
-            return;
-          }
-
-          requestAnimationFrame(stepV2155);
-        };
-
-        requestAnimationFrame(stepV2155);
-      });
-    }
-
-    function tipsAuthorizationFingerprintV2154() {
-      return String(qrAuthorizationFingerprintV1979() || 'NO_AUTH').trim() || 'NO_AUTH';
-    }
-
-    function tipsEnabledKeyV2154(fingerprint = tipsAuthorizationFingerprintV2154()) {
-      return SSHCP_TIPS_ENABLED_PREFIX_V2154 + String(fingerprint || 'NO_AUTH');
-    }
-
-    function tipsSeenKeyV2154(fingerprint = tipsAuthorizationFingerprintV2154()) {
-      return SSHCP_TIPS_SEEN_PREFIX_V2154 + String(fingerprint || 'NO_AUTH');
-    }
-
-    function tipsEnabledV2154() {
-      try {
-        return localStorage.getItem(tipsEnabledKeyV2154()) === '1';
-      } catch (_) {
-        return false;
-      }
-    }
-
-    function readSeenTipsV2154() {
-      try {
-        const parsed = JSON.parse(localStorage.getItem(tipsSeenKeyV2154()) || '[]');
-        return new Set(Array.isArray(parsed) ? parsed.map(String) : []);
-      } catch (_) {
-        return new Set();
-      }
-    }
-
-    function writeSeenTipsV2154(setV2154) {
-      try {
-        localStorage.setItem(tipsSeenKeyV2154(), JSON.stringify([...setV2154]));
-      } catch (_) {}
-    }
-
-    function resetTipsForFingerprintV2154(fingerprint, clearPreference = true) {
-      const clean = String(fingerprint || '').trim();
-      if (!clean) return;
-      try {
-        localStorage.removeItem(tipsSeenKeyV2154(clean));
-        if (clearPreference) localStorage.removeItem(tipsEnabledKeyV2154(clean));
-      } catch (_) {}
-    }
-
-    function syncTipsTogglesV2154() {
-      const enabled = tipsEnabledV2154();
-      [
-        document.getElementById('qrWelcomeTipsCheckV2154'),
-        document.getElementById('tipsCardCheckV2161'),
-        document.getElementById('quickGuideTipsCheckV2161')
-      ].forEach(input => {
-        if (input) input.checked = enabled;
-      });
-    }
-
-    function setTipsEnabledV2154(enabled, rearm = false) {
-      try {
-        if (enabled) localStorage.setItem(tipsEnabledKeyV2154(), '1');
-        else localStorage.removeItem(tipsEnabledKeyV2154());
-        if (enabled && rearm) localStorage.removeItem(tipsSeenKeyV2154());
-      } catch (_) {}
-      syncTipsTogglesV2154();
-    }
-
-    function wireTipsPreferenceInputV2161(input, rearmOnEnable = false) {
-      if (!input || input.dataset.tipsWiredV2161) return;
-      input.dataset.tipsWiredV2161 = '1';
-      input.addEventListener('change', () => {
-        const enabled = !!input.checked;
-        setTipsEnabledV2154(enabled, enabled && rearmOnEnable);
-      });
-    }
-
-    function setupTipsAndTricksV2154() {
-      wireTipsPreferenceInputV2161(document.getElementById('qrWelcomeTipsCheckV2154'), true);
-      wireTipsPreferenceInputV2161(document.getElementById('tipsCardCheckV2161'), false);
-      const ok = document.getElementById('tipsOkButtonV2154');
-      if (ok && !ok.dataset.tipsWiredV2154) {
-        ok.dataset.tipsWiredV2154 = '1';
-        ok.addEventListener('click', closeTipsCardV2154);
-      }
-      const summaryV2215 = document.getElementById('tipsSummaryButtonV2215');
-      if (summaryV2215 && !summaryV2215.dataset.completeTipWiredV2215) {
-        summaryV2215.dataset.completeTipWiredV2215 = '1';
-        summaryV2215.addEventListener('click', () => {
-          pendingAfterTipsActionV2155 = () => {
-            if (currentView === 'leaderboard' && tournamentIsComplete(lastLeaderboardRows)) {
-              handleLeaderboardFinalAction();
-            }
-          };
-          closeTipsCardV2154();
-        });
-      }
-      syncTipsTogglesV2154();
-    }
-
-    function tipsWelcomeIsVisibleV2154() {
+    function welcomeOverlayVisibleV2299() {
       const welcome = document.getElementById('qrWelcomeOverlayV170');
       return !!(welcome && welcome.getAttribute('aria-hidden') !== 'true');
     }
@@ -21662,9 +21489,29 @@ let scoreTimingDetail =
       });
     }
 
+    function setupScrambleCompleteCardV2299() {
+      const ok = document.getElementById('tipsOkButtonV2154');
+      if (ok && !ok.dataset.scrambleCompleteWiredV2299) {
+        ok.dataset.scrambleCompleteWiredV2299 = '1';
+        ok.addEventListener('click', closeScrambleCompleteCardV2299);
+      }
+      const summary = document.getElementById('tipsSummaryButtonV2215');
+      if (summary && !summary.dataset.scrambleCompleteWiredV2299) {
+        summary.dataset.scrambleCompleteWiredV2299 = '1';
+        summary.addEventListener('click', () => {
+          pendingAfterScrambleCompleteActionV2299 = () => {
+            if (currentView === 'leaderboard' && tournamentIsComplete(lastLeaderboardRows)) {
+              handleLeaderboardFinalAction();
+            }
+          };
+          closeScrambleCompleteCardV2299();
+        });
+      }
+    }
+
     function maybeShowScrambleCompleteV2215() {
       if (currentView !== 'leaderboard' || !tournamentIsComplete(lastLeaderboardRows)) return false;
-      if (scrambleCompleteSeenV2215() || tipsWelcomeIsVisibleV2154()) return false;
+      if (scrambleCompleteSeenV2215() || welcomeOverlayVisibleV2299()) return false;
 
       const overlay = document.getElementById('tipsOverlayV2154');
       const title = document.getElementById('tipsTitleV2154');
@@ -21672,11 +21519,8 @@ let scoreTimingDetail =
       if (!overlay || !title || !body || overlay.classList.contains('open-v2154')) return false;
 
       markScrambleCompleteSeenV2215();
-      activeTipsIdV2154 = 'scramble-complete-v2215';
       title.textContent = 'SCRAMBLE COMPLETE';
 
-      /* V22.60 - the completion card mirrors the same already-known final
-         action state as the Leaderboard. No extra read or tie calculation. */
       const tieBreakPendingV2260 = homeTieBreakPendingV2104();
       body.innerHTML = tieBreakPendingV2260
         ? '<div class="tips-line-v2154">Break the tie, then check out Scramble Summary, Game, and Geek Results</div>'
@@ -21690,9 +21534,9 @@ let scoreTimingDetail =
         completionActionV2260.classList.toggle('tie-break-v2261', tieBreakPendingV2260);
       }
 
-      if (tipsCloseTimerV2162) {
-        window.clearTimeout(tipsCloseTimerV2162);
-        tipsCloseTimerV2162 = null;
+      if (scrambleCompleteCloseTimerV2299) {
+        window.clearTimeout(scrambleCompleteCloseTimerV2299);
+        scrambleCompleteCloseTimerV2299 = null;
       }
       overlay.classList.add('tips-short-v2163', 'tips-scramble-complete-v2215', 'open-v2154');
       overlay.classList.remove('tips-home-v2165');
@@ -21706,154 +21550,27 @@ let scoreTimingDetail =
       return true;
     }
 
-    function tipsContentV2154(tipId) {
-      if (tipId === 'home') {
-        return {
-          title:'HOME',
-          lines:[
-            'Closing the browser or app will <strong>NOT</strong> reset your scores.',
-            'Use the <strong>MENU</strong> in the top-left to navigate the app.',
-            '__GAP__',
-            '__CUE_BLUE__',
-            '__CUE_GRAY__',
-            '__CUE_GOLD__',
-            '<strong>SCORECARD</strong>: enter and edit scores.',
-            '<strong>LEADERBOARD</strong>: view current standings.',
-            '<strong>SCRAMBLE SUMMARY</strong>: available after the scramble is complete.'
-          ]
-        };
-      }
-      if (tipId === 'scorecard') {
-        return {
-          title:'SCORECARD',
-          lines:[
-            'Tap any <strong>SCORE BOX</strong>.',
-            'Score starts at <strong>PAR</strong>.',
-            'Tap <strong>− / + / CLEAR - ENTER</strong> to save.',
-            'Tap a submitted score to <strong>EDIT</strong> it.',
-            'Tap the <strong>GRAY GAME CIRCLES</strong> for Game information.',
-            '<strong>SCORE HEADER</strong>: left score is <strong>GROSS</strong> and right score is <strong>NET</strong>.'
-          ]
-        };
-      }
-      if (tipId === 'leaderboard-live') {
-        return {
-          title:'LEADERBOARD',
-          lines:[
-            '<strong>20s AUTO REFRESH</strong>.',
-            'Tap <strong>REFRESH</strong> any time.',
-            'Touch the <strong>LEADERBOARD</strong> to pause Auto Refresh while reviewing.'
-          ]
-        };
-      }
-      if (tipId === 'leaderboard-final') {
-        return {
-          title:'LEADERBOARD',
-          lines:[
-            'The <strong>SCRAMBLE IS COMPLETE</strong>.',
-            'Visit <strong>SCRAMBLE SUMMARY</strong> for the final results.',
-            'If needed, use <strong>AUTO TIE BREAK</strong>.'
-          ]
-        };
-      }
-      if (tipId === 'summary') {
-        const assignedCount = Math.max(0, Array.isArray(lastLeaderboardRows) ? lastLeaderboardRows.length : 0);
-        const lowerLine = assignedCount > 3
-          ? '<strong>TEAMS 4 THROUGH ' + assignedCount + '</strong> are shown below.'
-          : '';
-        return {
-          title:'SCRAMBLE SUMMARY',
-          lines:[
-            'Shows each team\'s final <strong>NET SCORE</strong> after handicap.',
-            'The <strong>TOP 3</strong> teams are featured above.',
-            lowerLine
-          ].filter(Boolean)
-        };
-      }
-      if (tipId === 'geek') {
-        return {
-          title:'GEEK MODE',
-          lines:[
-            'Tap a <strong>STAT</strong> for more detail.',
-            'Use <strong>FILTERS</strong> to filter stat categories.',
-            '<strong>ROTATE</strong> to view <strong>ALL TEAMS</strong> stats.',
-            'Tap an individual <strong>RESULT</strong> for more detail.',
-            'Download complete tournament stats by tapping the icon in the top right.'
-          ]
-        };
-      }
-      return null;
-    }
-
-    function showTipsCardV2154(tipId) {
-      const content = tipsContentV2154(tipId);
+    function closeScrambleCompleteCardV2299() {
       const overlay = document.getElementById('tipsOverlayV2154');
-      const title = document.getElementById('tipsTitleV2154');
-      const body = document.getElementById('tipsBodyV2154');
-      if (!content || !overlay || !title || !body) return false;
-      activeTipsIdV2154 = String(tipId || '');
-      title.textContent = content.title;
-      body.innerHTML = content.lines.map(line => {
-        if (line === '__GAP__') return '<div class="tips-gap-v2161" aria-hidden="true"></div>';
-        if (line === '__CUE_BLUE__') return '<div class="tips-cue-row-v2162"><span class="tips-cue-box-v2162 blue-v2162">BLUE</span><span class="tips-cue-copy-v2162">PRIMARY NAV</span></div>';
-        if (line === '__CUE_GRAY__') return '<div class="tips-cue-row-v2162"><span class="tips-cue-box-v2162 gray-v2162">GRAY</span><span class="tips-cue-copy-v2162">SECONDARY NAV</span></div>';
-        if (line === '__CUE_GOLD__') return '<div class="tips-cue-row-v2162"><span class="tips-cue-box-v2162 gold-v2162">GOLD</span><span class="tips-cue-copy-v2162">AFTER-PLAY FEATURES</span></div>';
-        return '<div class="tips-line-v2154">' + line + '</div>';
-      }).join('');
-      syncTipsTogglesV2154();
-      if (tipsCloseTimerV2162) {
-        window.clearTimeout(tipsCloseTimerV2162);
-        tipsCloseTimerV2162 = null;
-      }
-      overlay.classList.remove('tips-scramble-complete-v2215');
-      overlay.classList.toggle('tips-short-v2163', ['leaderboard-live','leaderboard-final','summary','geek'].includes(activeTipsIdV2154));
-      overlay.classList.toggle('tips-home-v2165', activeTipsIdV2154 === 'home');
-      overlay.classList.add('open-v2154');
-      overlay.setAttribute('aria-hidden', 'false');
-      const ok = document.getElementById('tipsOkButtonV2154');
-      if (ok) requestAnimationFrame(() => ok.focus({ preventScroll:true }));
-      return true;
-    }
-
-    function closeTipsCardV2154() {
-      const overlay = document.getElementById('tipsOverlayV2154');
-      if (activeTipsIdV2154) {
-        const seen = readSeenTipsV2154();
-        seen.add(activeTipsIdV2154);
-        writeSeenTipsV2154(seen);
-      }
-      activeTipsIdV2154 = '';
       if (overlay) {
         overlay.classList.remove('open-v2154');
         overlay.setAttribute('aria-hidden', 'true');
       }
 
-      /* V22.97 — this hook fires at fade START, not after the 0.10s Tips fade.
-         Scorecard/Leaderboard use it to begin their existing white-curtain
-         reveal and initial positioning underneath the fading Tips surface. */
-      const closeStartV2297 = tipsCloseStartActionV2297;
-      tipsCloseStartActionV2297 = null;
-      if (typeof closeStartV2297 === 'function') {
-        try { closeStartV2297(); } catch (_) {}
+      const closeStartV2299 = scrambleCompleteCloseStartActionV2299;
+      scrambleCompleteCloseStartActionV2299 = null;
+      if (typeof closeStartV2299 === 'function') {
+        try { closeStartV2299(); } catch (_) {}
       }
 
-      const afterCloseV2155 = pendingAfterTipsActionV2155;
-      pendingAfterTipsActionV2155 = null;
-      if (tipsCloseTimerV2162) window.clearTimeout(tipsCloseTimerV2162);
-      tipsCloseTimerV2162 = window.setTimeout(() => {
-        tipsCloseTimerV2162 = null;
+      const afterCloseV2299 = pendingAfterScrambleCompleteActionV2299;
+      pendingAfterScrambleCompleteActionV2299 = null;
+      if (scrambleCompleteCloseTimerV2299) window.clearTimeout(scrambleCompleteCloseTimerV2299);
+      scrambleCompleteCloseTimerV2299 = window.setTimeout(() => {
+        scrambleCompleteCloseTimerV2299 = null;
         if (overlay) overlay.classList.remove('tips-short-v2163', 'tips-home-v2165', 'tips-scramble-complete-v2215');
-        if (typeof afterCloseV2155 === 'function') afterCloseV2155();
-      }, TIPS_POPUP_FADE_MS_V2162);
-    }
-
-    function maybeShowTipsV2154(tipId) {
-      if (!tipsEnabledV2154() || tipsWelcomeIsVisibleV2154()) return false;
-      const overlay = document.getElementById('tipsOverlayV2154');
-      if (overlay && overlay.classList.contains('open-v2154')) return false;
-      const seen = readSeenTipsV2154();
-      if (seen.has(String(tipId))) return false;
-      return showTipsCardV2154(tipId);
+        if (typeof afterCloseV2299 === 'function') afterCloseV2299();
+      }, SCRAMBLE_COMPLETE_FADE_MS_V2299);
     }
 
     async function showHome() {
@@ -21959,7 +21676,6 @@ let scoreTimingDetail =
          current presentation has completed, debounce one fresh diagnostic
          snapshot so Control Center reports the final viewport/shell authority. */
       scheduleControlCenterViewportSnapshotV2128();
-      showTipsAfterSettledV2155('home');
 
     }
 
@@ -22541,32 +22257,11 @@ let scoreTimingDetail =
           els.scoreScroll.scrollTop = 0;
         }
 
-        /* V22.97 — if the Scorecard contextual tip is due, show it while the
-           existing white destination curtain is still fully opaque. The normal
-           reveal is held until OK. At OK, the 0.10s Tips fade and 0.30s white
-           curtain fade start together; loadScorecard() is released immediately
-           so the established NESR/beauty positioning can begin underneath. */
-        const scorecardTipGateV2297 = maybeShowTipsV2154('scorecard');
-        let scorecardTipReleaseStartV2297 = null;
-        let scorecardRevealDoneV179 = null;
-
-        if (scorecardTipGateV2297) {
-          scorecardTipReleaseStartV2297 = new Promise(resolveV2297 => {
-            tipsCloseStartActionV2297 = () => {
-              scorecardRevealDoneV179 = revealDataShieldV177(
-                'scorecard',
-                scorecardRevealShieldV177
-              );
-              resolveV2297();
-            };
-          });
-        } else {
-          scorecardRevealDoneV179 = revealDataShieldAfterLayoutV177(
-            'scorecard',
-            scorecardRevealShieldV177,
-            2
-          );
-        }
+        const scorecardRevealDoneV179 = revealDataShieldAfterLayoutV177(
+          'scorecard',
+          scorecardRevealShieldV177,
+          2
+        );
 
         const renderedAt =
           timerStart();
@@ -22609,15 +22304,9 @@ let scoreTimingDetail =
           );
         }
 
-        /* V22.97: without a contextual tip, preserve the established contract
-           exactly and wait for the white reveal to finish before positioning.
-           With the tip gate, wait only for OK/reveal START so positioning becomes
-           visible through the same 0.30s curtain fade the golfer just released. */
-        if (scorecardTipGateV2297) {
-          await scorecardTipReleaseStartV2297;
-        } else {
-          await scorecardRevealDoneV179;
-        }
+        /* V22.99 — Tips & Tricks removed; keep the established Scorecard
+           curtain contract and position only after the normal reveal finishes. */
+        await scorecardRevealDoneV179;
 
       }
       catch (error) {
@@ -25897,31 +25586,30 @@ let scoreTimingDetail =
           rows
         );
 
-        /* V22.98 — use the same opaque-curtain gate for both Leaderboard entry
-           states. LIVE keeps V22.97's contextual tip. On completed play, the
-           established first SCRAMBLE COMPLETE card is now mounted over the same
-           still-opaque white curtain before render-triggered team placement. */
-        const leaderboardCompleteV2298 = tournamentIsComplete(rows);
-        const leaderboardTipGateV2298 = leaderboardCompleteV2298
+        /* V22.99 — no contextual Leaderboard tip exists. The separate first
+           SCRAMBLE COMPLETE card remains on completed play and retains V22.98's
+           opaque-curtain gate. Live Leaderboard follows the normal reveal path. */
+        const leaderboardCompleteV2299 = tournamentIsComplete(rows);
+        const leaderboardCompletionGateV2299 = leaderboardCompleteV2299
           ? maybeShowScrambleCompleteV2215()
-          : maybeShowTipsV2154('leaderboard-live');
-        let leaderboardTipReleaseStartV2298 = null;
+          : false;
+        let leaderboardCompletionReleaseStartV2299 = null;
         let leaderboardRevealDoneV179 = null;
 
-        if (leaderboardTipGateV2298) {
+        if (leaderboardCompletionGateV2299) {
           leaderboardAutoScrollHoldV2297 = true;
           leaderboardAutoScrollPendingV2297 = false;
-          leaderboardTipReleaseStartV2298 = new Promise(resolveV2298 => {
-            tipsCloseStartActionV2297 = () => {
+          leaderboardCompletionReleaseStartV2299 = new Promise(resolveV2299 => {
+            scrambleCompleteCloseStartActionV2299 = () => {
               leaderboardRevealDoneV179 = revealDataShieldV177(
                 'leaderboard',
                 leaderboardRevealShieldV177
               );
-              const runHeldAutoScrollV2298 = leaderboardAutoScrollPendingV2297;
+              const runHeldAutoScrollV2299 = leaderboardAutoScrollPendingV2297;
               leaderboardAutoScrollHoldV2297 = false;
               leaderboardAutoScrollPendingV2297 = false;
-              if (runHeldAutoScrollV2298) scheduleLeaderboardAutoScroll(0);
-              resolveV2298();
+              if (runHeldAutoScrollV2299) scheduleLeaderboardAutoScroll(0);
+              resolveV2299();
             };
           });
         }
@@ -25931,7 +25619,7 @@ let scoreTimingDetail =
           false
         );
 
-        if (!leaderboardTipGateV2298) {
+        if (!leaderboardCompletionGateV2299) {
           leaderboardRevealDoneV179 = revealDataShieldAfterLayoutV177(
             'leaderboard',
             leaderboardRevealShieldV177,
@@ -25980,21 +25668,13 @@ let scoreTimingDetail =
 
         if (!silentV182) completeLoadingLine();
 
-        /* V22.98 — either gated Leaderboard card now owns the opaque curtain.
-           Its close START launches the 0.10s card fade, the existing 0.30s white
-           reveal and any held authorized-team scroll together. If no card is due,
-           preserve V22.97's normal reveal/settle behavior exactly. */
-        if (leaderboardTipGateV2298) {
-          await leaderboardTipReleaseStartV2298;
+        /* V22.99 — only the separate SCRAMBLE COMPLETE card can hold a completed
+           Leaderboard curtain. Live Leaderboard has no help-popup delay. */
+        if (leaderboardCompletionGateV2299) {
+          await leaderboardCompletionReleaseStartV2299;
           if (leaderboardRevealDoneV179) await leaderboardRevealDoneV179;
         } else {
           await leaderboardRevealDoneV179;
-          await waitForLeaderboardSettledV2155();
-          if (leaderboardCompleteV2298) {
-            maybeShowScrambleCompleteV2215();
-          } else {
-            showTipsAfterSettledV2155('leaderboard-live');
-          }
         }
 
 
@@ -32170,8 +31850,6 @@ let scoreTimingDetail =
               geekAfterPlayCurtainV2086,
               2
             )).then(() => {
-              showTipsAfterSettledV2155('geek');
-
               /* V22.51 — portrait GEEK is already finished and visible. Build
                  ALL TEAMS shortly afterward from this same in-memory payload so
                  the likely later landscape rotation has no network work to do. */
@@ -33140,19 +32818,6 @@ let scoreTimingDetail =
         return;
       }
 
-      /* V22.98 — once the fresh completed-round rows are known, mount an unseen
-         enabled Summary tip immediately over the still-opaque after-play curtain.
-         Summary may continue fitting underneath. If OK is pressed before the
-         Summary is fully ready, remember that release and start the white reveal
-         at the first safe ready point instead of exposing an unfinished layout. */
-      const summaryTipGateV2298 = maybeShowTipsV2154('summary');
-      let summaryTipReleasedV2298 = false;
-      if (summaryTipGateV2298) {
-        tipsCloseStartActionV2297 = () => {
-          summaryTipReleasedV2298 = true;
-        };
-      }
-
       await waitForTournamentSummaryViewportStableV2236();
       syncSharedGeometryV187();
 
@@ -33313,35 +32978,11 @@ let scoreTimingDetail =
       requestAnimationFrame(() => captureTournamentSummaryAuditV189());
       await settleTournamentSummaryBeforeRevealV2236();
 
-      const startSummaryRevealV2298 = () => {
-        scheduleSummaryFitV2233();
-        return revealAfterPlayCurtainV2086(
-          'after-play-summary-v2086',
-          summaryCurtainV2086,
-          2
-        );
-      };
-
-      if (summaryTipGateV2298) {
-        const tipsOverlayV2298 = document.getElementById('tipsOverlayV2154');
-        const summaryTipStillOpenV2298 = Boolean(
-          tipsOverlayV2298 &&
-          tipsOverlayV2298.classList.contains('open-v2154') &&
-          activeTipsIdV2154 === 'summary'
-        );
-
-        if (summaryTipReleasedV2298 || !summaryTipStillOpenV2298) {
-          Promise.resolve(startSummaryRevealV2298()).then(scheduleSummaryFitV2233);
-        } else {
-          tipsCloseStartActionV2297 = () => {
-            summaryTipReleasedV2298 = true;
-            Promise.resolve(startSummaryRevealV2298()).then(scheduleSummaryFitV2233);
-          };
-        }
-      } else {
-        Promise.resolve(startSummaryRevealV2298()).then(scheduleSummaryFitV2233);
-      }
-
+      Promise.resolve(revealAfterPlayCurtainV2086(
+        'after-play-summary-v2086',
+        summaryCurtainV2086,
+        2
+      )).then(scheduleSummaryFitV2233);
       void recordScrambleSummaryViewedV2141();
     }
 
@@ -35791,11 +35432,6 @@ let scoreTimingDetail =
       els.modalBody.innerHTML =
         '<div class="quick-guide-scroll-v2050">' +
           '<div class="quick-guide-lines-v172 quick-guide-unified-v2161">' +
-            '<label id="quickGuideTipsToggleV2161" class="quick-guide-tips-toggle-v2161">' +
-              '<input id="quickGuideTipsCheckV2161" type="checkbox">' +
-              '<span class="tips-check-box-v2154" aria-hidden="true">✓</span>' +
-              '<span>SHOW TIPS &amp; TRICKS ONCE</span>' +
-            '</label>' +
             '<div class="quick-guide-legend-v2050">' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 blue-v2050">BLUE</span>' +
@@ -35845,8 +35481,6 @@ let scoreTimingDetail =
           '<div class="quick-guide-progress-thumb-v2050"></div>' +
         '</div>';
 
-      wireTipsPreferenceInputV2161(document.getElementById('quickGuideTipsCheckV2161'), true);
-      syncTipsTogglesV2154();
 
       els.modalInput.style.display =
         'none';
@@ -37038,7 +36672,6 @@ let scoreTimingDetail =
         overlay.style.removeProperty('opacity');
         overlay.style.removeProperty('transition');
         dismissQrWelcomeV170();
-        showTipsAfterSettledV2155('home');
       }, 520);
     }
 
@@ -37275,7 +36908,7 @@ let scoreTimingDetail =
       }
 
       setupQrWelcomeV170();
-      setupTipsAndTricksV2154();
+      setupScrambleCompleteCardV2299();
 
       /* SSHCP V20.78 — HOME refresh previously serialized two independent
          read-only network waits: stored QR/auth validation first, then HOME's
@@ -37311,7 +36944,6 @@ let scoreTimingDetail =
       if (isTeamQr() && getQrTeam()) rememberSelectedTeam(getQrTeam());
       syncTestAuthorizationToggle();
       syncTeamQrLockedUi();
-      syncTipsTogglesV2154();
       updateHomeScorecardAccess();
 
       if (failedIncomingQrV1984) {
