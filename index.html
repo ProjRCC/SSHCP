@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.0-M7Q4RX | BUILD KEY: 23.1-P8M4QV -->
+<!-- SSHCP | BASE KEY: 23.1-P8M4QV | BUILD KEY: 23.2-T7M4QX -->
+<!-- SSHCP V23.2 LOWER-SHELL COMPACTION + LEADER BAR RADIUS INSET - exact V23.1 donor.
+     Presentation-only experiment. Scorecard and Leaderboard retain their established upper geometry and fixed bottom-button anchors. The preferred table-to-footer buffer is reduced from the old 12px baseline to a compact 7px baseline, with a hard 7px minimum in the whole-row geometry chooser; equal row heights remain mandatory, and <=8-team Leaderboard geometry still anchors to the Scorecard actual remainder so the lower half stays visually consistent while leftover pixels remain in the variable buffer. The LIVE LEADERBOARD progress bar and completed FINAL RESULTS bar are inset 9px from each side, matching the leaderboard table's 9px top-corner radius tangent points. V23.1 GUIDE/Quick Guide copy, V23.0 completion-to-Summary handoff, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.2. -->
 <!-- SSHCP V23.1 GUIDE LABEL + QUICK GUIDE COPY - exact V23.0 donor.
      Changes only player-facing guide presentation/copy. Scorecard and Leaderboard INFO labels become GUIDE with unchanged button geometry; the existing shared nav fitter keeps HOME and GUIDE at the same target size and lets GUIDE shrink only if its extra letter requires it. Quick Guide wording is updated to the approved player copy, VISUAL CUES use PRIMARY NAVIGATION / SECONDARY NAVIGATION / AFTER-PLAY FEATURES, and all three cue descriptions share one fitted font size chosen only as small as needed to keep every cue on one line. V23.0 Scramble Complete -> Summary white-to-white handoff, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.1. -->
 <!-- SSHCP V23.0 SCRAMBLE COMPLETE -> AFTER-PLAY CURTAIN HANDOFF - exact V22.99 donor.
@@ -534,8 +536,8 @@
               '--v16-nav-context-gap': v188RoundY(8.16),
               '--v16-context-h': v188RoundY(40),
               '--v16-context-table-gap': v188RoundY(8.16),
-              '--v16-score-table-footer-gap': v188RoundY(12),
-              '--v16-leader-table-footer-gap': v188RoundY(12),
+              '--v16-score-table-footer-gap': Math.max(7, v188RoundY(7)),
+              '--v16-leader-table-footer-gap': Math.max(7, v188RoundY(7)),
               '--v16-footer-h': v188RoundY(50),
               '--v16-bottom-gap': v188RoundY(12.24),
               '--v16-internal-gap': v16Px(28)
@@ -546,8 +548,8 @@
               ((bootV16Vars['--v16-internal-gap'] * 2) / 3);
           } else {
             bootV16Vars['--v16-footer-h'] = v188RoundY(50);
-            bootV16Vars['--v16-score-table-footer-gap'] = v188RoundY(12);
-            bootV16Vars['--v16-leader-table-footer-gap'] = v188RoundY(12);
+            bootV16Vars['--v16-score-table-footer-gap'] = Math.max(7, v188RoundY(7));
+            bootV16Vars['--v16-leader-table-footer-gap'] = Math.max(7, v188RoundY(7));
           }
 
           /* V19.0: Leaderboard footer uses the exact same 8px internal gap as
@@ -14107,6 +14109,24 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-stat-v2216{
     }
   </style>
 
+<style id="sshcp-v232-lower-shell-and-leader-bar">
+/* V23.2 — lower-half density experiment. Keep upper Scorecard/Leaderboard
+   geometry untouched; only the variable table-to-footer remainder is compacted
+   by the JS geometry target/floor. The title progress/result bar begins and ends
+   at the 9px tangent points of the leaderboard table's top corner radius. */
+#leaderboardView .leader-title-bar::after,
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar::after{
+  left:9px!important;
+}
+@keyframes sshcpLeaderLiveProgressV57{
+  from{width:0;}
+  to{width:calc(100% - 18px);}
+}
+#leaderboardView .leaderboard-screen.tournament-complete .leader-title-bar::after{
+  width:calc(100% - 18px)!important;
+}
+</style>
+
 
 <style id="sshcp-v2283-geek-recommend-auth-header">
 /* V22.84 — keep each compact paper label + recommendation on one line.
@@ -14299,7 +14319,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.1</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.2</span></span>
         </button>
         <script>
           (function () {
@@ -23513,7 +23533,7 @@ let scoreTimingDetail =
       const count = Math.max(1, Math.floor(Number(rowCount) || 1));
       const available = Math.max(count, Math.round(Number(availableDataPixels) || count));
       const target = Math.max(0, Number(targetGap) || 0);
-      const minimumGap = target * 0.50;
+      const minimumGap = Math.min(target, 7);
       const upRowsHeight = Math.ceil(available / count) * count;
       const upGap = target + available - upRowsHeight;
       let rowsHeight;
@@ -23537,7 +23557,7 @@ let scoreTimingDetail =
       const available = Math.max(count, Math.round(Number(availableDataPixels) || count));
       const target = Math.max(0, Number(targetGap) || 0);
       const anchor = Number.isFinite(Number(scoreGap)) ? Math.max(0, Number(scoreGap)) : target;
-      const minimumGap = target * 0.50;
+      const minimumGap = Math.min(target, 7);
       const totalBudget = available + target;
       const ideal = (totalBudget - anchor) / count;
       const seeds = new Set();
@@ -23660,8 +23680,8 @@ let scoreTimingDetail =
         '--v16-nav-context-gap': py(8.16),
         '--v16-context-h': py(40),
         '--v16-context-table-gap': py(8.16),
-        '--v16-score-table-footer-gap': py(12),
-        '--v16-leader-table-footer-gap': py(12),
+        '--v16-score-table-footer-gap': Math.max(7, py(7)),
+        '--v16-leader-table-footer-gap': Math.max(7, py(7)),
         '--v16-footer-h': py(50),
         '--v16-bottom-gap': py(12.24),
         '--v16-internal-gap': px(28)
