@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.99-Q8M4RV | BUILD KEY: 23.0-M7Q4RX -->
+<!-- SSHCP | BASE KEY: 23.0-M7Q4RX | BUILD KEY: 23.1-P8M4QV -->
+<!-- SSHCP V23.1 GUIDE LABEL + QUICK GUIDE COPY - exact V23.0 donor.
+     Changes only player-facing guide presentation/copy. Scorecard and Leaderboard INFO labels become GUIDE with unchanged button geometry; the existing shared nav fitter keeps HOME and GUIDE at the same target size and lets GUIDE shrink only if its extra letter requires it. Quick Guide wording is updated to the approved player copy, VISUAL CUES use PRIMARY NAVIGATION / SECONDARY NAVIGATION / AFTER-PLAY FEATURES, and all three cue descriptions share one fitted font size chosen only as small as needed to keep every cue on one line. V23.0 Scramble Complete -> Summary white-to-white handoff, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.1. -->
 <!-- SSHCP V23.0 SCRAMBLE COMPLETE -> AFTER-PLAY CURTAIN HANDOFF - exact V22.99 donor.
      Fixes only the first-completion SCRAMBLE COMPLETE action handoff. When its SCRAMBLE SUMMARY / TIE BREAK action is pressed, the destination after-play path now starts synchronously before the held FINAL RESULTS white curtain is released. That mounts the destination white curtain underneath first, so the completion card can fade 0.10s and the existing Leaderboard curtain can fade 0.30s white-to-white without briefly exposing FINAL RESULTS before Summary/Tie Break. OK-without-navigation keeps the existing completed-Leaderboard release behavior. Quick Guide-only help, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak calculations, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.0. -->
 <!-- SSHCP V22.99 QUICK GUIDE ONLY / TIPS & TRICKS REMOVAL - exact V22.98 donor.
@@ -14297,7 +14299,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.0</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.1</span></span>
         </button>
         <script>
           (function () {
@@ -14393,7 +14395,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
             type="button"
             data-guide
           >
-            INFO
+            GUIDE
           </button>
 
         </div>
@@ -14567,7 +14569,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
             type="button"
             data-guide
           >
-            INFO
+            GUIDE
           </button>
 
         </div>
@@ -23718,7 +23720,7 @@ let scoreTimingDetail =
 
       const brand = view.querySelector('.header-brand');
       if (brand) {
-        /* V19.6: center header uses the same 80% HOME/INFO-height fitting rule.
+        /* V19.6: center header uses the same 80% HOME/GUIDE-height fitting rule.
            Scorecard content is authorization identity; Leaderboard/Final content
            is fixed event branding (ROTB 2026). Keep one line and shrink only if needed. */
         fitTextToBoxV5(brand, brand, vars['--v16-nav-h'] * 0.80, 0.001, {
@@ -34671,37 +34673,44 @@ let scoreTimingDetail =
       return size;
     }
 
-    /* SSHCP V20.79 — VISUAL CUES descriptions only. Start each row at the
-       inherited V20.77/V20.78 curved Quick Guide text target, then shrink that
-       individual description only when necessary to keep it on one line. */
+    /* SSHCP V23.1 — VISUAL CUES descriptions share one font size. Start all
+       three at the inherited Quick Guide text target, then reduce the shared size
+       only as much as the longest cue needs so PRIMARY NAVIGATION, SECONDARY
+       NAVIGATION and AFTER-PLAY FEATURES each remain on one line. */
     function fitQuickGuideVisualCueCopyV2079() {
       const copies = Array.from(
         els.modalBody.querySelectorAll('.quick-guide-legend-copy-v2050')
       );
       if (!copies.length) return false;
 
-      let fittedAny = false;
       copies.forEach(copy => {
         copy.style.removeProperty('font-size');
         copy.style.setProperty('white-space', 'nowrap', 'important');
         copy.style.setProperty('overflow', 'hidden', 'important');
         copy.style.setProperty('text-align', 'left', 'important');
-
-        const targetPx = parseFloat(getComputedStyle(copy).fontSize) || 1;
-        copy.style.setProperty('font-size', targetPx + 'px', 'important');
-
-        const available = copy.clientWidth;
-        if (!(available > 0)) return;
-
-        let size = targetPx;
-        const minimum = Math.max(8, targetPx * 0.70);
-        while (size > minimum && copy.scrollWidth > available + 0.5) {
-          size = Math.max(minimum, size - 0.25);
-          copy.style.setProperty('font-size', size + 'px', 'important');
-        }
-        fittedAny = true;
       });
-      return fittedAny;
+
+      const targetPx = Math.min(...copies.map(copy =>
+        parseFloat(getComputedStyle(copy).fontSize) || 1
+      ));
+      let size = targetPx;
+      const minimum = Math.max(8, targetPx * 0.70);
+
+      const applySharedSize = value => {
+        copies.forEach(copy => {
+          copy.style.setProperty('font-size', value + 'px', 'important');
+        });
+      };
+      const allFit = () => copies.every(copy =>
+        !(copy.clientWidth > 0) || copy.scrollWidth <= copy.clientWidth + 0.5
+      );
+
+      applySharedSize(size);
+      while (size > minimum && !allFit()) {
+        size = Math.max(minimum, size - 0.25);
+        applySharedSize(size);
+      }
+      return true;
     }
 
     function scheduleQuickGuideVisualCueFitV2079() {
@@ -35446,11 +35455,11 @@ let scoreTimingDetail =
             '<div class="quick-guide-legend-v2050">' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 blue-v2050">BLUE</span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>PRIMARY NAV</strong></span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>PRIMARY NAVIGATION</strong></span>' +
               '</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 gray-v2050">GRAY</span>' +
-                '<span class="quick-guide-legend-copy-v2050"><strong>SECONDARY NAV</strong></span>' +
+                '<span class="quick-guide-legend-copy-v2050"><strong>SECONDARY NAVIGATION</strong></span>' +
               '</div>' +
               '<div class="quick-guide-legend-row-v2050">' +
                 '<span class="quick-guide-fake-button-v2050 gold-v2050">GOLD</span>' +
@@ -35458,34 +35467,34 @@ let scoreTimingDetail =
               '</div>' +
             '</div>' +
             '<div class="quick-guide-section-heading-v2161">HOME</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Closing the browser or app will <strong>NOT</strong> reset your scores.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Closing the browser/app will <strong>NOT</strong> reset your scores.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Use the <strong>MENU</strong> in the top-left to navigate the app.</div>' +
             '<div class="quick-guide-section-heading-v2161 quick-guide-screen-divider-v2258">SCORECARD</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap any <strong>SCORE BOX</strong>.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Score starts at <strong>PAR</strong>.</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>− / + / CLEAR - ENTER</strong> to save.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>− / + / CLEAR</strong>. <strong>ENTER</strong> to save.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap a submitted score to <strong>EDIT</strong>.</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>GRAY GAME CIRCLES</strong> for Game information.</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>SCORE HEADER</strong>: left is <strong>GROSS</strong>, right is <strong>NET</strong>.</div>' +
-            '<div class="quick-guide-section-heading-v2161 quick-guide-screen-divider-v2258">LEADERBOARD</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>GRAY CIRCLES</strong> for Game information.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>SCORE HEADER</strong>: left <strong>GROSS</strong> / right <strong>NET</strong>.</div>' +
+            '<div class="quick-guide-section-heading-v2161 quick-guide-screen-divider-v2258">LIVE LEADERBOARD</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• View current standings.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>20s AUTO REFRESH</strong>.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>REFRESH</strong> any time.</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Touch the Leaderboard to pause Auto Refresh while reviewing.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Touch the Leaderboard to pause and reset Auto Refresh while reviewing.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-note-v2161">When the <strong>SCRAMBLE IS COMPLETE</strong>, explore <strong>SCRAMBLE SUMMARY</strong>, <strong>SKINS</strong>, <strong>GEEK MODE</strong>, and <strong>GAME MODE</strong> for final results and additional detail.</div>' +
             '<div class="quick-guide-section-heading-v2161 quick-guide-screen-divider-v2258">SCRAMBLE SUMMARY</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Final <strong>NET SCORES</strong> include handicap.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>TOP 3</strong> teams are featured.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Remaining teams are shown below.</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>AUTO TIE BREAK</strong> when needed.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap <strong>TIE BREAK</strong> when needed.</div>' +
             '<div class="quick-guide-section-heading-v2161 quick-guide-screen-divider-v2258">GEEK MODE</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap a <strong>STAT</strong> for more detail.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Use <strong>FILTERS</strong> to filter stat categories.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• <strong>ROTATE</strong> to view <strong>ALL TEAMS</strong> stats.</div>' +
             '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Tap an individual <strong>RESULT</strong> for more detail.</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Download complete tournament stats by tapping the icon in the top right.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-bullet-v2161">• Download complete tournament stats by tapping the download icon in the top right.</div>' +
             '<div class="quick-guide-section-heading-v2161 quick-guide-screen-divider-v2258">SKINS / GAME MODE</div>' +
-            '<div class="quick-guide-line-v172 quick-guide-note-v2161">Review final game results and additional game-specific details after play.</div>' +
+            '<div class="quick-guide-line-v172 quick-guide-note-v2161">Review final game results and skins details after play.</div>' +
           '</div>' +
         '</div>' +
         '<div class="quick-guide-progress-v2050" aria-hidden="true">' +
