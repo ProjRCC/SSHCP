@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.95-P6M3QX | BUILD KEY: 22.96-R8K4VN -->
+<!-- SSHCP | BASE KEY: 22.96-R8K4VN | BUILD KEY: 22.97-N6Q4RM -->
+<!-- SSHCP V22.97 TIPS CURTAIN GATE + 350 PPI GEEK PDF - exact V22.96 donor.
+     Changes only Scorecard / live-Leaderboard contextual Tips & Tricks reveal sequencing and the frontend-rendered GEEK PDF raster resolution. When an enabled unseen Scorecard or live-Leaderboard tip is due, the existing Tips card opens over the still-opaque white destination curtain before automatic positioning. Pressing OK starts the Tips overlay's 0.10s fade, the existing Scorecard/Leaderboard 0.30s white-curtain fade, and releases destination positioning together; a held Leaderboard authorized-team auto-scroll starts immediately on this gated path instead of waiting its normal 1.5s delay. If no applicable tip is due, V22.96 Scorecard/Leaderboard sequencing remains unchanged. GEEK PDF rendering increases from 200 PPI to 350 PPI for all existing paper choices while preserving the accepted one-page geometry, fitting rules, JPEG 0.96 capture, selector, filenames, status flow, and CF3.30 geekPrintData path. Scoring, GEEK calculations, filters, ALL TEAMS, Leaderboard/Summary/tiebreak, SKINS, GAME, authorization, Control Center, event config and Worker/API remain unchanged. HOME label advances to V22.97. -->
 <!-- SSHCP V22.96 GEEK TEAM HEADER 60% - exact V22.95 donor.
      Changes only frontend-rendered GEEK PDF team-name typography: each team name now targets 60%
      of the existing header-row height instead of 50%, shrinking independently only when its own
@@ -13016,10 +13018,10 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
   background:rgba(199,199,199,.90)!important;
   -webkit-backdrop-filter:blur(6px)!important;
   backdrop-filter:blur(6px)!important;
-  transition:opacity .30s ease, visibility 0s linear .30s!important;
+  transition:opacity .10s ease, visibility 0s linear .10s!important;
 }
 .tips-overlay-v2154.open-v2154{
-  transition:opacity .30s ease, visibility 0s linear 0s!important;
+  transition:opacity .10s ease, visibility 0s linear 0s!important;
 }
 </style>
 
@@ -14296,7 +14298,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.96</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.97</span></span>
         </button>
         <script>
           (function () {
@@ -15806,6 +15808,11 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
     let leaderboardAutoScrollTimer =
       null;
+
+    /* V22.97 — contextual Tips may temporarily hold the initial authorized-team
+       placement while the white destination curtain stays opaque. */
+    let leaderboardAutoScrollHoldV2297 = false;
+    let leaderboardAutoScrollPendingV2297 = false;
 
     let leaderboardRefreshTimerV57 =
       null;
@@ -21476,8 +21483,9 @@ let scoreTimingDetail =
     const SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215 = 'sshcpScrambleCompleteSeenV2215';
     let activeTipsIdV2154 = '';
     let pendingAfterTipsActionV2155 = null;
+    let tipsCloseStartActionV2297 = null;
     let tipsCloseTimerV2162 = null;
-    const TIPS_POPUP_FADE_MS_V2162 = 300;
+    const TIPS_POPUP_FADE_MS_V2162 = 100;
 
     function showTipsAfterSettledV2155(tipId) {
       window.setTimeout(() => {
@@ -21819,6 +21827,16 @@ let scoreTimingDetail =
         overlay.classList.remove('open-v2154');
         overlay.setAttribute('aria-hidden', 'true');
       }
+
+      /* V22.97 — this hook fires at fade START, not after the 0.10s Tips fade.
+         Scorecard/Leaderboard use it to begin their existing white-curtain
+         reveal and initial positioning underneath the fading Tips surface. */
+      const closeStartV2297 = tipsCloseStartActionV2297;
+      tipsCloseStartActionV2297 = null;
+      if (typeof closeStartV2297 === 'function') {
+        try { closeStartV2297(); } catch (_) {}
+      }
+
       const afterCloseV2155 = pendingAfterTipsActionV2155;
       pendingAfterTipsActionV2155 = null;
       if (tipsCloseTimerV2162) window.clearTimeout(tipsCloseTimerV2162);
@@ -22375,6 +22393,8 @@ let scoreTimingDetail =
          while the immediate fresh read is in flight. After the fresh rows are
          rendered, the long-standing authorized-team rule-based auto-position
          is scheduled. Scramble Summary remains manual/no-auto-scroll. */
+      leaderboardAutoScrollHoldV2297 = false;
+      leaderboardAutoScrollPendingV2297 = false;
       cancelLeaderboardAutoScroll();
       if (els.leaderContent) {
         els.leaderContent.scrollTop = 0;
@@ -22521,11 +22541,32 @@ let scoreTimingDetail =
           els.scoreScroll.scrollTop = 0;
         }
 
-        const scorecardRevealDoneV179 = revealDataShieldAfterLayoutV177(
-          'scorecard',
-          scorecardRevealShieldV177,
-          2
-        );
+        /* V22.97 — if the Scorecard contextual tip is due, show it while the
+           existing white destination curtain is still fully opaque. The normal
+           reveal is held until OK. At OK, the 0.10s Tips fade and 0.30s white
+           curtain fade start together; loadScorecard() is released immediately
+           so the established NESR/beauty positioning can begin underneath. */
+        const scorecardTipGateV2297 = maybeShowTipsV2154('scorecard');
+        let scorecardTipReleaseStartV2297 = null;
+        let scorecardRevealDoneV179 = null;
+
+        if (scorecardTipGateV2297) {
+          scorecardTipReleaseStartV2297 = new Promise(resolveV2297 => {
+            tipsCloseStartActionV2297 = () => {
+              scorecardRevealDoneV179 = revealDataShieldV177(
+                'scorecard',
+                scorecardRevealShieldV177
+              );
+              resolveV2297();
+            };
+          });
+        } else {
+          scorecardRevealDoneV179 = revealDataShieldAfterLayoutV177(
+            'scorecard',
+            scorecardRevealShieldV177,
+            2
+          );
+        }
 
         const renderedAt =
           timerStart();
@@ -22568,10 +22609,15 @@ let scoreTimingDetail =
           );
         }
 
-        /* V17.9 sequencing retained in V17.11: showScorecard() performs its active-hole positioning only
-           after loadScorecard() returns. V20.73 holds that return until the .8s white
-           reveal is completely finished, so reveal and scroll never overlap. */
-        await scorecardRevealDoneV179;
+        /* V22.97: without a contextual tip, preserve the established contract
+           exactly and wait for the white reveal to finish before positioning.
+           With the tip gate, wait only for OK/reveal START so positioning becomes
+           visible through the same 0.30s curtain fade the golfer just released. */
+        if (scorecardTipGateV2297) {
+          await scorecardTipReleaseStartV2297;
+        } else {
+          await scorecardRevealDoneV179;
+        }
 
       }
       catch (error) {
@@ -25850,15 +25896,45 @@ let scoreTimingDetail =
         updateTournamentFinishState(
           rows
         );
+
+        /* V22.97 — LIVE Leaderboard Tips appear over the still-opaque white
+           destination curtain before render-triggered authorized-team placement.
+           A completed tournament keeps its existing SCRAMBLE COMPLETE path. */
+        const leaderboardTipGateV2297 = !tournamentIsComplete(rows) &&
+          maybeShowTipsV2154('leaderboard-live');
+        let leaderboardTipReleaseStartV2297 = null;
+        let leaderboardRevealDoneV179 = null;
+
+        if (leaderboardTipGateV2297) {
+          leaderboardAutoScrollHoldV2297 = true;
+          leaderboardAutoScrollPendingV2297 = false;
+          leaderboardTipReleaseStartV2297 = new Promise(resolveV2297 => {
+            tipsCloseStartActionV2297 = () => {
+              leaderboardRevealDoneV179 = revealDataShieldV177(
+                'leaderboard',
+                leaderboardRevealShieldV177
+              );
+              const runHeldAutoScrollV2297 = leaderboardAutoScrollPendingV2297;
+              leaderboardAutoScrollHoldV2297 = false;
+              leaderboardAutoScrollPendingV2297 = false;
+              if (runHeldAutoScrollV2297) scheduleLeaderboardAutoScroll(0);
+              resolveV2297();
+            };
+          });
+        }
+
         renderLeaderboard(
           rows,
           false
         );
-        const leaderboardRevealDoneV179 = revealDataShieldAfterLayoutV177(
-          'leaderboard',
-          leaderboardRevealShieldV177,
-          2
-        );
+
+        if (!leaderboardTipGateV2297) {
+          leaderboardRevealDoneV179 = revealDataShieldAfterLayoutV177(
+            'leaderboard',
+            leaderboardRevealShieldV177,
+            2
+          );
+        }
         saveLeaderboardSnapshotV53();
 
         const renderedAt =
@@ -25901,14 +25977,21 @@ let scoreTimingDetail =
 
         if (!silentV182) completeLoadingLine();
 
-        /* V19.30 — reveal completes with no automatic leaderboard positioning.
-           Authorized-team highlighting remains intact; the golfer controls scroll. */
-        await leaderboardRevealDoneV179;
-        await waitForLeaderboardSettledV2155();
-        if (tournamentIsComplete(rows)) {
-          maybeShowScrambleCompleteV2215();
+        /* V22.97 — a gated LIVE tip already owns the opaque curtain. OK starts
+           the Tips fade, white-curtain fade, and held authorized-team scroll
+           together. No post-scroll settling wait or duplicate tip is needed.
+           When no tip is due, preserve the exact V22.96 reveal/settle path. */
+        if (leaderboardTipGateV2297) {
+          await leaderboardTipReleaseStartV2297;
+          if (leaderboardRevealDoneV179) await leaderboardRevealDoneV179;
         } else {
-          showTipsAfterSettledV2155('leaderboard-live');
+          await leaderboardRevealDoneV179;
+          await waitForLeaderboardSettledV2155();
+          if (tournamentIsComplete(rows)) {
+            maybeShowScrambleCompleteV2215();
+          } else {
+            showTipsAfterSettledV2155('leaderboard-live');
+          }
         }
 
 
@@ -31491,7 +31574,7 @@ let scoreTimingDetail =
       } catch (_) {}
 
       const paper = geekPrintPaperGeometryV2287(paperV2281);
-      const ppi = 200;
+      const ppi = 350;
       const canvas = document.createElement('canvas');
       canvas.width = Math.round(paper.widthIn * ppi);
       canvas.height = Math.round(paper.heightIn * ppi);
@@ -34515,22 +34598,30 @@ let scoreTimingDetail =
       }
     }
 
-    function scheduleLeaderboardAutoScroll() {
+    function scheduleLeaderboardAutoScroll(delayMsV2297 = 1500) {
       cancelLeaderboardAutoScroll();
 
       if (
         currentView !== 'leaderboard' ||
         !els.leaderContent
       ) {
+        leaderboardAutoScrollPendingV2297 = false;
         return;
       }
 
       const authorized = getAuthorizedTeam();
 
       if (!authorized) {
+        leaderboardAutoScrollPendingV2297 = false;
         return;
       }
 
+      if (leaderboardAutoScrollHoldV2297) {
+        leaderboardAutoScrollPendingV2297 = true;
+        return;
+      }
+
+      leaderboardAutoScrollPendingV2297 = false;
       const targetName = normalizeName(authorized);
 
       leaderboardAutoScrollTimer = setTimeout(
@@ -34643,7 +34734,7 @@ let scoreTimingDetail =
             behavior: 'smooth'
           });
         },
-        1500
+        Math.max(0, Number.isFinite(Number(delayMsV2297)) ? Number(delayMsV2297) : 1500)
       );
     }
 
