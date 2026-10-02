@@ -1,6 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.96-R8K4VN | BUILD KEY: 22.97-N6Q4RM -->
-<!-- SSHCP V22.97 TIPS CURTAIN GATE + 350 PPI GEEK PDF - exact V22.96 donor.
-     Changes only Scorecard / live-Leaderboard contextual Tips & Tricks reveal sequencing and the frontend-rendered GEEK PDF raster resolution. When an enabled unseen Scorecard or live-Leaderboard tip is due, the existing Tips card opens over the still-opaque white destination curtain before automatic positioning. Pressing OK starts the Tips overlay's 0.10s fade, the existing Scorecard/Leaderboard 0.30s white-curtain fade, and releases destination positioning together; a held Leaderboard authorized-team auto-scroll starts immediately on this gated path instead of waiting its normal 1.5s delay. If no applicable tip is due, V22.96 Scorecard/Leaderboard sequencing remains unchanged. GEEK PDF rendering increases from 200 PPI to 350 PPI for all existing paper choices while preserving the accepted one-page geometry, fitting rules, JPEG 0.96 capture, selector, filenames, status flow, and CF3.30 geekPrintData path. Scoring, GEEK calculations, filters, ALL TEAMS, Leaderboard/Summary/tiebreak, SKINS, GAME, authorization, Control Center, event config and Worker/API remain unchanged. HOME label advances to V22.97. -->
+<!-- SSHCP | BASE KEY: 22.97-N6Q4RM | BUILD KEY: 22.98-H7M4QX -->
+<!-- SSHCP V22.98 AFTER-PLAY TIPS CURTAIN GATE - exact V22.97 donor.
+     Extends V22.97's approved Tips/curtain sequencing to the two after-play surfaces seen in testing. The first SCRAMBLE COMPLETE card on FINAL RESULTS now opens over the still-opaque Leaderboard white curtain; its close start releases the existing 0.30s Leaderboard curtain fade and any held authorized-team auto-positioning while the card itself keeps the approved 0.10s fade. SCRAMBLE SUMMARY's enabled unseen contextual tip now opens over its still-opaque after-play white curtain as soon as the fresh completed-round rows are available; Summary continues building underneath, and when the tip closes the curtain begins its existing 0.30s reveal as soon as Summary is ready. If either card is not due, V22.97 behavior is preserved. Scorecard/live-Leaderboard gating, 350 PPI GEEK PDF rendering, GEEK/Summary/Leaderboard calculations, tiebreak, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V22.98. -->
 <!-- SSHCP V22.96 GEEK TEAM HEADER 60% - exact V22.95 donor.
      Changes only frontend-rendered GEEK PDF team-name typography: each team name now targets 60%
      of the existing header-row height instead of 50%, shrinking independently only when its own
@@ -14298,7 +14298,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.97</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.98</span></span>
         </button>
         <script>
           (function () {
@@ -25897,28 +25897,31 @@ let scoreTimingDetail =
           rows
         );
 
-        /* V22.97 — LIVE Leaderboard Tips appear over the still-opaque white
-           destination curtain before render-triggered authorized-team placement.
-           A completed tournament keeps its existing SCRAMBLE COMPLETE path. */
-        const leaderboardTipGateV2297 = !tournamentIsComplete(rows) &&
-          maybeShowTipsV2154('leaderboard-live');
-        let leaderboardTipReleaseStartV2297 = null;
+        /* V22.98 — use the same opaque-curtain gate for both Leaderboard entry
+           states. LIVE keeps V22.97's contextual tip. On completed play, the
+           established first SCRAMBLE COMPLETE card is now mounted over the same
+           still-opaque white curtain before render-triggered team placement. */
+        const leaderboardCompleteV2298 = tournamentIsComplete(rows);
+        const leaderboardTipGateV2298 = leaderboardCompleteV2298
+          ? maybeShowScrambleCompleteV2215()
+          : maybeShowTipsV2154('leaderboard-live');
+        let leaderboardTipReleaseStartV2298 = null;
         let leaderboardRevealDoneV179 = null;
 
-        if (leaderboardTipGateV2297) {
+        if (leaderboardTipGateV2298) {
           leaderboardAutoScrollHoldV2297 = true;
           leaderboardAutoScrollPendingV2297 = false;
-          leaderboardTipReleaseStartV2297 = new Promise(resolveV2297 => {
+          leaderboardTipReleaseStartV2298 = new Promise(resolveV2298 => {
             tipsCloseStartActionV2297 = () => {
               leaderboardRevealDoneV179 = revealDataShieldV177(
                 'leaderboard',
                 leaderboardRevealShieldV177
               );
-              const runHeldAutoScrollV2297 = leaderboardAutoScrollPendingV2297;
+              const runHeldAutoScrollV2298 = leaderboardAutoScrollPendingV2297;
               leaderboardAutoScrollHoldV2297 = false;
               leaderboardAutoScrollPendingV2297 = false;
-              if (runHeldAutoScrollV2297) scheduleLeaderboardAutoScroll(0);
-              resolveV2297();
+              if (runHeldAutoScrollV2298) scheduleLeaderboardAutoScroll(0);
+              resolveV2298();
             };
           });
         }
@@ -25928,7 +25931,7 @@ let scoreTimingDetail =
           false
         );
 
-        if (!leaderboardTipGateV2297) {
+        if (!leaderboardTipGateV2298) {
           leaderboardRevealDoneV179 = revealDataShieldAfterLayoutV177(
             'leaderboard',
             leaderboardRevealShieldV177,
@@ -25977,17 +25980,17 @@ let scoreTimingDetail =
 
         if (!silentV182) completeLoadingLine();
 
-        /* V22.97 — a gated LIVE tip already owns the opaque curtain. OK starts
-           the Tips fade, white-curtain fade, and held authorized-team scroll
-           together. No post-scroll settling wait or duplicate tip is needed.
-           When no tip is due, preserve the exact V22.96 reveal/settle path. */
-        if (leaderboardTipGateV2297) {
-          await leaderboardTipReleaseStartV2297;
+        /* V22.98 — either gated Leaderboard card now owns the opaque curtain.
+           Its close START launches the 0.10s card fade, the existing 0.30s white
+           reveal and any held authorized-team scroll together. If no card is due,
+           preserve V22.97's normal reveal/settle behavior exactly. */
+        if (leaderboardTipGateV2298) {
+          await leaderboardTipReleaseStartV2298;
           if (leaderboardRevealDoneV179) await leaderboardRevealDoneV179;
         } else {
           await leaderboardRevealDoneV179;
           await waitForLeaderboardSettledV2155();
-          if (tournamentIsComplete(rows)) {
+          if (leaderboardCompleteV2298) {
             maybeShowScrambleCompleteV2215();
           } else {
             showTipsAfterSettledV2155('leaderboard-live');
@@ -33126,8 +33129,6 @@ let scoreTimingDetail =
          post-rotation viewport correction can become visible. */
       const summaryCurtainV2086 = beginAfterPlayCurtainV2086('after-play-summary-v2086');
       await refreshTournamentSummaryRowsV2236();
-      await waitForTournamentSummaryViewportStableV2236();
-      syncSharedGeometryV187();
 
       if (!tournamentIsComplete(lastLeaderboardRows)) {
         closeModal();
@@ -33138,6 +33139,22 @@ let scoreTimingDetail =
         );
         return;
       }
+
+      /* V22.98 — once the fresh completed-round rows are known, mount an unseen
+         enabled Summary tip immediately over the still-opaque after-play curtain.
+         Summary may continue fitting underneath. If OK is pressed before the
+         Summary is fully ready, remember that release and start the white reveal
+         at the first safe ready point instead of exposing an unfinished layout. */
+      const summaryTipGateV2298 = maybeShowTipsV2154('summary');
+      let summaryTipReleasedV2298 = false;
+      if (summaryTipGateV2298) {
+        tipsCloseStartActionV2297 = () => {
+          summaryTipReleasedV2298 = true;
+        };
+      }
+
+      await waitForTournamentSummaryViewportStableV2236();
+      syncSharedGeometryV187();
 
       /* V22.67 — viewing Summary is the other after-play reveal point. The
          existing fresh Summary read has already updated lastLeaderboardRows,
@@ -33295,14 +33312,36 @@ let scoreTimingDetail =
 
       requestAnimationFrame(() => captureTournamentSummaryAuditV189());
       await settleTournamentSummaryBeforeRevealV2236();
-      Promise.resolve(revealAfterPlayCurtainV2086(
-        'after-play-summary-v2086',
-        summaryCurtainV2086,
-        2
-      )).then(() => {
+
+      const startSummaryRevealV2298 = () => {
         scheduleSummaryFitV2233();
-        return showTipsAfterSettledV2155('summary');
-      });
+        return revealAfterPlayCurtainV2086(
+          'after-play-summary-v2086',
+          summaryCurtainV2086,
+          2
+        );
+      };
+
+      if (summaryTipGateV2298) {
+        const tipsOverlayV2298 = document.getElementById('tipsOverlayV2154');
+        const summaryTipStillOpenV2298 = Boolean(
+          tipsOverlayV2298 &&
+          tipsOverlayV2298.classList.contains('open-v2154') &&
+          activeTipsIdV2154 === 'summary'
+        );
+
+        if (summaryTipReleasedV2298 || !summaryTipStillOpenV2298) {
+          Promise.resolve(startSummaryRevealV2298()).then(scheduleSummaryFitV2233);
+        } else {
+          tipsCloseStartActionV2297 = () => {
+            summaryTipReleasedV2298 = true;
+            Promise.resolve(startSummaryRevealV2298()).then(scheduleSummaryFitV2233);
+          };
+        }
+      } else {
+        Promise.resolve(startSummaryRevealV2298()).then(scheduleSummaryFitV2233);
+      }
+
       void recordScrambleSummaryViewedV2141();
     }
 
