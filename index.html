@@ -1,4 +1,11 @@
-<!-- SSHCP | BASE KEY: 22.94-N7Q4VL | BUILD KEY: 22.95-P6M3QX -->
+<!-- SSHCP | BASE KEY: 22.95-P6M3QX | BUILD KEY: 22.96-R8K4VN -->
+<!-- SSHCP V22.96 GEEK TEAM HEADER 60% - exact V22.95 donor.
+     Changes only frontend-rendered GEEK PDF team-name typography: each team name now targets 60%
+     of the existing header-row height instead of 50%, shrinking independently only when its own
+     cell width requires it. Main result values remain one shared 70% target; STAT labels remain
+     60%; hole/detail/scope text remains 60%. Geometry, borders, true glyph centering, category
+     bands, SHORT/LONG definitions, scoring, GEEK calculations, filters, PDF-size choices and
+     CF3.30 remain unchanged. -->
 <!-- SSHCP V22.95 GEEK RESULT 70% + DETAIL 60% - exact V22.94 donor.
      Keeps V22.94 geometry, true glyph centering, STAT>=team width floor, SHORT/LONG definitions,
      category bands and all app behavior unchanged. All MAIN GEEK result values still use one single
@@ -14289,7 +14296,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.95</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.96</span></span>
         </button>
         <script>
           (function () {
@@ -31557,12 +31564,12 @@ let scoreTimingDetail =
         700
       );
 
-      // Team names remain capped at 50%; team detail evidence now targets 60% row height.
+      // Team names now target 60%; team detail evidence remains at 60% row height.
       const teamNameSizes = teams.map(team =>
         geekPrintFitIndependentPxV2287(
           ctx,
           team && team.name,
-          headerH * 0.50,
+          headerH * 0.60,
           teamW,
           700,
           true
