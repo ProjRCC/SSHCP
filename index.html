@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 22.98-H7M4QX | BUILD KEY: 22.99-Q8M4RV -->
+<!-- SSHCP | BASE KEY: 22.99-Q8M4RV | BUILD KEY: 23.0-M7Q4RX -->
+<!-- SSHCP V23.0 SCRAMBLE COMPLETE -> AFTER-PLAY CURTAIN HANDOFF - exact V22.99 donor.
+     Fixes only the first-completion SCRAMBLE COMPLETE action handoff. When its SCRAMBLE SUMMARY / TIE BREAK action is pressed, the destination after-play path now starts synchronously before the held FINAL RESULTS white curtain is released. That mounts the destination white curtain underneath first, so the completion card can fade 0.10s and the existing Leaderboard curtain can fade 0.30s white-to-white without briefly exposing FINAL RESULTS before Summary/Tie Break. OK-without-navigation keeps the existing completed-Leaderboard release behavior. Quick Guide-only help, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak calculations, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.0. -->
 <!-- SSHCP V22.99 QUICK GUIDE ONLY / TIPS & TRICKS REMOVAL - exact V22.98 donor.
      Removes the player-facing Tips & Tricks system entirely: no Welcome toggle, no Quick Guide toggle, and no contextual HOME / SCORECARD / LIVE LEADERBOARD / SCRAMBLE SUMMARY / GEEK popups. Scorecard, live Leaderboard, Summary and GEEK return to their normal established curtain/reveal sequencing with no Tips gate. The separate first SCRAMBLE COMPLETE completion card is retained because it is tournament-state navigation, not a Tips & Tricks prompt; its V22.98 completed-Leaderboard curtain behavior remains unchanged. Quick Guide content itself remains intact and becomes the single player-help surface. 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V22.99. -->
 <!-- SSHCP V22.98 AFTER-PLAY TIPS CURTAIN GATE - exact V22.97 donor.
@@ -14295,7 +14297,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V22.99</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.0</span></span>
         </button>
         <script>
           (function () {
@@ -21557,19 +21559,28 @@ let scoreTimingDetail =
         overlay.setAttribute('aria-hidden', 'true');
       }
 
+      /* V23.0 — destination first, held Leaderboard curtain second.
+         SCRAMBLE SUMMARY / TIE BREAK synchronously mounts its own after-play
+         white curtain before FINAL RESULTS is allowed to reveal. The existing
+         completion-card 0.10s fade and Leaderboard 0.30s fade therefore hand
+         off white-to-white instead of exposing FINAL RESULTS between surfaces.
+         Plain OK has no destination action and keeps the established release. */
+      const afterCloseV2299 = pendingAfterScrambleCompleteActionV2299;
+      pendingAfterScrambleCompleteActionV2299 = null;
+      if (typeof afterCloseV2299 === 'function') {
+        try { afterCloseV2299(); } catch (_) {}
+      }
+
       const closeStartV2299 = scrambleCompleteCloseStartActionV2299;
       scrambleCompleteCloseStartActionV2299 = null;
       if (typeof closeStartV2299 === 'function') {
         try { closeStartV2299(); } catch (_) {}
       }
 
-      const afterCloseV2299 = pendingAfterScrambleCompleteActionV2299;
-      pendingAfterScrambleCompleteActionV2299 = null;
       if (scrambleCompleteCloseTimerV2299) window.clearTimeout(scrambleCompleteCloseTimerV2299);
       scrambleCompleteCloseTimerV2299 = window.setTimeout(() => {
         scrambleCompleteCloseTimerV2299 = null;
         if (overlay) overlay.classList.remove('tips-short-v2163', 'tips-home-v2165', 'tips-scramble-complete-v2215');
-        if (typeof afterCloseV2299 === 'function') afterCloseV2299();
       }, SCRAMBLE_COMPLETE_FADE_MS_V2299);
     }
 
