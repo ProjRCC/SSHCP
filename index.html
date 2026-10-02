@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.1-P8M4QV | BUILD KEY: 23.2-T7M4QX -->
+<!-- SSHCP | BASE KEY: 23.2-T7M4QX | BUILD KEY: 23.3-N8Q4RM -->
+<!-- SSHCP V23.3 SCORECARD-FIRST LOWER-HALF GEOMETRY - exact V23.2 donor.
+     Presentation-only lower-shell refinement. The Scorecard now derives its nine-row viewport from the actual current lower-shell slot between the completed Scorecard top stack and the anchored footer, rather than reusing the score-scroll element's prior measured height. Exactly nine equal whole-pixel rows remain visible; they consume the maximum usable slot without exposing a partial tenth row, and only the unavoidable whole-row remainder plus the scaled footer-gap baseline remains as variable buffer. The resulting actual Scorecard buffer remains the <=8-team Leaderboard comparison target, while Leaderboard team-count/scroll behavior stays dynamic and otherwise unchanged. The compact footer-gap reference now follows the existing global viewport/device multiplier instead of enforcing an absolute 7px floor; geometry chooser tolerance is proportional to that scaled target. V23.2 leaderboard radius-inset title/result bar, V23.1 GUIDE/Quick Guide, V23.0 completion-to-Summary handoff, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.3. -->
 <!-- SSHCP V23.2 LOWER-SHELL COMPACTION + LEADER BAR RADIUS INSET - exact V23.1 donor.
      Presentation-only experiment. Scorecard and Leaderboard retain their established upper geometry and fixed bottom-button anchors. The preferred table-to-footer buffer is reduced from the old 12px baseline to a compact 7px baseline, with a hard 7px minimum in the whole-row geometry chooser; equal row heights remain mandatory, and <=8-team Leaderboard geometry still anchors to the Scorecard actual remainder so the lower half stays visually consistent while leftover pixels remain in the variable buffer. The LIVE LEADERBOARD progress bar and completed FINAL RESULTS bar are inset 9px from each side, matching the leaderboard table's 9px top-corner radius tangent points. V23.1 GUIDE/Quick Guide copy, V23.0 completion-to-Summary handoff, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.2. -->
 <!-- SSHCP V23.1 GUIDE LABEL + QUICK GUIDE COPY - exact V23.0 donor.
@@ -536,8 +538,8 @@
               '--v16-nav-context-gap': v188RoundY(8.16),
               '--v16-context-h': v188RoundY(40),
               '--v16-context-table-gap': v188RoundY(8.16),
-              '--v16-score-table-footer-gap': Math.max(7, v188RoundY(7)),
-              '--v16-leader-table-footer-gap': Math.max(7, v188RoundY(7)),
+              '--v16-score-table-footer-gap': v188RoundY(7),
+              '--v16-leader-table-footer-gap': v188RoundY(7),
               '--v16-footer-h': v188RoundY(50),
               '--v16-bottom-gap': v188RoundY(12.24),
               '--v16-internal-gap': v16Px(28)
@@ -548,8 +550,8 @@
               ((bootV16Vars['--v16-internal-gap'] * 2) / 3);
           } else {
             bootV16Vars['--v16-footer-h'] = v188RoundY(50);
-            bootV16Vars['--v16-score-table-footer-gap'] = Math.max(7, v188RoundY(7));
-            bootV16Vars['--v16-leader-table-footer-gap'] = Math.max(7, v188RoundY(7));
+            bootV16Vars['--v16-score-table-footer-gap'] = v188RoundY(7);
+            bootV16Vars['--v16-leader-table-footer-gap'] = v188RoundY(7);
           }
 
           /* V19.0: Leaderboard footer uses the exact same 8px internal gap as
@@ -14319,7 +14321,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.2</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.3</span></span>
         </button>
         <script>
           (function () {
@@ -23533,7 +23535,7 @@ let scoreTimingDetail =
       const count = Math.max(1, Math.floor(Number(rowCount) || 1));
       const available = Math.max(count, Math.round(Number(availableDataPixels) || count));
       const target = Math.max(0, Number(targetGap) || 0);
-      const minimumGap = Math.min(target, 7);
+      const minimumGap = Math.max(0, target * 0.80);
       const upRowsHeight = Math.ceil(available / count) * count;
       const upGap = target + available - upRowsHeight;
       let rowsHeight;
@@ -23557,7 +23559,7 @@ let scoreTimingDetail =
       const available = Math.max(count, Math.round(Number(availableDataPixels) || count));
       const target = Math.max(0, Number(targetGap) || 0);
       const anchor = Number.isFinite(Number(scoreGap)) ? Math.max(0, Number(scoreGap)) : target;
-      const minimumGap = Math.min(target, 7);
+      const minimumGap = Math.max(0, target * 0.80);
       const totalBudget = available + target;
       const ideal = (totalBudget - anchor) / count;
       const seeds = new Set();
@@ -23680,8 +23682,8 @@ let scoreTimingDetail =
         '--v16-nav-context-gap': py(8.16),
         '--v16-context-h': py(40),
         '--v16-context-table-gap': py(8.16),
-        '--v16-score-table-footer-gap': Math.max(7, py(7)),
-        '--v16-leader-table-footer-gap': Math.max(7, py(7)),
+        '--v16-score-table-footer-gap': py(7),
+        '--v16-leader-table-footer-gap': py(7),
         '--v16-footer-h': py(50),
         '--v16-bottom-gap': py(12.24),
         '--v16-internal-gap': px(28)
@@ -23805,33 +23807,42 @@ let scoreTimingDetail =
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
 
-      /* SSHCP V22.0 — Scorecard is the visual spacing anchor. Begin with the
-         preferred 12px×global-multiplier footer gap, then let the nine-row table
-         consume only enough of that buffer to reach the next clean whole-pixel
-         row size. If that would leave less than half the target gap, drop one
-         row-size step instead. Exactly nine equal rows remain visible. */
-      const scoreViewportHeightV2094 = Math.max(
-        9,
-        Math.round(els.scoreScroll.clientHeight || 0)
-      );
+      /* SSHCP V23.3 — Scorecard-first lower-half geometry. The Scorecard always
+         exposes exactly nine holes, so derive the row budget from the ACTUAL
+         current grid slot between the finished top stack and anchored footer.
+         Nine identical whole-pixel rows consume as much of that slot as possible
+         without exposing any part of row ten. Only the unavoidable division
+         remainder stays outside the scroll viewport; the footer keeps its normal
+         multiplier-scaled top padding. This makes the resulting visual buffer a
+         viewport-derived remainder rather than an absolute target. */
       const baseFooterGapV2094 = Math.max(
         0,
         Number(geometry.vars && geometry.vars['--v16-score-table-footer-gap']) || 0
       );
-      const scoreGeometryV220 = chooseEqualRowGeometryV220(
-        scoreViewportHeightV2094,
-        9,
-        baseFooterGapV2094
-      );
-      const rowHeight = scoreGeometryV220.rowHeight;
-      const rowsHeightV2094 = scoreGeometryV220.rowsHeight;
-      const scoreFooterGapV2103 = scoreGeometryV220.gap;
-      window.SSHCP_SCORE_FOOTER_GAP_V220 = scoreFooterGapV2103;
+      const flexibleScrollRectV233 = els.scoreScroll.getBoundingClientRect();
       const scoreScrollChromeV2094 = Math.max(
         0,
-        Math.round(els.scoreScroll.getBoundingClientRect().height - els.scoreScroll.clientHeight)
+        Math.round(flexibleScrollRectV233.height - els.scoreScroll.clientHeight)
       );
+      const topRectV233 = top.getBoundingClientRect();
+      const bottomRectV233 = bottom.getBoundingClientRect();
+      const scoreMiddleOuterBudgetV233 = Math.max(
+        9 + scoreScrollChromeV2094,
+        Math.round(bottomRectV233.top - topRectV233.bottom)
+      );
+      const scoreViewportHeightV2094 = Math.max(
+        9,
+        scoreMiddleOuterBudgetV233 - scoreScrollChromeV2094
+      );
+      const rowHeight = Math.max(1, Math.floor(scoreViewportHeightV2094 / 9));
+      const rowsHeightV2094 = rowHeight * 9;
       const scoreScrollOuterHeightV2094 = rowsHeightV2094 + scoreScrollChromeV2094;
+      const scoreShellRemainderV233 = Math.max(
+        0,
+        scoreMiddleOuterBudgetV233 - scoreScrollOuterHeightV2094
+      );
+      const scoreFooterGapV2103 = baseFooterGapV2094 + scoreShellRemainderV233;
+      window.SSHCP_SCORE_FOOTER_GAP_V220 = scoreFooterGapV2103;
 
       els.scoreScroll.style.setProperty('flex', '0 0 ' + scoreScrollOuterHeightV2094 + 'px', 'important');
       els.scoreScroll.style.setProperty('height', scoreScrollOuterHeightV2094 + 'px', 'important');
@@ -23839,7 +23850,7 @@ let scoreTimingDetail =
       els.scoreScroll.style.setProperty('max-height', scoreScrollOuterHeightV2094 + 'px', 'important');
       bottom.style.setProperty(
         'padding-top',
-        scoreFooterGapV2103 + 'px',
+        baseFooterGapV2094 + 'px',
         'important'
       );
 
