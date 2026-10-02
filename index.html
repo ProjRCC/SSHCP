@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.2-T7M4QX | BUILD KEY: 23.3-N8Q4RM -->
+<!-- SSHCP | BASE KEY: 23.3-N8Q4RM | BUILD KEY: 23.4-R7M4QK -->
+<!-- SSHCP V23.4 ITERATIVE LOWER-BUFFER MATCH - exact V23.3 donor.
+     Presentation-only lower-shell refinement. The Scorecard now measures its preferred lower buffer from the actual current visual gap between the bottom of its HOME button and the top of the Scorecard table. Seven CSS pixels is only the hard minimum, never the target. The nine Scorecard rows remain identical whole-pixel heights and choose the closest valid geometry to that viewport-derived reference; the resulting actual Scorecard buffer becomes the Leaderboard target. The Leaderboard then chooses the closest valid lower-buffer geometry for its current team count while preserving <=8 identical rows and the established 9+ eight-row scrolling viewport. If matching the Scorecard would force the Leaderboard below the 7px hard minimum, the next larger valid Leaderboard buffer is iteratively fed back as the Scorecard target for that same viewport/team-count combination. Upper-half geometry, fixed bottom-button anchors, V23.2 radius-inset LIVE/FINAL bar, V23.1 GUIDE/Quick Guide, V23.0 completion-to-Summary handoff, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.4. -->
 <!-- SSHCP V23.3 SCORECARD-FIRST LOWER-HALF GEOMETRY - exact V23.2 donor.
      Presentation-only lower-shell refinement. The Scorecard now derives its nine-row viewport from the actual current lower-shell slot between the completed Scorecard top stack and the anchored footer, rather than reusing the score-scroll element's prior measured height. Exactly nine equal whole-pixel rows remain visible; they consume the maximum usable slot without exposing a partial tenth row, and only the unavoidable whole-row remainder plus the scaled footer-gap baseline remains as variable buffer. The resulting actual Scorecard buffer remains the <=8-team Leaderboard comparison target, while Leaderboard team-count/scroll behavior stays dynamic and otherwise unchanged. The compact footer-gap reference now follows the existing global viewport/device multiplier instead of enforcing an absolute 7px floor; geometry chooser tolerance is proportional to that scaled target. V23.2 leaderboard radius-inset title/result bar, V23.1 GUIDE/Quick Guide, V23.0 completion-to-Summary handoff, 350 PPI GEEK PDF rendering, scoring, Leaderboard/Summary/tiebreak logic, SKINS, GAME, authorization, Control Center, event config and CF3.30 remain unchanged. HOME label advances to V23.3. -->
 <!-- SSHCP V23.2 LOWER-SHELL COMPACTION + LEADER BAR RADIUS INSET - exact V23.1 donor.
@@ -14321,7 +14323,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.3</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.4</span></span>
         </button>
         <script>
           (function () {
@@ -23597,6 +23599,98 @@ let scoreTimingDetail =
       };
     }
 
+    function lowerShellViewportKeyV234(screen) {
+      const rect = screen && screen.getBoundingClientRect
+        ? screen.getBoundingClientRect()
+        : { width: window.innerWidth || 0, height: window.innerHeight || 0 };
+      return [
+        Math.round(Number(rect.width) || window.innerWidth || 0),
+        Math.round(Number(rect.height) || window.innerHeight || 0),
+        Math.round((Number(window.devicePixelRatio) || 1) * 100)
+      ].join('x');
+    }
+
+    /* SSHCP V23.4 — choose the equal whole-pixel row height whose resulting
+       TABLE -> BUTTON buffer is closest to the requested target, but never let
+       the actual visual buffer fall below seven CSS pixels. The target is a
+       preference, not a floor: a slightly smaller valid buffer is allowed when
+       it is the closer whole-row result. `minimumForced` identifies the one
+       case that feeds back iteratively: the unconstrained closest result would
+       have been under the 7px safety floor, so the next larger valid buffer had
+       to win instead. */
+    function chooseClosestFooterGapGeometryV234(
+      totalToButtonPixels,
+      rowCount,
+      chromePixels,
+      targetGap,
+      minimumGap = 7
+    ) {
+      const count = Math.max(1, Math.floor(Number(rowCount) || 1));
+      const chrome = Math.max(0, Number(chromePixels) || 0);
+      const minimum = Math.max(7, Number(minimumGap) || 7);
+      const total = Math.max(
+        chrome + count + minimum,
+        Number(totalToButtonPixels) || (chrome + count + minimum)
+      );
+      const target = Math.max(minimum, Number(targetGap) || minimum);
+      const ideal = Math.max(1, (total - chrome - target) / count);
+      const floorIdeal = Math.max(1, Math.floor(ideal));
+      const ceilIdeal = Math.max(1, Math.ceil(ideal));
+      const seeds = new Set([1]);
+      for (let delta = -4; delta <= 4; delta += 1) {
+        seeds.add(Math.max(1, floorIdeal + delta));
+        seeds.add(Math.max(1, ceilIdeal + delta));
+      }
+
+      const all = [...seeds].map(rowHeight => {
+        const rowsHeight = rowHeight * count;
+        const outerRowsHeight = rowsHeight + chrome;
+        const gap = total - outerRowsHeight;
+        return {
+          rowHeight,
+          rowsHeight,
+          outerRowsHeight,
+          gap,
+          distance: Math.abs(gap - target)
+        };
+      }).filter(item => item.outerRowsHeight <= total + 0.001);
+
+      const byClosest = (a, b) =>
+        (a.distance - b.distance) ||
+        (b.rowHeight - a.rowHeight);
+      const unconstrained = all.slice().sort(byClosest)[0] || null;
+      const valid = all
+        .filter(item => item.gap + 0.001 >= minimum)
+        .sort(byClosest);
+
+      let chosen = valid[0] || null;
+      if (!chosen) {
+        const rowHeight = 1;
+        const rowsHeight = count;
+        const outerRowsHeight = rowsHeight + chrome;
+        chosen = {
+          rowHeight,
+          rowsHeight,
+          outerRowsHeight,
+          gap: Math.max(minimum, total - outerRowsHeight),
+          distance: 0
+        };
+      }
+
+      return {
+        ...chosen,
+        totalToButton: total,
+        targetGap: target,
+        minimumGap: minimum,
+        unconstrainedGap: unconstrained ? unconstrained.gap : chosen.gap,
+        minimumForced: !!(
+          unconstrained &&
+          unconstrained.gap + 0.001 < minimum &&
+          chosen.gap > unconstrained.gap + 0.001
+        )
+      };
+    }
+
     function geekViewportUnitsV220(metricsValue) {
       const metrics = metricsValue || getVerticalMetricsV188();
       const effectiveHeight = Math.max(
@@ -23807,42 +23901,80 @@ let scoreTimingDetail =
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
 
-      /* SSHCP V23.3 — Scorecard-first lower-half geometry. The Scorecard always
-         exposes exactly nine holes, so derive the row budget from the ACTUAL
-         current grid slot between the finished top stack and anchored footer.
-         Nine identical whole-pixel rows consume as much of that slot as possible
-         without exposing any part of row ten. Only the unavoidable division
-         remainder stays outside the scroll viewport; the footer keeps its normal
-         multiplier-scaled top padding. This makes the resulting visual buffer a
-         viewport-derived remainder rather than an absolute target. */
+      /* SSHCP V23.4 — the Scorecard establishes the preferred lower buffer
+         from something already visually approved on THIS viewport: the actual
+         gap from the bottom of HOME to the top of the Scorecard table. Seven
+         pixels is only the hard safety minimum. The nine rows stay identical
+         whole CSS pixels; whichever adjacent row size lands closest to the
+         preferred buffer wins, provided the actual bottom buffer remains >=7.
+         A Leaderboard-only 7px constraint can feed a larger target back on the
+         next Scorecard pass for the same viewport/team count. */
       const baseFooterGapV2094 = Math.max(
         0,
         Number(geometry.vars && geometry.vars['--v16-score-table-footer-gap']) || 0
       );
-      const flexibleScrollRectV233 = els.scoreScroll.getBoundingClientRect();
+      const scoreHomeButtonV234 = els.scoreHomeButton;
+      const scoreActionButtonV234 = els.scoreLeaderboardButton;
+      const headerRectV234 = header.getBoundingClientRect();
+      const homeRectV234 = scoreHomeButtonV234
+        ? scoreHomeButtonV234.getBoundingClientRect()
+        : null;
+      const scrollRectV234 = els.scoreScroll.getBoundingClientRect();
+      const actionRectV234 = scoreActionButtonV234
+        ? scoreActionButtonV234.getBoundingClientRect()
+        : null;
       const scoreScrollChromeV2094 = Math.max(
         0,
-        Math.round(flexibleScrollRectV233.height - els.scoreScroll.clientHeight)
+        scrollRectV234.height - (els.scoreScroll.clientHeight || 0)
       );
-      const topRectV233 = top.getBoundingClientRect();
-      const bottomRectV233 = bottom.getBoundingClientRect();
-      const scoreMiddleOuterBudgetV233 = Math.max(
-        9 + scoreScrollChromeV2094,
-        Math.round(bottomRectV233.top - topRectV233.bottom)
+      const preferredTopGapV234 = Math.max(
+        7,
+        homeRectV234
+          ? (headerRectV234.top - homeRectV234.bottom)
+          : (Number(geometry.vars && geometry.vars['--v16-nav-context-gap']) || 7)
       );
-      const scoreViewportHeightV2094 = Math.max(
-        9,
-        scoreMiddleOuterBudgetV233 - scoreScrollChromeV2094
+      const scoreTotalToButtonV234 = Math.max(
+        scoreScrollChromeV2094 + 9 + 7,
+        actionRectV234
+          ? (actionRectV234.top - scrollRectV234.top)
+          : ((els.scoreScroll.clientHeight || 9) + baseFooterGapV2094)
       );
-      const rowHeight = Math.max(1, Math.floor(scoreViewportHeightV2094 / 9));
-      const rowsHeightV2094 = rowHeight * 9;
-      const scoreScrollOuterHeightV2094 = rowsHeightV2094 + scoreScrollChromeV2094;
-      const scoreShellRemainderV233 = Math.max(
+      const viewportKeyV234 = lowerShellViewportKeyV234(screen);
+      const currentLeaderCountV234 = Math.max(
         0,
-        scoreMiddleOuterBudgetV233 - scoreScrollOuterHeightV2094
+        els.leaderRows ? els.leaderRows.querySelectorAll('.leader-row').length : 0
       );
-      const scoreFooterGapV2103 = baseFooterGapV2094 + scoreShellRemainderV233;
+      const rebalanceV234 = window.SSHCP_SCORE_REBALANCE_V234;
+      const rebalanceMatchesV234 = !!(
+        rebalanceV234 &&
+        rebalanceV234.viewportKey === viewportKeyV234 &&
+        Number(rebalanceV234.teamCount || 0) === currentLeaderCountV234 &&
+        Number.isFinite(Number(rebalanceV234.gap))
+      );
+      const scoreTargetGapV234 = Math.max(
+        preferredTopGapV234,
+        rebalanceMatchesV234 ? Number(rebalanceV234.gap) : preferredTopGapV234
+      );
+      const scoreGeometryV234 = chooseClosestFooterGapGeometryV234(
+        scoreTotalToButtonV234,
+        9,
+        scoreScrollChromeV2094,
+        scoreTargetGapV234,
+        7
+      );
+      const rowHeight = scoreGeometryV234.rowHeight;
+      const rowsHeightV2094 = scoreGeometryV234.rowsHeight;
+      const scoreScrollOuterHeightV2094 = scoreGeometryV234.outerRowsHeight;
+      const scoreFooterGapV2103 = scoreGeometryV234.gap;
       window.SSHCP_SCORE_FOOTER_GAP_V220 = scoreFooterGapV2103;
+      window.SSHCP_SCORE_GEOMETRY_MODEL_V234 = {
+        viewportKey: viewportKeyV234,
+        teamCount: currentLeaderCountV234,
+        totalToButton: scoreTotalToButtonV234,
+        chrome: scoreScrollChromeV2094,
+        preferredTopGap: preferredTopGapV234,
+        actualGap: scoreFooterGapV2103
+      };
 
       els.scoreScroll.style.setProperty('flex', '0 0 ' + scoreScrollOuterHeightV2094 + 'px', 'important');
       els.scoreScroll.style.setProperty('height', scoreScrollOuterHeightV2094 + 'px', 'important');
@@ -23850,7 +23982,7 @@ let scoreTimingDetail =
       els.scoreScroll.style.setProperty('max-height', scoreScrollOuterHeightV2094 + 'px', 'important');
       bottom.style.setProperty(
         'padding-top',
-        baseFooterGapV2094 + 'px',
+        Math.min(baseFooterGapV2094, scoreFooterGapV2103) + 'px',
         'important'
       );
 
@@ -34218,57 +34350,126 @@ let scoreTimingDetail =
       els.leaderContent.style.setProperty('--v16-visible-row-count', String(rowCount));
 
       requestAnimationFrame(() => {
-        const actualViewportHeight = Math.max(rowCount, Math.round(els.leaderContent.clientHeight || 0));
-        let leaderRowPixelsV188;
-        let rowHeight;
-
         const baseFooterGapV2093 = Math.max(
           0,
           Number(geometry.vars && geometry.vars['--v16-leader-table-footer-gap']) || 0
         );
+        const leaderContentRectV234 = els.leaderContent.getBoundingClientRect();
+        const leaderActionButtonV234 = footer.querySelector('.access-scorecard, .leader-refresh-button');
+        const leaderActionRectV234 = leaderActionButtonV234
+          ? leaderActionButtonV234.getBoundingClientRect()
+          : null;
+        const contentChromeV2093 = Math.max(
+          0,
+          leaderContentRectV234.height - (els.leaderContent.clientHeight || 0)
+        );
+        const leaderTotalToButtonV234 = Math.max(
+          rowCount + contentChromeV2093 + 7,
+          leaderActionRectV234
+            ? (leaderActionRectV234.top - leaderContentRectV234.top)
+            : ((els.leaderContent.clientHeight || rowCount) + baseFooterGapV2093)
+        );
+        const scoreGapV220 = Number(window.SSHCP_SCORE_FOOTER_GAP_V220);
+        const leaderTargetGapV234 = Math.max(
+          7,
+          Number.isFinite(scoreGapV220) ? scoreGapV220 : baseFooterGapV2093
+        );
+        let leaderRowPixelsV188;
+        let rowHeight;
+        let leaderFooterGapV2103;
+        let contentOuterHeightV2093;
+        let leaderGeometryV234 = null;
 
         if (shortLeaderboardV2093) {
-          const scoreGapV220 = Number(window.SSHCP_SCORE_FOOTER_GAP_V220);
-          const leaderGeometryV220 = chooseLeaderboardRowGeometryV220(
-            actualViewportHeight,
+          leaderGeometryV234 = chooseClosestFooterGapGeometryV234(
+            leaderTotalToButtonV234,
             rowCount,
-            baseFooterGapV2093,
-            scoreGapV220
+            contentChromeV2093,
+            leaderTargetGapV234,
+            7
           );
-          rowHeight = leaderGeometryV220.rowHeight;
-          const rowsHeightV2093 = leaderGeometryV220.rowsHeight;
-          const leaderFooterGapV2103 = leaderGeometryV220.gap;
-          const contentChromeV2093 = Math.max(
-            0,
-            Math.round(els.leaderContent.getBoundingClientRect().height - els.leaderContent.clientHeight)
-          );
-          const contentOuterHeightV2093 = rowsHeightV2093 + contentChromeV2093;
 
+          /* If the closest whole-row Leaderboard geometry would have broken the
+             7px floor, use the next valid larger buffer and iteratively feed that
+             constraint back through the stored nine-row Scorecard model. This is
+             the only condition allowed to move the Scorecard away from its own
+             HOME->table reference gap. */
+          const scoreModelV234 = window.SSHCP_SCORE_GEOMETRY_MODEL_V234;
+          const viewportKeyV234 = lowerShellViewportKeyV234(screen);
+          const scoreModelMatchesV234 = !!(
+            scoreModelV234 &&
+            scoreModelV234.viewportKey === viewportKeyV234 &&
+            Number(scoreModelV234.teamCount || 0) === actualTeamCountV2093
+          );
+          if (leaderGeometryV234.minimumForced && scoreModelMatchesV234) {
+            let feedbackTargetV234 = leaderGeometryV234.gap;
+            let adjustedScoreV234 = null;
+            for (let passV234 = 0; passV234 < 5; passV234 += 1) {
+              adjustedScoreV234 = chooseClosestFooterGapGeometryV234(
+                scoreModelV234.totalToButton,
+                9,
+                scoreModelV234.chrome,
+                Math.max(scoreModelV234.preferredTopGap, feedbackTargetV234),
+                7
+              );
+              const nextLeaderV234 = chooseClosestFooterGapGeometryV234(
+                leaderTotalToButtonV234,
+                rowCount,
+                contentChromeV2093,
+                adjustedScoreV234.gap,
+                7
+              );
+              leaderGeometryV234 = nextLeaderV234;
+              if (!(nextLeaderV234.minimumForced && nextLeaderV234.gap > adjustedScoreV234.gap + 0.001)) break;
+              if (Math.abs(nextLeaderV234.gap - feedbackTargetV234) < 0.001) break;
+              feedbackTargetV234 = nextLeaderV234.gap;
+            }
+            if (adjustedScoreV234) {
+              window.SSHCP_SCORE_REBALANCE_V234 = {
+                viewportKey: viewportKeyV234,
+                teamCount: actualTeamCountV2093,
+                gap: adjustedScoreV234.gap
+              };
+            }
+          }
+
+          rowHeight = leaderGeometryV234.rowHeight;
+          leaderFooterGapV2103 = leaderGeometryV234.gap;
+          contentOuterHeightV2093 = leaderGeometryV234.outerRowsHeight;
           leaderRowPixelsV188 = Array(rowCount).fill(rowHeight);
-          window.SSHCP_LEADER_FOOTER_TARGET_GAP_V2103 = leaderFooterGapV2103;
-          window.SSHCP_LEADER_FOOTER_GAP_V220 = leaderFooterGapV2103;
-
-          /* V22.0: Scorecard and Leaderboard are adjacent screens, so the <=8
-             team table chooses the clean whole-row geometry closest to the
-             Scorecard's actual gap (±2px when the row multiple permits). */
-          els.leaderContent.style.setProperty('flex', '0 0 ' + contentOuterHeightV2093 + 'px', 'important');
-          els.leaderContent.style.setProperty('height', contentOuterHeightV2093 + 'px', 'important');
-          els.leaderContent.style.setProperty('min-height', contentOuterHeightV2093 + 'px', 'important');
-          els.leaderContent.style.setProperty('max-height', contentOuterHeightV2093 + 'px', 'important');
-          footer.style.setProperty(
-            'padding-top',
-            leaderFooterGapV2103 + 'px',
-            'important'
-          );
         }
         else {
-          /* 9+ behavior remains untouched; its established shell gap is the
-             Scorecard comparison target because the scrolling row distribution
-             is intentionally unchanged. */
-          window.SSHCP_LEADER_FOOTER_TARGET_GAP_V2103 = baseFooterGapV2093;
-          leaderRowPixelsV188 = distributeIntegerPixelsV188(actualViewportHeight, rowCount);
+          /* 9+ keeps the established eight-row scrolling viewport and its
+             distributed whole pixels. Only the viewport height changes so its
+             visual table->button buffer aims at the Scorecard's actual buffer. */
+          const desiredOuterV234 = Math.max(
+            rowCount + contentChromeV2093,
+            Math.floor(leaderTotalToButtonV234 - leaderTargetGapV234)
+          );
+          contentOuterHeightV2093 = Math.min(
+            leaderTotalToButtonV234 - 7,
+            desiredOuterV234
+          );
+          const dataViewportV234 = Math.max(
+            rowCount,
+            Math.round(contentOuterHeightV2093 - contentChromeV2093)
+          );
+          leaderRowPixelsV188 = distributeIntegerPixelsV188(dataViewportV234, rowCount);
           rowHeight = leaderRowPixelsV188.reduce((sum, value) => sum + value, 0) / rowCount;
+          leaderFooterGapV2103 = leaderTotalToButtonV234 - contentOuterHeightV2093;
         }
+
+        window.SSHCP_LEADER_FOOTER_TARGET_GAP_V2103 = leaderFooterGapV2103;
+        window.SSHCP_LEADER_FOOTER_GAP_V220 = leaderFooterGapV2103;
+        els.leaderContent.style.setProperty('flex', '0 0 ' + contentOuterHeightV2093 + 'px', 'important');
+        els.leaderContent.style.setProperty('height', contentOuterHeightV2093 + 'px', 'important');
+        els.leaderContent.style.setProperty('min-height', contentOuterHeightV2093 + 'px', 'important');
+        els.leaderContent.style.setProperty('max-height', contentOuterHeightV2093 + 'px', 'important');
+        footer.style.setProperty(
+          'padding-top',
+          Math.min(baseFooterGapV2093, leaderFooterGapV2103) + 'px',
+          'important'
+        );
 
         els.leaderRows.querySelectorAll('.leader-row').forEach((row, index) => {
           const exactHeight = leaderRowPixelsV188[index % rowCount];
