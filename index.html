@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.10-P7M4RX | BUILD KEY: 23.11-M8Q4VX -->
+<!-- SSHCP | BASE KEY: 23.11-M8Q4VX | BUILD KEY: 23.12-Q7M4VN -->
+<!-- SSHCP V23.12 GEEK DETAIL RETURN TITLE RESET - exact V23.11 donor.
+     Fixes one after-play state leak found by the V23.11 Screen Layout Log on iPad/Web: GEEK DETAIL uses the shared modal title node and fits it with inline !important typography, so returning to normal GEEK MODE could preserve the larger Detail title and push the GEEK table downward; GEEK FILTERS then inherited the same stale fit. renderGeekMainShellV180 now clears only the shared modal title fit properties (font-size, line-height, white-space, overflow, text-align) before normal GEEK MODE is rebuilt, allowing the existing GEEK MODE CSS to resume control. No GEEK data/stat logic, detail content, table geometry, filters, PDF, Scorecard/Leaderboard/Summary, GAME/SKINS, authorization, Screen Logger V4, Worker/API or CF3.30 behavior changes. HOME label advances to V23.12. -->
 <!-- SSHCP V23.11 SCREEN LOGGER V4 - exact V23.10 donor.
      Refines only the isolated opt-in SCREEN LAYOUT LOG. GAME MODE and standalone SKINS now use surface-specific representative typography samples tied to the same rendered rows/elements their existing fitters size, replacing the generic descendant sample that could report a default 16px instead of the visible fitted text. Authorization/confirmation popup measurements remain only coarse sanity diagnostics and are explicitly de-emphasized in the copied report. V23.10 stable-screen confirmation, SCRAMBLE SUMMARY inner-text sampling, START/COPY behavior, PWA/WEB scale reporting, lower-shell diagnostics, V23.8 MASTER correction, all application geometry, popup geometry, scoring, ranking/tiebreak, Summary rendering, GEEK/PDF, SKINS/GAME behavior, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.11. -->
 <!-- SSHCP V23.9 SCREEN LOGGER V2 - exact V23.8 donor.
@@ -14396,7 +14398,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.11</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.12</span></span>
         </button>
         <script>
           (function () {
@@ -32635,6 +32637,16 @@ let scoreTimingDetail =
       document.documentElement.classList.add('sshcp-geek-regular-v2230');
       els.modalOverlay.classList.add('geek-mode-v180');
       els.modalOverlay.classList.toggle('geek-early-v2068', geekEarlyAccessV2068);
+
+      /* V23.12 — GEEK DETAIL fits the shared modalTitle node with inline
+         !important typography. That node survives close/rebuild, so clear only
+         the fit-owned properties before normal GEEK MODE takes control again.
+         This also prevents GEEK FILTERS from inheriting a stale Detail title. */
+      if (els.modalTitle) {
+        ['font-size', 'line-height', 'white-space', 'overflow', 'text-align'].forEach(prop =>
+          els.modalTitle.style.removeProperty(prop)
+        );
+      }
       els.modalTitle.textContent = 'GEEK MODE';
       els.modalTitle.classList.remove('testing');
       els.modalInput.style.display = 'none';
