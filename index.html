@@ -1,6 +1,9 @@
-<!-- SSHCP | BASE KEY: 23.11-M8Q4VX | BUILD KEY: 23.12-Q7M4VN -->
-<!-- SSHCP V23.12 GEEK DETAIL RETURN TITLE RESET - exact V23.11 donor.
-     Fixes one after-play state leak found by the V23.11 Screen Layout Log on iPad/Web: GEEK DETAIL uses the shared modal title node and fits it with inline !important typography, so returning to normal GEEK MODE could preserve the larger Detail title and push the GEEK table downward; GEEK FILTERS then inherited the same stale fit. renderGeekMainShellV180 now clears only the shared modal title fit properties (font-size, line-height, white-space, overflow, text-align) before normal GEEK MODE is rebuilt, allowing the existing GEEK MODE CSS to resume control. No GEEK data/stat logic, detail content, table geometry, filters, PDF, Scorecard/Leaderboard/Summary, GAME/SKINS, authorization, Screen Logger V4, Worker/API or CF3.30 behavior changes. HOME label advances to V23.12. -->
+<!-- SSHCP | BASE KEY: 23.12-R6M4QX | BUILD KEY: 23.13-K7M4QV -->
+<!-- SSHCP V23.13 SCREEN LOGGER V5 - exact V23.12 donor.
+     Corrects only the opt-in SCREEN LAYOUT LOG for landscape GEEK. Landscape ALL TEAMS is a separate dedicated 98vw/98dvh surface layered above the still-mounted portrait GEEK modal; prior logger passes kept identifying the covered portrait modal as GEEK MODE and therefore reported its stale hidden table viewport as though it were the visible landscape table. The logger now detects visible ALL TEAMS first, reports its actual popup/scroll/table geometry, row/column tracks and representative fitted typography, and explicitly ignores the hidden portrait GEEK geometry while ALL TEAMS is active. GEEK/ALL TEAMS presentation and sizing code, orientation behavior, detail cards, Scorecard/Leaderboard/Summary/GAME/SKINS geometry, scoring, ranking/tiebreak, PDF flow, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.13. -->
+<!-- SSHCP | BASE KEY: 23.11-M8Q4VX | BUILD KEY: 23.12-R6M4QX -->
+<!-- SSHCP V23.12 GEEK MAIN TITLE STATE RESET - exact V23.11 donor.
+     Fixes one shared-modal title state leak found by the V23.11 app-wide layout audit: GEEK DETAIL fits the reused modal title with inline !important typography, and that fitted state could survive when rebuilding normal GEEK MODE / GEEK FILTERS, making the main GEEK title and table viewport change after returning from Detail. renderGeekMainShellV180 now clears only the inline typography properties written by shared title fitters before rebuilding the normal GEEK shell, so the main GEEK title always resolves from its own existing GEEK MODE rules regardless of the popup visited immediately before it. No Scorecard/Leaderboard/Summary/GAME/SKINS geometry, GEEK table math/detail content, PDF flow, scoring, ranking/tiebreak, Worker/API, logger behavior, or CF3.30 changes. HOME label advances to V23.12. -->
 <!-- SSHCP V23.11 SCREEN LOGGER V4 - exact V23.10 donor.
      Refines only the isolated opt-in SCREEN LAYOUT LOG. GAME MODE and standalone SKINS now use surface-specific representative typography samples tied to the same rendered rows/elements their existing fitters size, replacing the generic descendant sample that could report a default 16px instead of the visible fitted text. Authorization/confirmation popup measurements remain only coarse sanity diagnostics and are explicitly de-emphasized in the copied report. V23.10 stable-screen confirmation, SCRAMBLE SUMMARY inner-text sampling, START/COPY behavior, PWA/WEB scale reporting, lower-shell diagnostics, V23.8 MASTER correction, all application geometry, popup geometry, scoring, ranking/tiebreak, Summary rendering, GEEK/PDF, SKINS/GAME behavior, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.11. -->
 <!-- SSHCP V23.9 SCREEN LOGGER V2 - exact V23.8 donor.
@@ -14398,7 +14401,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.12</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.13</span></span>
         </button>
         <script>
           (function () {
@@ -17923,7 +17926,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V23.11 — OPT-IN SCREEN LAYOUT LOG V4
+       SSHCP V23.13 — OPT-IN SCREEN LAYOUT LOG V5
        Diagnostic/read-only. No function in this block writes application
        geometry. START enables observation for the current debug session;
        COPY stops and clears it after a successful clipboard copy.
@@ -18329,6 +18332,105 @@ let scoreTimingDetail =
       return { surface, lines, signatureParts: [actualGap, bodyRect && bodyRect.height, buttonRect && buttonRect.top, rows.length, complete] };
     }
 
+    function screenLayoutGeekAllTeamsVisibleV2313() {
+      const view = document.getElementById('geekAllTeamsViewV2216');
+      if (!view) return false;
+      if (!document.documentElement.classList.contains('sshcp-geek-all-teams-v2216')) return false;
+      if (view.getAttribute('aria-hidden') === 'true') return false;
+      return !!screenLayoutRectV238(view);
+    }
+
+    function screenLayoutGeekAllTeamsV2313() {
+      const view = document.getElementById('geekAllTeamsViewV2216');
+      const popup = view && view.querySelector('.geek-all-teams-popup-v2220');
+      const title = view && view.querySelector('.geek-all-teams-title-v2216');
+      const scroll = document.getElementById('geekAllTeamsScrollV2216');
+      const table = document.getElementById('geekAllTeamsTableV2216');
+      const headerRow = table && table.querySelector('.geek-all-teams-row-v2216.header-v2216');
+      const firstDataRow = table && table.querySelector('.geek-all-teams-row-v2216:not(.header-v2216)');
+      const titleRect = screenLayoutRectV238(title);
+      const viewRect = screenLayoutRectV238(view);
+      const popupRect = screenLayoutRectV238(popup);
+      const scrollRect = screenLayoutRectV238(scroll);
+      const tableRect = screenLayoutRectV238(table);
+      const headerRect = screenLayoutRectV238(headerRow);
+      const dataRect = screenLayoutRectV238(firstDataRow);
+      const teamCount = Math.max(1, Number(table && table.dataset.teamCount) || 1);
+      const visibleTeams = Math.max(1, Math.min(9, teamCount));
+      const dataRowH = Math.max(0, Number(table && table.dataset.dataRowHeight) || (dataRect && dataRect.height) || 0);
+      const headerRowH = Math.max(0, Number(table && table.dataset.headerRowHeight) || (headerRect && headerRect.height) || 0);
+      const statTrack = table ? screenLayoutComputedPxV238(table, '--gat-stat-w-v2217') : NaN;
+      const teamTrack = table ? screenLayoutComputedPxV238(table, '--gat-team-w-v2216') : NaN;
+      const { lines, scale } = screenLayoutBaseLinesV238('GEEK ALL TEAMS', 'LANDSCAPE / DEDICATED SURFACE');
+
+      lines.push('', 'LANDSCAPE SURFACE');
+      if (viewRect) {
+        lines.push('View: top ' + screenLayoutPxV238(viewRect.top) + ' • h ' + screenLayoutPxV238(viewRect.height) +
+          ' • width ' + screenLayoutPxV238(viewRect.width));
+      }
+      if (popupRect) {
+        lines.push('ALL TEAMS popup: top ' + screenLayoutPxV238(popupRect.top) + ' • h ' + screenLayoutPxV238(popupRect.height) +
+          ' • bottom ' + screenLayoutPxV238(popupRect.bottom) + ' • width ' + screenLayoutPxV238(popupRect.width) +
+          ' (DEDICATED 98vw × 98dvh SURFACE)');
+      }
+      if (titleRect) {
+        lines.push('Title: top ' + screenLayoutPxV238(titleRect.top) + ' • h ' + screenLayoutPxV238(titleRect.height) +
+          ' • bottom ' + screenLayoutPxV238(titleRect.bottom));
+      }
+      if (scrollRect) {
+        lines.push('Title → table viewport: ' + screenLayoutPxV238(screenLayoutGapV238(titleRect, scrollRect), 2) + ' (MEASURED)');
+      }
+
+      lines.push('', 'ALL TEAMS TABLE');
+      if (scrollRect) {
+        lines.push('Scroll viewport: top ' + screenLayoutPxV238(scrollRect.top) + ' • h ' + screenLayoutPxV238(scrollRect.height) +
+          ' • bottom ' + screenLayoutPxV238(scrollRect.bottom) + ' • width ' + screenLayoutPxV238(scrollRect.width));
+      }
+      lines.push('Teams: ' + teamCount + ' • visible team columns: ' + visibleTeams + ' (MAX 9)');
+      if (headerRowH > 0 || dataRowH > 0) {
+        lines.push('Header row h: ' + screenLayoutPxV238(headerRowH, 2) +
+          ' • data row h: ' + screenLayoutPxV238(dataRowH, 2) + ' • target: 5 complete stat rows');
+      }
+      if (scroll) {
+        lines.push('Scroll content: ' + screenLayoutPxV238(scroll.scrollHeight) + ' high × ' + screenLayoutPxV238(scroll.scrollWidth) +
+          ' wide • scrollTop ' + screenLayoutPxV238(scroll.scrollTop) + ' • scrollLeft ' + screenLayoutPxV238(scroll.scrollLeft));
+      }
+      if (tableRect) {
+        lines.push('Rendered table: h ' + screenLayoutPxV238(tableRect.height) + ' • width ' + screenLayoutPxV238(tableRect.width));
+      }
+
+      lines.push('', 'TYPE / SCALE CHECK');
+      screenLayoutTypeLineV239(lines, 'ALL TEAMS title', title, NaN, 'COMPUTED • LANDSCAPE TITLE RULE');
+      const teamHeaderSample = screenLayoutTextSampleV239(view, '.geek-all-teams-row-v2216.header-v2216 .geek-all-teams-team-name-v2217');
+      const statSample = screenLayoutTextSampleV239(view, '.geek-all-teams-row-v2216:not(.header-v2216) .geek-all-teams-stat-label-v2217');
+      const valueSample = screenLayoutTextSampleV239(view, '.geek-all-teams-value-v2217');
+      screenLayoutTypeLineV239(lines, 'Team header sample', teamHeaderSample, headerRowH > 0 ? headerRowH * 0.40 : NaN, '40% OF HEADER ROW • FIT');
+      screenLayoutTypeLineV239(lines, 'STAT sample', statSample, dataRowH > 0 ? dataRowH * 0.40 : NaN, '40% OF DATA ROW • FIT');
+      screenLayoutTypeLineV239(lines, 'Result sample', valueSample, dataRowH > 0 ? dataRowH * 0.50 : NaN, '50% OF DATA ROW • FIT');
+
+      lines.push('', 'WIDTHS / LIMITS');
+      if (popupRect) lines.push('Popup width: ' + screenLayoutPxV238(popupRect.width) + ' (LANDSCAPE FULL-SURFACE RULE)');
+      if (scrollRect) lines.push('Table viewport width: ' + screenLayoutPxV238(scrollRect.width));
+      if (Number.isFinite(statTrack) || Number.isFinite(teamTrack)) {
+        lines.push('Tracks: STAT ' + screenLayoutPxV238(statTrack, 2) + ' • TEAM ' + screenLayoutPxV238(teamTrack, 2) + ' × ' + teamCount);
+      }
+      lines.push('Global multiplier on this surface: ×' + screenLayoutRoundV238(scale.globalScale, 4));
+      lines.push('Hidden portrait GEEK geometry: IGNORED while ALL TEAMS is visible.');
+      return {
+        surface: 'GEEK ALL TEAMS',
+        lines,
+        signatureParts: [
+          popupRect && popupRect.width,
+          popupRect && popupRect.height,
+          scrollRect && scrollRect.width,
+          scrollRect && scrollRect.height,
+          headerRowH,
+          dataRowH,
+          teamCount
+        ]
+      };
+    }
+
     function screenLayoutModalNameV238() {
       if (!els.modalOverlay || !els.modalOverlay.classList.contains('open')) return '';
       const c = els.modalOverlay.classList;
@@ -18531,6 +18633,14 @@ let scoreTimingDetail =
 
     function buildCurrentScreenLayoutSnapshotV238() {
       const modalSurface = screenLayoutModalNameV238();
+      /* V23.13 — landscape ALL TEAMS is a separate visible surface layered above
+         the still-mounted portrait GEEK modal. Prefer the real visible landscape
+         surface unless a real ALL TEAMS detail popup is currently on top. */
+      if (modalSurface === 'GEEK ALL TEAMS DETAIL') return screenLayoutModalV238(modalSurface);
+      if (screenLayoutGeekAllTeamsVisibleV2313() &&
+          (!modalSurface || modalSurface === 'GEEK MODE' || modalSurface === 'GEEK FILTERS')) {
+        return screenLayoutGeekAllTeamsV2313();
+      }
       if (modalSurface) return screenLayoutModalV238(modalSurface);
       if (currentView === 'scorecard') return screenLayoutScorecardV238();
       if (currentView === 'leaderboard') return screenLayoutLeaderboardV238();
@@ -18603,8 +18713,9 @@ let scoreTimingDetail =
       screenLayoutLogObserverV238 = new MutationObserver(() => {
         scheduleScreenLayoutLogCaptureV238('DOM');
       });
-      [els.scorecardView, els.leaderboardView, els.modalOverlay].filter(Boolean).forEach(target => {
-        if (target === els.modalOverlay) {
+      const geekAllTeamsViewV2313 = document.getElementById('geekAllTeamsViewV2216');
+      [els.scorecardView, els.leaderboardView, els.modalOverlay, geekAllTeamsViewV2313].filter(Boolean).forEach(target => {
+        if (target === els.modalOverlay || target === geekAllTeamsViewV2313) {
           screenLayoutLogObserverV238.observe(target, {
             childList: true,
             subtree: true,
@@ -18618,6 +18729,12 @@ let scoreTimingDetail =
           });
         }
       });
+      /* V23.13 — ALL TEAMS is lazily created as a direct body child after the
+         logger may already be running. Observe only direct child creation so the
+         logger notices that diagnostic surface without adding normal-app cost. */
+      if (document.body) {
+        screenLayoutLogObserverV238.observe(document.body, { childList:true });
+      }
       screenLayoutResizeHandlerV238 = () => scheduleScreenLayoutLogCaptureV238('RESIZE');
       window.addEventListener('resize', screenLayoutResizeHandlerV238, { passive:true });
       if (window.visualViewport) {
@@ -18664,6 +18781,7 @@ let scoreTimingDetail =
         'Typography: representative samples only; actual computed font sizes are paired with governing target/fit rules when known.',
         'Capture settling: automatic entries are committed only after the same structural signature remains stable across the confirmation window.',
         'AUTHORIZATION / CONFIRMATION NOTE: popup geometry is a coarse sanity check only; ignore detailed sizing unless specifically requested.',
+        'LANDSCAPE ALL TEAMS NOTE: this is a dedicated full-landscape surface; the logger ignores the hidden portrait GEEK table underneath it.',
         'CONTROL CENTER NOTE: sizing on CONTROL CENTER is diagnostic-host geometry; ignore it unless specifically requested.',
         ''
       ];
@@ -32638,14 +32756,14 @@ let scoreTimingDetail =
       els.modalOverlay.classList.add('geek-mode-v180');
       els.modalOverlay.classList.toggle('geek-early-v2068', geekEarlyAccessV2068);
 
-      /* V23.12 — GEEK DETAIL fits the shared modalTitle node with inline
-         !important typography. That node survives close/rebuild, so clear only
-         the fit-owned properties before normal GEEK MODE takes control again.
-         This also prevents GEEK FILTERS from inheriting a stale Detail title. */
+      /* V23.12 — modalTitle is shared by Summary, GEEK DETAIL, GAME and other
+         after-play surfaces. Their text fitters write inline !important
+         typography. Normal GEEK MODE owns its own CSS sizing, so discard only
+         those reusable fitter properties before rebuilding the main GEEK shell.
+         This makes direct entry and DETAIL -> BACK resolve identically. */
       if (els.modalTitle) {
-        ['font-size', 'line-height', 'white-space', 'overflow', 'text-align'].forEach(prop =>
-          els.modalTitle.style.removeProperty(prop)
-        );
+        ['font-size', 'line-height', 'white-space', 'overflow', 'text-align']
+          .forEach(property => els.modalTitle.style.removeProperty(property));
       }
       els.modalTitle.textContent = 'GEEK MODE';
       els.modalTitle.classList.remove('testing');
