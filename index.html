@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.7-K8M4QX | BUILD KEY: 23.8-N4Q7VX -->
+<!-- SSHCP | BASE KEY: 23.8-N4Q7VX | BUILD KEY: 23.9-H6Q4MX -->
+<!-- SSHCP V23.9 SCREEN LOGGER V2 - exact V23.8 donor.
+     Refines only the isolated opt-in SCREEN LAYOUT LOG. START is Blue/white while idle and gray while logging; COPY is gray when the diagnostic log is empty and Blue/white whenever captured data exists. START clears/starts a session; COPY copies the session, ends logging, clears it, and restores the idle button states. The report explicitly marks CONTROL CENTER geometry as diagnostic-host-only unless specifically requested, renames the lower-shell target to TABLE -> BUTTON, adds readable representative typography checks (title/header/body/button samples with actual computed font sizes and known global/row/fit targets), and adds meaningful popup structure such as Summary notes/tiebreak spacing. No entry cap is imposed. V23.8 MASTER lower-gap correction, Scorecard/Leaderboard geometry, all popup geometry, scoring, ranking/tiebreak, Summary, GEEK/PDF, SKINS, GAME, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.9. -->
 <!-- SSHCP V23.8 SCREEN LAYOUT LOGGER + MASTER LOWER-GAP CORRECTION - exact V23.7 donor.
      Adds an isolated, opt-in SCREEN LOG diagnostic recorder in Control Center. START clears/starts one debugging session and turns gray while active; only while active, each actually visited/visible screen or after-play surface is measured after layout settles. The readable top-to-bottom log records state, viewport/VPH/DPR/global scale inputs, actual bounds/gaps/row heights, governing multiplier/floor annotations, and selected width/max constraints. COPY copies the accumulated SCREEN LAYOUT LOG, stops logging, clears that diagnostic session, and restores START. Control Center's visible screen-info strip is reduced to global scale inputs only. Also corrects V23.7's known MASTER/preauth lower-shell bug: when the Scorecard selector is visible, the shared Scorecard/Leaderboard table-to-footer target uses the immediate selector-to-table gap, not nav gap + the full selector row + table gap. TEAM/QR V23.7 geometry therefore remains unchanged; MASTER no longer reproduces the selector height as blank lower space. Seven CSS px remains only the absolute floor. Worker/API, scoring, ranking/tiebreak, Summary, GEEK/PDF, SKINS, GAME and CF3.30 remain unchanged. HOME label advances to V23.8. -->
 <!-- SSHCP V23.7 SHARED FRACTIONAL LOWER BOUNDARY + LEADER BAR RADIUS INSET - exact V23.1 donor.
@@ -14193,7 +14195,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 </style>
 
 <style id="sshcp-v238-screen-layout-log">
-/* V23.8 — debugging-only Screen Log controls. This block has no authority over
+/* V23.9 — debugging-only Screen Log V2 controls. This block has no authority over
    Scorecard/Leaderboard/after-play geometry; it styles only the Control Center
    diagnostic strip. */
 #testLogView .control-center-viewport-v188{
@@ -14211,10 +14213,11 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
   max-height:100%!important;
   margin:0!important;
   padding:0 2px!important;
-  border:1px solid #777!important;
+  border:1px solid var(--accent)!important;
   border-radius:calc(6px * var(--cc-mult-v1824,1))!important;
-  background:#fff!important;
-  color:#333!important;
+  background:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
   font-family:"Oswald",Arial,sans-serif!important;
   font-size:calc(8.5px * var(--cc-mult-v1824,1))!important;
   font-weight:800!important;
@@ -14224,18 +14227,26 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
   overflow:hidden!important;
   box-sizing:border-box!important;
 }
-#testLogView .screen-log-button-v238.logging-v238{
+#testLogView .screen-log-button-v238.logging-v238,
+#testLogView #screenLogCopyButtonV238:not(.has-data-v239){
   background:#cfcfcf!important;
   border-color:#aaa!important;
   color:#777!important;
   -webkit-text-fill-color:#777!important;
 }
+#testLogView #screenLogCopyButtonV238.has-data-v239{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
 #testLogView .screen-log-button-v238:active:not(:disabled),
 #testLogView .screen-log-button-v238.sshcp-button-pressed-v172{
-  background:#d9d9d9!important;
-  border-color:#999!important;
-  color:#555!important;
-  -webkit-text-fill-color:#555!important;
+  filter:brightness(.88)!important;
+}
+#testLogView .screen-log-button-v238:disabled{
+  opacity:1!important;
+  cursor:default!important;
 }
 #testLogView .screen-log-scale-info-v238{
   min-width:0!important;
@@ -14383,7 +14394,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.8</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.9</span></span>
         </button>
         <script>
           (function () {
@@ -17908,7 +17919,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V23.8 — OPT-IN SCREEN LAYOUT LOG
+       SSHCP V23.9 — OPT-IN SCREEN LAYOUT LOG V2
        Diagnostic/read-only. No function in this block writes application
        geometry. START enables observation for the current debug session;
        COPY stops and clears it after a successful clipboard copy.
@@ -17957,9 +17968,15 @@ let scoreTimingDetail =
     }
 
     function syncScreenLayoutLogControlsV238() {
+      const hasDataV239 = screenLayoutLogEntriesV238.length > 0;
       if (els.screenLogStartButtonV238) {
         els.screenLogStartButtonV238.classList.toggle('logging-v238', screenLayoutLogActiveV238);
         els.screenLogStartButtonV238.setAttribute('aria-pressed', screenLayoutLogActiveV238 ? 'true' : 'false');
+      }
+      if (els.screenLogCopyButtonV238) {
+        els.screenLogCopyButtonV238.classList.toggle('has-data-v239', hasDataV239);
+        els.screenLogCopyButtonV238.disabled = !hasDataV239;
+        els.screenLogCopyButtonV238.setAttribute('aria-disabled', hasDataV239 ? 'false' : 'true');
       }
     }
 
@@ -18000,6 +18017,38 @@ let scoreTimingDetail =
       if (!(element instanceof Element)) return NaN;
       const value = parseFloat(getComputedStyle(element).getPropertyValue(property));
       return Number.isFinite(value) ? value : NaN;
+    }
+
+    function screenLayoutFontSizeV239(element) {
+      if (!(element instanceof Element)) return NaN;
+      const value = parseFloat(getComputedStyle(element).fontSize);
+      return Number.isFinite(value) ? value : NaN;
+    }
+
+    function screenLayoutTypeLineV239(lines, label, element, targetSize, rule) {
+      if (!Array.isArray(lines) || !(element instanceof Element)) return;
+      const actual = screenLayoutFontSizeV239(element);
+      if (!Number.isFinite(actual)) return;
+      const target = Number(targetSize);
+      let suffix = String(rule || 'COMPUTED');
+      if (Number.isFinite(target) && target > 0) {
+        const ratio = actual / target;
+        let fitState = 'AT TARGET';
+        if (ratio < 0.985) fitState = 'SHRUNK TO ' + screenLayoutRoundV238(ratio * 100, 1) + '% TARGET';
+        else if (ratio > 1.015) fitState = 'OTHER RULE / ABOVE TARGET';
+        suffix += ' • target ' + screenLayoutPxV238(target, 2) + ' • ' + fitState;
+      }
+      lines.push(label + ': ' + screenLayoutPxV238(actual, 2) + ' (' + suffix + ')');
+    }
+
+    function screenLayoutTextSampleV239(root, selectors) {
+      if (!(root instanceof Element)) return null;
+      const list = Array.isArray(selectors) ? selectors : [selectors];
+      for (const selector of list) {
+        const found = root.querySelector(selector);
+        if (found && screenLayoutRectV238(found)) return found;
+      }
+      return null;
     }
 
     function screenLayoutWidthConstraintV238(actualWidth, maxWidth) {
@@ -18122,13 +18171,35 @@ let scoreTimingDetail =
           ' • scroll content ' + screenLayoutPxV238(tableBody ? tableBody.scrollHeight : NaN));
       }
 
+      lines.push('', 'TYPE / SCALE CHECK');
+      const scoreBrandV239 = els.scorecardView && els.scorecardView.querySelector('.header-brand');
+      const scoreHeaderCellsV239 = tableHead ? Array.from(tableHead.children) : [];
+      const scoreTypeRowV239 = els.scoreRows && els.scoreRows.querySelector('.score-row');
+      const scoreTypeRowRectV239 = screenLayoutRectV238(scoreTypeRowV239);
+      const scoreHoleV239 = scoreTypeRowV239 && scoreTypeRowV239.querySelector('.hole-number');
+      const scoreYardsV239 = scoreTypeRowV239 && scoreTypeRowV239.querySelector('.yardage-cell');
+      const scoreButtonV239 = screenLayoutTextSampleV239(
+        els.scoreRows,
+        ['.score-button.saved', '.score-button.unsaved', '.score-button']
+      );
+      const scoreBoxSizeV239 = screenLayoutComputedPxV238(els.scorecardView, '--v5-score-box');
+      screenLayoutTypeLineV239(lines, 'Center header', scoreBrandV239, navRect ? navRect.height * 0.80 : NaN, 'GLOBAL/SHELL • 80% OF NAV H • WIDTH FIT');
+      if (selectorRect) {
+        screenLayoutTypeLineV239(lines, 'Team selector text', els.scoreTeamSelectButton, NaN, 'COMPUTED • SELECTOR RULE / WIDTH FIT');
+      }
+      screenLayoutTypeLineV239(lines, 'Table header sample (YARDS)', scoreHeaderCellsV239[2], headRect ? headRect.height * 0.375 : NaN, '37.5% OF HEADER H • FIT');
+      screenLayoutTypeLineV239(lines, 'Hole number sample', scoreHoleV239, scoreTypeRowRectV239 ? scoreTypeRowRectV239.height * 0.50 : NaN, '50% OF ROW H • FIT');
+      screenLayoutTypeLineV239(lines, 'Yardage sample', scoreYardsV239, scoreTypeRowRectV239 ? scoreTypeRowRectV239.height * 0.40 : NaN, '40% OF ROW H • FIT');
+      screenLayoutTypeLineV239(lines, 'Score button sample', scoreButtonV239, Number.isFinite(scoreBoxSizeV239) ? scoreBoxSizeV239 * 0.68 : NaN, '68% OF SCORE BOX • FIT');
+      screenLayoutTypeLineV239(lines, 'Bottom button text', footerButton, buttonRect ? Math.max(13, buttonRect.height * 0.55) : NaN, '55% OF BUTTON H • FIT • MIN 13');
+
       lines.push('', 'LOWER AREA');
       const actualGap = screenLayoutGapV238(bodyRect, buttonRect);
       const navGapTarget = screenLayoutComputedPxV238(els.scorecardView, '--v16-nav-context-gap');
       const selectorGapTarget = screenLayoutComputedPxV238(els.scorecardView, '--v16-context-table-gap');
       const targetGap = Math.max(7, selectorRect ? selectorGapTarget : navGapTarget);
       lines.push('Table → button: ' + screenLayoutPxV238(actualGap, 2) + ' (MEASURED)');
-      lines.push('Target table → footer: ' + screenLayoutPxV238(targetGap) +
+      lines.push('Target table → button: ' + screenLayoutPxV238(targetGap) +
         ' (8.16 × SHELL, rounded • MIN 7)');
       if (footerRect) {
         lines.push('Footer shell: top ' + screenLayoutPxV238(footerRect.top) + ' • h ' + screenLayoutPxV238(footerRect.height));
@@ -18205,6 +18276,26 @@ let scoreTimingDetail =
           ' • scrollTop ' + screenLayoutPxV238(tableBody ? tableBody.scrollTop : NaN));
       }
 
+      lines.push('', 'TYPE / SCALE CHECK');
+      const leaderBrandV239 = els.leaderboardView && els.leaderboardView.querySelector('.header-brand');
+      const leaderHeaderCellsV239 = tableHead ? Array.from(tableHead.children) : [];
+      const leaderTypeRowV239 = rows.length ? rows[0] : null;
+      const leaderTypeRowRectV239 = screenLayoutRectV238(leaderTypeRowV239);
+      const leaderTeamV239 = leaderTypeRowV239 && leaderTypeRowV239.querySelector('.leader-team-name');
+      const leaderRoundV239 = leaderTypeRowV239 && leaderTypeRowV239.querySelector('.leader-through-score');
+      const leaderTotalV239 = leaderTypeRowV239 && leaderTypeRowV239.querySelector('.leader-total');
+      const leaderContextHV239 = screenLayoutComputedPxV238(els.leaderboardView, '--v16-context-h');
+      const leaderTeamTargetV239 = leaderTypeRowRectV239
+        ? leaderTypeRowRectV239.height * ((leaderTeamV239 && leaderTeamV239.classList.contains('two-line')) ? 0.40 : 0.50)
+        : NaN;
+      screenLayoutTypeLineV239(lines, 'Center header', leaderBrandV239, navRect ? navRect.height * 0.80 : NaN, 'GLOBAL/SHELL • 80% OF NAV H • WIDTH FIT');
+      screenLayoutTypeLineV239(lines, 'Page title', title, Number.isFinite(leaderContextHV239) ? leaderContextHV239 * 0.605 : NaN, '60.5% OF CONTEXT BASELINE • WIDTH FIT');
+      screenLayoutTypeLineV239(lines, 'Table header sample (TEAM / HCP)', leaderHeaderCellsV239[0], headRect ? headRect.height * 0.48 : NaN, '48% OF HEADER H • FIT');
+      screenLayoutTypeLineV239(lines, 'Team name sample', leaderTeamV239, leaderTeamTargetV239, '50% ROW ONE-LINE / 40% TWO-LINE • WIDTH FIT');
+      screenLayoutTypeLineV239(lines, 'ROUND score sample', leaderRoundV239, leaderTypeRowRectV239 ? leaderTypeRowRectV239.height * 0.35 : NaN, '35% OF ROW H • DIRECT');
+      screenLayoutTypeLineV239(lines, 'TOTAL sample', leaderTotalV239, leaderTypeRowRectV239 ? leaderTypeRowRectV239.height * 0.70 : NaN, '70% OF ROW H • FIT');
+      screenLayoutTypeLineV239(lines, 'Bottom SCORECARD text', firstFooterButton, buttonRect ? Math.max(11, buttonRect.height * 0.40) : NaN, '40% OF BUTTON H • FIT • MIN 11');
+
       lines.push('', 'LOWER AREA');
       const actionTopRect = finalActionRect || buttonRect;
       const actualGap = screenLayoutGapV238(bodyRect, actionTopRect);
@@ -18212,7 +18303,7 @@ let scoreTimingDetail =
       const selectorGapTarget = screenLayoutComputedPxV238(els.leaderboardView, '--v16-context-table-gap');
       const targetGap = Math.max(7, document.body.classList.contains('team-qr-locked') ? navGapTarget : selectorGapTarget);
       lines.push('Table → button/action: ' + screenLayoutPxV238(actualGap, 2) + ' (MEASURED)');
-      lines.push('Target table → footer: ' + screenLayoutPxV238(targetGap) +
+      lines.push('Target table → button: ' + screenLayoutPxV238(targetGap) +
         ' (8.16 × SHELL, rounded • MIN 7)');
       if (footerRect) lines.push('Footer shell: top ' + screenLayoutPxV238(footerRect.top) + ' • h ' + screenLayoutPxV238(footerRect.height));
       if (buttonRect) {
@@ -18285,6 +18376,7 @@ let scoreTimingDetail =
       }
 
       const summaryGrid = els.modalOverlay && els.modalOverlay.querySelector('.tournament-summary-grid');
+      const summaryNotes = els.modalOverlay && els.modalOverlay.querySelector('.tournament-summary-notes');
       const summaryLower = els.modalOverlay && els.modalOverlay.querySelector('.tournament-summary-remaining');
       const geekScroll = els.modalOverlay && els.modalOverlay.querySelector('.geek-table-scroll-v180');
       const skinsTable = els.modalOverlay && els.modalOverlay.querySelector('.skins-table-v1627');
@@ -18299,6 +18391,68 @@ let scoreTimingDetail =
         const rect = screenLayoutRectV238(element);
         if (rect) lines.push(label + ': top ' + screenLayoutPxV238(rect.top) + ' • h ' + screenLayoutPxV238(rect.height) + ' • bottom ' + screenLayoutPxV238(rect.bottom));
       });
+
+      const summaryGridRectV239 = screenLayoutRectV238(summaryGrid);
+      const summaryNotesRectV239 = screenLayoutRectV238(summaryNotes);
+      const summaryLowerRectV239 = screenLayoutRectV238(summaryLower);
+      if (summaryGridRectV239 || summaryNotesRectV239 || summaryLowerRectV239) {
+        lines.push('', 'MEANINGFUL MIDDLE SPACING');
+        if (summaryGridRectV239 && summaryNotesRectV239) {
+          lines.push('Top table → notes: ' + screenLayoutPxV238(screenLayoutGapV238(summaryGridRectV239, summaryNotesRectV239), 2) + ' (MEASURED)');
+        }
+        if (summaryNotesRectV239) {
+          lines.push('Notes/tiebreak block: top ' + screenLayoutPxV238(summaryNotesRectV239.top) + ' • h ' + screenLayoutPxV238(summaryNotesRectV239.height) + ' • bottom ' + screenLayoutPxV238(summaryNotesRectV239.bottom));
+        }
+        if (summaryNotesRectV239 && summaryLowerRectV239) {
+          lines.push('Notes → lower table: ' + screenLayoutPxV238(screenLayoutGapV238(summaryNotesRectV239, summaryLowerRectV239), 2) + ' (MEASURED)');
+        } else if (summaryGridRectV239 && summaryLowerRectV239) {
+          lines.push('Top table → lower table: ' + screenLayoutPxV238(screenLayoutGapV238(summaryGridRectV239, summaryLowerRectV239), 2) + ' (MEASURED)');
+        }
+      }
+
+      lines.push('', 'TYPE / SCALE CHECK');
+      screenLayoutTypeLineV239(lines, 'Popup title', title, NaN, 'COMPUTED • SURFACE RULE / CLAMP/FIT');
+      if (surface === 'SCRAMBLE SUMMARY') {
+        const summaryHeaderV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-row.header > div');
+        const summaryFirstTeamV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-row.place-1 .tournament-summary-team');
+        const summaryFirstNetV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-row.place-1 .tournament-summary-net');
+        const summaryLowerTeamV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-remaining-cell.team');
+        const summaryActionV239 = screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn');
+        screenLayoutTypeLineV239(lines, 'Table header sample', summaryHeaderV239, NaN, 'COMPUTED • SUMMARY HEADER FIT');
+        screenLayoutTypeLineV239(lines, '1st-place team sample', summaryFirstTeamV239, NaN, 'COMPUTED • SUMMARY TOP-3 FIT');
+        screenLayoutTypeLineV239(lines, '1st-place NET sample', summaryFirstNetV239, NaN, 'COMPUTED • SUMMARY 90/80/70 HIERARCHY');
+        screenLayoutTypeLineV239(lines, 'Lower-table team sample', summaryLowerTeamV239, NaN, 'COMPUTED • LOWER RESULT FIT');
+        screenLayoutTypeLineV239(lines, 'Bottom button text', summaryActionV239, NaN, 'COMPUTED • AFTER-PLAY BUTTON RULE');
+      } else if (surface === 'TIE BREAK / RESULT') {
+        screenLayoutTypeLineV239(lines, 'Winner/result sample',
+          screenLayoutTextSampleV239(els.modalOverlay, '.tiebreak-winner'),
+          NaN, 'COMPUTED • RESULT FIT');
+        screenLayoutTypeLineV239(lines, 'Body/explanation sample',
+          screenLayoutTextSampleV239(els.modalOverlay, '.tiebreak-explanation'),
+          NaN, 'COMPUTED • RESULT BODY RULE');
+        screenLayoutTypeLineV239(lines, 'Bottom button text',
+          screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn'),
+          NaN, 'COMPUTED • AFTER-PLAY BUTTON RULE');
+      } else if (surface.indexOf('GEEK') === 0) {
+        screenLayoutTypeLineV239(lines, 'GEEK header sample',
+          screenLayoutTextSampleV239(els.modalOverlay, ['.geek-row-v180.header .geek-cell-v180', '.geek-all-teams-row-v2216.header-v2216 .geek-all-teams-cell-v2216']),
+          NaN, 'COMPUTED • GEEK HEADER RULE');
+        screenLayoutTypeLineV239(lines, 'GEEK stat sample',
+          screenLayoutTextSampleV239(els.modalOverlay, ['.geek-row-v180.stat .geek-stat-label-v186', '.geek-all-teams-stat-v2216']),
+          NaN, 'COMPUTED • GEEK ROW/FIT RULE');
+        screenLayoutTypeLineV239(lines, 'Bottom button text',
+          screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn'),
+          NaN, 'COMPUTED • AFTER-PLAY BUTTON RULE');
+      } else {
+        const genericTableTextV239 = screenLayoutTextSampleV239(
+          els.modalOverlay,
+          ['.skins-table-v1627 *', '.game-mode-table-v2026 *']
+        );
+        screenLayoutTypeLineV239(lines, 'Table/body sample', genericTableTextV239, NaN, 'COMPUTED • SURFACE RULE');
+        screenLayoutTypeLineV239(lines, 'Bottom button text',
+          screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn'),
+          NaN, 'COMPUTED • AFTER-PLAY BUTTON RULE');
+      }
 
       lines.push('', 'WIDTHS / LIMITS');
       if (boxRect) {
@@ -18371,6 +18525,7 @@ let scoreTimingDetail =
         text: snapshot.lines.join('\n')
       });
       persistScreenLayoutLogV238();
+      syncScreenLayoutLogControlsV238();
     }
 
     function scheduleScreenLayoutLogCaptureV238(reason = '') {
@@ -18448,6 +18603,8 @@ let scoreTimingDetail =
         'Entries: ' + screenLayoutLogEntriesV238.length,
         'Units: actual CSS pixels unless noted.',
         'Global scale formula: max(0.70, VPH × DPR ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
+        'Typography: representative samples only; actual computed font sizes are paired with governing target/fit rules when known.',
+        'CONTROL CENTER NOTE: sizing on CONTROL CENTER is diagnostic-host geometry; ignore it unless specifically requested.',
         ''
       ];
       screenLayoutLogEntriesV238.forEach((entry, index) => {
@@ -18461,6 +18618,10 @@ let scoreTimingDetail =
 
     async function copyScreenLayoutLogV238() {
       if (screenLayoutLogActiveV238) appendScreenLayoutSnapshotV238();
+      if (!screenLayoutLogEntriesV238.length) {
+        syncScreenLayoutLogControlsV238();
+        return;
+      }
       const report = buildScreenLayoutLogReportV238();
       let copied = false;
       try {
