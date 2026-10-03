@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.8-N4Q7VX | BUILD KEY: 23.9-H6Q4MX -->
+<!-- SSHCP | BASE KEY: 23.9-H6Q4MX | BUILD KEY: 23.10-P7M4RX -->
+<!-- SSHCP V23.10 SCREEN LOGGER V3 - exact V23.9 donor.
+     Refines only the isolated opt-in SCREEN LAYOUT LOG. Automatic captures now require a stable unchanged screen signature across a settle-confirmation window before an entry is committed, so transient async states such as a FINAL RESULTS shell with zero rows are not logged as finished screens. SCRAMBLE SUMMARY typography samples now measure the actual fitted inner .summary-team-text elements for the podium and lower table rather than their outer cells. START/COPY behavior, PWA/WEB scale reporting, representative typography, lower-shell diagnostics, V23.8 MASTER correction, all application geometry, popup geometry, scoring, ranking/tiebreak, Summary rendering, GEEK/PDF, SKINS, GAME, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.10. -->
 <!-- SSHCP V23.9 SCREEN LOGGER V2 - exact V23.8 donor.
      Refines only the isolated opt-in SCREEN LAYOUT LOG. START is Blue/white while idle and gray while logging; COPY is gray when the diagnostic log is empty and Blue/white whenever captured data exists. START clears/starts a session; COPY copies the session, ends logging, clears it, and restores the idle button states. The report explicitly marks CONTROL CENTER geometry as diagnostic-host-only unless specifically requested, renames the lower-shell target to TABLE -> BUTTON, adds readable representative typography checks (title/header/body/button samples with actual computed font sizes and known global/row/fit targets), and adds meaningful popup structure such as Summary notes/tiebreak spacing. No entry cap is imposed. V23.8 MASTER lower-gap correction, Scorecard/Leaderboard geometry, all popup geometry, scoring, ranking/tiebreak, Summary, GEEK/PDF, SKINS, GAME, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.9. -->
 <!-- SSHCP V23.8 SCREEN LAYOUT LOGGER + MASTER LOWER-GAP CORRECTION - exact V23.7 donor.
@@ -14394,7 +14396,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.9</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.10</span></span>
         </button>
         <script>
           (function () {
@@ -17919,7 +17921,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V23.9 — OPT-IN SCREEN LAYOUT LOG V2
+       SSHCP V23.10 — OPT-IN SCREEN LAYOUT LOG V3
        Diagnostic/read-only. No function in this block writes application
        geometry. START enables observation for the current debug session;
        COPY stops and clears it after a successful clipboard copy.
@@ -17930,6 +17932,7 @@ let scoreTimingDetail =
     let screenLayoutLogEntriesV238 = [];
     let screenLayoutLogStartedAtV238 = '';
     let screenLayoutLogTimerV238 = 0;
+    let screenLayoutSettleConfirmTimerV2310 = 0;
     let screenLayoutLogObserverV238 = null;
     let screenLayoutResizeHandlerV238 = null;
     let screenLayoutCaptureTokenV238 = 0;
@@ -18414,9 +18417,9 @@ let scoreTimingDetail =
       screenLayoutTypeLineV239(lines, 'Popup title', title, NaN, 'COMPUTED • SURFACE RULE / CLAMP/FIT');
       if (surface === 'SCRAMBLE SUMMARY') {
         const summaryHeaderV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-row.header > div');
-        const summaryFirstTeamV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-row.place-1 .tournament-summary-team');
+        const summaryFirstTeamV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-row.place-1 .tournament-summary-team .summary-team-text');
         const summaryFirstNetV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-row.place-1 .tournament-summary-net');
-        const summaryLowerTeamV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-remaining-cell.team');
+        const summaryLowerTeamV239 = screenLayoutTextSampleV239(els.modalOverlay, '.tournament-summary-remaining-cell.team .summary-team-text');
         const summaryActionV239 = screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn');
         screenLayoutTypeLineV239(lines, 'Table header sample', summaryHeaderV239, NaN, 'COMPUTED • SUMMARY HEADER FIT');
         screenLayoutTypeLineV239(lines, '1st-place team sample', summaryFirstTeamV239, NaN, 'COMPUTED • SUMMARY TOP-3 FIT');
@@ -18509,9 +18512,9 @@ let scoreTimingDetail =
       ].join('|');
     }
 
-    function appendScreenLayoutSnapshotV238() {
+    function appendScreenLayoutSnapshotV238(confirmedSnapshotV2310 = null) {
       if (!screenLayoutLogActiveV238) return;
-      const snapshot = buildCurrentScreenLayoutSnapshotV238();
+      const snapshot = confirmedSnapshotV2310 || buildCurrentScreenLayoutSnapshotV238();
       if (!snapshot || !snapshot.lines || !snapshot.lines.length) return;
       const signature = screenLayoutSnapshotSignatureV238(snapshot);
       const last = screenLayoutLogEntriesV238.length
@@ -18532,10 +18535,25 @@ let scoreTimingDetail =
       if (!screenLayoutLogActiveV238) return;
       const token = ++screenLayoutCaptureTokenV238;
       window.clearTimeout(screenLayoutLogTimerV238);
+      window.clearTimeout(screenLayoutSettleConfirmTimerV2310);
       screenLayoutLogTimerV238 = window.setTimeout(() => {
         requestAnimationFrame(() => requestAnimationFrame(() => {
           if (!screenLayoutLogActiveV238 || token !== screenLayoutCaptureTokenV238) return;
-          appendScreenLayoutSnapshotV238();
+          const candidateV2310 = buildCurrentScreenLayoutSnapshotV238();
+          if (!candidateV2310 || !candidateV2310.lines || !candidateV2310.lines.length) return;
+          const candidateSignatureV2310 = screenLayoutSnapshotSignatureV238(candidateV2310);
+          screenLayoutSettleConfirmTimerV2310 = window.setTimeout(() => {
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              if (!screenLayoutLogActiveV238 || token !== screenLayoutCaptureTokenV238) return;
+              const confirmedV2310 = buildCurrentScreenLayoutSnapshotV238();
+              if (!confirmedV2310 || !confirmedV2310.lines || !confirmedV2310.lines.length) return;
+              if (screenLayoutSnapshotSignatureV238(confirmedV2310) !== candidateSignatureV2310) {
+                scheduleScreenLayoutLogCaptureV238('SETTLE-CHANGED');
+                return;
+              }
+              appendScreenLayoutSnapshotV238(confirmedV2310);
+            }));
+          }, 420);
         }));
       }, 220);
     }
@@ -18570,6 +18588,7 @@ let scoreTimingDetail =
 
     function stopScreenLayoutLogObserverV238() {
       window.clearTimeout(screenLayoutLogTimerV238);
+      window.clearTimeout(screenLayoutSettleConfirmTimerV2310);
       screenLayoutCaptureTokenV238 += 1;
       if (screenLayoutLogObserverV238) {
         screenLayoutLogObserverV238.disconnect();
@@ -18604,6 +18623,7 @@ let scoreTimingDetail =
         'Units: actual CSS pixels unless noted.',
         'Global scale formula: max(0.70, VPH × DPR ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
         'Typography: representative samples only; actual computed font sizes are paired with governing target/fit rules when known.',
+        'Capture settling: automatic entries are committed only after the same structural signature remains stable across the confirmation window.',
         'CONTROL CENTER NOTE: sizing on CONTROL CENTER is diagnostic-host geometry; ignore it unless specifically requested.',
         ''
       ];
