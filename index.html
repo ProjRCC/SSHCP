@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.12-R6M4QX | BUILD KEY: 23.13-K7M4QV -->
+<!-- SSHCP | BASE KEY: 23.13-K7M4QV | BUILD KEY: 23.14-M6Q4VX -->
+<!-- SSHCP V23.14 ADAPTIVE LANDSCAPE ALL TEAMS STAT ROWS - exact V23.13 donor.
+     Changes only the dedicated landscape GEEK ALL TEAMS vertical row density. The established S25 landscape effective-height reference is 995 physical/effective pixels (settled visualViewport height × DPR) with the existing five complete stat rows. After the existing V22.52 settled-landscape viewport handoff and while the white orientation curtain still covers the destination, ALL TEAMS computes capacity = current settled effective height ÷ 995, rounds the theoretical 5×capacity row count to the nearest complete row, then deliberately reserves one row of capacity above the five-row baseline: visible rows = max(5, rounded theoretical rows - 1). This keeps S25 at 5 rows while the tested iPad/Web landscape 1784 effective height resolves to 8 rows, preserving some larger-screen readability instead of spending all extra height on density. Header/data-row proportions, nine-team horizontal geometry, device-pixel track solver, rails, eased snapping, detail cards, portrait GEEK, filters/data/math, PDF flow, Scorecard/Leaderboard/Summary/GAME/SKINS, scoring, ranking/tiebreak, Worker/API and CF3.30 remain unchanged. Screen Layout Log reports the resolved adaptive row target/capacity. HOME label advances to V23.14. -->
 <!-- SSHCP V23.13 SCREEN LOGGER V5 - exact V23.12 donor.
      Corrects only the opt-in SCREEN LAYOUT LOG for landscape GEEK. Landscape ALL TEAMS is a separate dedicated 98vw/98dvh surface layered above the still-mounted portrait GEEK modal; prior logger passes kept identifying the covered portrait modal as GEEK MODE and therefore reported its stale hidden table viewport as though it were the visible landscape table. The logger now detects visible ALL TEAMS first, reports its actual popup/scroll/table geometry, row/column tracks and representative fitted typography, and explicitly ignores the hidden portrait GEEK geometry while ALL TEAMS is active. GEEK/ALL TEAMS presentation and sizing code, orientation behavior, detail cards, Scorecard/Leaderboard/Summary/GAME/SKINS geometry, scoring, ranking/tiebreak, PDF flow, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.13. -->
 <!-- SSHCP | BASE KEY: 23.11-M8Q4VX | BUILD KEY: 23.12-R6M4QX -->
@@ -14401,7 +14403,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.13</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.14</span></span>
         </button>
         <script>
           (function () {
@@ -17926,7 +17928,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V23.13 — OPT-IN SCREEN LAYOUT LOG V5
+       SSHCP V23.14 — OPT-IN SCREEN LAYOUT LOG V5 + ADAPTIVE ALL TEAMS ROW TELEMETRY
        Diagnostic/read-only. No function in this block writes application
        geometry. START enables observation for the current debug session;
        COPY stops and clears it after a successful clipboard copy.
@@ -18359,6 +18361,10 @@ let scoreTimingDetail =
       const visibleTeams = Math.max(1, Math.min(9, teamCount));
       const dataRowH = Math.max(0, Number(table && table.dataset.dataRowHeight) || (dataRect && dataRect.height) || 0);
       const headerRowH = Math.max(0, Number(table && table.dataset.headerRowHeight) || (headerRect && headerRect.height) || 0);
+      const visibleStatRowsV2314 = Math.max(5, Number(table && table.dataset.visibleStatRowsV2314) || 5);
+      const theoreticalStatRowsV2314 = Math.max(5, Number(table && table.dataset.theoreticalStatRowsV2314) || visibleStatRowsV2314);
+      const effectiveHeightV2314 = Math.max(0, Number(table && table.dataset.landscapeEffectiveHeightV2314) || 0);
+      const capacityRatioV2314 = Math.max(0, Number(table && table.dataset.landscapeCapacityRatioV2314) || 0);
       const statTrack = table ? screenLayoutComputedPxV238(table, '--gat-stat-w-v2217') : NaN;
       const teamTrack = table ? screenLayoutComputedPxV238(table, '--gat-team-w-v2216') : NaN;
       const { lines, scale } = screenLayoutBaseLinesV238('GEEK ALL TEAMS', 'LANDSCAPE / DEDICATED SURFACE');
@@ -18389,8 +18395,11 @@ let scoreTimingDetail =
       lines.push('Teams: ' + teamCount + ' • visible team columns: ' + visibleTeams + ' (MAX 9)');
       if (headerRowH > 0 || dataRowH > 0) {
         lines.push('Header row h: ' + screenLayoutPxV238(headerRowH, 2) +
-          ' • data row h: ' + screenLayoutPxV238(dataRowH, 2) + ' • target: 5 complete stat rows');
+          ' • data row h: ' + screenLayoutPxV238(dataRowH, 2) + ' • target: ' + visibleStatRowsV2314 + ' complete stat rows');
       }
+      lines.push('Adaptive rows: effective height ' + screenLayoutPxV238(effectiveHeightV2314, 0) +
+        ' ÷ S25 landscape baseline 995 = ×' + screenLayoutRoundV238(capacityRatioV2314, 3) +
+        ' • theoretical ' + theoreticalStatRowsV2314 + ' • reserve 1 above baseline → ' + visibleStatRowsV2314);
       if (scroll) {
         lines.push('Scroll content: ' + screenLayoutPxV238(scroll.scrollHeight) + ' high × ' + screenLayoutPxV238(scroll.scrollWidth) +
           ' wide • scrollTop ' + screenLayoutPxV238(scroll.scrollTop) + ' • scrollLeft ' + screenLayoutPxV238(scroll.scrollLeft));
@@ -30584,14 +30593,38 @@ let scoreTimingDetail =
       if (!scroll || !table) return;
       const teamCount = Math.max(1, Number(table.dataset.teamCount) || 1);
 
-      /* V22.43 — five COMPLETE stat rows remain visible. The horizontal rail now
-         owns the separate 16px popup gutter below the table, so scroll.clientHeight
-         is the exact table budget. Add four pixels to the header and solve the five
-         data rows around it rather than taking those pixels from the bottom rail. */
+      /* V23.14 — ALL TEAMS keeps the established S25 landscape as the density
+         baseline: 995 effective-height pixels (settled VPH × DPR) = five complete
+         stat rows. Larger landscape viewports may spend part of their extra physical
+         height on additional complete rows, but one theoretical row of capacity is
+         deliberately held back so the larger display also retains a readability gain.
+         The five-row S25 floor never changes. Geometry is committed only from the
+         current settled viewport by the existing V22.52 orientation handoff. */
       const availableHeight = Math.max(1, scroll.clientHeight || 1);
       const headerExtraV2242 = 4;
-      const dataRowHeight = Math.max(1, (availableHeight - headerExtraV2242) / 5.82);
+      const dprV2314 = Math.max(0.1, Number(window.devicePixelRatio) || 1);
+      const vphV2314 = Math.max(1, Number(window.visualViewport && window.visualViewport.height) || Number(window.innerHeight) || 1);
+      const effectiveHeightV2314 = vphV2314 * dprV2314;
+      const baselineEffectiveHeightV2314 = 995;
+      const baselineRowsV2314 = 5;
+      const capacityRatioV2314 = Math.max(0.01, effectiveHeightV2314 / baselineEffectiveHeightV2314);
+      const theoreticalRowsV2314 = Math.max(
+        baselineRowsV2314,
+        Math.round(baselineRowsV2314 * capacityRatioV2314)
+      );
+      const visibleStatRowsV2314 = Math.max(
+        baselineRowsV2314,
+        theoreticalRowsV2314 > baselineRowsV2314 ? theoreticalRowsV2314 - 1 : baselineRowsV2314
+      );
+      const dataRowHeight = Math.max(
+        1,
+        (availableHeight - headerExtraV2242) / (visibleStatRowsV2314 + 0.82)
+      );
       const headerRowHeight = Math.max(1, (dataRowHeight * 0.82) + headerExtraV2242);
+      table.dataset.visibleStatRowsV2314 = String(visibleStatRowsV2314);
+      table.dataset.theoreticalStatRowsV2314 = String(theoreticalRowsV2314);
+      table.dataset.landscapeEffectiveHeightV2314 = effectiveHeightV2314.toFixed(3);
+      table.dataset.landscapeCapacityRatioV2314 = capacityRatioV2314.toFixed(6);
 
       /* V22.54 — solve the horizontal grid in DEVICE pixels using the actual
          number of visible teams: fewer than nine assigned teams fill the moving
