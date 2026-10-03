@@ -1,6 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.9-H6Q4MX | BUILD KEY: 23.10-P7M4RX -->
-<!-- SSHCP V23.10 SCREEN LOGGER V3 - exact V23.9 donor.
-     Refines only the isolated opt-in SCREEN LAYOUT LOG. Automatic captures now require a stable unchanged screen signature across a settle-confirmation window before an entry is committed, so transient async states such as a FINAL RESULTS shell with zero rows are not logged as finished screens. SCRAMBLE SUMMARY typography samples now measure the actual fitted inner .summary-team-text elements for the podium and lower table rather than their outer cells. START/COPY behavior, PWA/WEB scale reporting, representative typography, lower-shell diagnostics, V23.8 MASTER correction, all application geometry, popup geometry, scoring, ranking/tiebreak, Summary rendering, GEEK/PDF, SKINS, GAME, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.10. -->
+<!-- SSHCP | BASE KEY: 23.10-P7M4RX | BUILD KEY: 23.11-M8Q4VX -->
+<!-- SSHCP V23.11 SCREEN LOGGER V4 - exact V23.10 donor.
+     Refines only the isolated opt-in SCREEN LAYOUT LOG. GAME MODE and standalone SKINS now use surface-specific representative typography samples tied to the same rendered rows/elements their existing fitters size, replacing the generic descendant sample that could report a default 16px instead of the visible fitted text. Authorization/confirmation popup measurements remain only coarse sanity diagnostics and are explicitly de-emphasized in the copied report. V23.10 stable-screen confirmation, SCRAMBLE SUMMARY inner-text sampling, START/COPY behavior, PWA/WEB scale reporting, lower-shell diagnostics, V23.8 MASTER correction, all application geometry, popup geometry, scoring, ranking/tiebreak, Summary rendering, GEEK/PDF, SKINS/GAME behavior, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.11. -->
 <!-- SSHCP V23.9 SCREEN LOGGER V2 - exact V23.8 donor.
      Refines only the isolated opt-in SCREEN LAYOUT LOG. START is Blue/white while idle and gray while logging; COPY is gray when the diagnostic log is empty and Blue/white whenever captured data exists. START clears/starts a session; COPY copies the session, ends logging, clears it, and restores the idle button states. The report explicitly marks CONTROL CENTER geometry as diagnostic-host-only unless specifically requested, renames the lower-shell target to TABLE -> BUTTON, adds readable representative typography checks (title/header/body/button samples with actual computed font sizes and known global/row/fit targets), and adds meaningful popup structure such as Summary notes/tiebreak spacing. No entry cap is imposed. V23.8 MASTER lower-gap correction, Scorecard/Leaderboard geometry, all popup geometry, scoring, ranking/tiebreak, Summary, GEEK/PDF, SKINS, GAME, Worker/API and CF3.30 remain unchanged. HOME label advances to V23.9. -->
 <!-- SSHCP V23.8 SCREEN LAYOUT LOGGER + MASTER LOWER-GAP CORRECTION - exact V23.7 donor.
@@ -14396,7 +14396,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.10</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.11</span></span>
         </button>
         <script>
           (function () {
@@ -17921,7 +17921,7 @@ let scoreTimingDetail =
 
 
     /* =========================================================
-       SSHCP V23.10 — OPT-IN SCREEN LAYOUT LOG V3
+       SSHCP V23.11 — OPT-IN SCREEN LAYOUT LOG V4
        Diagnostic/read-only. No function in this block writes application
        geometry. START enables observation for the current debug session;
        COPY stops and clears it after a successful clipboard copy.
@@ -18446,15 +18446,52 @@ let scoreTimingDetail =
         screenLayoutTypeLineV239(lines, 'Bottom button text',
           screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn'),
           NaN, 'COMPUTED • AFTER-PLAY BUTTON RULE');
-      } else {
-        const genericTableTextV239 = screenLayoutTextSampleV239(
-          els.modalOverlay,
-          ['.skins-table-v1627 *', '.game-mode-table-v2026 *']
-        );
-        screenLayoutTypeLineV239(lines, 'Table/body sample', genericTableTextV239, NaN, 'COMPUTED • SURFACE RULE');
+      } else if (surface === 'SKINS') {
+        const skinsHeaderV2311 = screenLayoutTextSampleV239(els.modalOverlay, '.skins-row-v1627.header .skins-cell-v1627');
+        const skinsBodyRowV2311 = screenLayoutTextSampleV239(els.modalOverlay, '.skins-row-v1627:not(.header)');
+        const skinsBodyRowRectV2311 = screenLayoutRectV238(skinsBodyRowV2311);
+        const skinsTeamV2311 = screenLayoutTextSampleV239(els.modalOverlay, [
+          '.skins-row-v1627:not(.header) .skins-team-v1627',
+          '.skins-row-v1627:not(.header) .skins-no-skins-cell-v187'
+        ]);
+        const skinsHoleV2311 = screenLayoutTextSampleV239(els.modalOverlay, '.skins-row-v1627:not(.header) .skins-hole-v1627');
+        const skinsScoreV2311 = screenLayoutTextSampleV239(els.modalOverlay, '.skins-row-v1627:not(.header) .skins-score-number-v1627');
+        const skinsHeaderRowV2311 = skinsHeaderV2311 && skinsHeaderV2311.closest('.skins-row-v1627.header');
+        const skinsHeaderRowRectV2311 = screenLayoutRectV238(skinsHeaderRowV2311);
+        screenLayoutTypeLineV239(lines, 'SKINS header sample', skinsHeaderV2311, skinsHeaderRowRectV2311 ? skinsHeaderRowRectV2311.height * 0.38 : NaN, '38% OF HEADER ROW • FIT');
+        screenLayoutTypeLineV239(lines, 'SKINS team sample', skinsTeamV2311, skinsBodyRowRectV2311 ? skinsBodyRowRectV2311.height * 0.50 : NaN, '50% OF ROW H • FIT');
+        screenLayoutTypeLineV239(lines, 'SKINS hole sample', skinsHoleV2311, skinsBodyRowRectV2311 ? skinsBodyRowRectV2311.height * 0.50 : NaN, '50% OF ROW H • FIT');
+        screenLayoutTypeLineV239(lines, 'SKINS score sample', skinsScoreV2311, NaN, 'COMPUTED • SCORE MARK RULE');
         screenLayoutTypeLineV239(lines, 'Bottom button text',
           screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn'),
           NaN, 'COMPUTED • AFTER-PLAY BUTTON RULE');
+      } else if (surface === 'GAME MODE') {
+        const gameHeaderV2311 = screenLayoutTextSampleV239(els.modalOverlay, '.game-mode-row-v2026.header .game-mode-group-label-v2036');
+        const gameHeaderRowV2311 = gameHeaderV2311 && gameHeaderV2311.closest('.game-mode-row-v2026.header');
+        const gameHeaderRowRectV2311 = screenLayoutRectV238(gameHeaderRowV2311);
+        const gameSkinsTeamV2311 = screenLayoutTextSampleV239(els.modalOverlay, '.game-mode-row-v2026.skins:not(.header) .game-mode-skins-team-v2027');
+        const gameSkinsRowV2311 = gameSkinsTeamV2311 && gameSkinsTeamV2311.closest('.game-mode-row-v2026.skins');
+        const gameSkinsRowRectV2311 = screenLayoutRectV238(gameSkinsRowV2311);
+        const gameNameV2311 = screenLayoutTextSampleV239(els.modalOverlay, '.game-mode-row-v2026.games:not(.header) .game-name-v2026');
+        const gameHoleV2311 = screenLayoutTextSampleV239(els.modalOverlay, '.game-mode-row-v2026.games:not(.header) .game-hole-v2027');
+        const gameWinnerV2311 = screenLayoutTextSampleV239(els.modalOverlay, [
+          '.game-mode-row-v2026.games:not(.header) .game-winner-name-v2028',
+          '.game-mode-row-v2026.games:not(.header) .game-winner-v2026:not(.has-quoted-winner-v2028)'
+        ]);
+        const gameBodyRowV2311 = (gameNameV2311 || gameHoleV2311 || gameWinnerV2311);
+        const gameBodyRowRectV2311 = screenLayoutRectV238(gameBodyRowV2311 && gameBodyRowV2311.closest('.game-mode-row-v2026.games'));
+        screenLayoutTypeLineV239(lines, 'GAME group header sample', gameHeaderV2311, gameHeaderRowRectV2311 ? gameHeaderRowRectV2311.height * 0.50 : NaN, '50% OF HEADER ROW • FIT');
+        screenLayoutTypeLineV239(lines, 'GAME SKINS team sample', gameSkinsTeamV2311, gameSkinsRowRectV2311 ? gameSkinsRowRectV2311.height * 0.47 : NaN, '47% OF SKINS ROW H • FIT');
+        screenLayoutTypeLineV239(lines, 'GAME name sample', gameNameV2311, gameBodyRowRectV2311 ? gameBodyRowRectV2311.height * 0.50 : NaN, '50% OF GAME ROW H • FIT');
+        screenLayoutTypeLineV239(lines, 'GAME hole sample', gameHoleV2311, gameBodyRowRectV2311 ? gameBodyRowRectV2311.height * 0.50 : NaN, '50% OF GAME ROW H • FIT');
+        screenLayoutTypeLineV239(lines, 'GAME winner sample', gameWinnerV2311, gameBodyRowRectV2311 ? gameBodyRowRectV2311.height * 0.40 : NaN, '40% OF GAME ROW H • FIT');
+        screenLayoutTypeLineV239(lines, 'Bottom button text',
+          screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn'),
+          NaN, 'COMPUTED • AFTER-PLAY BUTTON RULE');
+      } else {
+        screenLayoutTypeLineV239(lines, 'Bottom button text',
+          screenLayoutTextSampleV239(els.modalOverlay, '.modal-actions .modal-btn'),
+          NaN, 'COMPUTED • POPUP BUTTON RULE');
       }
 
       lines.push('', 'WIDTHS / LIMITS');
@@ -18624,6 +18661,7 @@ let scoreTimingDetail =
         'Global scale formula: max(0.70, VPH × DPR ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
         'Typography: representative samples only; actual computed font sizes are paired with governing target/fit rules when known.',
         'Capture settling: automatic entries are committed only after the same structural signature remains stable across the confirmation window.',
+        'AUTHORIZATION / CONFIRMATION NOTE: popup geometry is a coarse sanity check only; ignore detailed sizing unless specifically requested.',
         'CONTROL CENTER NOTE: sizing on CONTROL CENTER is diagnostic-host geometry; ignore it unless specifically requested.',
         ''
       ];
