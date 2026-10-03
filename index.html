@@ -1,6 +1,9 @@
-<!-- SSHCP | BASE KEY: 23.15-P8M4QN | BUILD KEY: 23.16-H7Q4MV -->
-<!-- SSHCP V23.16 GEEK ORIENTATION CURTAIN HARD-COVER + 1.00S REVEAL - exact V23.15 donor.
-     Refines only the existing in-place regular-GEEK <-> landscape ALL TEAMS white-curtain handoff. Timing-panel 6B is intentionally set to 1.00s for this test. Curtain acquisition now forces an immediate inline-important white/opaque state and synchronously flushes that compositor layer before rotation reconciliation continues; the curtain is raised above every normal app/modal surface so an ALL TEAMS detail cannot sit above it. A lightweight native-orientation-angle watcher and an early matchMedia listener can acquire the already-mounted curtain before the normal orientation handler, while V22.52 still waits for the real visualViewport to settle and commits the already-prepared destination geometry underneath white. Reveal then removes only the acquisition overrides and performs the single 1.00s white-to-finished-view fade. No reload, no extra Worker/Sheets read, no GEEK/ALL TEAMS geometry/adaptive-row/detail math changes, and no Scorecard/Leaderboard/Summary/GAME/SKINS/scoring/ranking/PDF/Worker/CF3.30 changes. HOME label advances to V23.16. -->
+<!-- SSHCP | BASE KEY: 23.15-P8M4QN | BUILD KEY: 23.17-N6Q4RX -->
+<!-- SSHCP V23.17 GEEK ORIENTATION 1.00s DESTINATION REVEAL - exact V23.15 donor.
+     Keeps V23.15 orientation-curtain pre-acquisition exactly intact and changes only timing-panel 6B from 0.30s to 1.00s. The white curtain still acquires immediately on the established V23.15 signals, the prepared portrait/landscape destination still settles underneath through the protected V22.51/V22.52 in-place handoff, and only the final solid-white-to-settled-destination fade lasts 1.00 second. V23.16 is intentionally abandoned and is not a donor. No orientation signal/lock changes from V23.16 are included. No GEEK/ALL TEAMS geometry, adaptive-row math, detail cards, Scorecard/Leaderboard/Summary/GAME/SKINS, scoring, ranking/tiebreak, PDF, Worker/API or CF3.30 changes. HOME label advances to V23.17. -->
+<!-- SSHCP | BASE KEY: 23.14-M6Q4VX | BUILD KEY: 23.15-P8M4QN -->
+<!-- SSHCP V23.15 GEEK ORIENTATION CURTAIN PRE-ACQUISITION - exact V23.14 donor.
+     Refines only the in-place regular-GEEK <-> landscape ALL TEAMS rotation handoff. The dedicated white orientation curtain is now pre-mounted/compositor-ready while GEEK is open, stays visibility-present at opacity 0 instead of being lazily created/hidden, and is forced fully opaque on the earliest available orientation/major two-axis viewport-change signals before the normal matchMedia reconciliation runs. Destination data remains the already-prepared V22.51 in-memory copy; V22.52 still waits for the real visualViewport to settle and commits shared/ALL TEAMS geometry under white. After settled geometry, the existing timing-panel 6B 0.30s white-to-destination fade is preserved, with one unnecessary pre-reveal animation frame removed. No reload, no extra Worker/Sheets read, no GEEK/ALL TEAMS geometry or adaptive-row math changes, no detail-card changes, and no Scorecard/Leaderboard/Summary/GAME/SKINS/scoring/ranking/PDF/Worker/CF3.30 changes. HOME label advances to V23.15. -->
 <!-- SSHCP | BASE KEY: 23.13-K7M4QV | BUILD KEY: 23.14-M6Q4VX -->
 <!-- SSHCP V23.14 ADAPTIVE LANDSCAPE ALL TEAMS STAT ROWS - exact V23.13 donor.
      Changes only the dedicated landscape GEEK ALL TEAMS vertical row density. The established S25 landscape effective-height reference is 995 physical/effective pixels (settled visualViewport height × DPR) with the existing five complete stat rows. After the existing V22.52 settled-landscape viewport handoff and while the white orientation curtain still covers the destination, ALL TEAMS computes capacity = current settled effective height ÷ 995, rounds the theoretical 5×capacity row count to the nearest complete row, then deliberately reserves one row of capacity above the five-row baseline: visible rows = max(5, rounded theoretical rows - 1). This keeps S25 at 5 rows while the tested iPad/Web landscape 1784 effective height resolves to 8 rows, preserving some larger-screen readability instead of spending all extra height on density. Header/data-row proportions, nine-team horizontal geometry, device-pixel track solver, rails, eased snapping, detail cards, portrait GEEK, filters/data/math, PDF flow, Scorecard/Leaderboard/Summary/GAME/SKINS, scoring, ranking/tiebreak, Worker/API and CF3.30 remain unchanged. Screen Layout Log reports the resolved adaptive row target/capacity. HOME label advances to V23.14. -->
@@ -263,7 +266,7 @@
       setSeconds('--sshcp-fade-5a-cc-enter-refresh', timing.FADE_5A_CC_ENTER_REFRESH, 0.25);
       setSeconds('--sshcp-fade-5b-sm-refresh', timing.FADE_5B_SM_REFRESH, 0.30);
       setSeconds('--sshcp-fade-6a-orientation-warning-in', timing.FADE_6A_ORIENTATION_WARNING_IN, 1.00);
-      setSeconds('--sshcp-fade-6b-orientation-curtain-out', timing.FADE_6B_ORIENTATION_CURTAIN_OUT, 0.30);
+      setSeconds('--sshcp-fade-6b-orientation-curtain-out', timing.FADE_6B_ORIENTATION_CURTAIN_OUT, 1.00);
     })();
   </script>
   <meta
@@ -13650,7 +13653,7 @@ html.sshcp-pre-geek-transition-v2220 body::after{
 .sshcp-orientation-transition-curtain{
   position:fixed!important;
   inset:0!important;
-  z-index:214000!important;
+  z-index:6240!important;
   margin:0!important;
   padding:0!important;
   border:0!important;
@@ -14411,7 +14414,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.16</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.17</span></span>
         </button>
         <script>
           (function () {
@@ -22893,7 +22896,7 @@ let scoreTimingDetail =
           shield.classList.contains('sshcp-geek-orientation-curtain-v2221'));
         const revealDurationMsV2092 =
           orientationRevealV2222
-            ? timingMsV2092(timingV2092.FADE_6B_ORIENTATION_CURTAIN_OUT, 0.30)
+            ? timingMsV2092(timingV2092.FADE_6B_ORIENTATION_CURTAIN_OUT, 1.00)
             : key === 'home-full-v1986'
               ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.25)
               : (key === 'scorecard' || key === 'leaderboard')
@@ -31346,15 +31349,6 @@ let scoreTimingDetail =
       curtain.classList.remove('reveal');
       curtain.classList.add('active');
       curtain.setAttribute('aria-hidden', 'false');
-
-      /* V23.16 — acquisition is not an animation. Force the already-mounted
-         compositor layer fully white synchronously, then flush this exact frame
-         before the browser proceeds with its native rotation/reflow. */
-      curtain.style.setProperty('opacity', '1', 'important');
-      curtain.style.setProperty('visibility', 'visible', 'important');
-      curtain.style.setProperty('pointer-events', 'auto', 'important');
-      curtain.style.setProperty('transition', 'none', 'important');
-      void curtain.getBoundingClientRect();
       return curtain;
     }
 
@@ -31366,10 +31360,6 @@ let scoreTimingDetail =
       }
       if (!curtain) return;
       curtain.classList.remove('active', 'reveal');
-      curtain.style.removeProperty('opacity');
-      curtain.style.removeProperty('visibility');
-      curtain.style.removeProperty('pointer-events');
-      curtain.style.removeProperty('transition');
       curtain.setAttribute('aria-hidden', 'true');
     }
 
@@ -31403,7 +31393,6 @@ let scoreTimingDetail =
 
     function primeGeekOrientationCurtainV2315() {
       ensureOrientationCurtainV2225();
-      startGeekOrientationAngleWatchV2316();
       if (!(geekOrientationBaselineWidthV2315 > 0) || !(geekOrientationBaselineHeightV2315 > 0)) {
         markGeekOrientationViewportSettledV2315();
       }
@@ -31441,57 +31430,6 @@ let scoreTimingDetail =
       if (aspectFlip || oppositeAxisMotion) acquireGeekOrientationCurtainEarlyV2315();
     }
 
-    /* V23.16 — screen.orientation/window.orientation can flip before the later
-       viewport reconciliation callbacks are dispatched. Poll only while a GEEK
-       orientation surface is actually open and acquire white on the first native
-       angle change. This does not predict/force rotation and does no layout work. */
-    let geekOrientationAngleWatchRunningV2316 = false;
-    let geekOrientationNativeAngleV2316 = null;
-
-    function nativeOrientationAngleV2316() {
-      let angle = null;
-      try {
-        if (window.screen && screen.orientation && Number.isFinite(Number(screen.orientation.angle))) {
-          angle = Number(screen.orientation.angle);
-        } else if (Number.isFinite(Number(window.orientation))) {
-          angle = Number(window.orientation);
-        }
-      } catch (_) {}
-      if (!Number.isFinite(angle)) return null;
-      angle = ((angle % 360) + 360) % 360;
-      return angle;
-    }
-
-    function startGeekOrientationAngleWatchV2316() {
-      if (geekOrientationAngleWatchRunningV2316) return;
-      geekOrientationAngleWatchRunningV2316 = true;
-      geekOrientationNativeAngleV2316 = nativeOrientationAngleV2316();
-      const tickV2316 = () => {
-        if (!geekOrientationSurfaceActiveV2315()) {
-          geekOrientationAngleWatchRunningV2316 = false;
-          geekOrientationNativeAngleV2316 = null;
-          return;
-        }
-        const angle = nativeOrientationAngleV2316();
-        if (angle !== null) {
-          if (geekOrientationNativeAngleV2316 !== null && angle !== geekOrientationNativeAngleV2316) {
-            acquireGeekOrientationCurtainEarlyV2315();
-          }
-          geekOrientationNativeAngleV2316 = angle;
-        }
-        requestAnimationFrame(tickV2316);
-      };
-      requestAnimationFrame(tickV2316);
-    }
-
-    if (sshcpLandscapeMediaV2225) {
-      if (sshcpLandscapeMediaV2225.addEventListener) {
-        sshcpLandscapeMediaV2225.addEventListener('change', acquireGeekOrientationCurtainEarlyV2315);
-      } else if (sshcpLandscapeMediaV2225.addListener) {
-        sshcpLandscapeMediaV2225.addListener(acquireGeekOrientationCurtainEarlyV2315);
-      }
-    }
-
     window.addEventListener('orientationchange', acquireGeekOrientationCurtainEarlyV2315, true);
     window.addEventListener('resize', maybeAcquireGeekOrientationCurtainFromViewportV2315, { passive:true, capture:true });
     if (window.visualViewport) {
@@ -31514,21 +31452,13 @@ let scoreTimingDetail =
           requestAnimationFrame(start);
           return;
         }
-        /* V23.16 — release only the hard-acquisition overrides at reveal time;
-           computed state is already opaque from .active, so .reveal transitions
-           from white to transparent using timing-panel 6B. */
-        curtain.style.removeProperty('opacity');
-        curtain.style.removeProperty('visibility');
-        curtain.style.removeProperty('pointer-events');
-        curtain.style.removeProperty('transition');
-        void curtain.getBoundingClientRect();
         curtain.classList.add('reveal');
         sshcpOrientationCurtainTimerV2225 = window.setTimeout(() => {
           sshcpOrientationCurtainTimerV2225 = 0;
           if (!curtain.classList.contains('reveal')) return;
           curtain.classList.remove('active', 'reveal');
           curtain.setAttribute('aria-hidden', 'true');
-        }, Math.ceil(orientationTimingMsV2225('FADE_6B_ORIENTATION_CURTAIN_OUT', 0.30) + 60));
+        }, Math.ceil(orientationTimingMsV2225('FADE_6B_ORIENTATION_CURTAIN_OUT', 1.00) + 60));
       };
       requestAnimationFrame(start);
     }
@@ -31685,8 +31615,8 @@ let scoreTimingDetail =
 
             sshcpNormalLastLandscapeV2225 = finalLandscapeV2251;
             markGeekOrientationViewportSettledV2315();
-            /* V23.16 — destination geometry is already committed under solid white.
-               Reveal immediately from settled white using the current 1.00s 6B test fade. */
+            /* V23.15 — destination geometry is already committed under solid white.
+               One paint frame is enough before the established 0.30s 6B fade. */
             revealOrientationCurtainV2225(0);
             geekOrientationSwitchingV2251 = false;
 
