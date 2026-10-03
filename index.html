@@ -1,3 +1,6 @@
+<!-- SSHCP | BASE KEY: 23.14-M6Q4VX | BUILD KEY: 23.15-P8M4QN -->
+<!-- SSHCP V23.15 GEEK ORIENTATION CURTAIN PRE-ACQUISITION - exact V23.14 donor.
+     Refines only the in-place regular-GEEK <-> landscape ALL TEAMS rotation handoff. The dedicated white orientation curtain is now pre-mounted/compositor-ready while GEEK is open, stays visibility-present at opacity 0 instead of being lazily created/hidden, and is forced fully opaque on the earliest available orientation/major two-axis viewport-change signals before the normal matchMedia reconciliation runs. Destination data remains the already-prepared V22.51 in-memory copy; V22.52 still waits for the real visualViewport to settle and commits shared/ALL TEAMS geometry under white. After settled geometry, the existing timing-panel 6B 0.30s white-to-destination fade is preserved, with one unnecessary pre-reveal animation frame removed. No reload, no extra Worker/Sheets read, no GEEK/ALL TEAMS geometry or adaptive-row math changes, no detail-card changes, and no Scorecard/Leaderboard/Summary/GAME/SKINS/scoring/ranking/PDF/Worker/CF3.30 changes. HOME label advances to V23.15. -->
 <!-- SSHCP | BASE KEY: 23.13-K7M4QV | BUILD KEY: 23.14-M6Q4VX -->
 <!-- SSHCP V23.14 ADAPTIVE LANDSCAPE ALL TEAMS STAT ROWS - exact V23.13 donor.
      Changes only the dedicated landscape GEEK ALL TEAMS vertical row density. The established S25 landscape effective-height reference is 995 physical/effective pixels (settled visualViewport height × DPR) with the existing five complete stat rows. After the existing V22.52 settled-landscape viewport handoff and while the white orientation curtain still covers the destination, ALL TEAMS computes capacity = current settled effective height ÷ 995, rounds the theoretical 5×capacity row count to the nearest complete row, then deliberately reserves one row of capacity above the five-row baseline: visible rows = max(5, rounded theoretical rows - 1). This keeps S25 at 5 rows while the tested iPad/Web landscape 1784 effective height resolves to 8 rows, preserving some larger-screen readability instead of spending all extra height on density. Header/data-row proportions, nine-team horizontal geometry, device-pixel track solver, rails, eased snapping, detail cards, portrait GEEK, filters/data/math, PDF flow, Scorecard/Leaderboard/Summary/GAME/SKINS, scoring, ranking/tiebreak, Worker/API and CF3.30 remain unchanged. Screen Layout Log reports the resolved adaptive row target/capacity. HOME label advances to V23.14. -->
@@ -13653,9 +13656,14 @@ html.sshcp-pre-geek-transition-v2220 body::after{
   border:0!important;
   background:#fff!important;
   opacity:0!important;
-  visibility:hidden!important;
+  visibility:visible!important;
   pointer-events:none!important;
   transition:none!important;
+  transform:translateZ(0)!important;
+  -webkit-transform:translateZ(0)!important;
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+  contain:paint!important;
   will-change:opacity;
 }
 .sshcp-orientation-transition-curtain.active{
@@ -14403,7 +14411,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.14</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.15</span></span>
         </button>
         <script>
           (function () {
@@ -31051,6 +31059,10 @@ let scoreTimingDetail =
        landscape viewport exists. */
     function prepareGeekAllTeamsV2251() {
       if (!geekDataV180 || !Array.isArray(geekDataV180.categories)) return false;
+      /* V23.15 — keep the white orientation layer mounted/compositor-ready before
+         the user physically rotates. Activation then becomes only an opacity/class
+         flip instead of DOM creation during the browser's own rotation animation. */
+      primeGeekOrientationCurtainV2315();
       ensureGeekAllTeamsShellV2216();
       renderGeekAllTeamsV2216();
       return true;
@@ -31348,6 +31360,84 @@ let scoreTimingDetail =
       curtain.setAttribute('aria-hidden', 'true');
     }
 
+    /* V23.15 — acquire solid white before the browser's native rotation animation
+       can expose either the old portrait frame or a partially rebuilt destination.
+       The layer is already mounted; these listeners only force opacity to 1. */
+    let geekOrientationBaselineWidthV2315 = 0;
+    let geekOrientationBaselineHeightV2315 = 0;
+
+    function geekOrientationViewportV2315() {
+      const vv = window.visualViewport;
+      return {
+        width: Math.max(1, Number(vv && vv.width) || Number(window.innerWidth) || 1),
+        height: Math.max(1, Number(vv && vv.height) || Number(window.innerHeight) || 1)
+      };
+    }
+
+    function geekOrientationSurfaceActiveV2315() {
+      return !!(
+        isRegularGeekModeOpenV2230() ||
+        geekAllTeamsOpenV2216 ||
+        (els.modalOverlay && els.modalOverlay.classList.contains('geek-all-teams-detail-v2238'))
+      );
+    }
+
+    function markGeekOrientationViewportSettledV2315() {
+      const viewport = geekOrientationViewportV2315();
+      geekOrientationBaselineWidthV2315 = viewport.width;
+      geekOrientationBaselineHeightV2315 = viewport.height;
+    }
+
+    function primeGeekOrientationCurtainV2315() {
+      ensureOrientationCurtainV2225();
+      if (!(geekOrientationBaselineWidthV2315 > 0) || !(geekOrientationBaselineHeightV2315 > 0)) {
+        markGeekOrientationViewportSettledV2315();
+      }
+    }
+
+    function acquireGeekOrientationCurtainEarlyV2315() {
+      if (geekRequiredRotationReloadingV2220 || !geekOrientationSurfaceActiveV2315()) return;
+      holdOrientationCurtainV2225();
+    }
+
+    function maybeAcquireGeekOrientationCurtainFromViewportV2315() {
+      const viewport = geekOrientationViewportV2315();
+      if (!geekOrientationSurfaceActiveV2315()) {
+        geekOrientationBaselineWidthV2315 = viewport.width;
+        geekOrientationBaselineHeightV2315 = viewport.height;
+        return;
+      }
+      if (!(geekOrientationBaselineWidthV2315 > 0) || !(geekOrientationBaselineHeightV2315 > 0)) {
+        geekOrientationBaselineWidthV2315 = viewport.width;
+        geekOrientationBaselineHeightV2315 = viewport.height;
+        return;
+      }
+
+      const dw = viewport.width - geekOrientationBaselineWidthV2315;
+      const dh = viewport.height - geekOrientationBaselineHeightV2315;
+      const widthMoved = Math.abs(dw) >= Math.max(18, geekOrientationBaselineWidthV2315 * 0.055);
+      const heightMoved = Math.abs(dh) >= Math.max(18, geekOrientationBaselineHeightV2315 * 0.055);
+      const oppositeAxisMotion = widthMoved && heightMoved && Math.sign(dw) !== Math.sign(dh);
+      const aspectFlip =
+        (viewport.width > viewport.height) !==
+        (geekOrientationBaselineWidthV2315 > geekOrientationBaselineHeightV2315);
+
+      /* Browser chrome normally changes height only; pinch zoom changes width and
+         height in the same direction. Rotation is the opposite-axis/aspect-flip case. */
+      if (aspectFlip || oppositeAxisMotion) acquireGeekOrientationCurtainEarlyV2315();
+    }
+
+    window.addEventListener('orientationchange', acquireGeekOrientationCurtainEarlyV2315, true);
+    window.addEventListener('resize', maybeAcquireGeekOrientationCurtainFromViewportV2315, { passive:true, capture:true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', maybeAcquireGeekOrientationCurtainFromViewportV2315, { passive:true });
+    }
+    try {
+      if (window.screen && screen.orientation && screen.orientation.addEventListener) {
+        screen.orientation.addEventListener('change', acquireGeekOrientationCurtainEarlyV2315);
+      }
+    } catch (_) {}
+
     function revealOrientationCurtainV2225(frames = 2) {
       const curtain = document.getElementById('sshcpOrientationCurtain');
       if (!curtain || !curtain.classList.contains('active')) return;
@@ -31490,7 +31580,6 @@ let scoreTimingDetail =
       holdOrientationCurtainV2225();
 
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
           const landscapeNowV2251 = isLandscapeOrientationV2225();
 
           if (landscapeNowV2251) {
@@ -31522,7 +31611,10 @@ let scoreTimingDetail =
             }
 
             sshcpNormalLastLandscapeV2225 = finalLandscapeV2251;
-            revealOrientationCurtainV2225(1);
+            markGeekOrientationViewportSettledV2315();
+            /* V23.15 — destination geometry is already committed under solid white.
+               One paint frame is enough before the established 0.30s 6B fade. */
+            revealOrientationCurtainV2225(0);
             geekOrientationSwitchingV2251 = false;
 
             const orientationMismatchV2251 =
@@ -31532,7 +31624,6 @@ let scoreTimingDetail =
               requestAnimationFrame(reconcileGeekOrientationInPlaceV2251);
             }
           });
-        });
       });
     }
 
@@ -32860,6 +32951,9 @@ let scoreTimingDetail =
     async function openGeekModeV180() {
       setHomeHamburgerVisibleV2055(false);
       syncSharedGeometryV187();
+      /* V23.15 — pre-mount the invisible white orientation layer as soon as GEEK
+         entry begins so a later physical rotation never has to create it mid-spin. */
+      primeGeekOrientationCurtainV2315();
       /* V19.33: every visible GEEK entry starts a fresh validation set and
          retires only prior GEEK log rows; the rest of the Control Center run remains. */
       resetGeekAuditSessionV1932();
