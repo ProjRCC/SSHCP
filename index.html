@@ -1,3 +1,11 @@
+<!-- SSHCP | BASE KEY: 23.17-N6Q4RX | BUILD KEY: 23.18-K8M4QZ -->
+<!-- SSHCP V23.18 MULTI-EVENT RUNTIME — EXACT V23.17 DONOR / TEST / NOT GOLDEN.
+     Matched to CF3.31. Event key comes only from ?event=... and is required for
+     all Worker reads and writes, including QR/auth/score saves and test actions.
+     Every established app localStorage/sessionStorage method call is scoped to
+     GolfAPP:<event>:; no legacy storage reads/fallback. Bootstrap reads EVENT C1/C2
+     and uses selected event Drive images C3/C4 through authenticated Worker.
+     No scoring, visual geometry, GEEK/PDF, orientation or timing redesign. -->
 <!-- SSHCP | BASE KEY: 23.15-P8M4QN | BUILD KEY: 23.17-N6Q4RX -->
 <!-- SSHCP V23.17 GEEK ORIENTATION 1.00s DESTINATION REVEAL - exact V23.15 donor.
      Keeps V23.15 orientation-curtain pre-acquisition exactly intact and changes only timing-panel 6B from 0.30s to 1.00s. The white curtain still acquires immediately on the established V23.15 signals, the prepared portrait/landscape destination still settles underneath through the protected V22.51/V22.52 in-place handoff, and only the final solid-white-to-settled-destination fade lasts 1.00 second. V23.16 is intentionally abandoned and is not a donor. No orientation signal/lock changes from V23.16 are included. No GEEK/ALL TEAMS geometry, adaptive-row math, detail cards, Scorecard/Leaderboard/Summary/GAME/SKINS, scoring, ranking/tiebreak, PDF, Worker/API or CF3.30 changes. HOME label advances to V23.17. -->
@@ -213,13 +221,108 @@
   <meta charset="UTF-8">
 
   <script>
-    /* =========================================================
-       EVENT DETAILS — EDIT THESE TWO VALUES ONLY
-       ========================================================= */
-    window.SSHCP_EVENT = {
-      DETAILS: 'SimpleScramble - Sep 2026',
-      SHORT_NAME: 'SSHCP'
-    };
+    /* CF3.31 / V23.18 — strict event/bootstrap, with no event-specific defaults.
+       Keep storage namespaces in place BEFORE any first-paint or QR state reads. */
+    (function(){
+      'use strict';
+      var queryV2318 = new URLSearchParams(window.location.search);
+      var eventV2318 = String(queryV2318.get('event') || '').trim();
+      var validV2318 = /^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(eventV2318);
+      var namespaceV2318 = validV2318 ? 'GolfAPP:' + eventV2318 + ':' : null;
+      window.GOLFAPP_EVENT_KEY = validV2318 ? eventV2318 : '';
+      window.SSHCP_EVENT = { DETAILS:'', SHORT_NAME:'' };
+      var nativeFetchV2318 = window.fetch.bind(window);
+      function scopedStorageV2318(raw) {
+        return Object.freeze({
+          getItem: function(k) {
+            if (!namespaceV2318) return null;
+            return raw.getItem(namespaceV2318 + String(k));
+          },
+          setItem: function(k,v) {
+            if (!namespaceV2318) throw new Error('Missing event context.');
+            return raw.setItem(namespaceV2318 + String(k), String(v));
+          },
+          removeItem: function(k) {
+            if (!namespaceV2318) return;
+            return raw.removeItem(namespaceV2318 + String(k));
+          }
+        });
+      }
+      window.sshcpLocalStorageV2318 = scopedStorageV2318(window.localStorage);
+      window.sshcpSessionStorageV2318 = scopedStorageV2318(window.sessionStorage);
+      window.sshcpEventFetchV2318 = function(input, options) {
+        var rawUrl = input instanceof Request ? input.url : String(input);
+        var url = new URL(rawUrl, window.location.href);
+        if (url.origin !== 'https://rotbtest.projrcc.workers.dev') {
+          return nativeFetchV2318(input, options);
+        }
+        if (!validV2318) {
+          return Promise.reject(new Error('Required ?event=EVENTKEY is missing or invalid.'));
+        }
+        // Override any accidental conflicting value: URL context is authoritative.
+        url.searchParams.set('event', eventV2318);
+        var dispatchV2318 = function() {
+          var target = input instanceof Request ? new Request(url.toString(), input) : url.toString();
+          return nativeFetchV2318(target, options);
+        };
+        if (url.searchParams.get('action') === 'eventConfig') return dispatchV2318();
+        // Gate every action, including score writes, behind verified C2 bootstrap.
+        return window.__sshcpEventBootstrapV2318.then(dispatchV2318);
+      };
+      function bootErrorV2318(error) {
+        function renderV2318() {
+          if (document.getElementById('sshcpEventFailureV2318')) return;
+          var cover = document.createElement('div');
+          cover.id = 'sshcpEventFailureV2318';
+          cover.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#fff;color:#133362;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:Arial,sans-serif;font-size:18px;line-height:1.5;';
+          var text = document.createElement('div');
+          text.textContent = 'EVENT UNAVAILABLE\n' + String(error && error.message || 'Unable to load event.');
+          text.style.whiteSpace = 'pre-line';
+          cover.appendChild(text);
+          document.body.appendChild(cover);
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderV2318, {once:true});
+        else renderV2318();
+      }
+      function updatePresentationV2318(data) {
+        function applyV2318() {
+          var info = document.getElementById('homeEventInfoV2255');
+          var leader = document.getElementById('leaderTiming');
+          if (info) info.textContent = data.longName;
+          if (leader) leader.textContent = data.shortName;
+          var homeImage = document.querySelector('#homeView .splash-image');
+          var infoImage = document.getElementById('teamInfoImageV2032');
+          var baseUrl = 'https://rotbtest.projrcc.workers.dev/?event=' + encodeURIComponent(eventV2318) + '&action=eventImage&kind=';
+          if (homeImage) {
+            homeImage.alt = data.longName;
+            homeImage.src = baseUrl + 'home';
+          }
+          if (infoImage) {
+            infoImage.alt = data.longName + ' event information';
+            infoImage.src = baseUrl + 'info';
+          }
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyV2318, {once:true});
+        else applyV2318();
+      }
+      window.__sshcpEventBootstrapV2318 = (async function(){
+        if (!validV2318) throw new Error('Open this page using ?event=SSHCP26 (or another valid event key).');
+        var response = await window.sshcpEventFetchV2318(
+          'https://rotbtest.projrcc.workers.dev/?action=eventConfig',
+          {cache:'no-store'}
+        );
+        var data = await response.json();
+        if (!response.ok || data.ok !== true || data.event !== eventV2318 ||
+            data.shortName !== eventV2318 || !data.longName || !data.homeImage || !data.infoImage) {
+          throw new Error(data.error || 'Event metadata or identity validation failed.');
+        }
+        window.SSHCP_EVENT.DETAILS = String(data.longName);
+        window.SSHCP_EVENT.SHORT_NAME = String(data.shortName);
+        updatePresentationV2318(data);
+        return data;
+      })();
+      window.__sshcpEventBootstrapV2318.catch(bootErrorV2318);
+    })();
   </script>
 
   <script>
@@ -281,7 +384,7 @@
            refresh, which intentionally performs a fresh reload/read. Hold first
            paint white until that requested refresh has rebuilt. */
         var geekRequiredRotationRestoreV2220 = String(
-          sessionStorage.getItem('sshcpGeekRequiredRotationRestoreV2220') || ''
+          sshcpSessionStorageV2318.getItem('sshcpGeekRequiredRotationRestoreV2220') || ''
         ).trim();
         window.__sshcpGeekRequiredRotationRestoreV2220 = geekRequiredRotationRestoreV2220;
         if (geekRequiredRotationRestoreV2220 === 'allteams' || geekRequiredRotationRestoreV2220 === 'geek') {
@@ -304,7 +407,7 @@
           initialQrParams.get('passkey') || initialQrParams.get('key') || ''
         ).trim();
         var storedQrPasskeyV2144 = String(
-          localStorage.getItem('sshcpQrPasskey') || ''
+          sshcpLocalStorageV2318.getItem('sshcpQrPasskey') || ''
         ).trim();
 
         /* V21.44 — an installed PWA/browser can reopen the exact QR URL that
@@ -327,8 +430,8 @@
            only while this device has no saved QR or local scoring authorization.
            V21.44 treats the same already-saved incoming QR as returning auth. */
         var hasSavedAuthorizationV180b = !!(
-          localStorage.getItem('sshcpQrPasskey') ||
-          localStorage.getItem('rotbAuthorizedTeam')
+          sshcpLocalStorageV2318.getItem('sshcpQrPasskey') ||
+          sshcpLocalStorageV2318.getItem('rotbAuthorizedTeam')
         );
         var competitorWelcomeV180b = !!(
           !hasIncomingQrWelcome && !hasSavedAuthorizationV180b
@@ -347,7 +450,7 @@
           document.documentElement.classList.add('sshcp-qr-welcome-v170');
         }
 
-        var rememberedView = sessionStorage.getItem('rotbCurrentView') || 'home';
+        var rememberedView = sshcpSessionStorageV2318.getItem('rotbCurrentView') || 'home';
         window.__sshcpBootView = rememberedView;
         if (rememberedView === 'scorecard' || rememberedView === 'leaderboard') {
           document.documentElement.classList.add('sshcp-pre-' + rememberedView);
@@ -389,15 +492,15 @@
 
         if (
           rememberedView === 'leaderboard' &&
-          sessionStorage.getItem('sshcpTournamentComplete') === '1'
+          sshcpSessionStorageV2318.getItem('sshcpTournamentComplete') === '1'
         ) {
           document.documentElement.classList.add('sshcp-pre-complete');
         }
 
-        var role = localStorage.getItem('sshcpQrRole') || 'NONE';
-        var qrTeam = localStorage.getItem('sshcpQrTeam') || '';
-        var authorizedTeam = localStorage.getItem('rotbAuthorizedTeam') || '';
-        var rememberedTeam = localStorage.getItem('rotbSelectedTeam') || '';
+        var role = sshcpLocalStorageV2318.getItem('sshcpQrRole') || 'NONE';
+        var qrTeam = sshcpLocalStorageV2318.getItem('sshcpQrTeam') || '';
+        var authorizedTeam = sshcpLocalStorageV2318.getItem('rotbAuthorizedTeam') || '';
+        var rememberedTeam = sshcpLocalStorageV2318.getItem('rotbSelectedTeam') || '';
 
         window.__sshcpBootTeam =
           (role === 'QR' && qrTeam) ? qrTeam :
@@ -414,7 +517,7 @@
           (role === 'QR' && !!qrTeam);
 
         window.__sshcpBootTournamentComplete =
-          sessionStorage.getItem('sshcpTournamentComplete') === '1';
+          sshcpSessionStorageV2318.getItem('sshcpTournamentComplete') === '1';
 
         /* V16.30 — completed HOME styling/label is available before normal
            runtime initialization so returning golfers do not flash LIVE state. */
@@ -424,16 +527,16 @@
         );
 
         window.__sshcpBootFinalActionMode =
-          sessionStorage.getItem('sshcpFinalActionMode') || '';
+          sshcpSessionStorageV2318.getItem('sshcpFinalActionMode') || '';
 
         window.__sshcpBootFinalActionLabel =
-          (sessionStorage.getItem('sshcpFinalActionLabel') || '').replace(/\*+$/, '');
+          (sshcpSessionStorageV2318.getItem('sshcpFinalActionLabel') || '').replace(/\*+$/, '');
 
         /* V5.3 refresh continuity: data snapshots are read before paint so a
            pull-to-refresh can show the last-known scorecard/leaderboard immediately. */
         try {
           window.__sshcpBootScorecardSnapshot = JSON.parse(
-            sessionStorage.getItem('sshcpScorecardSnapshotV53') || 'null'
+            sshcpSessionStorageV2318.getItem('sshcpScorecardSnapshotV53') || 'null'
           );
         } catch (_) {
           window.__sshcpBootScorecardSnapshot = null;
@@ -441,7 +544,7 @@
 
         try {
           window.__sshcpBootLeaderboardSnapshot = JSON.parse(
-            sessionStorage.getItem('sshcpLeaderboardSnapshotV53') || 'null'
+            sshcpSessionStorageV2318.getItem('sshcpLeaderboardSnapshotV53') || 'null'
           );
           if (
             window.__sshcpBootLeaderboardSnapshot &&
@@ -463,7 +566,7 @@
         */
         try {
           var savedGeometry = JSON.parse(
-            sessionStorage.getItem('sshcpResponsiveGeometryV5') || 'null'
+            sshcpSessionStorageV2318.getItem('sshcpResponsiveGeometryV5') || 'null'
           );
 
           if (savedGeometry && savedGeometry.v188 === true) {
@@ -505,7 +608,7 @@
           var v16NowW = window.innerWidth || 1;
           var v16NowH = window.innerHeight || 1;
           var savedV16Shell = JSON.parse(
-            sessionStorage.getItem('sshcpV16ShellGeometry') || 'null'
+            sshcpSessionStorageV2318.getItem('sshcpV16ShellGeometry') || 'null'
           );
           var bootV16Vars = null;
 
@@ -11818,7 +11921,7 @@ body.team-info-open-v2032{
 }
 </style>
 
-  <link rel="preload" as="image" href="teaminfo.jpg">
+  <!-- V23.18 — event info image loaded by event-scoped Worker after C1:C4 verification. -->
 
 <style>
 html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2105,
@@ -14333,7 +14436,6 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
             <div class="splash-image-wrap">
 
         <img
-          src="Splash_white.jpg"
           class="splash-image"
           alt="Running of the Bulls 2026"
         >
@@ -14388,7 +14490,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
                 document.body.classList.add('team-qr-locked');
               }
 
-              if ((localStorage.getItem('sshcpQrRole') || '') === 'MASTER') {
+              if ((sshcpLocalStorageV2318.getItem('sshcpQrRole') || '') === 'MASTER') {
                 document.body.classList.add('master-qr');
               }
 
@@ -14414,7 +14516,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.17</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.18</span></span>
         </button>
         <script>
           (function () {
@@ -14493,12 +14595,12 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
               try {
                 var scoreHeader = document.getElementById('scoreTiming');
                 if (!scoreHeader) return;
-                var bootRole = localStorage.getItem('sshcpQrRole') || 'NONE';
+                var bootRole = sshcpLocalStorageV2318.getItem('sshcpQrRole') || 'NONE';
                 var bootScoreHeader = bootRole === 'MASTER'
                   ? 'MASTER'
                   : (bootRole === 'QR'
-                      ? (localStorage.getItem('sshcpQrTeam') || '')
-                      : (localStorage.getItem('rotbAuthorizedTeam') || ''));
+                      ? (sshcpLocalStorageV2318.getItem('sshcpQrTeam') || '')
+                      : (sshcpLocalStorageV2318.getItem('rotbAuthorizedTeam') || ''));
                 scoreHeader.textContent = String(bootScoreHeader || '').trim().toUpperCase();
               } catch (_) {}
             })();
@@ -15544,7 +15646,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
       if (gameModeLoadPromiseV2026 && !forceFresh) return gameModeLoadPromiseV2026;
 
       const run = (async () => {
-        const response = await fetch(
+        const response = await sshcpEventFetchV2318(
           CLOUDFLARE_API_URL + '?action=gameMode&refresh=' + Date.now(),
           { cache:'no-store' }
         );
@@ -16221,7 +16323,7 @@ let scoreTimingDetail =
     const SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979 =
       'sshcpFirstScorecardAfterAuthV1979';
 
-    function qrAuthorizationFingerprintV1979(role = getQrRole(), qrId = localStorage.getItem(SSHCP_QR_ID_KEY) || '', team = getQrTeam()) {
+    function qrAuthorizationFingerprintV1979(role = getQrRole(), qrId = sshcpLocalStorageV2318.getItem(SSHCP_QR_ID_KEY) || '', team = getQrTeam()) {
       const cleanRoleV1979 = String(role || '').toUpperCase();
       if (cleanRoleV1979 === 'QR') {
         return 'QR|' + normalizeName(qrId) + '|' + normalizeName(team);
@@ -16236,20 +16338,20 @@ let scoreTimingDetail =
       const cleanV1979 = String(fingerprintV1979 || '');
       if (!cleanV1979) return;
       try {
-        sessionStorage.setItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979, cleanV1979);
+        sshcpSessionStorageV2318.setItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979, cleanV1979);
       } catch (_) {}
     }
 
     function clearFirstScorecardAfterAuthorizationV1979() {
       try {
-        sessionStorage.removeItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979);
+        sshcpSessionStorageV2318.removeItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979);
       } catch (_) {}
     }
 
     function consumeFirstScorecardAfterAuthorizationV1979() {
       let pendingV1979 = '';
       try {
-        pendingV1979 = sessionStorage.getItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979) || '';
+        pendingV1979 = sshcpSessionStorageV2318.getItem(SSHCP_FIRST_SCORECARD_AFTER_AUTH_KEY_V1979) || '';
       } catch (_) {}
 
       const currentV1979 = qrAuthorizationFingerprintV1979();
@@ -16356,14 +16458,14 @@ let scoreTimingDetail =
         try { sshcpQrAuthControllerV1631.abort(); } catch (_) {}
       }
       const token = makeQrAuthRequestTokenV1631();
-      localStorage.setItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631, token);
+      sshcpLocalStorageV2318.setItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631, token);
       const controller = typeof AbortController === 'function' ? new AbortController() : null;
       sshcpQrAuthControllerV1631 = controller;
       return { token, controller };
     }
 
     function invalidateQrAuthRequestsV1631() {
-      localStorage.setItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631, 'REMOVED-' + makeQrAuthRequestTokenV1631());
+      sshcpLocalStorageV2318.setItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631, 'REMOVED-' + makeQrAuthRequestTokenV1631());
       if (sshcpQrAuthControllerV1631) {
         try { sshcpQrAuthControllerV1631.abort(); } catch (_) {}
       }
@@ -16371,7 +16473,7 @@ let scoreTimingDetail =
     }
 
     function qrAuthRequestIsCurrentV1631(token) {
-      return localStorage.getItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631) === token;
+      return sshcpLocalStorageV2318.getItem(SSHCP_QR_AUTH_REQUEST_KEY_V1631) === token;
     }
 
     /* CF V1.3 now supplies the complete TEST/admin QR directory in one
@@ -16385,7 +16487,7 @@ let scoreTimingDetail =
     function readStoredTestQrDirectory() {
       if (sshcpQrDirectoryCache) return sshcpQrDirectoryCache;
       try {
-        const parsed = JSON.parse(localStorage.getItem(SSHCP_TEST_QR_CACHE_KEY) || 'null');
+        const parsed = JSON.parse(sshcpLocalStorageV2318.getItem(SSHCP_TEST_QR_CACHE_KEY) || 'null');
         if (Array.isArray(parsed) && parsed.length) {
           sshcpQrDirectoryCache = parsed;
           return parsed;
@@ -16397,16 +16499,16 @@ let scoreTimingDetail =
     function saveStoredTestQrDirectory(directory) {
       if (!Array.isArray(directory) || !directory.length) return;
       sshcpQrDirectoryCache = directory;
-      localStorage.setItem(SSHCP_TEST_QR_CACHE_KEY, JSON.stringify(directory));
-      localStorage.setItem(SSHCP_TEST_QR_CACHE_TIME_KEY, String(Date.now()));
+      sshcpLocalStorageV2318.setItem(SSHCP_TEST_QR_CACHE_KEY, JSON.stringify(directory));
+      sshcpLocalStorageV2318.setItem(SSHCP_TEST_QR_CACHE_TIME_KEY, String(Date.now()));
     }
 
-    function getQrPasskey(){ return localStorage.getItem(SSHCP_QR_PASSKEY_KEY) || ''; }
-    function getQrRole(){ return localStorage.getItem(SSHCP_QR_ROLE_KEY) || 'NONE'; }
-    function getQrTeam(){ return localStorage.getItem(SSHCP_QR_TEAM_KEY) || ''; }
+    function getQrPasskey(){ return sshcpLocalStorageV2318.getItem(SSHCP_QR_PASSKEY_KEY) || ''; }
+    function getQrRole(){ return sshcpLocalStorageV2318.getItem(SSHCP_QR_ROLE_KEY) || 'NONE'; }
+    function getQrTeam(){ return sshcpLocalStorageV2318.getItem(SSHCP_QR_TEAM_KEY) || ''; }
     function isMasterQr(){ return getQrRole() === 'MASTER'; }
     function isTeamQr(){ return getQrRole() === 'QR'; }
-        function isPreAuthorizeEnabledV1958(){ return localStorage.getItem(SSHCP_PREAUTHORIZE_KEY) !== '0'; }
+        function isPreAuthorizeEnabledV1958(){ return sshcpLocalStorageV2318.getItem(SSHCP_PREAUTHORIZE_KEY) !== '0'; }
     function syncTeamQrLockedUi(){
       const locked = isTeamQr() && !!getQrTeam();
       const master = isMasterQr();
@@ -16450,12 +16552,12 @@ let scoreTimingDetail =
       requestAnimationFrame(fitTestPageButtonText);
     }
         function setPreAuthorizeEnabledV1958(enabled){
-      localStorage.setItem(SSHCP_PREAUTHORIZE_KEY, enabled ? '1' : '0');
+      sshcpLocalStorageV2318.setItem(SSHCP_PREAUTHORIZE_KEY, enabled ? '1' : '0');
       /* V19.59 — PREAUTH is a MASTER browsing/scoring convenience only.
          It never converts MASTER into a fixed QR/team authorization. */
-      if (!enabled && localStorage.getItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY) === '1') {
-        localStorage.removeItem('rotbAuthorizedTeam');
-        localStorage.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
+      if (!enabled && sshcpLocalStorageV2318.getItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY) === '1') {
+        sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
+        sshcpLocalStorageV2318.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
       }
       syncTeamQrLockedUi();
       syncTestAuthorizationToggle();
@@ -16469,7 +16571,7 @@ let scoreTimingDetail =
          itself is the authorization step. MASTER remains MASTER, so HOME and
          SCORECARD keep their selectors while team-aware views use this team. */
       if (!isMasterQr()) return true;
-      localStorage.setItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY, '1');
+      sshcpLocalStorageV2318.setItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY, '1');
       setAuthorizedTeam(String(team.name));
       rememberSelectedTeam(String(team.name));
       syncTestAuthorizationToggle();
@@ -16478,13 +16580,13 @@ let scoreTimingDetail =
     }
     function clearQrAuthorization(){
       const hadQrAuthorizationV2135 = !!(
-        localStorage.getItem(SSHCP_QR_PASSKEY_KEY) ||
-        localStorage.getItem(SSHCP_QR_ROLE_KEY) ||
-        localStorage.getItem(SSHCP_QR_ID_KEY) ||
-        localStorage.getItem(SSHCP_QR_TEAM_KEY) ||
-        localStorage.getItem(SSHCP_QR_SLOT_KEY)
+        sshcpLocalStorageV2318.getItem(SSHCP_QR_PASSKEY_KEY) ||
+        sshcpLocalStorageV2318.getItem(SSHCP_QR_ROLE_KEY) ||
+        sshcpLocalStorageV2318.getItem(SSHCP_QR_ID_KEY) ||
+        sshcpLocalStorageV2318.getItem(SSHCP_QR_TEAM_KEY) ||
+        sshcpLocalStorageV2318.getItem(SSHCP_QR_SLOT_KEY)
       );
-      [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>localStorage.removeItem(k));
+      [SSHCP_QR_PASSKEY_KEY,SSHCP_QR_ROLE_KEY,SSHCP_QR_ID_KEY,SSHCP_QR_TEAM_KEY,SSHCP_QR_SLOT_KEY].forEach(k=>sshcpLocalStorageV2318.removeItem(k));
       if (hadQrAuthorizationV2135) resetControlCenterUnlockedV2135();
       clearFirstScorecardAfterAuthorizationV1979();
       syncTeamQrLockedUi();
@@ -16492,8 +16594,8 @@ let scoreTimingDetail =
     function removeQrAuthorization(){
       invalidateQrAuthRequestsV1631();
       clearQrAuthorization();
-      localStorage.removeItem('rotbAuthorizedTeam');
-      localStorage.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
+      sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
+      sshcpLocalStorageV2318.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
       scorecardHasLoaded = false;
       leaderboardHasLoaded = false;
       syncTestAuthorizationToggle();
@@ -16502,17 +16604,17 @@ let scoreTimingDetail =
     function saveQrAuthorization(data, passkey){
       const priorFingerprintV1979 = qrAuthorizationFingerprintV1979();
 
-      localStorage.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
-      localStorage.setItem(SSHCP_QR_PASSKEY_KEY, passkey);
-      localStorage.setItem(SSHCP_QR_ROLE_KEY, data.role || 'NONE');
-      localStorage.setItem(SSHCP_QR_ID_KEY, data.qrId || '');
-      localStorage.setItem(SSHCP_QR_TEAM_KEY, data.team || '');
-      localStorage.setItem(SSHCP_QR_SLOT_KEY, data.slot ? String(data.slot) : '');
+      sshcpLocalStorageV2318.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
+      sshcpLocalStorageV2318.setItem(SSHCP_QR_PASSKEY_KEY, passkey);
+      sshcpLocalStorageV2318.setItem(SSHCP_QR_ROLE_KEY, data.role || 'NONE');
+      sshcpLocalStorageV2318.setItem(SSHCP_QR_ID_KEY, data.qrId || '');
+      sshcpLocalStorageV2318.setItem(SSHCP_QR_TEAM_KEY, data.team || '');
+      sshcpLocalStorageV2318.setItem(SSHCP_QR_SLOT_KEY, data.slot ? String(data.slot) : '');
       if (data.role === 'QR' && data.team) {
-        localStorage.setItem('rotbAuthorizedTeam', data.team);
+        sshcpLocalStorageV2318.setItem('rotbAuthorizedTeam', data.team);
         rememberSelectedTeam(data.team);
       }
-      if (data.role === 'MASTER') localStorage.removeItem('rotbAuthorizedTeam');
+      if (data.role === 'MASTER') sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
 
       const nextFingerprintV1979 = qrAuthorizationFingerprintV1979();
       if (nextFingerprintV1979 && nextFingerprintV1979 !== priorFingerprintV1979) {
@@ -16583,7 +16685,7 @@ let scoreTimingDetail =
       if(!clean){
         invalidateQrAuthRequestsV1631();
         clearQrAuthorization();
-        localStorage.removeItem('rotbAuthorizedTeam');
+        sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
         syncTestAuthorizationToggle();
         updateHomeScorecardAccess();
         addTestLog('QR AUTH CHECK','INVALID','—','EMPTY PASSKEY');
@@ -16602,7 +16704,7 @@ let scoreTimingDetail =
         const fetchOptions = {cache:'no-store'};
         if (request.controller) fetchOptions.signal = request.controller.signal;
 
-        const response=await fetch(
+        const response=await sshcpEventFetchV2318(
           CLOUDFLARE_API_URL+
           '?action=qrAuth&passkey='+encodeURIComponent(clean)+
           (auditEvent ? '&audit=1' : '')+
@@ -16647,7 +16749,7 @@ let scoreTimingDetail =
 
         if(data.valid!==true){
           clearQrAuthorization();
-          localStorage.removeItem('rotbAuthorizedTeam');
+          sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
           syncTestAuthorizationToggle();
           updateHomeScorecardAccess();
           addTestLog(
@@ -16665,7 +16767,7 @@ let scoreTimingDetail =
 
         if(data.role==='QR' && data.assigned!==true){
           clearQrAuthorization();
-          localStorage.removeItem('rotbAuthorizedTeam');
+          sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
           syncTestAuthorizationToggle();
           updateHomeScorecardAccess();
           addTestLog(
@@ -16745,7 +16847,7 @@ let scoreTimingDetail =
           history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
           if (storedOk === false) {
             clearQrAuthorization();
-            localStorage.removeItem('rotbAuthorizedTeam');
+            sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
           }
           return { incoming:false, returningIncoming:true, ok:storedOk };
         }
@@ -16761,7 +16863,7 @@ let scoreTimingDetail =
         const storedOk = await validateQrPasskey(getQrPasskey(),false,false);
         if (storedOk === false) {
           clearQrAuthorization();
-          localStorage.removeItem('rotbAuthorizedTeam');
+          sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
         }
         return { incoming:false, ok:storedOk };
       }
@@ -16798,7 +16900,7 @@ let scoreTimingDetail =
         let response = null;
 
         try {
-          response = await fetch(
+          response = await sshcpEventFetchV2318(
             CLOUDFLARE_API_URL +
               '?action=qrDirectory' +
               '&passkey=' + encodeURIComponent(SSHCP_MASTER_TEST_KEY) +
@@ -17136,7 +17238,7 @@ let scoreTimingDetail =
 
     function getAuthorizedTeam() {
       if (isTeamQr()) return getQrTeam();
-      return localStorage.getItem('rotbAuthorizedTeam') || '';
+      return sshcpLocalStorageV2318.getItem('rotbAuthorizedTeam') || '';
     }
 
 
@@ -17144,7 +17246,7 @@ let scoreTimingDetail =
       teamName
     ) {
 
-      localStorage.setItem(
+      sshcpLocalStorageV2318.setItem(
         'rotbAuthorizedTeam',
         teamName
       );
@@ -17163,7 +17265,7 @@ let scoreTimingDetail =
     function getRememberedSelectedTeam() {
 
       return (
-        localStorage.getItem(
+        sshcpLocalStorageV2318.getItem(
           'rotbSelectedTeam'
         ) || ''
       );
@@ -17175,7 +17277,7 @@ let scoreTimingDetail =
       teamName
     ) {
 
-      localStorage.setItem(
+      sshcpLocalStorageV2318.setItem(
         'rotbSelectedTeam',
         teamName
       );
@@ -17209,7 +17311,7 @@ let scoreTimingDetail =
       }
 
 
-      localStorage.setItem(
+      sshcpLocalStorageV2318.setItem(
         scorePositionKey(
           selectedTeam.name
         ),
@@ -17646,7 +17748,7 @@ let scoreTimingDetail =
         view;
 
 
-      sessionStorage.setItem(
+      sshcpSessionStorageV2318.setItem(
         'rotbCurrentView',
         view
       );
@@ -17657,7 +17759,7 @@ let scoreTimingDetail =
     function getRememberedView() {
 
       const value =
-        sessionStorage.getItem(
+        sshcpSessionStorageV2318.getItem(
           'rotbCurrentView'
         );
 
@@ -17690,20 +17792,20 @@ let scoreTimingDetail =
       'rotbTournamentTieBreakViewedV14';
 
     function hasViewedTournamentTieBreak() {
-      return localStorage.getItem(
+      return sshcpLocalStorageV2318.getItem(
         TOURNAMENT_TIEBREAK_VIEWED_KEY
       ) === '1';
     }
 
     function markTournamentTieBreakViewed() {
-      localStorage.setItem(
+      sshcpLocalStorageV2318.setItem(
         TOURNAMENT_TIEBREAK_VIEWED_KEY,
         '1'
       );
     }
 
     function resetTournamentTieBreakViewed() {
-      localStorage.removeItem(
+      sshcpLocalStorageV2318.removeItem(
         TOURNAMENT_TIEBREAK_VIEWED_KEY
       );
     }
@@ -17715,20 +17817,20 @@ let scoreTimingDetail =
       'rotbTournamentPlacesFinalizedV2267';
 
     function hasFinalizedTournamentPlacesV2267() {
-      return localStorage.getItem(
+      return sshcpLocalStorageV2318.getItem(
         TOURNAMENT_PLACES_FINALIZED_KEY_V2267
       ) === '1';
     }
 
     function markTournamentPlacesFinalizedV2267() {
-      localStorage.setItem(
+      sshcpLocalStorageV2318.setItem(
         TOURNAMENT_PLACES_FINALIZED_KEY_V2267,
         '1'
       );
     }
 
     function resetTournamentPlacesFinalizedV2267() {
-      localStorage.removeItem(
+      sshcpLocalStorageV2318.removeItem(
         TOURNAMENT_PLACES_FINALIZED_KEY_V2267
       );
     }
@@ -17741,7 +17843,7 @@ let scoreTimingDetail =
 
     function getTestLog() {
       try {
-        const parsed = JSON.parse(localStorage.getItem(TEST_LOG_KEY) || '[]');
+        const parsed = JSON.parse(sshcpLocalStorageV2318.getItem(TEST_LOG_KEY) || '[]');
         return Array.isArray(parsed) ? parsed : [];
       } catch (_) {
         return [];
@@ -17763,7 +17865,7 @@ let scoreTimingDetail =
 
       /* SSHCP V21.08 — no entry truncation. Diagnostic history remains until
          the user explicitly taps CLEAR LOG. DELETE ALL clears scores only. */
-      localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log));
+      sshcpLocalStorageV2318.setItem(TEST_LOG_KEY, JSON.stringify(log));
 
       if (currentView === 'testlog') renderTestLog();
     }
@@ -17827,7 +17929,7 @@ let scoreTimingDetail =
       let remembered = {};
       try {
         remembered = JSON.parse(
-          sessionStorage.getItem('sshcpResponsiveGeometryV5') || '{}'
+          sshcpSessionStorageV2318.getItem('sshcpResponsiveGeometryV5') || '{}'
         ) || {};
       } catch (_) {}
 
@@ -17924,7 +18026,7 @@ let scoreTimingDetail =
         controlCenterViewportSnapshotV2128 =
           buildControlCenterViewportSnapshotV2128(true);
         try {
-          sessionStorage.setItem(
+          sshcpSessionStorageV2318.setItem(
             'sshcpControlCenterViewportV2128',
             JSON.stringify(controlCenterViewportSnapshotV2128)
           );
@@ -17957,8 +18059,8 @@ let scoreTimingDetail =
 
     function loadScreenLayoutLogStateV238() {
       try {
-        screenLayoutLogActiveV238 = sessionStorage.getItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238) === '1';
-        const parsed = JSON.parse(sessionStorage.getItem(SSHCP_SCREEN_LAYOUT_LOG_KEY_V238) || 'null');
+        screenLayoutLogActiveV238 = sshcpSessionStorageV2318.getItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238) === '1';
+        const parsed = JSON.parse(sshcpSessionStorageV2318.getItem(SSHCP_SCREEN_LAYOUT_LOG_KEY_V238) || 'null');
         if (parsed && typeof parsed === 'object') {
           screenLayoutLogStartedAtV238 = String(parsed.startedAt || '');
           screenLayoutLogEntriesV238 = Array.isArray(parsed.entries) ? parsed.entries : [];
@@ -17973,8 +18075,8 @@ let scoreTimingDetail =
     function persistScreenLayoutLogV238() {
       try {
         if (screenLayoutLogActiveV238) {
-          sessionStorage.setItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238, '1');
-          sessionStorage.setItem(
+          sshcpSessionStorageV2318.setItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238, '1');
+          sshcpSessionStorageV2318.setItem(
             SSHCP_SCREEN_LAYOUT_LOG_KEY_V238,
             JSON.stringify({
               startedAt: screenLayoutLogStartedAtV238,
@@ -17982,8 +18084,8 @@ let scoreTimingDetail =
             })
           );
         } else {
-          sessionStorage.removeItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238);
-          sessionStorage.removeItem(SSHCP_SCREEN_LAYOUT_LOG_KEY_V238);
+          sshcpSessionStorageV2318.removeItem(SSHCP_SCREEN_LAYOUT_ACTIVE_KEY_V238);
+          sshcpSessionStorageV2318.removeItem(SSHCP_SCREEN_LAYOUT_LOG_KEY_V238);
         }
       } catch (_) {}
     }
@@ -19357,7 +19459,7 @@ let scoreTimingDetail =
       entry.ok = entry.mismatches.length === 0;
 
       log[matchIndex] = entry;
-      localStorage.setItem(RESULT_AUDIT_LOG_KEY_V189, JSON.stringify(log));
+      sshcpLocalStorageV2318.setItem(RESULT_AUDIT_LOG_KEY_V189, JSON.stringify(log));
       updateResultCopyButtonLabelV2082();
       return matchIndex + 1;
     }
@@ -19430,7 +19532,7 @@ let scoreTimingDetail =
 
     function getResultAuditLogV189() {
       try {
-        const parsed = JSON.parse(localStorage.getItem(RESULT_AUDIT_LOG_KEY_V189) || '[]');
+        const parsed = JSON.parse(sshcpLocalStorageV2318.getItem(RESULT_AUDIT_LOG_KEY_V189) || '[]');
         return Array.isArray(parsed) ? parsed : [];
       } catch (_) {
         return [];
@@ -19448,7 +19550,7 @@ let scoreTimingDetail =
 
     function resetResultAuditLogV189() {
       resultAuditEpochV189 += 1;
-      localStorage.removeItem(RESULT_AUDIT_LOG_KEY_V189);
+      sshcpLocalStorageV2318.removeItem(RESULT_AUDIT_LOG_KEY_V189);
       updateResultCopyButtonLabelV2082();
     }
 
@@ -20149,7 +20251,7 @@ let scoreTimingDetail =
       const log = getResultAuditLogV189();
       if (entry.fingerprint && log.some(item => item && item.fingerprint === entry.fingerprint)) return false;
       log.push(entry);
-      localStorage.setItem(RESULT_AUDIT_LOG_KEY_V189, JSON.stringify(log));
+      sshcpLocalStorageV2318.setItem(RESULT_AUDIT_LOG_KEY_V189, JSON.stringify(log));
       updateResultCopyButtonLabelV2082();
       return true;
     }
@@ -20271,9 +20373,9 @@ let scoreTimingDetail =
       try {
         const stamp = Date.now();
         const [scoreResponse, leaderResponse, teamsResponse] = await Promise.all([
-          fetch(CLOUDFLARE_API_URL + '?refresh=' + stamp + '-summary-audit', { cache:'no-store' }),
-          fetch(CLOUDFLARE_API_URL + '?action=leaderboard&refresh=' + stamp + '-summary-audit', { cache:'no-store' }),
-          fetch(CLOUDFLARE_API_URL + '?action=teams&refresh=' + stamp + '-summary-audit', { cache:'no-store' })
+          sshcpEventFetchV2318(CLOUDFLARE_API_URL + '?refresh=' + stamp + '-summary-audit', { cache:'no-store' }),
+          sshcpEventFetchV2318(CLOUDFLARE_API_URL + '?action=leaderboard&refresh=' + stamp + '-summary-audit', { cache:'no-store' }),
+          sshcpEventFetchV2318(CLOUDFLARE_API_URL + '?action=teams&refresh=' + stamp + '-summary-audit', { cache:'no-store' })
         ]);
         const [scoreData, leaderData, teamsData] = await Promise.all([
           scoreResponse.json(),
@@ -20468,7 +20570,7 @@ let scoreTimingDetail =
         item => item && item.qrId !== 'MASTER' && !item.assigned
       ).length;
       const cacheTimeRaw = Number(
-        localStorage.getItem(SSHCP_TEST_QR_CACHE_TIME_KEY) || 0
+        sshcpLocalStorageV2318.getItem(SSHCP_TEST_QR_CACHE_TIME_KEY) || 0
       );
 
       const lines = [
@@ -20587,12 +20689,12 @@ let scoreTimingDetail =
       const fingerprint = controlCenterUnlockFingerprintV2145();
       if (controlCenterUnlockedV2133) {
         try {
-          if (localStorage.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145) === fingerprint) return true;
+          if (sshcpLocalStorageV2318.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145) === fingerprint) return true;
         } catch (_) {}
         controlCenterUnlockedV2133 = false;
       }
       try {
-        return localStorage.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145) === fingerprint;
+        return sshcpLocalStorageV2318.getItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145) === fingerprint;
       } catch (_) {
         return false;
       }
@@ -20601,7 +20703,7 @@ let scoreTimingDetail =
     function markControlCenterUnlockedV2133() {
       controlCenterUnlockedV2133 = true;
       try {
-        localStorage.setItem(
+        sshcpLocalStorageV2318.setItem(
           SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145,
           controlCenterUnlockFingerprintV2145()
         );
@@ -20610,7 +20712,7 @@ let scoreTimingDetail =
 
     function resetControlCenterUnlockedV2135() {
       controlCenterUnlockedV2133 = false;
-      try { localStorage.removeItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145); } catch (_) {}
+      try { sshcpLocalStorageV2318.removeItem(SSHCP_CONTROL_CENTER_UNLOCK_KEY_V2145); } catch (_) {}
     }
 
     function openControlCenterUnlockedV2133(options = {}) {
@@ -21170,7 +21272,7 @@ let scoreTimingDetail =
         params.set(key, String(value));
       });
 
-      const response = await fetch(
+      const response = await sshcpEventFetchV2318(
         CLOUDFLARE_API_URL + '?' + params.toString(),
         { cache: 'no-store' }
       );
@@ -21513,7 +21615,7 @@ let scoreTimingDetail =
     
     function rememberTeamsPopupScrollV1626() {
       if (!els.teamsPopupTableScroll) return;
-      sessionStorage.setItem(
+      sshcpSessionStorageV2318.setItem(
         TEAMS_POPUP_SCROLL_KEY_V1626,
         String(Math.max(0, els.teamsPopupTableScroll.scrollTop || 0))
       );
@@ -21540,7 +21642,7 @@ let scoreTimingDetail =
 
     function saveTeamsPopupSnapshotV1626(rows) {
       try {
-        sessionStorage.setItem(
+        sshcpSessionStorageV2318.setItem(
           TEAMS_POPUP_DATA_KEY_V1626,
           JSON.stringify(Array.isArray(rows) ? rows.slice(0, 36) : [])
         );
@@ -21549,7 +21651,7 @@ let scoreTimingDetail =
 
     function readTeamsPopupSnapshotV1626() {
       try {
-        const parsed = JSON.parse(sessionStorage.getItem(TEAMS_POPUP_DATA_KEY_V1626) || '[]');
+        const parsed = JSON.parse(sshcpSessionStorageV2318.getItem(TEAMS_POPUP_DATA_KEY_V1626) || '[]');
         if (!Array.isArray(parsed)) return [];
         return parsed
           .map((row, index) => normalizeControlCenterTeamRow(row, index + 1))
@@ -21673,7 +21775,7 @@ let scoreTimingDetail =
     async function loadControlCenterTeams() {
       const started = timerStart();
       try {
-        const response = await fetch(
+        const response = await sshcpEventFetchV2318(
           CLOUDFLARE_API_URL + '?action=teams&refresh=' + Date.now(),
           { cache: 'no-store' }
         );
@@ -21717,7 +21819,7 @@ let scoreTimingDetail =
 
       els.teamsPopupOverlay.classList.add('open');
       els.teamsPopupOverlay.setAttribute('aria-hidden', 'false');
-      sessionStorage.setItem(TEAMS_POPUP_OPEN_KEY_V1626, '1');
+      sshcpSessionStorageV2318.setItem(TEAMS_POPUP_OPEN_KEY_V1626, '1');
 
       if (restoredRows.length) {
         renderTeamsPopupRows(restoredRows);
@@ -21729,11 +21831,11 @@ let scoreTimingDetail =
 
       if (els.teamsPopupTableScroll) {
         const saved = restoringAfterRefresh
-          ? Number(sessionStorage.getItem(TEAMS_POPUP_SCROLL_KEY_V1626))
+          ? Number(sshcpSessionStorageV2318.getItem(TEAMS_POPUP_SCROLL_KEY_V1626))
           : 0;
         els.teamsPopupTableScroll.scrollTop = Number.isFinite(saved) && saved > 0 ? saved : 0;
         if (!restoringAfterRefresh) {
-          sessionStorage.setItem(TEAMS_POPUP_SCROLL_KEY_V1626, '0');
+          sshcpSessionStorageV2318.setItem(TEAMS_POPUP_SCROLL_KEY_V1626, '0');
         }
       }
 
@@ -21750,15 +21852,15 @@ let scoreTimingDetail =
     function closeTeamsPopup() {
       if (!els.teamsPopupOverlay) return;
       rememberTeamsPopupScrollV1626();
-      sessionStorage.removeItem(TEAMS_POPUP_OPEN_KEY_V1626);
-      sessionStorage.removeItem(TEAMS_POPUP_SCROLL_KEY_V1626);
+      sshcpSessionStorageV2318.removeItem(TEAMS_POPUP_OPEN_KEY_V1626);
+      sshcpSessionStorageV2318.removeItem(TEAMS_POPUP_SCROLL_KEY_V1626);
       els.teamsPopupOverlay.classList.remove('teams-loading');
       els.teamsPopupOverlay.classList.remove('open');
       els.teamsPopupOverlay.setAttribute('aria-hidden', 'true');
     }
 
     function resetTestLog() {
-      localStorage.removeItem(TEST_LOG_KEY);
+      sshcpLocalStorageV2318.removeItem(TEST_LOG_KEY);
       resetResultAuditLogV189();
       renderTestLog();
     }
@@ -21778,7 +21880,7 @@ let scoreTimingDetail =
          team card in memory, performs one batch score write, and verifies the
          complete batch with one full-range readback. No per-team saveScores
          loop remains on the active RANDOM 2 path. */
-      const response = await fetch(
+      const response = await sshcpEventFetchV2318(
         CLOUDFLARE_API_URL +
           '?action=testScores' +
           '&mode=random2' +
@@ -21823,7 +21925,7 @@ let scoreTimingDetail =
     });
 
     async function fetchAssignedSlotsForRotb26V2240() {
-      const response = await fetch(
+      const response = await sshcpEventFetchV2318(
         CLOUDFLARE_API_URL + '?action=teams&refresh=' + Date.now(),
         { cache: 'no-store' }
       );
@@ -21860,7 +21962,7 @@ let scoreTimingDetail =
         '&audit=0' +
         '&refresh=' + Date.now();
 
-      const response = await fetch(url, { cache: 'no-store' });
+      const response = await sshcpEventFetchV2318(url, { cache: 'no-store' });
       let data = null;
       try { data = await response.json(); } catch (_) {}
 
@@ -21898,7 +22000,7 @@ let scoreTimingDetail =
       /* V22.50 — CF V3.4 owns the complete ROTB26 test transaction.
          The legacy frontend score arrays/helpers above remain preserved as
          historical reference but are no longer used by the active action. */
-      const response = await fetch(
+      const response = await sshcpEventFetchV2318(
         CLOUDFLARE_API_URL +
           '?action=testScores' +
           '&mode=rotb26' +
@@ -22010,7 +22112,7 @@ let scoreTimingDetail =
         } else {
           const controlCenterPasskey = SSHCP_MASTER_TEST_KEY;
 
-          const response = await fetch(
+          const response = await sshcpEventFetchV2318(
             CLOUDFLARE_API_URL +
               '?action=testScores' +
               '&mode=' + encodeURIComponent(mode) +
@@ -22050,13 +22152,13 @@ let scoreTimingDetail =
         }
 
         teams.forEach(team => {
-          localStorage.removeItem(pendingScoresKey(team));
+          sshcpLocalStorageV2318.removeItem(pendingScoresKey(team));
         });
 
         scorecardHasLoaded = false;
         leaderboardHasLoaded = false;
-        sessionStorage.removeItem('sshcpScorecardSnapshotV53');
-        sessionStorage.removeItem('sshcpLeaderboardSnapshotV53');
+        sshcpSessionStorageV2318.removeItem('sshcpScorecardSnapshotV53');
+        sshcpSessionStorageV2318.removeItem('sshcpLeaderboardSnapshotV53');
 
         const testDetailParts = [
           data.affectedTeams + ' team slot' +
@@ -22509,7 +22611,7 @@ let scoreTimingDetail =
 
     function scrambleCompleteSeenV2215() {
       try {
-        return localStorage.getItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215) === '1';
+        return sshcpLocalStorageV2318.getItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215) === '1';
       } catch (_) {
         return false;
       }
@@ -22517,13 +22619,13 @@ let scoreTimingDetail =
 
     function markScrambleCompleteSeenV2215() {
       try {
-        localStorage.setItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215, '1');
+        sshcpLocalStorageV2318.setItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215, '1');
       } catch (_) {}
     }
 
     function resetScrambleCompleteSeenV2215() {
       try {
-        localStorage.removeItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215);
+        sshcpLocalStorageV2318.removeItem(SSHCP_SCRAMBLE_COMPLETE_SEEN_KEY_V2215);
       } catch (_) {}
     }
 
@@ -23238,7 +23340,7 @@ let scoreTimingDetail =
           Date.now();
 
         const response =
-          await fetch(
+          await sshcpEventFetchV2318(
             url,
             {
               cache:
@@ -23984,7 +24086,7 @@ let scoreTimingDetail =
             className: els.scoreRunningNet ? els.scoreRunningNet.className : 'score-running-net'
           }
         };
-        sessionStorage.setItem(SSHCP_SCORECARD_SNAPSHOT_KEY, JSON.stringify(snapshot));
+        sshcpSessionStorageV2318.setItem(SSHCP_SCORECARD_SNAPSHOT_KEY, JSON.stringify(snapshot));
         window.__sshcpBootScorecardSnapshot = snapshot;
       } catch (_) {}
     }
@@ -23993,7 +24095,7 @@ let scoreTimingDetail =
       let snapshot = window.__sshcpBootScorecardSnapshot || null;
       if (!snapshot) {
         try {
-          snapshot = JSON.parse(sessionStorage.getItem(SSHCP_SCORECARD_SNAPSHOT_KEY) || 'null');
+          snapshot = JSON.parse(sshcpSessionStorageV2318.getItem(SSHCP_SCORECARD_SNAPSHOT_KEY) || 'null');
         } catch (_) {
           snapshot = null;
         }
@@ -24050,7 +24152,7 @@ let scoreTimingDetail =
           complete: tournamentIsComplete(lastLeaderboardRows),
           finalSlotHeight
         };
-        sessionStorage.setItem(SSHCP_LEADERBOARD_SNAPSHOT_KEY, JSON.stringify(snapshot));
+        sshcpSessionStorageV2318.setItem(SSHCP_LEADERBOARD_SNAPSHOT_KEY, JSON.stringify(snapshot));
         window.__sshcpBootLeaderboardSnapshot = snapshot;
       } catch (_) {}
     }
@@ -24059,7 +24161,7 @@ let scoreTimingDetail =
       let snapshot = window.__sshcpBootLeaderboardSnapshot || null;
       if (!snapshot) {
         try {
-          snapshot = JSON.parse(sessionStorage.getItem(SSHCP_LEADERBOARD_SNAPSHOT_KEY) || 'null');
+          snapshot = JSON.parse(sshcpSessionStorageV2318.getItem(SSHCP_LEADERBOARD_SNAPSHOT_KEY) || 'null');
         } catch (_) {
           snapshot = null;
         }
@@ -24213,7 +24315,7 @@ let scoreTimingDetail =
     function rememberResponsiveGeometryV5(patch = {}) {
       try {
         const previous = JSON.parse(
-          sessionStorage.getItem('sshcpResponsiveGeometryV5') || '{}'
+          sshcpSessionStorageV2318.getItem('sshcpResponsiveGeometryV5') || '{}'
         ) || {};
 
         const next = {
@@ -24224,7 +24326,7 @@ let scoreTimingDetail =
           h: window.innerHeight || 0
         };
 
-        sessionStorage.setItem(
+        sshcpSessionStorageV2318.setItem(
           'sshcpResponsiveGeometryV5',
           JSON.stringify(next)
         );
@@ -24309,11 +24411,11 @@ let scoreTimingDetail =
         Math.abs(physicalLong - V188_S25_PHYSICAL_H) <= 180;
       const screenLong = Math.max(screenWidth, screenHeight);
 
-      let s25ScreenLong = Number(localStorage.getItem('sshcpV188S25ScreenCssHeight') || 0);
+      let s25ScreenLong = Number(sshcpLocalStorageV2318.getItem('sshcpV188S25ScreenCssHeight') || 0);
       if (isS25 && screenLong > 0) {
         s25ScreenLong = screenLong;
         try {
-          localStorage.setItem('sshcpV188S25ScreenCssHeight', String(s25ScreenLong));
+          sshcpLocalStorageV2318.setItem('sshcpV188S25ScreenCssHeight', String(s25ScreenLong));
         } catch (_) {}
       }
       if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
@@ -24760,7 +24862,7 @@ let scoreTimingDetail =
       document.documentElement.style.setProperty('--v187-main-button-h', sharedV187.mainButton + 'px');
 
       try {
-        sessionStorage.setItem(
+        sshcpSessionStorageV2318.setItem(
           'sshcpV16ShellGeometry',
           JSON.stringify({
             v188: true,
@@ -25526,7 +25628,7 @@ let scoreTimingDetail =
       if (!key) return null;
 
       try {
-        const parsed = JSON.parse(localStorage.getItem(key) || 'null');
+        const parsed = JSON.parse(sshcpLocalStorageV2318.getItem(key) || 'null');
         if (!Array.isArray(parsed) || parsed.length !== 18) return null;
         return normalizeScores(parsed);
       }
@@ -25543,10 +25645,10 @@ let scoreTimingDetail =
       if (!key) return;
 
       if (hasPendingScores()) {
-        localStorage.setItem(key, JSON.stringify(localScores));
+        sshcpLocalStorageV2318.setItem(key, JSON.stringify(localScores));
       }
       else {
-        localStorage.removeItem(key);
+        sshcpLocalStorageV2318.removeItem(key);
       }
     }
 
@@ -25610,7 +25712,7 @@ let scoreTimingDetail =
 
       if (isMasterQr() && isPreAuthorizeEnabledV1958()) {
         setAuthorizedTeam(selectedTeam.name);
-        localStorage.setItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY, '1');
+        sshcpLocalStorageV2318.setItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY, '1');
         rememberSelectedTeam(selectedTeam.name);
         openScoreEntry(index);
         return;
@@ -26153,7 +26255,7 @@ let scoreTimingDetail =
       try {
 
         const response =
-          await fetch(
+          await sshcpEventFetchV2318(
             url,
             {
               cache:
@@ -26543,7 +26645,7 @@ let scoreTimingDetail =
         const teamMetadataPromise =
           teams.length
             ? Promise.resolve(null)
-            : fetch(
+            : sshcpEventFetchV2318(
                 CLOUDFLARE_API_URL +
                 '?refresh=' +
                 Date.now() +
@@ -26564,7 +26666,7 @@ let scoreTimingDetail =
                 );
 
         const response =
-          await fetch(
+          await sshcpEventFetchV2318(
             url,
             {
               cache:
@@ -26992,8 +27094,8 @@ let scoreTimingDetail =
         button.setAttribute('aria-hidden', 'true');
         els.leaderTop.classList.remove('final-action-active');
         try {
-          sessionStorage.removeItem('sshcpFinalActionMode');
-          sessionStorage.removeItem('sshcpFinalActionLabel');
+          sshcpSessionStorageV2318.removeItem('sshcpFinalActionMode');
+          sshcpSessionStorageV2318.removeItem('sshcpFinalActionLabel');
         } catch (e) {}
         return;
       }
@@ -27011,8 +27113,8 @@ let scoreTimingDetail =
       }
 
       try {
-        sessionStorage.setItem('sshcpFinalActionMode', mode);
-        sessionStorage.setItem(
+        sshcpSessionStorageV2318.setItem('sshcpFinalActionMode', mode);
+        sshcpSessionStorageV2318.setItem(
           'sshcpFinalActionLabel',
           button.textContent.trim()
         );
@@ -27111,7 +27213,7 @@ let scoreTimingDetail =
        line, and no hidden table render. The returned rows also prime Summary. */
     async function refreshHomeTournamentStateV1831() {
       try {
-        const response = await fetch(
+        const response = await sshcpEventFetchV2318(
           CLOUDFLARE_API_URL +
           '?action=leaderboard&refresh=' +
           Date.now() +
@@ -27145,7 +27247,7 @@ let scoreTimingDetail =
       syncHomeTournamentCompleteV1630(complete);
       syncHomeTieBreakActionV2104();
 
-      sessionStorage.setItem(
+      sshcpSessionStorageV2318.setItem(
         'sshcpTournamentComplete',
         complete ? '1' : '0'
       );
@@ -28338,7 +28440,7 @@ let scoreTimingDetail =
 
     async function fetchGeekEvidenceSnapshotV1921() {
       try {
-        const response = await fetch(
+        const response = await sshcpEventFetchV2318(
           CLOUDFLARE_API_URL + '?refresh=' + Date.now() + '-geek-evidence',
           { cache:'no-store' }
         );
@@ -28472,7 +28574,7 @@ let scoreTimingDetail =
     }
 
     function setGeekEnabledV180(enabled) {
-      localStorage.setItem(GEEK_ENABLED_KEY_V180, enabled ? '1' : '0');
+      sshcpLocalStorageV2318.setItem(GEEK_ENABLED_KEY_V180, enabled ? '1' : '0');
       if (els.controlCenterGeekModeCheck) {
         els.controlCenterGeekModeCheck.checked = Boolean(enabled);
       }
@@ -28900,7 +29002,7 @@ let scoreTimingDetail =
         let snapshot = window.__sshcpBootScorecardSnapshot || null;
         if (!snapshot) {
           try {
-            snapshot = JSON.parse(sessionStorage.getItem(SSHCP_SCORECARD_SNAPSHOT_KEY) || 'null');
+            snapshot = JSON.parse(sshcpSessionStorageV2318.getItem(SSHCP_SCORECARD_SNAPSHOT_KEY) || 'null');
           } catch (_) {
             snapshot = null;
           }
@@ -31302,12 +31404,12 @@ let scoreTimingDetail =
 
     function persistGeekRequiredRotationStateV2220(target) {
       try {
-        sessionStorage.setItem(GEEK_REQUIRED_ROTATION_RESTORE_KEY_V2220, target);
-        sessionStorage.setItem(
+        sshcpSessionStorageV2318.setItem(GEEK_REQUIRED_ROTATION_RESTORE_KEY_V2220, target);
+        sshcpSessionStorageV2318.setItem(
           GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220,
           JSON.stringify(Array.from(geekSelectedCategoriesV180 || []))
         );
-        sessionStorage.setItem(
+        sshcpSessionStorageV2318.setItem(
           GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220,
           String(postPlayReturnDestinationV2054 || 'summary')
         );
@@ -31713,7 +31815,7 @@ let scoreTimingDetail =
       let savedFilters = null;
       try {
         savedFilters = JSON.parse(
-          sessionStorage.getItem(GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220) || 'null'
+          sshcpSessionStorageV2318.getItem(GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220) || 'null'
         );
       } catch (_) {}
 
@@ -31725,7 +31827,7 @@ let scoreTimingDetail =
 
       try {
         const savedReturn = String(
-          sessionStorage.getItem(GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220) || ''
+          sshcpSessionStorageV2318.getItem(GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220) || ''
         ).trim();
         if (savedReturn === 'home' || savedReturn === 'summary') {
           postPlayReturnDestinationV2054 = savedReturn;
@@ -31764,9 +31866,9 @@ let scoreTimingDetail =
       }));
 
       try {
-        sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_RESTORE_KEY_V2220);
-        sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220);
-        sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220);
+        sshcpSessionStorageV2318.removeItem(GEEK_REQUIRED_ROTATION_RESTORE_KEY_V2220);
+        sshcpSessionStorageV2318.removeItem(GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220);
+        sshcpSessionStorageV2318.removeItem(GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220);
       } catch (_) {}
 
       /* The final after-play curtain is now fully opaque above the destination,
@@ -32021,7 +32123,7 @@ let scoreTimingDetail =
     function rememberedGeekPdfPaperV2281() {
       try {
         return normalizedGeekPdfPaperV2281(
-          localStorage.getItem(GEEK_PDF_PAPER_KEY_V2281) || 'letter'
+          sshcpLocalStorageV2318.getItem(GEEK_PDF_PAPER_KEY_V2281) || 'letter'
         );
       } catch (_) {
         return 'letter';
@@ -32031,7 +32133,7 @@ let scoreTimingDetail =
     function rememberGeekPdfPaperV2281(value) {
       const key = normalizedGeekPdfPaperV2281(value);
       try {
-        localStorage.setItem(GEEK_PDF_PAPER_KEY_V2281, key);
+        sshcpLocalStorageV2318.setItem(GEEK_PDF_PAPER_KEY_V2281, key);
       } catch (_) {}
       return key;
     }
@@ -32378,7 +32480,7 @@ let scoreTimingDetail =
     }
 
     async function geekPrintFetchDataV2287() {
-      const response = await fetch(
+      const response = await sshcpEventFetchV2318(
         CLOUDFLARE_API_URL + '?action=geekPrintData&refresh=' + Date.now(),
         { cache:'no-store' }
       );
@@ -32756,7 +32858,7 @@ let scoreTimingDetail =
     }
 
     async function geekPrintLegacyPdfV2287(paperV2281) {
-      const response = await fetch(
+      const response = await sshcpEventFetchV2318(
         CLOUDFLARE_API_URL + '?action=geekPdf&paper=' +
           encodeURIComponent(normalizedGeekPdfPaperV2281(paperV2281)) +
           '&refresh=' + Date.now(),
@@ -32980,7 +33082,7 @@ let scoreTimingDetail =
       const evidencePromiseV1921 = fetchGeekEvidenceSnapshotV1921();
 
       try {
-        const response = await fetch(
+        const response = await sshcpEventFetchV2318(
           CLOUDFLARE_API_URL +
           '?action=geekMode' +
           '&refresh=' + Date.now(),
@@ -33407,7 +33509,7 @@ let scoreTimingDetail =
     }
 
     function setSkinsEnabledV1627(enabled) {
-      localStorage.setItem(SKINS_ENABLED_KEY_V1627, enabled ? '1' : '0');
+      sshcpLocalStorageV2318.setItem(SKINS_ENABLED_KEY_V1627, enabled ? '1' : '0');
       if (els.controlCenterSkinsCheck) els.controlCenterSkinsCheck.checked = Boolean(enabled);
       addTestLog('SKINS', enabled ? 'ON' : 'OFF', '—', 'Summary button ' + (enabled ? 'shown' : 'hidden'));
     }
@@ -33506,11 +33608,11 @@ let scoreTimingDetail =
       const started = timerStart();
       const refreshKey = Date.now();
       const [scorecardResponse, teamsResponse] = await Promise.all([
-        fetch(
+        sshcpEventFetchV2318(
           CLOUDFLARE_API_URL + '?refresh=' + refreshKey,
           { cache: 'no-store' }
         ),
-        fetch(
+        sshcpEventFetchV2318(
           CLOUDFLARE_API_URL + '?action=teams&refresh=' + refreshKey,
           { cache: 'no-store' }
         )
@@ -33900,7 +34002,7 @@ let scoreTimingDetail =
          through loadLeaderboard(): that function owns Leaderboard rendering,
          progress/tips and reveal side effects that Summary does not need. */
       try {
-        const response = await fetch(
+        const response = await sshcpEventFetchV2318(
           CLOUDFLARE_API_URL +
           '?action=leaderboard' +
           '&refresh=' + Date.now() + '-summary-v2236',
@@ -37252,7 +37354,7 @@ let scoreTimingDetail =
 
     async function openHomePrimaryV181() {
       const completeHint =
-        sessionStorage.getItem('sshcpTournamentComplete') === '1' ||
+        sshcpSessionStorageV2318.getItem('sshcpTournamentComplete') === '1' ||
         document.documentElement.classList.contains('sshcp-tournament-complete');
 
       if (!completeHint) {
@@ -37991,7 +38093,7 @@ let scoreTimingDetail =
       const restoreTeamsPopupV1626 = false; /* V18.40: Control Center TEAMS row retired. */
       try {
         const savedControlCenterSnapshotV2128 = JSON.parse(
-          sessionStorage.getItem('sshcpControlCenterViewportV2128') || 'null'
+          sshcpSessionStorageV2318.getItem('sshcpControlCenterViewportV2128') || 'null'
         );
         if (savedControlCenterSnapshotV2128 && typeof savedControlCenterSnapshotV2128 === 'object') {
           controlCenterViewportSnapshotV2128 = savedControlCenterSnapshotV2128;
@@ -38000,7 +38102,7 @@ let scoreTimingDetail =
       scheduleControlCenterViewportSnapshotV2128();
       syncSharedGeometryV187();
       syncHomeTournamentCompleteV1630(
-        sessionStorage.getItem('sshcpTournamentComplete') === '1'
+        sshcpSessionStorageV2318.getItem('sshcpTournamentComplete') === '1'
       );
 
       if (
@@ -38296,9 +38398,9 @@ let scoreTimingDetail =
            to leave the installed app permanently white. */
         hideOrientationCurtainV2225Instant();
         try {
-          sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_RESTORE_KEY_V2220);
-          sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220);
-          sessionStorage.removeItem(GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220);
+          sshcpSessionStorageV2318.removeItem(GEEK_REQUIRED_ROTATION_RESTORE_KEY_V2220);
+          sshcpSessionStorageV2318.removeItem(GEEK_REQUIRED_ROTATION_FILTERS_KEY_V2220);
+          sshcpSessionStorageV2318.removeItem(GEEK_REQUIRED_ROTATION_RETURN_KEY_V2220);
         } catch (_) {}
         window.__sshcpGeekRequiredRotationRestoreV2220 = '';
         console.error('SSHCP initialization failed:', error);
@@ -38367,7 +38469,7 @@ let scoreTimingDetail =
 <div id="teamInfoOverlayV2032" class="team-info-overlay-v2032" aria-hidden="true">
   <div class="team-info-shell-v2032" role="dialog" aria-modal="true" aria-label="2026 team information">
     <div class="team-info-image-wrap-v2032">
-      <img id="teamInfoImageV2032" class="team-info-image-v2032" src="teaminfo.jpg" alt="2026 pairings and handicaps">
+      <img id="teamInfoImageV2032" class="team-info-image-v2032" alt="2026 pairings and handicaps">
     </div>
     <button id="teamInfoBackV2032" class="team-info-back-v2032" type="button">BACK</button>
   </div>
@@ -38501,7 +38603,7 @@ let scoreTimingDetail =
       } catch (_) {}
 
       try {
-        if (sessionStorage.getItem('sshcpTournamentComplete') === '1') return true;
+        if (sshcpSessionStorageV2318.getItem('sshcpTournamentComplete') === '1') return true;
       } catch (_) {}
 
       return document.documentElement.classList.contains('sshcp-tournament-complete');
