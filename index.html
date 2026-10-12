@@ -1,4 +1,12 @@
-<!-- SSHCP | BASE KEY: 23.18-K8M4QZ | BUILD KEY: 23.19-R7M4QX -->
+<!-- SSHCP | BASE KEY: 23.19-R7M4QX | BUILD KEY: 23.20-P6M4QX -->
+<!-- SSHCP V23.20 EVENT HOME IMAGE/CURTAIN READINESS — exact V23.19 donor / TEST / NOT GOLDEN.
+     Preserves the established HOME 1A white curtain and timing. After the verified event config
+     assigns the event-specific HOME logo, wait for its actual image load and decode, plus the
+     established HOME data/Oswald layout, before the existing curtain begins its fade. Incoming
+     QR WELCOME -> HOME also waits underneath the existing Welcome overlay before its established
+     exit fade. Image failure/timeout retains cover and reports a safe error rather than showing
+     a late or broken HOME logo. No score/authorization/event routing/Worker, leaderboard,
+     scorecard, summary, GEEK, PDF, orientation or fade-duration changes. -->
 <!-- SSHCP V23.19 UNIVERSAL EVENT RESTORATION — EXACT V23.18 DONOR / TEST / NOT GOLDEN.
      Works identically in installed PWA and browser. Explicit ?event= always takes
      priority and invalid explicit events are rejected. With no event parameter,
@@ -309,6 +317,37 @@
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderV2318, {once:true});
         else renderV2318();
       }
+      /* V23.20 — The event config can finish before its separately fetched logo
+         image. Keep one real image/decode readiness promise for HOME and QR WELCOME;
+         there is no fixed cosmetic delay and no shared event/auth storage. */
+      var resolveHomeLogoV2320;
+      var rejectHomeLogoV2320;
+      var homeLogoSettledV2320 = false;
+      window.__sshcpHomeLogoReadyV2320 = new Promise(function(resolve, reject) {
+        resolveHomeLogoV2320 = resolve;
+        rejectHomeLogoV2320 = reject;
+      });
+      // Non-HOME startup routes may never await the image; suppress only the
+      // standalone unhandled-rejection notification, not the consumer rejection.
+      window.__sshcpHomeLogoReadyV2320.catch(function() {});
+      function settleHomeLogoV2320(error) {
+        if (homeLogoSettledV2320) return;
+        homeLogoSettledV2320 = true;
+        if (error) rejectHomeLogoV2320(error);
+        else resolveHomeLogoV2320();
+      }
+      window.__sshcpAwaitHomeReadyV2320 = async function() {
+        await window.__sshcpEventBootstrapV2318;
+        await window.__sshcpHomeLogoReadyV2320;
+        if (document.fonts && document.fonts.ready) {
+          try { await document.fonts.ready; } catch (_) { /* CSS fallback font remains usable. */ }
+        }
+      };
+      window.__sshcpReportHomeLogoErrorV2320 = function(error) {
+        bootErrorV2318(new Error('HOME image could not finish loading. Reload this event to try again.'));
+        try { console.error('SSHCP HOME image readiness failed:', error); } catch (_) {}
+      };
+
       function updatePresentationV2318(data) {
         function applyV2318() {
           var info = document.getElementById('homeEventInfoV2255');
@@ -320,7 +359,40 @@
           var baseUrl = 'https://rotbtest.projrcc.workers.dev/?event=' + encodeURIComponent(eventV2318) + '&action=eventImage&kind=';
           if (homeImage) {
             homeImage.alt = data.longName;
+            var logoTimerV2320 = 0;
+            var logoDecodeStartedV2320 = false;
+            function releaseLogoWatchV2320(error) {
+              if (logoTimerV2320) window.clearTimeout(logoTimerV2320);
+              settleHomeLogoV2320(error);
+            }
+            function logoLoadedV2320() {
+              if (logoDecodeStartedV2320 || homeLogoSettledV2320) return;
+              logoDecodeStartedV2320 = true;
+              Promise.resolve().then(async function() {
+                if (!homeImage.naturalWidth || !homeImage.naturalHeight) {
+                  throw new Error('HOME image has no decoded dimensions.');
+                }
+                if (typeof homeImage.decode === 'function') {
+                  await homeImage.decode();
+                }
+                // decode() may not be supported; loaded pixels are still valid.
+                if (!homeImage.naturalWidth || !homeImage.naturalHeight) {
+                  throw new Error('HOME image decode failed.');
+                }
+              }).then(function() { releaseLogoWatchV2320(null); }, releaseLogoWatchV2320);
+            }
+            homeImage.addEventListener('load', logoLoadedV2320, {once:true});
+            homeImage.addEventListener('error', function() {
+              releaseLogoWatchV2320(new Error('Event HOME image request failed.'));
+            }, {once:true});
+            logoTimerV2320 = window.setTimeout(function() {
+              releaseLogoWatchV2320(new Error('Event HOME image request timed out.'));
+            }, 20000);
             homeImage.src = baseUrl + 'home';
+            // Cached images can already be complete before a load event is queued.
+            if (homeImage.complete && homeImage.naturalWidth > 0) logoLoadedV2320();
+          } else {
+            settleHomeLogoV2320(new Error('Event HOME image element not found.'));
           }
           if (infoImage) {
             infoImage.alt = data.longName + ' event information';
@@ -360,6 +432,7 @@
         return data;
       })();
       window.__sshcpEventBootstrapV2318.catch(function(error) {
+        settleHomeLogoV2320(error);
         if (restoredEventV2319) {
           try {
             if (window.localStorage.getItem(lastEventKeyV2319) === eventV2318) {
@@ -14563,7 +14636,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.19</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.20</span></span>
         </button>
         <script>
           (function () {
@@ -22866,6 +22939,18 @@ let scoreTimingDetail =
       fitHomeActionTypographyV197();
       if (typeof window.refreshHomeMenuV2054 === 'function') {
         window.refreshHomeMenuV2054();
+      }
+
+      /* V23.20 — HOME's data/layout are already ready underneath the opaque
+         1A curtain. Do not start its unchanged fade while the per-event logo
+         has only a URL but not loaded/decoded pixels (or Oswald is still
+         settling). This also holds on ordinary browser refresh and PWA entry. */
+      try {
+        await window.__sshcpAwaitHomeReadyV2320();
+        fitHomeActionTypographyV197();
+      } catch (error) {
+        window.__sshcpReportHomeLogoErrorV2320(error);
+        return;
       }
 
       /* V21.45 fallback — a full-screen runtime 1A curtain is expected on HOME
@@ -37913,12 +37998,29 @@ let scoreTimingDetail =
       }
     }
 
-    function dismissQrWelcomeAnimatedV172() {
+    let qrWelcomeHomeReadyGateV2320 = false;
+    async function dismissQrWelcomeAnimatedV172() {
       const overlay = document.getElementById('qrWelcomeOverlayV170');
       if (!overlay || !window.__sshcpIncomingQrWelcomeV170) {
         dismissQrWelcomeV170();
         return;
       }
+
+      /* V23.20 — QR WELCOME is itself the full-screen cover. Do not fade it
+         away to expose HOME until the current event's real logo has decoded.
+         The established 0.52s Welcome animation begins only after readiness. */
+      if (qrWelcomeHomeReadyGateV2320) return;
+      qrWelcomeHomeReadyGateV2320 = true;
+      try {
+        await window.__sshcpAwaitHomeReadyV2320();
+        fitHomeActionTypographyV197();
+      } catch (error) {
+        window.__sshcpReportHomeLogoErrorV2320(error);
+        qrWelcomeHomeReadyGateV2320 = false;
+        return;
+      }
+      qrWelcomeHomeReadyGateV2320 = false;
+      if (!window.__sshcpIncomingQrWelcomeV170) return;
 
       /* Freeze every child animation at its exact current visual state, then
          dissolve the WHOLE Welcome layer as one object. HOME is already live
