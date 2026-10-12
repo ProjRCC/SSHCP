@@ -1,3 +1,12 @@
+<!-- SSHCP | BASE KEY: 23.20-P6M4QX | BUILD KEY: 23.21-Q8M4VX -->
+<!-- SSHCP V23.21 SCRAMBLE COMPLETE FOOTER BUTTON HEIGHT — exact V23.20 donor / TEST / NOT GOLDEN.
+     The completion overlay lives outside Leaderboard's --v16-footer-h scope and
+     had fallen back to a smaller 50px value. Before revealing SCRAMBLE COMPLETE,
+     resolve the rendered Leaderboard footer button height (or the same view-scoped
+     CSS value if not yet measurable) into an overlay-only variable. Both popup
+     buttons use that identical height; established 40% text fitter automatically
+     matches the corrected height. Keep width, colors, popup layout, fade, ranking,
+     tiebreak action, Scorecard/Leaderboard geometry, scoring, Worker and PDF unchanged. -->
 <!-- SSHCP | BASE KEY: 23.19-R7M4QX | BUILD KEY: 23.20-P6M4QX -->
 <!-- SSHCP V23.20 EVENT HOME IMAGE/CURTAIN READINESS — exact V23.19 donor / TEST / NOT GOLDEN.
      Preserves the established HOME 1A white curtain and timing. After the verified event config
@@ -13348,9 +13357,9 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 .tips-overlay-v2154.tips-scramble-complete-v2215 .tips-ok-v2154{
   width:66.666667%!important;
   max-width:390px!important;
-  height:var(--v16-footer-h,50px)!important;
-  min-height:var(--v16-footer-h,50px)!important;
-  max-height:var(--v16-footer-h,50px)!important;
+  height:var(--v2321-complete-footer-h,var(--v187-main-button-h,50px))!important;
+  min-height:var(--v2321-complete-footer-h,var(--v187-main-button-h,50px))!important;
+  max-height:var(--v2321-complete-footer-h,var(--v187-main-button-h,50px))!important;
   margin-left:auto!important;
   margin-right:auto!important;
   padding:0 5%!important;
@@ -14636,7 +14645,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.20</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.21</span></span>
         </button>
         <script>
           (function () {
@@ -22749,6 +22758,22 @@ let scoreTimingDetail =
       } catch (_) {}
     }
 
+    /* V23.21: Leaderboard calculates --v16-footer-h on its own view, not
+       on the unrelated, body-level completion overlay. Copy the exact rendered
+       footer button height to the overlay before it is made visible; retaining
+       the real view-scoped CSS value as a fallback covers pre-layout startup. */
+    function syncScrambleCompleteFooterHeightV2321() {
+      const overlay = document.getElementById('tipsOverlayV2154');
+      const leaderboard = document.getElementById('leaderboardView');
+      if (!overlay || !leaderboard) return;
+      const footerButton = leaderboard.querySelector('.leader-bottom .access-scorecard');
+      const measured = footerButton ? footerButton.getBoundingClientRect().height : 0;
+      const viewHeight = parseFloat(getComputedStyle(leaderboard).getPropertyValue('--v16-footer-h'));
+      const globalHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--v187-main-button-h'));
+      const height = [measured, viewHeight, globalHeight].find(value => Number.isFinite(value) && value > 0);
+      if (height) overlay.style.setProperty('--v2321-complete-footer-h', height + 'px');
+    }
+
     function fitScrambleCompleteButtonsV2215() {
       ['tipsSummaryButtonV2215', 'tipsOkButtonV2154'].forEach(id => {
         const button = document.getElementById(id);
@@ -22812,6 +22837,7 @@ let scoreTimingDetail =
         window.clearTimeout(scrambleCompleteCloseTimerV2299);
         scrambleCompleteCloseTimerV2299 = null;
       }
+      syncScrambleCompleteFooterHeightV2321();
       overlay.classList.add('tips-short-v2163', 'tips-scramble-complete-v2215', 'open-v2154');
       overlay.classList.remove('tips-home-v2165');
       overlay.setAttribute('aria-hidden', 'false');
