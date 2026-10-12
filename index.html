@@ -1,3 +1,13 @@
+<!-- SSHCP | BASE KEY: 23.18-K8M4QZ | BUILD KEY: 23.19-R7M4QX -->
+<!-- SSHCP V23.19 UNIVERSAL EVENT RESTORATION — EXACT V23.18 DONOR / TEST / NOT GOLDEN.
+     Works identically in installed PWA and browser. Explicit ?event= always takes
+     priority and invalid explicit events are rejected. With no event parameter,
+     restore only the last successfully verified event (one unscoped event-key
+     pointer; no shared auth/scores). After verified eventConfig / EVENT!C2,
+     remember the event and add it to the URL if restored. Keep every existing
+     scoring, auth and session item scoped to GolfAPP:<event>:; no legacy fallback.
+     EVENT UNAVAILABLE uses the established Oswald family, including boot errors.
+     No Worker, scoring, GEEK/PDF, appearance geometry or timing change. -->
 <!-- SSHCP | BASE KEY: 23.17-N6Q4RX | BUILD KEY: 23.18-K8M4QZ -->
 <!-- SSHCP V23.18 MULTI-EVENT RUNTIME — EXACT V23.17 DONOR / TEST / NOT GOLDEN.
      Matched to CF3.31. Event key comes only from ?event=... and is required for
@@ -221,13 +231,28 @@
   <meta charset="UTF-8">
 
   <script>
-    /* CF3.31 / V23.18 — strict event/bootstrap, with no event-specific defaults.
-       Keep storage namespaces in place BEFORE any first-paint or QR state reads. */
+    /* CF3.31 / V23.19 — strict event/bootstrap plus verified event restoration.
+       Keep storage namespaces in place BEFORE any first-paint or QR state reads.
+       The ONLY unscoped item is the non-secret last-verified event key. */
     (function(){
       'use strict';
       var queryV2318 = new URLSearchParams(window.location.search);
-      var eventV2318 = String(queryV2318.get('event') || '').trim();
-      var validV2318 = /^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(eventV2318);
+      var explicitEventV2319 = queryV2318.has('event');
+      var lastEventKeyV2319 = 'SimpleScramble:lastVerifiedEvent:V2319';
+      var validEventKeyV2319 = /^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/;
+      var eventV2318 = explicitEventV2319 ? String(queryV2318.get('event') || '').trim() : '';
+      var restoredEventV2319 = false;
+      // An explicitly supplied (even empty/invalid) event NEVER falls back.
+      if (!explicitEventV2319) {
+        try {
+          var rememberedEventV2319 = String(window.localStorage.getItem(lastEventKeyV2319) || '');
+          if (validEventKeyV2319.test(rememberedEventV2319)) {
+            eventV2318 = rememberedEventV2319;
+            restoredEventV2319 = true;
+          }
+        } catch (_) { /* Storage unavailable: continue with strict missing-event rejection. */ }
+      }
+      var validV2318 = validEventKeyV2319.test(eventV2318);
       var namespaceV2318 = validV2318 ? 'GolfAPP:' + eventV2318 + ':' : null;
       window.GOLFAPP_EVENT_KEY = validV2318 ? eventV2318 : '';
       window.SSHCP_EVENT = { DETAILS:'', SHORT_NAME:'' };
@@ -274,7 +299,7 @@
           if (document.getElementById('sshcpEventFailureV2318')) return;
           var cover = document.createElement('div');
           cover.id = 'sshcpEventFailureV2318';
-          cover.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#fff;color:#133362;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:Arial,sans-serif;font-size:18px;line-height:1.5;';
+          cover.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#fff;color:#133362;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:"Oswald","Arial Narrow",Arial,sans-serif;font-size:18px;line-height:1.5;';
           var text = document.createElement('div');
           text.textContent = 'EVENT UNAVAILABLE\n' + String(error && error.message || 'Unable to load event.');
           text.style.whiteSpace = 'pre-line';
@@ -306,7 +331,7 @@
         else applyV2318();
       }
       window.__sshcpEventBootstrapV2318 = (async function(){
-        if (!validV2318) throw new Error('Open this page using ?event=SSHCP26 (or another valid event key).');
+        if (!validV2318) throw new Error('Open this page using ?event=EVENTKEY (a valid event key).');
         var response = await window.sshcpEventFetchV2318(
           'https://rotbtest.projrcc.workers.dev/?action=eventConfig',
           {cache:'no-store'}
@@ -318,10 +343,32 @@
         }
         window.SSHCP_EVENT.DETAILS = String(data.longName);
         window.SSHCP_EVENT.SHORT_NAME = String(data.shortName);
+        // Persist a non-secret event selector ONLY after Worker EVENT!C2 verification.
+        // Authorization, team selection, scores and other storage remain event-scoped.
+        try { window.localStorage.setItem(lastEventKeyV2319, eventV2318); } catch (_) {}
+        if (restoredEventV2319) {
+          // Make browser/PWA refresh and copied links carry the resolved event.
+          // Preserve other query parameters, including any incoming QR passkey.
+          try {
+            var restoredUrlV2319 = new URL(window.location.href);
+            restoredUrlV2319.searchParams.set('event', eventV2318);
+            window.history.replaceState(window.history.state, '',
+              restoredUrlV2319.pathname + restoredUrlV2319.search + restoredUrlV2319.hash);
+          } catch (_) { /* A history restriction must not block a valid event. */ }
+        }
         updatePresentationV2318(data);
         return data;
       })();
-      window.__sshcpEventBootstrapV2318.catch(bootErrorV2318);
+      window.__sshcpEventBootstrapV2318.catch(function(error) {
+        if (restoredEventV2319) {
+          try {
+            if (window.localStorage.getItem(lastEventKeyV2319) === eventV2318) {
+              window.localStorage.removeItem(lastEventKeyV2319);
+            }
+          } catch (_) {}
+        }
+        bootErrorV2318(error);
+      });
     })();
   </script>
 
@@ -14516,7 +14563,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.18</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.19</span></span>
         </button>
         <script>
           (function () {
