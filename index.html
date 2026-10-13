@@ -1,4 +1,12 @@
-<!-- SSHCP | BASE KEY: 23.28-N7M4QX | BUILD KEY: 23.29-K8M4RX -->
+<!-- SSHCP | BASE KEY: 23.29-K8M4RX | BUILD KEY: 23.30-R6Q4MX -->
+<!-- SSHCP V23.30 — MASTER selector clean handoff + no redundant GO button.
+     Exact V23.29 donor. On tournament selection use the existing white reveal
+     shield geometry to fade to opaque BEFORE the required event-context reload.
+     New selected-event bootstrap remains white, never replays WELCOME lettering.
+     The existing MASTER password input still auto-submits exactly when GO is typed;
+     keep only BACK, remove the unnecessary GO action button. No change to QR
+     verification, data, event discovery, Worker, HOME readiness or other screens.
+     TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.29 — MASTER GO auto-entry and protected WELCOME -> HOME curtain.
      Only universal/master ENTER-password gate changes: typing GO auto-verifies
      using the existing MASTER QR backend path. The established full-screen HOME
@@ -7693,6 +7701,19 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
    Android <select>/radio popup). Nothing changes for incoming QR WELCOME. */
 html.sshcp-master-picker-v2326 .qr-welcome-actions-v170,
 html.sshcp-master-entry-v2326 .qr-welcome-actions-v170 { display:none!important; }
+/* V23.30: selected-event reload may never replay the first WELCOME title.
+   Its white presentation remains until the existing password popup opens. */
+html.sshcp-master-entry-v2326 .qr-welcome-title-v170,
+html.sshcp-master-entry-v2326 .qr-welcome-team-v170 { display:none!important; }
+/* V23.30: use the same full-screen data-reveal shield primitive, but enter
+   opaque on selection before changing documents (HOME 1A fade timing). */
+.sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-master-pick-curtain-v2330 {
+  background:#fff!important; z-index:5100!important; opacity:0!important;
+  transition:opacity var(--sshcp-fade-1a-home-full,.25s) ease-out!important;
+}
+.sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-master-pick-curtain-v2330.is-covering-v2330 {
+  opacity:1!important;
+}
 html.sshcp-master-picker-v2326 .qr-welcome-team-v170 {
   top:39%; transform:translate(-50%,-50%); overflow:visible;
   width:min(76vw,440px); max-width:90vw; white-space:normal;
@@ -14783,7 +14804,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.29</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.30</span></span>
         </button>
         <script>
           (function () {
@@ -38406,9 +38427,17 @@ let scoreTimingDetail =
           els.modalBody.textContent = 'AUTHORIZATION FAILED';
         }
       }
-      const enter = makeModalButton(masterGoV2329 ? 'GO' : 'ENTER','primary',authorizeBareMasterV2329);
-      els.modalActions.className = 'modal-actions';
-      els.modalActions.replaceChildren(back,enter);
+      // V23.30 — typing GO already triggers the one-and-only authorization.
+      // No second GO button. Preserve the existing BACK/abort path, while the
+      // legacy non-master popup retains its original explicit ENTER action.
+      if (masterGoV2329) {
+        els.modalActions.className = 'modal-actions single';
+        els.modalActions.replaceChildren(back);
+      } else {
+        const enter = makeModalButton('ENTER','primary',authorizeBareMasterV2329);
+        els.modalActions.className = 'modal-actions';
+        els.modalActions.replaceChildren(back,enter);
+      }
       // V23.29 — as soon as G + O is entered, submit without a tap or Enter.
       // This includes paste, lowercase and autofill; duplicate events are gated.
       els.modalInput.oninput = masterGoV2329 ? () => {
@@ -38505,6 +38534,7 @@ let scoreTimingDetail =
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape' && !options.hidden) { close(); trigger.focus(); }
       });
+      let switchingEventV2330 = false;
       for (const key of keys) {
         const option = document.createElement('button');
         option.type = 'button';
@@ -38512,14 +38542,33 @@ let scoreTimingDetail =
         option.setAttribute('role','option');
         option.textContent = key;
         option.addEventListener('click', () => {
+          if (switchingEventV2330) return;
+          switchingEventV2330 = true;
+          // The previous handler changed the trigger text and removed the
+          // options a frame before a document reload, causing a visible flicker.
+          // Keep that exact view in place until the existing white shield covers it.
+          picker.style.pointerEvents = 'none';
           trigger.disabled = true;
-          caption.textContent = key;
-          close();
           const url = new URL(window.location.href);
           url.searchParams.set('event', key);
           url.searchParams.set('masterEntrance', '1');
           url.searchParams.delete('passkey'); url.searchParams.delete('key');
-          window.location.assign(url.pathname + url.search + url.hash);
+          const shield = beginDataRevealShieldV177(
+            'master-pick-v2330', [], '#fff', true, 5100
+          );
+          if (shield) {
+            shield.classList.add('sshcp-master-pick-curtain-v2330');
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              shield.classList.add('is-covering-v2330');
+            }));
+          }
+          const fadeSeconds = Number(window.SSHCP_FADE_TIMING_V2092 &&
+            window.SSHCP_FADE_TIMING_V2092.FADE_1A_HOME_FULL);
+          const fadeMs = Number.isFinite(fadeSeconds) && fadeSeconds >= 0
+            ? Math.ceil(1000 * fadeSeconds) : 250;
+          window.setTimeout(() => {
+            window.location.assign(url.pathname + url.search + url.hash);
+          }, fadeMs + 60);
         });
         options.appendChild(option);
       }
