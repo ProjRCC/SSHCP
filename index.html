@@ -1,4 +1,9 @@
-<!-- SSHCP | BASE KEY: 23.20-P6M4QX | BUILD KEY: 23.21-Q8M4VX -->
+<!-- SSHCP | BASE KEY: 23.21-Q8M4VX | BUILD KEY: 23.22-N7R4QX -->
+<!-- SSHCP V23.22 GEEK DETAIL POPUP CLOSE LABELS — exact V23.21 donor / TEST / NOT GOLDEN.
+     The regular portrait GEEK DETAIL and landscape ALL TEAMS detail modal buttons say CLOSE,
+     retaining their existing callbacks to dismiss only the detail overlay and reveal the
+     respective parent GEEK view. Main portrait GEEK MODE BACK navigation remains unchanged.
+     No geometry, sizing, orientation, curtain, scoring, network, auth, or Worker changes. -->
 <!-- SSHCP V23.21 SCRAMBLE COMPLETE FOOTER BUTTON HEIGHT — exact V23.20 donor / TEST / NOT GOLDEN.
      The completion overlay lives outside Leaderboard's --v16-footer-h scope and
      had fallen back to a smaller 50px value. Before revealing SCRAMBLE COMPLETE,
@@ -31206,7 +31211,7 @@ let scoreTimingDetail =
           '</li>' +
         '</ul>';
 
-      const back = makeModalButton('BACK', 'geek-detail-back-v182 geek-all-teams-detail-back-v2238', returnToGeekAllTeamsFromDetailV2238);
+      const back = makeModalButton('CLOSE', 'geek-detail-back-v182 geek-all-teams-detail-back-v2238', returnToGeekAllTeamsFromDetailV2238);
       /* V22.53 — portrait GEEK fitting owns an inline !important margin-top:0 on
          the shared modalActions node. In-place rotation keeps that node alive,
          so clear the portrait-only override before the first ALL TEAMS detail. */
@@ -33634,7 +33639,7 @@ let scoreTimingDetail =
         '</div>' +
         teamsHtml;
 
-      const back = makeModalButton('BACK', 'geek-detail-back-v182', returnToGeekModeV180);
+      const back = makeModalButton('CLOSE', 'geek-detail-back-v182', returnToGeekModeV180);
       els.modalActions.className = 'modal-actions single';
       els.modalActions.replaceChildren(back);
       els.modalOverlay.classList.add('open');
