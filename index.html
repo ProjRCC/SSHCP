@@ -1,4 +1,11 @@
-<!-- SSHCP | BASE KEY: 23.42-V7M4QX | BUILD KEY: 23.43-T6Q4VX -->
+<!-- SSHCP | BASE KEY: 23.43-T6Q4VX | BUILD KEY: 23.44-M7Q4VX -->
+<!-- SSHCP V23.44 — Control Center MASTER team display correction only.
+     As on HOME, resolve the visible MASTER team from current scoring
+     authorization OR event-scoped remembered Team selection. MASTER should
+     show * TEAM 5 when HOME shows TEAM 5, not * MASTER. Preserve actual MASTER
+     role, separate score-write authority, QR/team auth, asterisk/italics,
+     button actions, event isolation, timing, logging and CF3.35 unchanged.
+     TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.43 — MASTER label typography only.
      In both CONTROL CENTER 1:2 auth buttons, MASTER replaces (M) with an
      asterisk followed by a space, and both MASTER button labels appear italic.
@@ -15349,7 +15356,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.43</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.44</span></span>
         </button>
         <script>
           (function () {
@@ -17401,10 +17408,12 @@ let scoreTimingDetail =
         els.testSwitchAuthorizationButton.classList.toggle('authorized', authorized);
         els.testSwitchAuthorizationButton.classList.toggle('gain-auth-v2136', !authorized);
 
-        /* Keep the exact authoritative TEAM NAME (not a guessed slot index).
-           If MASTER has no currently selected team, retain MASTER as fallback. */
+        /* V23.44 — match HOME's visible team: MASTER may have a currently
+           selected/remembered team without a rotbAuthorizedTeam scoring grant.
+           Display only; do not change authorization. If no team, show MASTER. */
         const teamAuthNameV2342 = authorized
-          ? String(isTeamQr() ? getQrTeam() : getAuthorizedTeam() || '').trim()
+          ? String(isTeamQr() ? getQrTeam() :
+              (getAuthorizedTeam() || (masterV2342 ? getRememberedSelectedTeam() : ''))).trim()
           : '';
         const teamAuthLabelV2342 = teamAuthNameV2342
           ? masterPrefixV2342 + compactTestAuthTeamLabel(teamAuthNameV2342)
