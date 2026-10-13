@@ -1,4 +1,10 @@
-<!-- SSHCP | BASE KEY: 23.38-N7Q4VX | BUILD KEY: 23.39-P8M4QX -->
+<!-- SSHCP | BASE KEY: 23.39-P8M4QX | BUILD KEY: 23.40-K7M4QV -->
+<!-- SSHCP V23.40 — device-wide Control Center diagnostic history across events.
+     Migrate existing event-scoped local histories once into one shared on-device log,
+     preserve each entry's event and original timestamp/duration, and display
+     EVENT / DESCRIPTION / TIMES. CLEAR LOG affects the common history only once;
+     event-specific authorization, score/result audit, layout and Worker untouched.
+     Exact V23.39 source donor. TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.39 — require a fully SETTLED HOME under opaque 1A curtain.
      Returning QR stays locally authorized and skips repeated qrAuth/eventConfig;
      Worker keeps per-save QR ownership checks. Instead of exposing the incomplete
@@ -2521,7 +2527,7 @@
 .test-log-header{display:grid;grid-template-columns:74px 1fr 74px;gap:8px;align-items:center;margin-bottom:10px;}
 .test-log-title{color:var(--gold);font-size:20px;font-weight:700;text-align:center;letter-spacing:.4px;}
 .test-log-table{width:100%;min-height:0;border:1px solid var(--line-strong);border-radius:8px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:rgba(255,255,255,.55);}
-.test-log-row{display:grid;grid-template-columns:62px minmax(0,1fr) 52px 48px;border-bottom:1px solid var(--line);font-size:10px;line-height:1.15;}
+.test-log-row{display:grid;grid-template-columns:26% 54% 20%;border-bottom:1px solid var(--line);font-size:10px;line-height:1.15;}
 .test-log-row:last-child{border-bottom:0;}
 .test-log-row.header{min-height:28px;align-items:center;background:rgba(255,255,255,.95);color:#222;font-weight:700;text-align:center;}
 .test-log-row>div{min-width:0;padding:5px 4px;border-right:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center;}
@@ -9767,7 +9773,7 @@ body option{
   -webkit-overflow-scrolling:touch!important;
 }
 #testLogView .test-log-row{
-  grid-template-columns:17% 55% 14% 14%!important;
+  grid-template-columns:26% 54% 20%!important;
   min-height:var(--cc-log-row-min-v1824)!important;
   font-size:var(--cc-log-font-v1824)!important;
   line-height:1.15!important;
@@ -9788,6 +9794,27 @@ body option{
   margin-top:var(--cc-detail-gap-v1824)!important;
   font-size:var(--cc-log-detail-v1824)!important;
   line-height:1.12!important;
+}
+/* V23.40 — device-wide event identity, description/result and two timing lines. */
+#testLogView .test-log-event-v2340{
+  overflow-wrap:anywhere!important;
+  font-weight:700!important;
+  justify-content:flex-start!important;
+  text-align:left!important;
+}
+#testLogView .test-log-result-v2340{
+  display:block!important;
+  font-weight:700!important;
+}
+#testLogView .test-log-times-v2340{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:2px!important;
+  white-space:nowrap!important;
+  font-variant-numeric:tabular-nums!important;
+}
+#testLogView .test-log-times-v2340 span{
+  font-weight:700!important;
 }
 
 #testLogView .control-center-bottom-stack{
@@ -15293,7 +15320,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.39</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.40</span></span>
         </button>
         <script>
           (function () {
@@ -15715,7 +15742,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
       <div class="test-log-table" aria-label="Control Center detailed log">
         <div class="test-log-row header">
-          <div>TIME</div><div>ACTION</div><div>RESULT</div><div>TOTAL</div>
+          <div>EVENT</div><div>DESCRIPTION</div><div>TIMES</div>
         </div>
         <div id="testLogRows"></div>
       </div>
@@ -18689,7 +18716,13 @@ let scoreTimingDetail =
        TEST LOG — FULL LOCAL HISTORY
        ========================================================= */
 
-    const TEST_LOG_KEY = 'rotbTestLogV75';
+    /* V23.40 — one device-wide diagnostic history, independent of event namespace.
+       Never use sshcpLocalStorageV2318 for this log: that wrapper prefixes
+       GolfAPP:<event>: and was why switching events revived older histories.
+       This is local device storage, not a Cloudflare or Google Sheets log. */
+    const TEST_LOG_KEY = 'SimpleScramble:ControlCenterLog:V2340';
+    const TEST_LOG_MIGRATED_KEY_V2340 = 'SimpleScramble:ControlCenterLogMigrated:V2340';
+    const LEGACY_EVENT_LOG_SUFFIX_V2340 = ':rotbTestLogV75';
 
     /* V23.25 — the bootstrap URL event key, not QR/team identity or the mutable
        presentation label, is the event authority for each diagnostic entry. */
@@ -18699,9 +18732,66 @@ let scoreTimingDetail =
         ? key : 'UNKNOWN';
     }
 
-    function getTestLog() {
+    function migrateEventControlCenterLogsV2340() {
       try {
-        const parsed = JSON.parse(sshcpLocalStorageV2318.getItem(TEST_LOG_KEY) || '[]');
+        const storage = window.localStorage;
+        // The marker also prevents a later CLEAR LOG from re-importing old entries.
+        if (storage.getItem(TEST_LOG_MIGRATED_KEY_V2340) === '1') return;
+
+        const legacyKeys = [];
+        for (let i = 0; i < storage.length; i++) {
+          const key = storage.key(i) || '';
+          const match = /^GolfAPP:([A-Za-z0-9][A-Za-z0-9_-]{1,39}):rotbTestLogV75$/.exec(key);
+          if (match) legacyKeys.push({key, event: match[1]});
+        }
+
+        const combined = [];
+        const sharedRaw = storage.getItem(TEST_LOG_KEY);
+        if (sharedRaw) {
+          try {
+            const shared = JSON.parse(sharedRaw);
+            if (Array.isArray(shared)) combined.push(...shared);
+          } catch (_) {}
+        }
+        for (const legacy of legacyKeys) {
+          try {
+            const entries = JSON.parse(storage.getItem(legacy.key) || '[]');
+            if (!Array.isArray(entries)) continue;
+            for (const entry of entries) {
+              if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue;
+              // Legacy rows before V23.25 had no event; their storage key does.
+              combined.push({
+                ...entry,
+                event: /^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(String(entry.event || ''))
+                  ? String(entry.event) : legacy.event
+              });
+            }
+          } catch (_) {} // one malformed old event must not hide other histories
+        }
+
+        // Existing entries have ISO timestamps; newest first like the old UI.
+        // A stable sort keeps legacy entries without a timestamp in their order.
+        combined.sort((a,b) => {
+          const aTime = Date.parse(String(a?.timestamp || ''));
+          const bTime = Date.parse(String(b?.timestamp || ''));
+          if (Number.isFinite(aTime) && Number.isFinite(bTime)) return bTime - aTime;
+          if (Number.isFinite(aTime)) return -1;
+          if (Number.isFinite(bTime)) return 1;
+          return 0;
+        });
+
+        // Only mark migration complete AFTER the shared copy was saved.
+        storage.setItem(TEST_LOG_KEY, JSON.stringify(combined));
+        storage.setItem(TEST_LOG_MIGRATED_KEY_V2340, '1');
+        // Preserve old event-scoped copies for rollback to V23.39. They are never
+        // read again by V23.40, even after the shared log is cleared.
+      } catch (_) { /* Storage/quota error must not interrupt scoring or HOME. */ }
+    }
+
+    function getTestLog() {
+      migrateEventControlCenterLogsV2340();
+      try {
+        const parsed = JSON.parse(window.localStorage.getItem(TEST_LOG_KEY) || '[]');
         return Array.isArray(parsed) ? parsed : [];
       } catch (_) {
         return [];
@@ -18724,7 +18814,7 @@ let scoreTimingDetail =
 
       /* SSHCP V21.08 — no entry truncation. Diagnostic history remains until
          the user explicitly taps CLEAR LOG. DELETE ALL clears scores only. */
-      sshcpLocalStorageV2318.setItem(TEST_LOG_KEY, JSON.stringify(log));
+      try { window.localStorage.setItem(TEST_LOG_KEY, JSON.stringify(log)); } catch (_) {}
 
       if (currentView === 'testlog') renderTestLog();
     }
@@ -21438,8 +21528,8 @@ let scoreTimingDetail =
         'Viewport: ' + controlCenterViewportLineV188(),
         'Scale: ' + controlCenterGeometryLineV188(),
         'Worker: ' + CLOUDFLARE_API_URL,
-        'Event: ' + currentControlCenterEventV2325(),
-        'Authorization: ' + getQrRole() +
+        'Active Event: ' + currentControlCenterEventV2325(),
+        'Active Authorization: ' + getQrRole() +
           (getQrTeam() ? ' / ' + getQrTeam() : ''),
         'QR cache: ' +
           (directory.length
@@ -21449,20 +21539,16 @@ let scoreTimingDetail =
           (cacheTimeRaw ? new Date(cacheTimeRaw).toISOString() : '—'),
         'Log entries: ' + log.length,
         '',
-        'TIME | EVENT | ACTION | RESULT | TOTAL | DETAIL'
+        'Scope: ALL EVENTS ON THIS DEVICE',
+        'EVENT | DESCRIPTION | TIMES'
       ];
 
       log.slice().reverse().forEach(item => {
-        lines.push(
-          [
-            item.timestamp || item.time || '',
-            item.event || 'UNKNOWN (PRE-V23.25)',
-            item.action || '',
-            item.result || '',
-            item.total || '—',
-            item.detail || ''
-          ].join(' | ')
-        );
+        const description = [item.action || '—', item.result || '', item.detail || '']
+          .filter(Boolean).join(' • ');
+        const times = [item.timestamp || item.time || '', item.total || '—']
+          .filter(Boolean).join(' • ');
+        lines.push([item.event || 'UNKNOWN (PRE-V23.25)', description, times].join(' | '));
       });
 
       return lines.join('\n');
@@ -21525,13 +21611,17 @@ let scoreTimingDetail =
       els.testLogRows.innerHTML = log.map(item => {
         const resultClass = item.result === 'OK' || item.result === 'VERIFIED' ? 'test-log-ok' : (item.result === 'FAILED' ? 'test-log-fail' : '');
         const detail = String(item.detail || '').trim();
+        const event = String(item.event || 'UNKNOWN (PRE-V23.25)');
+        const clock = String(item.time || (item.timestamp
+          ? new Date(item.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '—'));
         return '<div class="test-log-row">' +
-          '<div>' + escapeHtml(item.time) + '</div>' +
-          '<div class="test-log-action"><strong>' + escapeHtml(item.action) + '</strong>' +
+          '<div class="test-log-event-v2340">' + escapeHtml(event) + '</div>' +
+          '<div class="test-log-action"><strong>' + escapeHtml(item.action || '—') + '</strong>' +
+            (item.result ? '<span class="test-log-result-v2340 ' + resultClass + '">' + escapeHtml(item.result) + '</span>' : '') +
             (detail ? '<span class="test-log-detail">' + escapeHtml(detail) + '</span>' : '') +
           '</div>' +
-          '<div class="' + resultClass + '">' + escapeHtml(item.result) + '</div>' +
-          '<div>' + escapeHtml(item.total) + '</div>' +
+          '<div class="test-log-times-v2340"><strong>' + escapeHtml(clock) + '</strong>' +
+            '<span>' + escapeHtml(item.total || '—') + '</span></div>' +
           '</div>';
       }).join('');
     }
@@ -22721,7 +22811,12 @@ let scoreTimingDetail =
     }
 
     function resetTestLog() {
-      sshcpLocalStorageV2318.removeItem(TEST_LOG_KEY);
+      // Prevent migrated per-event histories from reappearing after CLEAR LOG.
+      migrateEventControlCenterLogsV2340();
+      try {
+        window.localStorage.removeItem(TEST_LOG_KEY);
+        window.localStorage.setItem(TEST_LOG_MIGRATED_KEY_V2340, '1');
+      } catch (_) {}
       resetResultAuditLogV189();
       renderTestLog();
     }
