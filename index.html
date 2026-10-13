@@ -1,4 +1,6 @@
-<!-- SSHCP | BASE KEY: 23.32-T7M4QX | BUILD KEY: 23.33-K6M4QW -->
+<!-- SSHCP | BASE KEY: 23.33-K6M4QW | BUILD KEY: 23.34-P8M4QX -->
+<!-- SSHCP V23.34 — popup/dropdown presentation consistency and CC 1:2 EVENT/TEAM AUTH row.
+     UI-only: existing auth, event, GEEK, scoring, Worker CF3.34 unchanged. -->
 <!-- SSHCP V23.33 — GEEK portrait layout capacity correction only.
      Preserve V22.0/V22.31 existing effective-viewport thresholds and 1X/2X
      whole-CSS-pixel rows; measure real GEEK main height BEFORE deciding X and
@@ -14738,6 +14740,96 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 }
 </style>
 
+
+<style id="sshcp-v2334-consistent-popup-dropdown-and-cc-auth">
+/* Only password-entry overlays use the solid gray GEEK-detail canvas.
+   Confirmation dialogs retain their existing blur and black border. */
+.modal-overlay.master-go-gate-v2331,
+.modal-overlay.authorization.access-key-gate-v2134 {
+  background:var(--sshcp-gray-2-v1850,#e8e8e8)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+.modal-overlay.master-go-gate-v2331 .modal-box,
+.modal-overlay.authorization.access-key-gate-v2134 .modal-box {
+  border:0!important;
+  border-radius:18px!important;
+  box-shadow:none!important;
+  background:#fff!important;
+}
+/* One MASTER-splash menu frame for the other custom event/team menus.
+   Do not alter the popup alignment, team order, click handlers or arrow behavior. */
+.sshcp-event-options-v2327,
+#homeView .home-team-dropup,
+#scorecardView .score-team-dropdown,
+.passkey-team-menu {
+  box-sizing:border-box!important;
+  border:3px solid var(--accent)!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  padding:0!important;
+  box-shadow:0 7px 18px rgba(0,0,0,.16)!important;
+}
+.sshcp-event-option-v2327,
+#homeView .home-team-option,
+#scorecardView .score-team-option,
+.passkey-team-option {
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  background:#fff!important;
+  border-bottom:1px solid #d9e2ed!important;
+  border-radius:0!important;
+  text-align:center!important;
+}
+.sshcp-event-option-v2327:last-child,
+#homeView .home-team-option:last-child,
+#scorecardView .score-team-option:last-child,
+.passkey-team-option:last-child { border-bottom:0!important; }
+.sshcp-event-option-v2327:active,
+.sshcp-event-option-v2327:focus-visible,
+#homeView .home-team-option:active,
+#scorecardView .score-team-option:active,
+.passkey-team-option:active {
+  background:#e8eef6!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+/* CC uses one permanent 1:2 event/team-action split in every authorization state.
+   Keep the existing 46px CC height, insets and spacing across both controls. */
+#testLogView .test-auth-button-row,
+#testLogView .test-auth-button-row.authorized,
+#testLogView .test-auth-button-row.master-authorized,
+#testLogView .test-auth-button-row.authorized:not(.master-authorized) {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;
+  gap:7px!important;
+  align-items:stretch!important;
+}
+#testLogView #testRemoveAuthorizationButton,
+#testLogView #testSwitchAuthorizationButton,
+#testLogView .test-auth-button-row.authorized:not(.master-authorized) #testSwitchAuthorizationButton {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  grid-row:1!important;
+  width:100%!important;
+  min-width:0!important;
+  height:46px!important;
+  min-height:46px!important;
+  max-height:46px!important;
+  margin:0!important;
+  padding:2px 4px!important;
+  border:2px solid var(--accent)!important;
+  border-radius:8px!important;
+  background:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+  white-space:nowrap!important;
+}
+#testLogView #testRemoveAuthorizationButton{grid-column:1!important;}
+#testLogView #testSwitchAuthorizationButton{grid-column:2!important;}
+</style>
+
 </head>
 
 
@@ -14866,7 +14958,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.33</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.34</span></span>
         </button>
         <script>
           (function () {
@@ -15318,8 +15410,8 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <div class="test-auth-controls">
           <div id="testAuthorizationButtonRow" class="test-auth-button-row">
-            <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">EVENT AUTH</button>
-            <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTH</button>
+            <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">EVENT</button>
+            <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">TEAM AUTH</button>
           </div>
         </div>
 
@@ -16905,13 +16997,9 @@ let scoreTimingDetail =
         els.testSwitchAuthorizationButton.classList.toggle('authorized', authorized);
         els.testSwitchAuthorizationButton.classList.toggle('gain-auth-v2136', !authorized);
 
-        if (isMasterQr()) {
-          els.testSwitchAuthorizationButton.textContent = 'MASTER AUTH';
-        } else if (isTeamQr() && getQrTeam()) {
-          els.testSwitchAuthorizationButton.textContent = compactTestAuthTeamLabel(getQrTeam()) + ' AUTH';
-        } else {
-          els.testSwitchAuthorizationButton.textContent = 'GAIN AUTH';
-        }
+        /* V23.34 — button label describes its ACTION, not the current QR role.
+           Actual authorization state remains in the underlying event-scoped model. */
+        els.testSwitchAuthorizationButton.textContent = 'TEAM AUTH';
       }
 
       requestAnimationFrame(fitTestPageButtonText);
