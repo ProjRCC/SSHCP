@@ -1,4 +1,11 @@
-<!-- SSHCP | BASE KEY: 23.29-K8M4RX | BUILD KEY: 23.30-R6Q4MX -->
+<!-- SSHCP | BASE KEY: 23.30-R6Q4MX | BUILD KEY: 23.31-M7Q4PX -->
+<!-- SSHCP V23.31 — MASTER entrance presentation and Control Center event switching.
+     MASTER replaces only the universal chooser's WELCOME title. Blue tournament
+     trigger; existing MASTER GO prompt gets centered title and responsive visual-
+     viewport keyboard positioning. Control Center SWITCH AUTHORIZATION adds one
+     SWITCH TOURNAMENT action which returns to the same universal chooser behind
+     the established white curtain. Existing event-specific QR, auth validation,
+     data, scoring, Worker CF3.34 and core screens remain unchanged. TEST. -->
 <!-- SSHCP V23.30 — MASTER selector clean handoff + no redundant GO button.
      Exact V23.29 donor. On tournament selection use the existing white reveal
      shield geometry to fade to opaque BEFORE the required event-context reload.
@@ -7695,6 +7702,33 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 .qr-welcome-button-v170:active{
   filter:brightness(.92);
 }
+/* V23.31 — isolated MASTER-only popup geometry. The visual viewport JS
+   positions the compact box ABOVE the soft keyboard instead of letting Android
+   cover the input/action. Other modal geometry remains byte-for-byte intact. */
+.modal-overlay.master-go-gate-v2331 {
+  align-items:flex-start!important;
+  justify-content:center!important;
+  padding:0!important;
+}
+.modal-overlay.master-go-gate-v2331 .modal-box {
+  position:fixed!important;
+  left:50%!important;
+  top:12px;
+  transform:translateX(-50%)!important;
+  box-sizing:border-box!important;
+  width:min(650px,calc(100% - 40px))!important;
+  margin:0!important;
+  overflow-y:auto!important;
+}
+.modal-overlay.master-go-gate-v2331 .modal-title {
+  text-align:center!important;
+  font-size:clamp(19px,5vw,25px)!important;
+  white-space:nowrap!important;
+}
+.switch-auth-event-row-v2331 { display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px; }
+.switch-auth-event-row-v2331 .switch-auth-button {
+  width:100%;height:54px!important;min-height:54px!important;max-height:54px!important;
+}
 /* V23.27 — preserve original WELCOME typography/fade and native modal.
    The master-only selector belongs just below WELCOME, in the width family of
    its old buttons, not at mid-screen; every option is app-rendered (never an
@@ -7724,8 +7758,8 @@ html.sshcp-master-picker-v2326 .qr-welcome-team-v170 {
   width:100%; height:clamp(54px,7.2dvh,70px);
   padding:0 38px 0 14px; margin:0; box-sizing:border-box;
   border:3px solid var(--accent); border-radius:9px;
-  background:#fff; color:var(--accent);
-  font:600 clamp(22px,5.5vw,33px)/1 Oswald,'Arial Narrow',Arial,sans-serif;
+  background:var(--accent); color:var(--on-accent);
+  font:600 clamp(18px,5vw,26px)/1 Oswald,'Arial Narrow',Arial,sans-serif;
   text-align:center; cursor:pointer;
 }
 .sshcp-event-trigger-v2327 > span:first-child {
@@ -14804,7 +14838,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.30</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.31</span></span>
         </button>
         <script>
           (function () {
@@ -17394,6 +17428,9 @@ let scoreTimingDetail =
         '<div class="switch-auth-master-row">' +
           '<button id="switchAuthorizeMaster" class="switch-auth-button" type="button">AUTHORIZE MASTER</button>' +
           '<label class="switch-auth-preauth"><input id="switchPreAuthorize" type="checkbox"><span>PREAUTH</span></label>' +
+        '</div>' +
+        '<div class="switch-auth-event-row-v2331">' +
+          '<button id="switchTournamentV2331" class="switch-auth-button" type="button">SWITCH TOURNAMENT</button>' +
         '</div>';
       els.modalInput.style.display='none';
       const close=makeModalButton('CLOSE','',closeModal);
@@ -17414,6 +17451,24 @@ let scoreTimingDetail =
         if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
       });
       document.getElementById('switchScanQr').addEventListener('click',()=>els.testQrCameraInput && els.testQrCameraInput.click());
+      document.getElementById('switchTournamentV2331').addEventListener('click', () => {
+        // V23.31 — use the same universal MASTER picker, not a second menu or
+        // unsafely carry MASTER auth between events. This event's stored auth
+        // remains scoped; the destination requires its own GO validation.
+        closeModal();
+        const curtainV2331 = beginDataRevealShieldV177('master-switch-v2331', [], '#fff', true, 5100);
+        if (curtainV2331) {
+          curtainV2331.classList.add('sshcp-master-pick-curtain-v2330');
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            curtainV2331.classList.add('is-covering-v2330');
+          }));
+        }
+        const fadeV2331 = Number(window.SSHCP_FADE_TIMING_V2092 &&
+          window.SSHCP_FADE_TIMING_V2092.FADE_1A_HOME_FULL);
+        const msV2331 = Number.isFinite(fadeV2331) && fadeV2331 >= 0
+          ? Math.ceil(fadeV2331 * 1000) : 250;
+        window.setTimeout(() => window.location.assign(window.location.pathname), msV2331 + 60);
+      });
     }
 
     async function showEnterPasskey(){
@@ -37234,6 +37289,7 @@ let scoreTimingDetail =
         closeGeekAllTeamsV2216();
       }
       clearAccessKeyViewportHandlerV2134();
+      clearMasterGoViewportV2331();
       if (tournamentSummaryResizeObserver) {
         tournamentSummaryResizeObserver.disconnect();
         tournamentSummaryResizeObserver = null;
@@ -37274,7 +37330,8 @@ let scoreTimingDetail =
           'geek-detail-v180',
           'geek-all-teams-detail-v2238',
           'score-save-warning',
-          'welcome-competitor-v1985'
+          'welcome-competitor-v1985',
+          'master-go-gate-v2331'
         );
 
 
@@ -38322,6 +38379,10 @@ let scoreTimingDetail =
       if (!overlay) return;
 
       overlay.setAttribute('aria-hidden', 'false');
+      if (window.__sshcpMasterPickerV2326) {
+        const titleV2331 = overlay.querySelector('.qr-welcome-title-v170');
+        if (titleV2331) titleV2331.textContent = 'MASTER';
+      }
       if (guide) guide.addEventListener('click', showQuickGuide, { once:false });
       if (enter) enter.addEventListener('click', () => {
         /* V19.61 — only a truly bare COMPETITOR entry is gated. Incoming QR/key
@@ -38350,12 +38411,41 @@ let scoreTimingDetail =
       els.modalOverlay.classList.add('open');
     }
 
+    let masterGoViewportHandlerV2331 = null;
+    function clearMasterGoViewportV2331() {
+      if (masterGoViewportHandlerV2331) {
+        window.removeEventListener('resize', masterGoViewportHandlerV2331);
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener('resize', masterGoViewportHandlerV2331);
+          window.visualViewport.removeEventListener('scroll', masterGoViewportHandlerV2331);
+        }
+        masterGoViewportHandlerV2331 = null;
+      }
+      if (els.modalBox) {
+        els.modalBox.style.removeProperty('top');
+        els.modalBox.style.removeProperty('max-height');
+      }
+    }
+    function positionMasterGoViewportV2331() {
+      if (!els.modalOverlay.classList.contains('master-go-gate-v2331') || !els.modalBox) return;
+      const v = window.visualViewport;
+      const visibleTop = v ? v.offsetTop : 0;
+      const visibleHeight = Math.max(1, v ? v.height : window.innerHeight);
+      const margin = 12;
+      const maxHeight = Math.max(100, visibleHeight - margin * 2);
+      els.modalBox.style.maxHeight = Math.floor(maxHeight) + 'px';
+      // Center the entire original popup within the actually visible portion.
+      const boxHeight = Math.min(els.modalBox.getBoundingClientRect().height, maxHeight);
+      const top = visibleTop + margin + Math.max(0, (visibleHeight - margin * 2 - boxHeight) / 2);
+      els.modalBox.style.top = Math.round(top) + 'px';
+    }
     function showBareEntryPasswordV1961() {
       closeModal();
       const masterGoV2329 = !!(
         window.__sshcpMasterEntryV2326 ||
         window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY'
       );
+      if (masterGoV2329) els.modalOverlay.classList.add('master-go-gate-v2331');
       els.modalTitle.textContent = 'ENTER PASSWORD';
       els.modalBody.textContent = '';
       els.modalInput.style.display = '';
@@ -38448,7 +38538,19 @@ let scoreTimingDetail =
         if (event.key === 'Enter') { event.preventDefault(); authorizeBareMasterV2329(); }
       };
       els.modalOverlay.classList.add('open');
-      window.setTimeout(() => els.modalInput.focus(), 0);
+      if (masterGoV2329) {
+        masterGoViewportHandlerV2331 = () => requestAnimationFrame(positionMasterGoViewportV2331);
+        window.addEventListener('resize', masterGoViewportHandlerV2331, {passive:true});
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener('resize', masterGoViewportHandlerV2331, {passive:true});
+          window.visualViewport.addEventListener('scroll', masterGoViewportHandlerV2331, {passive:true});
+        }
+        requestAnimationFrame(positionMasterGoViewportV2331);
+      }
+      window.setTimeout(() => {
+        try { els.modalInput.focus({preventScroll:true}); } catch (_) { els.modalInput.focus(); }
+        if (masterGoV2329) requestAnimationFrame(positionMasterGoViewportV2331);
+      }, 0);
     }
 
     /* V23.28 — original QR TEAM WELCOME contract: the title appears at first
