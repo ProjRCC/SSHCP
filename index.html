@@ -1,4 +1,13 @@
-<!-- SSHCP | BASE KEY: 23.30-R6Q4MX | BUILD KEY: 23.31-M7Q4PX -->
+<!-- SSHCP | BASE KEY: 23.31-M7Q4PX | BUILD KEY: 23.32-T7M4QX -->
+<!-- SSHCP V23.32 — exact GEEK whole-X scroll viewport and EVENT AUTH access.
+     Match the existing effective VPH×DPR / 22-20-18-16-14 unit rules; include
+     the real table frame border in sizing and give the scroll viewport exactly
+     targetUnits × integer X, never partial category/stat rows. Refit on actual
+     visualViewport height changes without altering other screens. CC's retired
+     REMOVE AUTH becomes Blue EVENT AUTH and uses the prior SWITCH TOURNAMENT
+     curtain/chooser callback, removed from SWITCH AUTHORIZATION popup. No Worker,
+     scoring, formulas, GEEK data, PDF, auth validation, or other geometry edits.
+     TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.31 — MASTER entrance presentation and Control Center event switching.
      MASTER replaces only the universal chooser's WELCOME title. Blue tournament
      trigger; existing MASTER GO prompt gets centered title and responsive visual-
@@ -14710,6 +14719,18 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 }
 </style>
 
+<style id="sshcp-v2332-control-center-event-auth">
+/* Keep the existing Control Center button in exactly its previous slot.
+   It now opens EVENT AUTH (not the former destructive REMOVE AUTH). */
+#testLogView .test-remove-auth {
+  display:block!important;
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+  color:var(--on-accent)!important;
+  -webkit-text-fill-color:var(--on-accent)!important;
+}
+</style>
+
 </head>
 
 
@@ -14838,7 +14859,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.31</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.32</span></span>
         </button>
         <script>
           (function () {
@@ -15290,7 +15311,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <div class="test-auth-controls">
           <div id="testAuthorizationButtonRow" class="test-auth-button-row">
-            <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">REMOVE AUTH</button>
+            <button id="testRemoveAuthorizationButton" class="test-remove-auth" type="button">EVENT AUTH</button>
             <button id="testSwitchAuthorizationButton" class="test-switch-auth" type="button">GAIN AUTH</button>
           </div>
         </div>
@@ -17415,6 +17436,25 @@ let scoreTimingDetail =
       }
     }
 
+    function openEventAuthorizationV2332() {
+        // V23.31 — use the same universal MASTER picker, not a second menu or
+        // unsafely carry MASTER auth between events. This event's stored auth
+        // remains scoped; the destination requires its own GO validation.
+        closeModal();
+        const curtainV2331 = beginDataRevealShieldV177('master-switch-v2331', [], '#fff', true, 5100);
+        if (curtainV2331) {
+          curtainV2331.classList.add('sshcp-master-pick-curtain-v2330');
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            curtainV2331.classList.add('is-covering-v2330');
+          }));
+        }
+        const fadeV2331 = Number(window.SSHCP_FADE_TIMING_V2092 &&
+          window.SSHCP_FADE_TIMING_V2092.FADE_1A_HOME_FULL);
+        const msV2331 = Number.isFinite(fadeV2331) && fadeV2331 >= 0
+          ? Math.ceil(fadeV2331 * 1000) : 250;
+        window.setTimeout(() => window.location.assign(window.location.pathname), msV2331 + 60);
+    }
+
     function showSwitchAuthorization(){
       closeModal();
       els.modalOverlay.classList.add('switch-authorization');
@@ -17428,9 +17468,6 @@ let scoreTimingDetail =
         '<div class="switch-auth-master-row">' +
           '<button id="switchAuthorizeMaster" class="switch-auth-button" type="button">AUTHORIZE MASTER</button>' +
           '<label class="switch-auth-preauth"><input id="switchPreAuthorize" type="checkbox"><span>PREAUTH</span></label>' +
-        '</div>' +
-        '<div class="switch-auth-event-row-v2331">' +
-          '<button id="switchTournamentV2331" class="switch-auth-button" type="button">SWITCH TOURNAMENT</button>' +
         '</div>';
       els.modalInput.style.display='none';
       const close=makeModalButton('CLOSE','',closeModal);
@@ -17451,24 +17488,7 @@ let scoreTimingDetail =
         if(ok){ scorecardHasLoaded=false; leaderboardHasLoaded=false; showTestLog(); }
       });
       document.getElementById('switchScanQr').addEventListener('click',()=>els.testQrCameraInput && els.testQrCameraInput.click());
-      document.getElementById('switchTournamentV2331').addEventListener('click', () => {
-        // V23.31 — use the same universal MASTER picker, not a second menu or
-        // unsafely carry MASTER auth between events. This event's stored auth
-        // remains scoped; the destination requires its own GO validation.
-        closeModal();
-        const curtainV2331 = beginDataRevealShieldV177('master-switch-v2331', [], '#fff', true, 5100);
-        if (curtainV2331) {
-          curtainV2331.classList.add('sshcp-master-pick-curtain-v2330');
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            curtainV2331.classList.add('is-covering-v2330');
-          }));
-        }
-        const fadeV2331 = Number(window.SSHCP_FADE_TIMING_V2092 &&
-          window.SSHCP_FADE_TIMING_V2092.FADE_1A_HOME_FULL);
-        const msV2331 = Number.isFinite(fadeV2331) && fadeV2331 >= 0
-          ? Math.ceil(fadeV2331 * 1000) : 250;
-        window.setTimeout(() => window.location.assign(window.location.pathname), msV2331 + 60);
-      });
+
     }
 
     async function showEnterPasskey(){
@@ -30126,12 +30146,27 @@ let scoreTimingDetail =
          above and below the table. The helper text keeps its existing 16px target
          and is shifted only enough to sit at the visual midpoint of the complete
          table-to-actions buffer. X/2X is never altered to manufacture spacing. */
-      const exactShellHeightV2097 = Math.max(1, headerHeight + usedDataPixelsV2097);
+      /* V23.32: the 1px top/bottom frame belongs to the shell, not to
+         the 1X/2X data viewport. Previously the shell was 2px too short, and
+         re-fit after shorter browser viewport changes could leave a partial
+         next row visible. Preserve the exact existing X and unit decisions. */
+      const shellStyleV2332 = getComputedStyle(shell);
+      const frameHeightV2332 = (parseFloat(shellStyleV2332.borderTopWidth) || 0) +
+        (parseFloat(shellStyleV2332.borderBottomWidth) || 0);
+      const exactShellHeightV2097 = Math.max(1, headerHeight + usedDataPixelsV2097 + frameHeightV2332);
       const exactShellValueV2097 = exactShellHeightV2097 + 'px';
       const totalRemainderV2231 = Math.max(0, availableShellHeightV2097 - exactShellHeightV2097);
       const topRemainderV2231 = totalRemainderV2231 * 0.50;
       const bottomRemainderV2231 = totalRemainderV2231 - topRemainderV2231;
       shell.style.setProperty('--geek-visible-units-v220', String(targetUnitsV220));
+      /* The scroller itself must never expose a fractional next 1X/2X row. */
+      if (scrollViewport) {
+        const vpV2332 = usedDataPixelsV2097 + 'px';
+        scrollViewport.style.setProperty('flex', '0 0 ' + vpV2332, 'important');
+        scrollViewport.style.setProperty('height', vpV2332, 'important');
+        scrollViewport.style.setProperty('min-height', vpV2332, 'important');
+        scrollViewport.style.setProperty('max-height', vpV2332, 'important');
+      }
       els.modalActions.style.setProperty('margin-top', '0px', 'important');
 
       shell.style.setProperty('margin-top', topRemainderV2231.toFixed(2) + 'px', 'important');
@@ -37683,6 +37718,24 @@ let scoreTimingDetail =
     }
 
 
+    /* V23.32: Android Chrome can resize visualViewport when its toolbar
+       moves without dispatching window.resize. Reuse the exact GEEK fitter
+       once CSS dynamic viewport geometry has settled. PWA remains unchanged. */
+    let geekViewportResizeFrameV2332 = 0;
+    function scheduleGeekVisualViewportRefitV2332() {
+      if (!els.modalOverlay || !els.modalOverlay.classList.contains('geek-mode-v180')) return;
+      if (geekViewportResizeFrameV2332) cancelAnimationFrame(geekViewportResizeFrameV2332);
+      geekViewportResizeFrameV2332 = requestAnimationFrame(() => {
+        geekViewportResizeFrameV2332 = requestAnimationFrame(() => {
+          geekViewportResizeFrameV2332 = 0;
+          if (els.modalOverlay.classList.contains('geek-mode-v180')) fitGeekRowsV180();
+        });
+      });
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', scheduleGeekVisualViewportRefitV2332, { passive:true });
+    }
+
     window.addEventListener('resize', () => {
       if (
         els.teamsPopupOverlay &&
@@ -37773,7 +37826,7 @@ let scoreTimingDetail =
       els.testSwitchAuthorizationButton.addEventListener('click', showSwitchAuthorization);
     }
     if (els.testRemoveAuthorizationButton) {
-      els.testRemoveAuthorizationButton.addEventListener('click', removeQrAuthorization);
+      els.testRemoveAuthorizationButton.addEventListener('click', openEventAuthorizationV2332);
     }
     if (els.testQrCameraInput) els.testQrCameraInput.addEventListener('change', event => decodeQrImage(event.target.files && event.target.files[0]));
 
