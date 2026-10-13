@@ -1,4 +1,10 @@
-<!-- SSHCP | BASE KEY: 23.39-P8M4QX | BUILD KEY: 23.40-K7M4QV -->
+<!-- SSHCP | BASE KEY: 23.40-K7M4QV | BUILD KEY: 23.41-R6Q4VX -->
+<!-- SSHCP V23.41 — Control Center diagnostic log presentation ONLY.
+     Center EVENT values horizontally within their existing column and use normal
+     font weight for the time-of-day while preserving bold duration on line 2.
+     V23.40 shared on-device event log, QR authorization and HOME reveal,
+     scoring, event isolation, all other UI geometry and fade timing unchanged.
+     Paired compatible Worker CF3.35. TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.40 — device-wide Control Center diagnostic history across events.
      Migrate existing event-scoped local histories once into one shared on-device log,
      preserve each entry's event and original timestamp/duration, and display
@@ -9799,8 +9805,8 @@ body option{
 #testLogView .test-log-event-v2340{
   overflow-wrap:anywhere!important;
   font-weight:700!important;
-  justify-content:flex-start!important;
-  text-align:left!important;
+  justify-content:center!important;
+  text-align:center!important;
 }
 #testLogView .test-log-result-v2340{
   display:block!important;
@@ -9816,6 +9822,11 @@ body option{
 #testLogView .test-log-times-v2340 span{
   font-weight:700!important;
 }
+/* V23.41 — the time of day is secondary; the elapsed duration remains bold. */
+#testLogView .test-log-times-v2340 .test-log-clock-v2341{
+  font-weight:400!important;
+}
+
 
 #testLogView .control-center-bottom-stack{
   flex:0 0 auto!important;
@@ -15320,7 +15331,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.40</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.41</span></span>
         </button>
         <script>
           (function () {
@@ -21620,7 +21631,7 @@ let scoreTimingDetail =
             (item.result ? '<span class="test-log-result-v2340 ' + resultClass + '">' + escapeHtml(item.result) + '</span>' : '') +
             (detail ? '<span class="test-log-detail">' + escapeHtml(detail) + '</span>' : '') +
           '</div>' +
-          '<div class="test-log-times-v2340"><strong>' + escapeHtml(clock) + '</strong>' +
+          '<div class="test-log-times-v2340"><span class="test-log-clock-v2341">' + escapeHtml(clock) + '</span>' +
             '<span>' + escapeHtml(item.total || '—') + '</span></div>' +
           '</div>';
       }).join('');
