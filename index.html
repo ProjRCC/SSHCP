@@ -1,4 +1,10 @@
-<!-- SSHCP | BASE KEY: 23.25-Q6M4RX | BUILD KEY: 23.26-P7M4QX -->
+<!-- SSHCP | BASE KEY: 23.26-P7M4QX | BUILD KEY: 23.27-R8Q4MN -->
+<!-- SSHCP V23.27 — MASTER WELCOME dropdown geometry, bespoke app-themed
+     tournament menu, and immediate verified-event ENTER password gate.
+     Fixes V23.26 native Android select and delayed/stranded password handoff.
+     Do not change the existing QR Welcome, tournament API, password validation,
+     scoring, event separation, GEEK, Control Center, or Worker CF3.34.
+     TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.26 — universal bookmarked MASTER entry. No-event URL shows
      the proven WELCOME with an active-tournament dropdown and no action buttons;
      selection loads the event and its existing ENTER MASTER password popup.
@@ -7661,24 +7667,62 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 .qr-welcome-button-v170:active{
   filter:brightness(.92);
 }
-/* V23.26 — only the universal no-event chooser replaces TEAM lettering
-   with a native tournament select. WELCOME title + fades remain original. */
+/* V23.27 — preserve original WELCOME typography/fade and native modal.
+   The master-only selector belongs just below WELCOME, in the width family of
+   its old buttons, not at mid-screen; every option is app-rendered (never an
+   Android <select>/radio popup). Nothing changes for incoming QR WELCOME. */
 html.sshcp-master-picker-v2326 .qr-welcome-actions-v170,
 html.sshcp-master-entry-v2326 .qr-welcome-actions-v170 { display:none!important; }
 html.sshcp-master-picker-v2326 .qr-welcome-team-v170 {
-  top:50%; transform:translate(-50%,-50%); overflow:visible;
-  width:min(85vw,500px); max-width:85vw; white-space:normal;
+  top:39%; transform:translate(-50%,-50%); overflow:visible;
+  width:min(76vw,440px); max-width:90vw; white-space:normal;
 }
-#sshcpEventSelectV2326 {
+.sshcp-event-picker-v2327 { position:relative; width:100%; font-family:Oswald,'Arial Narrow',Arial,sans-serif; }
+.sshcp-event-trigger-v2327 {
+  position:relative; display:flex; justify-content:center; align-items:center;
   width:100%; height:clamp(54px,7.2dvh,70px);
+  padding:0 38px 0 14px; margin:0; box-sizing:border-box;
   border:3px solid var(--accent); border-radius:9px;
   background:#fff; color:var(--accent);
-  font-family:Oswald,'Arial Narrow',Arial,sans-serif;
-  font-size:clamp(22px,5.5vw,33px); font-weight:600;
-  padding:0 12px; text-align:center; text-align-last:center;
-  box-sizing:border-box; appearance:auto;
+  font:600 clamp(22px,5.5vw,33px)/1 Oswald,'Arial Narrow',Arial,sans-serif;
+  text-align:center; cursor:pointer;
 }
-#sshcpEventSelectV2326:disabled { opacity:.65; }
+.sshcp-event-trigger-v2327 > span:first-child {
+  display:block; max-width:100%; overflow:hidden;
+  white-space:nowrap; text-overflow:ellipsis;
+}
+.sshcp-event-trigger-v2327:disabled { opacity:.65; cursor:default; }
+.sshcp-event-chevron-v2327 {
+  position:absolute; right:12px; top:50%; width:24px; height:24px;
+  transform:translateY(-50%); transform-origin:center center;
+  transform-box:fill-box; transition:transform .15s ease;
+  pointer-events:none;
+}
+.sshcp-event-chevron-v2327 polyline {
+  fill:none; stroke:currentColor; stroke-width:2.6;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+/* The arrow path changes between V and ^; never rotate an SVG, whose
+   coordinate-origin defaults differ across Android browsers. */
+.sshcp-event-options-v2327 {
+  position:absolute; left:0; top:calc(100% + 7px); z-index:3;
+  width:100%; max-height:min(42dvh,390px); overflow-y:auto;
+  box-sizing:border-box; border:3px solid var(--accent);
+  border-radius:9px; background:#fff; box-shadow:0 7px 18px rgba(0,0,0,.16);
+  overscroll-behavior:contain;
+}
+.sshcp-event-options-v2327[hidden] { display:none!important; }
+.sshcp-event-option-v2327 {
+  display:block; width:100%; min-height:52px;
+  border:0; border-bottom:1px solid #d9e2ed; border-radius:0;
+  padding:10px 8px; box-sizing:border-box; background:#fff;
+  color:var(--accent); text-align:center;
+  font:500 clamp(21px,5.1vw,29px)/1.15 Oswald,'Arial Narrow',Arial,sans-serif;
+  cursor:pointer;
+}
+.sshcp-event-option-v2327:last-child { border-bottom:0; }
+.sshcp-event-option-v2327:active,
+.sshcp-event-option-v2327:focus-visible { background:var(--accent); color:var(--on-accent); outline:none; }
 
 @keyframes sshcpQrWelcomeFadeV170{
   from{opacity:0;}
@@ -14719,7 +14763,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.26</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.27</span></span>
         </button>
         <script>
           (function () {
@@ -38305,22 +38349,59 @@ let scoreTimingDetail =
       window.setTimeout(() => els.modalInput.focus(), 0);
     }
 
-    /* V23.26 — true root-only live event selector, never guessed from memory.
-       No score/auth operations can run until the selected event is verified. */
+    /* V23.27 — custom on-page selector: no OS dropdown/radio sheet. Clicking
+       an option proceeds directly to that event's existing MASTER password.
+       Only the Worker-verified root eventList supplies the options. */
     async function revealMasterEventPickerV2326(team, overlay) {
       team.replaceChildren();
-      team.style.top = '50%';
-      team.style.transform = 'translate(-50%,-50%)';
-      const dropdown = document.createElement('select');
-      dropdown.id = 'sshcpEventSelectV2326';
-      dropdown.setAttribute('aria-label', 'SELECT TOURNAMENT');
-      dropdown.disabled = true;
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'LOADING TOURNAMENTS';
-      dropdown.appendChild(placeholder);
-      team.appendChild(dropdown);
+      team.style.top = '';
+      team.style.transform = '';
+      const picker = document.createElement('div');
+      picker.className = 'sshcp-event-picker-v2327';
+      const trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'sshcp-event-trigger-v2327';
+      trigger.setAttribute('aria-label', 'SELECT TOURNAMENT');
+      trigger.setAttribute('aria-haspopup', 'listbox');
+      trigger.setAttribute('aria-expanded', 'false');
+      trigger.disabled = true;
+      const caption = document.createElement('span');
+      caption.textContent = 'LOADING TOURNAMENTS';
+      const svgNsV2327 = 'http://www.w3.org/2000/svg';
+      const chevron = document.createElementNS(svgNsV2327,'svg');
+      chevron.classList.add('sshcp-event-chevron-v2327');
+      chevron.setAttribute('viewBox','0 0 24 24');
+      chevron.setAttribute('aria-hidden','true');
+      const arrow = document.createElementNS(svgNsV2327,'polyline');
+      arrow.setAttribute('points','5,9 12,16 19,9');
+      chevron.appendChild(arrow);
+      trigger.append(caption, chevron);
+      const options = document.createElement('div');
+      options.id = 'sshcpEventOptionsV2327';
+      options.className = 'sshcp-event-options-v2327';
+      options.setAttribute('role','listbox');
+      options.hidden = true;
+      picker.append(trigger, options);
+      team.appendChild(picker);
       overlay.classList.add('show-team');
+      const close = () => {
+        options.hidden = true;
+        picker.classList.remove('open');
+        arrow.setAttribute('points','5,9 12,16 19,9');
+        trigger.setAttribute('aria-expanded','false');
+      };
+      trigger.addEventListener('click', () => {
+        options.hidden = !options.hidden;
+        picker.classList.toggle('open', !options.hidden);
+        arrow.setAttribute('points', options.hidden ? '5,9 12,16 19,9' : '5,15 12,8 19,15');
+        trigger.setAttribute('aria-expanded', String(!options.hidden));
+      });
+      document.addEventListener('pointerdown', event => {
+        if (!picker.contains(event.target)) close();
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !options.hidden) { close(); trigger.focus(); }
+      });
       try {
         const response = await window.fetch(
           'https://rotbtest.projrcc.workers.dev/?action=eventList',
@@ -38329,41 +38410,33 @@ let scoreTimingDetail =
         if (!response.ok) throw new Error('Tournament directory unavailable (HTTP '+response.status+').');
         const data = await response.json();
         if (!data || data.ok !== true || !Array.isArray(data.events)) throw new Error('Invalid tournament directory.');
-        dropdown.replaceChildren();
-        const prompt = document.createElement('option');
-        prompt.value=''; prompt.textContent='SELECT TOURNAMENT';
-        dropdown.appendChild(prompt);
         const keys = new Set();
         for (const item of data.events) {
           const key = String(item && item.event || '');
-          if (!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(key)) continue;
-          if (keys.has(key)) continue;
+          if (!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(key) || keys.has(key)) continue;
           keys.add(key);
-          const option = document.createElement('option');
-          option.value=key; option.textContent=key;
-          dropdown.appendChild(option);
+          const option = document.createElement('button');
+          option.type = 'button';
+          option.className = 'sshcp-event-option-v2327';
+          option.setAttribute('role','option');
+          option.textContent = key;
+          option.addEventListener('click', () => {
+            trigger.disabled = true;
+            caption.textContent = key;
+            close();
+            const url = new URL(window.location.href);
+            url.searchParams.set('event', key);
+            url.searchParams.set('masterEntrance', '1');
+            url.searchParams.delete('passkey'); url.searchParams.delete('key');
+            window.location.assign(url.pathname + url.search + url.hash);
+          });
+          options.appendChild(option);
         }
-        if (!keys.size) {
-          prompt.textContent='NO ACTIVE TOURNAMENTS';
-          return;
-        }
-        dropdown.disabled = false;
-        dropdown.addEventListener('change', () => {
-          const selected = dropdown.value;
-          if (!keys.has(selected)) return;
-          dropdown.disabled=true;
-          const url = new URL(window.location.href);
-          url.searchParams.set('event', selected);
-          url.searchParams.set('masterEntrance', '1');
-          url.searchParams.delete('passkey'); url.searchParams.delete('key');
-          window.location.assign(url.pathname + url.search + url.hash);
-        });
+        caption.textContent = keys.size ? 'SELECT TOURNAMENT' : 'NO ACTIVE TOURNAMENTS';
+        trigger.disabled = !keys.size;
       } catch (err) {
-        dropdown.replaceChildren();
-        const failure = document.createElement('option');
-        failure.textContent='TOURNAMENTS UNAVAILABLE'; failure.value='';
-        dropdown.appendChild(failure);
-        dropdown.disabled = true;
+        caption.textContent = 'TOURNAMENTS UNAVAILABLE';
+        trigger.disabled = true;
         try { console.error('Master tournament selection:',err); } catch (_) {}
       }
     }
@@ -38385,7 +38458,15 @@ let scoreTimingDetail =
         return;
       }
       if (mode === 'MASTER_ENTRY') {
-        showBareEntryPasswordV1961();
+        /* V23.27: launch the existing ENTER password modal as soon as the
+           selected event is verified. Never wait on old stored QR validation,
+           HOME image decoding, or a second WELCOME animation. */
+        window.__sshcpEventBootstrapV2318.then(() => {
+          if (window.__sshcpIncomingQrWelcomeV170 &&
+              window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY') {
+            showBareEntryPasswordV1961();
+          }
+        }).catch(() => { /* bootstrap displays the event error */ });
         return;
       }
       let displayLabel = '';
@@ -38570,7 +38651,12 @@ let scoreTimingDetail =
         homeRefreshPrefetchV2078 = refreshHomeTournamentStateV1831();
       }
 
-      const qrInitializationV1984 = await initializeQrAuthorization();
+      /* V23.27: choosing MASTER is explicitly a new authorization attempt.
+         Do not block its ENTER gate on revalidating a previous team/QR session.
+         All normal QR and previously authorized event entry stays unchanged. */
+      const qrInitializationV1984 = window.__sshcpMasterEntryV2326
+        ? { incoming:false, ok:null }
+        : await initializeQrAuthorization();
       if (geekEnabledV180()) startGeekDiagnosticV180b();
 
       const failedIncomingQrV1984 = !!(
