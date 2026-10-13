@@ -1,3 +1,13 @@
+<!-- SSHCP | BASE KEY: 23.46-P7M4QX | BUILD KEY: 23.47-M8Q4VX -->
+<!-- SSHCP V23.47 — auto-push successful save resumes normal Scorecard NESR scroll.
+     The 10-second retry remains unchanged. After a verified nonblank AUTO
+     score save, use the established V18.35 next-expected-row positioning:
+     with more pending scores, the normal beauty scroll; after the final
+     verified save, settle the row against the restored no-red-bar geometry
+     UNDER the existing full-screen Scorecard Fade 2 white curtain, then
+     reveal at its original 0.20s. CLEAR stays stationary. No Worker, auth,
+     retry, event isolation, general scorecard scroll or layout changes.
+     TEST / NOT GOLDEN. -->
 <!-- SSHCP | BASE KEY: 23.45-K8M4QX | BUILD KEY: 23.46-P7M4QX -->
 <!-- SSHCP V23.46 — AUTO PUSH red-row visibility for TEAM QR only.
      V23.45 colored the Scorecard team-selector button, but established QR-only
@@ -15409,7 +15419,7 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.46</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.47</span></span>
         </button>
         <script>
           (function () {
@@ -26901,7 +26911,7 @@ let scoreTimingDetail =
       }
     }
 
-    async function scoreAutoPushRowTransitionV2345(change) {
+    async function scoreAutoPushRowTransitionV2345(change, verifiedScrollV2347 = false) {
       if (scoreAutoPushTransitionV2345) return;
       scoreAutoPushTransitionV2345 = true;
       /* MUST mount the same white full-viewport Scorecard curtain BEFORE any
@@ -26911,6 +26921,14 @@ let scoreTimingDetail =
       try {
         change();
         paintScoreAutoPushRowV2345();
+        /* V23.47: a successfully recovered ENTER may be the LAST pending
+           score. Removing the red selector changes the table viewport. Settle
+           the normal NESR against that FINAL geometry while fully covered;
+           don't calculate scroll from the now-retired red-row height. The
+           existing Fade 2 duration is not changed. */
+        if (scorecardVisible && verifiedScrollV2347 && shield && selectedTeam) {
+          await new Promise(resolve => restoreScorePosition(false, resolve));
+        }
         if (scorecardVisible) await revealDataShieldAfterLayoutV177('scorecard', shield, 2);
       } finally { scoreAutoPushTransitionV2345 = false; }
     }
@@ -26947,7 +26965,7 @@ let scoreTimingDetail =
       });
     }
 
-    function stopScoreAutoPushV2345(reason='cancelled') {
+    function stopScoreAutoPushV2345(reason='cancelled', verifiedScrollV2347 = false) {
       if (!scoreAutoPushV2345) return;
       clearScoreAutoPushTimerV2345();
       void scoreAutoPushRowTransitionV2345(() => {
@@ -26956,7 +26974,7 @@ let scoreTimingDetail =
         sshcpLocalStorageV2318.removeItem(SCORE_AUTO_PUSH_KEY_V2345);
         addTestLog('SCORE AUTO PUSH', reason==='verified'?'VERIFIED':'CANCELLED', '—',
           'Team '+slot+(reason==='verified'?' • all pending scores confirmed':' • gray scores retained'));
-      });
+      }, reason === 'verified' && verifiedScrollV2347);
     }
 
     function restoreScoreAutoPushAfterLoadV2345() {
@@ -27564,6 +27582,9 @@ let scoreTimingDetail =
         Date.now();
 
       startLoadingLine();
+      /* Only a newly VERIFIED nonblank AUTO score may advance NESR. An
+         unsuccessful attempt, manual CANCEL, and a CLEAR remain stationary. */
+      let autoPushVerifiedEnteredScoreV2347 = false;
 
       try {
 
@@ -27634,6 +27655,8 @@ let scoreTimingDetail =
           );
 
         const sameTeamAtVerifyV2345 = !!(selectedTeam && Number(selectedTeam.slot) === expectedSlot);
+        autoPushVerifiedEnteredScoreV2347 = !!(sameTeamAtVerifyV2345 &&
+          failureContextV1621 === 'auto' && shouldAutoPositionAfterSave);
         if (sameTeamAtVerifyV2345) savedScores = [...confirmedScores];
 
         if (sameTeamAtVerifyV2345) markScoreVisualVerificationV1619(
@@ -27799,8 +27822,17 @@ let scoreTimingDetail =
         /* V23.45 — one in-flight request at a time. Verified cards stop the
            retry session; unanswered writes wait for the next 10-second slot. */
         if (scoreAutoPushV2345 && !queuedAnotherSave && scoreAutoPushMatchesV2345()) {
-          if (!hasPendingScores()) stopScoreAutoPushV2345('verified');
-          else if (!scoreAutoPushTimerV2345) scoreAutoPushPlanNextV2345();
+          if (!hasPendingScores()) {
+            stopScoreAutoPushV2345('verified', autoPushVerifiedEnteredScoreV2347);
+          } else {
+            /* More than one pending change can remain if the golfer keeps
+               scoring during a retry. Reuse ENTER's established local-progress
+               scroll, and leave the red row and retry schedule intact. */
+            if (autoPushVerifiedEnteredScoreV2347 && currentView === 'scorecard') {
+              restoreScorePosition(true);
+            }
+            if (!scoreAutoPushTimerV2345) scoreAutoPushPlanNextV2345();
+          }
         }
 
         /* If the player moved to LIVE LEADERBOARD while this score was being
