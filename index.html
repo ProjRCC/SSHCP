@@ -1,4 +1,14 @@
-<!-- SSHCP | BASE KEY: 23.35-N6Q4RV | BUILD KEY: 23.36-R7M4QX -->
+<!-- SSHCP | BASE KEY: 23.36-R7M4QX | BUILD KEY: 23.37-Q8M4VX -->
+<!-- SSHCP V23.37 — installed-PWA cold HOME speed, exact V23.36 donor.
+     For an already stored QR/MASTER, start only the existing read-only QR
+     verification and the event HOME image in parallel with eventConfig.
+     Worker eventConfig identity and QR verification MUST BOTH succeed before
+     any auth state is saved or HOME is revealed. A fresh incoming QR, MASTER
+     chooser/GO, CC EVENT, and non-PWA browser routes retain V23.36 behavior.
+     Adopt the preloaded image element rather than refetching it; time stages
+     in one Control Center HOME STARTUP entry. Show a delayed minimal loading
+     label during unusually slow authenticated cold HOME startup. No scoring,
+     event storage isolation, Worker, GEEK, results or layout redesign. TEST. -->
 <!-- SSHCP V23.36 — repair authorization launch routes following rejected V23.35.
      Keep incoming QR authority and event-isolated stored QR/MASTER authorization.
      MASTER selection uses a one-use 120-second localStorage intent matched to a
@@ -458,6 +468,126 @@
       window.GOLFAPP_EVENT_KEY = validV2318 ? eventV2318 : '';
       window.SSHCP_EVENT = { DETAILS:'', SHORT_NAME:'' };
       var nativeFetchV2318 = window.fetch.bind(window);
+      /* V23.37 — parallel read-only cold-start preflights. The authenticated
+         eventConfig response remains authoritative: neither QR auth state nor
+         HOME reveal may commit until that response passes C2 identity checks.
+         Never preflight a new QR URL or an intentional MASTER tournament entry.
+         Raw event-qualified Worker URLs and stored passkeys never enter logs. */
+      var startupTraceV2337 = {
+        started: (window.performance && performance.now) ? performance.now() : Date.now(),
+        event: eventV2318, preflightQrMs: null, eventConfigMs: null,
+        homeImageMs: null, homeStatusMs: null, qrVerifiedMs: null,
+        coldHome: false
+      };
+      window.__sshcpStartupTraceV2337 = startupTraceV2337;
+      var startupClockV2337 = function(){
+        return (window.performance && performance.now) ? performance.now() : Date.now();
+      };
+      var preflightQrV2337 = null;
+      var preflightImageV2337 = null;
+      var startupSavedPasskeyV2337 = '';
+      var startupRememberedHomeV2337 = false;
+      if (standaloneLaunchV2336 && validV2318 && !hasIncomingQrV2336 &&
+          !masterEntryV2326 && !masterPickerV2326) {
+        try {
+          var startupRoleV2337 = window.localStorage.getItem(namespaceV2318 + 'sshcpQrRole');
+          var startupViewV2337 = window.sessionStorage.getItem(namespaceV2318 + 'rotbCurrentView') || 'home';
+          startupRememberedHomeV2337 = startupViewV2337 === 'home';
+          if (startupRoleV2337 === 'QR' || startupRoleV2337 === 'MASTER') {
+            startupSavedPasskeyV2337 = String(
+              window.localStorage.getItem(namespaceV2318 + 'sshcpQrPasskey') || ''
+            ).trim();
+          }
+        } catch (_) { startupSavedPasskeyV2337 = ''; }
+      }
+      if (startupSavedPasskeyV2337) {
+        var qrStartedV2337 = startupClockV2337();
+        var qrUrlV2337 = new URL('https://rotbtest.projrcc.workers.dev/');
+        qrUrlV2337.searchParams.set('action','qrAuth');
+        qrUrlV2337.searchParams.set('event',eventV2318);
+        qrUrlV2337.searchParams.set('passkey',startupSavedPasskeyV2337);
+        qrUrlV2337.searchParams.set('refresh',String(Date.now()));
+        var qrPromiseV2337 = nativeFetchV2318(qrUrlV2337.toString(), {cache:'no-store'});
+        // Store a settling promise, not a reusable authority; every validation
+        // still checks the existing request-token guard and response validity.
+        qrPromiseV2337 = qrPromiseV2337.then(function(response){
+          startupTraceV2337.preflightQrMs = startupClockV2337() - qrStartedV2337;
+          return response;
+        }, function(error){
+          startupTraceV2337.preflightQrMs = startupClockV2337() - qrStartedV2337;
+          throw error;
+        });
+        qrPromiseV2337.catch(function(){}); // auth consumer reports errors
+        preflightQrV2337 = {passkey:startupSavedPasskeyV2337,
+                            event:eventV2318, promise:qrPromiseV2337};
+      }
+      if (startupSavedPasskeyV2337 && startupRememberedHomeV2337 &&
+          typeof window.Image === 'function') {
+        try {
+          var imageStartedV2337 = startupClockV2337();
+          var warmImageV2337 = new window.Image();
+          var warmImageUrlV2337 = 'https://rotbtest.projrcc.workers.dev/?event=' +
+            encodeURIComponent(eventV2318) + '&action=eventImage&kind=home';
+          warmImageV2337.addEventListener('load',function(){
+            startupTraceV2337.homeImageMs = startupClockV2337() - imageStartedV2337;
+          },{once:true});
+          warmImageV2337.addEventListener('error',function(){
+            startupTraceV2337.homeImageMs = startupClockV2337() - imageStartedV2337;
+          },{once:true});
+          warmImageV2337.src=warmImageUrlV2337;
+          preflightImageV2337={element:warmImageV2337,url:warmImageUrlV2337};
+        } catch (_) { preflightImageV2337=null; }
+      }
+      window.__sshcpConsumeSavedQrPrefetchV2337 = function(passkey,auditEvent){
+        if (!preflightQrV2337 || auditEvent ||
+            preflightQrV2337.event !== window.GOLFAPP_EVENT_KEY ||
+            preflightQrV2337.passkey !== String(passkey||'').trim()) return null;
+        var value = preflightQrV2337;
+        preflightQrV2337=null; // never reuse a prior response for a later check
+        return value.promise.then(function(response){
+          // The preflight was started in parallel, but a validated C2 eventConfig
+          // must exist before its response may be consumed as authorization.
+          return window.__sshcpEventBootstrapV2318.then(function(){ return response; });
+        });
+      };
+      /* Delayed, noninteractive loading feedback ONLY on an already-authorized
+         standalone HOME reopening. Never replace the established white curtains. */
+      if (startupSavedPasskeyV2337 && startupRememberedHomeV2337) {
+        startupTraceV2337.coldHome=true;
+        var startupLoadingTimerV2337=0;
+        var startupLoadingElV2337=null;
+        var startupLoadingFinishedV2337=false;
+        var presentStartupLoadingV2337=function(){
+          if (startupLoadingFinishedV2337 || !document.body || startupLoadingElV2337) return;
+          var el=document.createElement('div');
+          el.id='sshcpStartupLoadingV2337';
+          el.style.cssText='position:fixed;inset:0;z-index:9010;display:flex;'+
+            'align-items:center;justify-content:center;background:#fff;'+
+            'color:#133362;pointer-events:none;font-family:Oswald,Arial,sans-serif;'+
+            'font-size:20px;font-weight:600;letter-spacing:1px;'+
+            'transition:opacity .25s ease;';
+          el.textContent='OPENING SIMPLESCRAMBLE';
+          document.body.appendChild(el);
+          startupLoadingElV2337=el;
+        };
+        var scheduleStartupLoadingV2337=function(){
+          if (startupLoadingFinishedV2337) return;
+          startupLoadingTimerV2337=window.setTimeout(presentStartupLoadingV2337,
+            Math.max(0,700-(startupClockV2337()-startupTraceV2337.started)));
+        };
+        if (document.readyState==='loading')
+          document.addEventListener('DOMContentLoaded',scheduleStartupLoadingV2337,{once:true});
+        else scheduleStartupLoadingV2337();
+        window.__sshcpDismissStartupLoadingV2337=function(){
+          startupLoadingFinishedV2337=true;
+          if (startupLoadingTimerV2337) window.clearTimeout(startupLoadingTimerV2337);
+          if (startupLoadingElV2337) {
+            var el=startupLoadingElV2337;
+            el.style.opacity='0';
+            window.setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},300);
+          }
+        };
+      }
       function scopedStorageV2318(raw) {
         return Object.freeze({
           getItem: function(k) {
@@ -502,6 +632,8 @@
         return window.__sshcpEventBootstrapV2318.then(dispatchV2318);
       };
       function bootErrorV2318(error) {
+        if (typeof window.__sshcpDismissStartupLoadingV2337 === 'function')
+          window.__sshcpDismissStartupLoadingV2337();
         function renderV2318() {
           if (document.getElementById('sshcpEventFailureV2318')) return;
           var cover = document.createElement('div');
@@ -555,6 +687,15 @@
           if (leader) leader.textContent = data.shortName;
           var homeImage = document.querySelector('#homeView .splash-image');
           var infoImage = document.getElementById('teamInfoImageV2032');
+          /* Adopt the original in-flight image, never start a second request.
+             The event identity is already verified when applyV2318 runs. */
+          if (homeImage && preflightImageV2337 &&
+              preflightImageV2337.element && homeImage.parentNode) {
+            preflightImageV2337.element.className = homeImage.className;
+            preflightImageV2337.element.alt = homeImage.alt;
+            homeImage.parentNode.replaceChild(preflightImageV2337.element,homeImage);
+            homeImage=preflightImageV2337.element;
+          }
           var baseUrl = 'https://rotbtest.projrcc.workers.dev/?event=' + encodeURIComponent(eventV2318) + '&action=eventImage&kind=';
           if (homeImage) {
             homeImage.alt = data.longName;
@@ -587,7 +728,7 @@
             logoTimerV2320 = window.setTimeout(function() {
               releaseLogoWatchV2320(new Error('Event HOME image request timed out.'));
             }, 20000);
-            homeImage.src = baseUrl + 'home';
+            if (homeImage.src !== baseUrl + 'home') homeImage.src = baseUrl + 'home';
             // Cached images can already be complete before a load event is queued.
             if (homeImage.complete && homeImage.naturalWidth > 0) logoLoadedV2320();
           } else {
@@ -604,11 +745,13 @@
       window.__sshcpEventBootstrapV2318 = (async function(){
          if (masterPickerV2326) return await new Promise(function() {}); // no event APIs behind chooser
          if (!validV2318) throw new Error('Open this page using ?event=EVENTKEY (a valid event key).');
+        var eventConfigStartedV2337 = startupClockV2337();
         var response = await window.sshcpEventFetchV2318(
           'https://rotbtest.projrcc.workers.dev/?action=eventConfig',
           {cache:'no-store'}
         );
         var data = await response.json();
+        startupTraceV2337.eventConfigMs = startupClockV2337() - eventConfigStartedV2337;
         if (!response.ok || data.ok !== true || data.event !== eventV2318 ||
             data.shortName !== eventV2318 || !data.longName || !data.homeImage || !data.infoImage) {
           throw new Error(data.error || 'Event metadata or identity validation failed.');
@@ -663,14 +806,14 @@
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
-      FADE_1A_HOME_FULL: 0.20,
-      FADE_2_SCORECARD_LEADERBOARD: 0.20,
-      FADE_3_AFTER_PLAY: 0.20,
-      FADE_4_QUICK_GUIDE: 0.50,
-      FADE_5A_CC_ENTER_REFRESH: 0.20,
-      FADE_5B_SM_REFRESH: 0.20,
+      FADE_1A_HOME_FULL: 0.25,
+      FADE_2_SCORECARD_LEADERBOARD: 0.30,
+      FADE_3_AFTER_PLAY: 0.30,
+      FADE_4_QUICK_GUIDE: 0.80,
+      FADE_5A_CC_ENTER_REFRESH: 0.25,
+      FADE_5B_SM_REFRESH: 0.30,
       FADE_6A_ORIENTATION_WARNING_IN: 1.00,
-      FADE_6B_ORIENTATION_CURTAIN_OUT: 0.50,
+      FADE_6B_ORIENTATION_CURTAIN_OUT: 1.00,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -15048,7 +15191,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.36</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.37</span></span>
         </button>
         <script>
           (function () {
@@ -17265,13 +17408,18 @@ let scoreTimingDetail =
         const fetchOptions = {cache:'no-store'};
         if (request.controller) fetchOptions.signal = request.controller.signal;
 
-        const response=await sshcpEventFetchV2318(
+        /* V23.37 — consume the single saved-QR read-only preflight if present.
+           The preflight still waits for eventConfig C2 verification before
+           this function is allowed to use its response or mutate auth state. */
+        const savedQrPrefetchV2337 = typeof window.__sshcpConsumeSavedQrPrefetchV2337 === 'function'
+          ? window.__sshcpConsumeSavedQrPrefetchV2337(clean,auditEvent) : null;
+        const response=await (savedQrPrefetchV2337 || sshcpEventFetchV2318(
           CLOUDFLARE_API_URL+
           '?action=qrAuth&passkey='+encodeURIComponent(clean)+
           (auditEvent ? '&audit=1' : '')+
           '&refresh='+Date.now(),
           fetchOptions
-        );
+        ));
 
         /* A newer auth or REMOVE AUTH owns state now. Ignore this response
            completely — no storage write, no failure popup, no stale log. */
@@ -17347,6 +17495,9 @@ let scoreTimingDetail =
         if(!qrAuthRequestIsCurrentV1631(requestToken)) return null;
 
         saveQrAuthorization(data,clean);
+        if (window.__sshcpStartupTraceV2337 && savedQrPrefetchV2337) {
+          window.__sshcpStartupTraceV2337.qrVerifiedMs=timerSeconds(started)*1000;
+        }
         syncTestAuthorizationToggle();
         updateHomeScorecardAccess();
 
@@ -17359,7 +17510,8 @@ let scoreTimingDetail =
             String(data.role||''),
             data.qrId ? 'QR '+String(data.qrId) : '',
             data.team ? String(data.team) : ''
-          ].filter(Boolean).join(' • ')
+          ].filter(Boolean).join(' • ') +
+          (savedQrPrefetchV2337 ? ' • STARTUP PREFETCH' : '')
         );
 
         return true;
@@ -23443,6 +23595,27 @@ let scoreTimingDetail =
         return;
       }
 
+      /* V23.37 — the established HOME readiness gate has completed. Log stage
+         timings (never credentials), then release delayed cold-load feedback
+         behind the SAME established final white-to-HOME curtain. */
+      if (window.__sshcpStartupTraceV2337 &&
+          window.__sshcpStartupTraceV2337.coldHome) {
+        const tV2337=window.__sshcpStartupTraceV2337;
+        const msV2337=value=>Number.isFinite(value)?(value/1000).toFixed(2)+'s':'—';
+        const elapsedV2337=(window.performance&&performance.now)
+          ? performance.now()-tV2337.started : Date.now()-tV2337.started;
+        addTestLog('HOME STARTUP','OK',msV2337(elapsedV2337),
+          'EVENT '+msV2337(tV2337.eventConfigMs)+
+          ' • QR FETCH '+msV2337(tV2337.preflightQrMs)+
+          ' • QR VERIFY '+msV2337(tV2337.qrVerifiedMs)+
+          ' • LOGO '+msV2337(tV2337.homeImageMs)+
+          ' • HOME STATUS '+msV2337(tV2337.homeStatusMs)+
+          ' • DATA/FONTS READY; REVEAL NEXT');
+        tV2337.coldHome=false;
+      }
+      if(typeof window.__sshcpDismissStartupLoadingV2337==='function')
+        window.__sshcpDismissStartupLoadingV2337();
+
       // V23.29 — signal the already-existing HOME readiness milestone to the
       // MASTER handoff. Normal HOME navigation never waits on this promise.
       if (typeof window.__sshcpResolveMasterHomeReadyV2329 === 'function') {
@@ -27844,6 +28017,7 @@ let scoreTimingDetail =
        read: no view switch, no Leaderboard reveal shield, no visible loading
        line, and no hidden table render. The returned rows also prime Summary. */
     async function refreshHomeTournamentStateV1831() {
+      const homeStatusStartedV2337 = timerStart();
       try {
         const response = await sshcpEventFetchV2318(
           CLOUDFLARE_API_URL +
@@ -27863,6 +28037,8 @@ let scoreTimingDetail =
           : [];
 
         updateTournamentFinishState(rows);
+        if(window.__sshcpStartupTraceV2337)
+          window.__sshcpStartupTraceV2337.homeStatusMs=Number(timerSeconds(homeStatusStartedV2337))*1000;
         return true;
       }
       catch (_) {
