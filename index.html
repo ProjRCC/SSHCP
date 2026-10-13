@@ -1,4 +1,12 @@
-<!-- SSHCP | BASE KEY: 23.37-Q8M4VX | BUILD KEY: 23.38-N7Q4VX -->
+<!-- SSHCP | BASE KEY: 23.38-N7Q4VX | BUILD KEY: 23.39-P8M4QX -->
+<!-- SSHCP V23.39 — require a fully SETTLED HOME under opaque 1A curtain.
+     Returning QR stays locally authorized and skips repeated qrAuth/eventConfig;
+     Worker keeps per-save QR ownership checks. Instead of exposing the incomplete
+     HOME, await real current tournament HOME status, loaded/decoded event logo,
+     loaded font and stable measured HOME geometry before the existing 0.20s 1A
+     fade. Preload status and image concurrently. First QR, MASTER, other views,
+     numbered timing controls, scoring, Worker CF3.34 and GOLDEN unchanged.
+     TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.38 — persistent returning TEAM session / startup speed, exact V23.37 donor.
      A first/new QR still requires the existing full Worker eventConfig and qrAuth
      checks. Once a Team QR is verified, event-scoped non-secret presentation
@@ -719,9 +727,11 @@
       }
       window.__sshcpAwaitHomeReadyV2320 = async function() {
         await window.__sshcpEventBootstrapV2318;
-        /* Returning Team QR: render HOME while its static logo loads behind it.
-           First scans, all MASTER and all browser routes keep the full image gate. */
-        if (!fastTeamReturnV2338) await window.__sshcpHomeLogoReadyV2320;
+        /* V23.39 — V23.38 correctly skipped returning TEAM authentication but
+           also skipped logo readiness. HOME must NEVER fade to an empty/late logo.
+           The cached logo is still preferred, but its actual load+decode remains
+           mandatory before the 1A curtain can reveal either returning or first HOME. */
+        await window.__sshcpHomeLogoReadyV2320;
         if (document.fonts && document.fonts.ready) {
           try { await document.fonts.ready; } catch (_) { /* CSS fallback font remains usable. */ }
         }
@@ -15283,7 +15293,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.38</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.39</span></span>
         </button>
         <script>
           (function () {
@@ -23682,14 +23692,14 @@ let scoreTimingDetail =
          established fresh status read normally. */
       const prefetchedHomeStateV2078 = homeRefreshPrefetchV2078;
       homeRefreshPrefetchV2078 = null;
-      if (window.__sshcpFastTeamReturnV2338) {
-        // Status always reads fresh, but it does not prevent a returning golfer
-        // from seeing HOME. Its completion updates LIVE/FINAL action normally.
-        Promise.resolve(prefetchedHomeStateV2078 || refreshHomeTournamentStateV1831())
-          .catch(() => {});
-      } else {
-        await (prefetchedHomeStateV2078 || refreshHomeTournamentStateV1831());
-      }
+      /* V23.39 — V23.38's background request could change the visible HOME
+         from LIVE LEADERBOARD to SCRAMBLE SUMMARY *after* the 1A fade began.
+         The returning TEAM QR still avoids all repeated startup authorization.
+         This independent READ-ONLY current-state request starts in initialize()
+         in parallel with the cached-logo restore. Await it before revealing HOME,
+         so completed/live buttons are already correct under solid white. */
+      const homeStatusSettledV2339 = await
+        (prefetchedHomeStateV2078 || refreshHomeTournamentStateV1831());
       updateHomeScorecardAccess();
       fitHomeActionTypographyV197();
       if (typeof window.refreshHomeMenuV2054 === 'function') {
@@ -23708,6 +23718,49 @@ let scoreTimingDetail =
         return;
       }
 
+      /* V23.39 — the complete logo and current LIVE/FINAL state now exist.
+         Perform the final typography/layout pass with that true content, then
+         observe at least two identical painted-frame geometry samples before
+         fading the 1A curtain. Do not mistake a fast auth shortcut for a
+         visually settled HOME. Never add a new auth request or cosmetic hold. */
+      updateHomeScorecardAccess();
+      fitHomeActionTypographyV197();
+      if (typeof window.refreshHomeMenuV2054 === 'function')
+        window.refreshHomeMenuV2054();
+      await new Promise(resolve => {
+        const homeV2339 = document.getElementById('homeView');
+        const logoV2339 = homeV2339 && homeV2339.querySelector('.splash-image');
+        const itemsV2339 = [
+          homeV2339,
+          homeV2339 && homeV2339.querySelector('.splash-image-wrap'),
+          logoV2339,
+          document.getElementById('homeLeaderboardButton'),
+          document.getElementById('homeScorecardAccess'),
+          homeV2339 && homeV2339.querySelector('.sshcp-home-guide-row'),
+          document.getElementById('homeEventInfoV2255')
+        ].filter(Boolean);
+        let lastV2339 = '';
+        let stableV2339 = 0;
+        function watchFrameV2339() {
+          const vv = window.visualViewport;
+          const rectV2339 = el => {
+            const r = el.getBoundingClientRect();
+            return [r.x,r.y,r.width,r.height].map(n => Math.round(n * 10)).join(',');
+          };
+          const sampleV2339 = [window.innerWidth, window.innerHeight,
+            Math.round((vv ? vv.width : window.innerWidth) * 10),
+            Math.round((vv ? vv.height : window.innerHeight) * 10),
+            logoV2339 ? logoV2339.naturalWidth : 0,
+            document.documentElement.classList.contains('sshcp-tournament-complete') ? 1 : 0,
+            ...itemsV2339.map(rectV2339)].join('|');
+          stableV2339 = sampleV2339 === lastV2339 ? stableV2339 + 1 : 0;
+          lastV2339 = sampleV2339;
+          if (stableV2339 >= 2) resolve();
+          else requestAnimationFrame(watchFrameV2339);
+        }
+        requestAnimationFrame(watchFrameV2339);
+      });
+
       /* V23.37 — the established HOME readiness gate has completed. Log stage
          timings (never credentials), then release delayed cold-load feedback
          behind the SAME established final white-to-HOME curtain. */
@@ -23718,7 +23771,7 @@ let scoreTimingDetail =
         const elapsedV2338=(window.performance&&performance.now)
           ? performance.now()-tV2338.started : Date.now()-tV2338.started;
         addTestLog('HOME STARTUP','OK',(elapsedV2338/1000).toFixed(2)+'s',
-          'RETURNING TEAM • EVENT CACHED • QR CHECK SKIPPED • HOME STATUS BACKGROUND • LIVE SCORE WRITE AUTH');
+          'RETURNING TEAM • EVENT CACHED • QR CHECK SKIPPED • LOGO/LAYOUT SETTLED • HOME STATUS '+(homeStatusSettledV2339?'LIVE':'LAST KNOWN')+' • LIVE SCORE WRITE AUTH');
         tV2338.fastLoggedV2338=true;
       }
       if (window.__sshcpStartupTraceV2337 &&
