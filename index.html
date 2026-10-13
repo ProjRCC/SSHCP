@@ -1,4 +1,16 @@
-<!-- SSHCP | BASE KEY: 23.36-R7M4QX | BUILD KEY: 23.37-Q8M4VX -->
+<!-- SSHCP | BASE KEY: 23.37-Q8M4VX | BUILD KEY: 23.38-N7Q4VX -->
+<!-- SSHCP V23.38 — persistent returning TEAM session / startup speed, exact V23.37 donor.
+     A first/new QR still requires the existing full Worker eventConfig and qrAuth
+     checks. Once a Team QR is verified, event-scoped non-secret presentation
+     settings are stored. Installed-PWA return with the SAME Team QR and intact
+     local session restores HOME without repeating qrAuth or eventConfig.
+     Worker continues authoritative per-save QR validation, event mapping,
+     score write/readback; scorecard, leaderboard and HOME status read live.
+     Returning HOME's status/image no longer hold up the curtain. Cache the
+     stable event HOME image in origin CacheStorage after successful first load.
+     MASTER/new QR, authorization changes, WELCOME and other transitions retain
+     their exact original paths. Only timing panel 1A/2/3/4/5A/5B set .20s;
+     6A/6B remain 1.00s and CLEAR remains .10s. CF3.34 unchanged. TEST. -->
 <!-- SSHCP V23.37 — installed-PWA cold HOME speed, exact V23.36 donor.
      For an already stored QR/MASTER, start only the existing read-only QR
      verification and the event HOME image in parallel with eventConfig.
@@ -500,7 +512,44 @@
           }
         } catch (_) { startupSavedPasskeyV2337 = ''; }
       }
-      if (startupSavedPasskeyV2337) {
+      /* V23.38 — only returning installed-PWA TEAM users with a locally
+         VERIFIED, event-scoped identity qualify. Same QR in a stale launch
+         URL counts as returning; a different incoming QR must be verified.
+         MASTER never uses this shortcut. Cached presentation is public only;
+         stored TEAM identity cannot authorize Worker score writes. */
+      var fastTeamReturnV2338 = false;
+      var fastPresentationV2338 = null;
+      var presentationStorageKeyV2338 = 'sshcpVerifiedPresentationV2338';
+      var oldQrInLaunchV2338 = String(queryV2318.get('passkey') || queryV2318.get('key') || '').trim();
+      try {
+        if (standaloneLaunchV2336 && validV2318 && !masterEntryV2326 &&
+            !masterPickerV2326 && !forceMasterPickerV2336 &&
+            window.localStorage.getItem('SimpleScramble:lastAuthorizedEvent:V2335') === eventV2318 &&
+            window.localStorage.getItem(namespaceV2318 + 'sshcpQrRole') === 'QR') {
+          var savedTeamKeyV2338 = String(window.localStorage.getItem(namespaceV2318 + 'sshcpQrPasskey') || '').trim();
+          var savedTeamIdV2338 = String(window.localStorage.getItem(namespaceV2318 + 'sshcpQrId') || '').trim();
+          var savedTeamNameV2338 = String(window.localStorage.getItem(namespaceV2318 + 'sshcpQrTeam') || '').trim();
+          var savedTeamSlotV2338 = Number(window.localStorage.getItem(namespaceV2318 + 'sshcpQrSlot'));
+          var savedPresentationRawV2338 = window.localStorage.getItem(namespaceV2318 + presentationStorageKeyV2338);
+          var cachedCandidateV2338 = savedPresentationRawV2338 ? JSON.parse(savedPresentationRawV2338) : null;
+          if (savedTeamKeyV2338 && savedTeamIdV2338 && savedTeamNameV2338 &&
+              Number.isInteger(savedTeamSlotV2338) && savedTeamSlotV2338 >= 1 &&
+              savedTeamSlotV2338 <= 36 &&
+              (!oldQrInLaunchV2338 || oldQrInLaunchV2338 === savedTeamKeyV2338) &&
+              cachedCandidateV2338 && cachedCandidateV2338.event === eventV2318 &&
+              cachedCandidateV2338.shortName === eventV2318 &&
+              typeof cachedCandidateV2338.longName === 'string' && !!cachedCandidateV2338.longName &&
+              typeof cachedCandidateV2338.homeImage === 'string' && !!cachedCandidateV2338.homeImage &&
+              typeof cachedCandidateV2338.infoImage === 'string' && !!cachedCandidateV2338.infoImage) {
+            fastTeamReturnV2338 = true;
+            fastPresentationV2338 = cachedCandidateV2338;
+          }
+        }
+      } catch (_) { fastTeamReturnV2338 = false; fastPresentationV2338 = null; }
+      window.__sshcpFastTeamReturnV2338 = fastTeamReturnV2338;
+      startupTraceV2337.fastTeamReturnV2338 = fastTeamReturnV2338;
+      /* Existing stale QR query cleanup stays on the normal init path. */
+      if (startupSavedPasskeyV2337 && !fastTeamReturnV2338) {
         var qrStartedV2337 = startupClockV2337();
         var qrUrlV2337 = new URL('https://rotbtest.projrcc.workers.dev/');
         qrUrlV2337.searchParams.set('action','qrAuth');
@@ -522,7 +571,7 @@
                             event:eventV2318, promise:qrPromiseV2337};
       }
       if (startupSavedPasskeyV2337 && startupRememberedHomeV2337 &&
-          typeof window.Image === 'function') {
+          !fastTeamReturnV2338 && typeof window.Image === 'function') {
         try {
           var imageStartedV2337 = startupClockV2337();
           var warmImageV2337 = new window.Image();
@@ -552,7 +601,8 @@
       };
       /* Delayed, noninteractive loading feedback ONLY on an already-authorized
          standalone HOME reopening. Never replace the established white curtains. */
-      if (startupSavedPasskeyV2337 && startupRememberedHomeV2337) {
+      if (startupSavedPasskeyV2337 && startupRememberedHomeV2337 &&
+          !fastTeamReturnV2338) {
         startupTraceV2337.coldHome=true;
         var startupLoadingTimerV2337=0;
         var startupLoadingElV2337=null;
@@ -669,7 +719,9 @@
       }
       window.__sshcpAwaitHomeReadyV2320 = async function() {
         await window.__sshcpEventBootstrapV2318;
-        await window.__sshcpHomeLogoReadyV2320;
+        /* Returning Team QR: render HOME while its static logo loads behind it.
+           First scans, all MASTER and all browser routes keep the full image gate. */
+        if (!fastTeamReturnV2338) await window.__sshcpHomeLogoReadyV2320;
         if (document.fonts && document.fonts.ready) {
           try { await document.fonts.ready; } catch (_) { /* CSS fallback font remains usable. */ }
         }
@@ -679,6 +731,28 @@
         try { console.error('SSHCP HOME image readiness failed:', error); } catch (_) {}
       };
 
+      function warmStableHomeLogoV2338(url) {
+        if (!window.caches || !url) return;
+        Promise.resolve().then(async function(){
+          var cache = await window.caches.open('GolfAPP:public-home-logos:V2338');
+          if (await cache.match(url)) return;
+          var response = await nativeFetchV2318(url, {cache:'force-cache'});
+          if (response.ok && /image\/jpeg/i.test(response.headers.get('content-type') || ''))
+            await cache.put(url,response);
+        }).catch(function(){});
+      }
+      function restoreStableHomeLogoV2338(img,url) {
+        if (!fastTeamReturnV2338 || !window.caches) { img.src=url; return; }
+        Promise.resolve().then(async function(){
+          var cache = await window.caches.open('GolfAPP:public-home-logos:V2338');
+          var response = await cache.match(url);
+          if (!response) { img.src=url; return; }
+          var blob = await response.blob();
+          if (!blob.type.startsWith('image/')) { img.src=url; return; }
+          var objectUrl=URL.createObjectURL(blob);
+          img.src=objectUrl;
+        }).catch(function(){ img.src=url; });
+      }
       function updatePresentationV2318(data) {
         function applyV2318() {
           var info = document.getElementById('homeEventInfoV2255');
@@ -719,7 +793,10 @@
                 if (!homeImage.naturalWidth || !homeImage.naturalHeight) {
                   throw new Error('HOME image decode failed.');
                 }
-              }).then(function() { releaseLogoWatchV2320(null); }, releaseLogoWatchV2320);
+              }).then(function() {
+                releaseLogoWatchV2320(null);
+                if (!fastTeamReturnV2338) warmStableHomeLogoV2338(baseUrl+'home');
+              }, releaseLogoWatchV2320);
             }
             homeImage.addEventListener('load', logoLoadedV2320, {once:true});
             homeImage.addEventListener('error', function() {
@@ -728,7 +805,8 @@
             logoTimerV2320 = window.setTimeout(function() {
               releaseLogoWatchV2320(new Error('Event HOME image request timed out.'));
             }, 20000);
-            if (homeImage.src !== baseUrl + 'home') homeImage.src = baseUrl + 'home';
+            if (fastTeamReturnV2338) restoreStableHomeLogoV2338(homeImage,baseUrl+'home');
+            else if (homeImage.src !== baseUrl + 'home') homeImage.src = baseUrl + 'home';
             // Cached images can already be complete before a load event is queued.
             if (homeImage.complete && homeImage.naturalWidth > 0) logoLoadedV2320();
           } else {
@@ -745,6 +823,13 @@
       window.__sshcpEventBootstrapV2318 = (async function(){
          if (masterPickerV2326) return await new Promise(function() {}); // no event APIs behind chooser
          if (!validV2318) throw new Error('Open this page using ?event=EVENTKEY (a valid event key).');
+        if (fastTeamReturnV2338 && fastPresentationV2338) {
+          startupTraceV2337.eventConfigMs = 0;
+          window.SSHCP_EVENT.DETAILS = fastPresentationV2338.longName;
+          window.SSHCP_EVENT.SHORT_NAME = fastPresentationV2338.shortName;
+          updatePresentationV2318(fastPresentationV2338);
+          return fastPresentationV2338;
+        }
         var eventConfigStartedV2337 = startupClockV2337();
         var response = await window.sshcpEventFetchV2318(
           'https://rotbtest.projrcc.workers.dev/?action=eventConfig',
@@ -771,6 +856,13 @@
               restoredUrlV2319.pathname + restoredUrlV2319.search + restoredUrlV2319.hash);
           } catch (_) { /* A history restriction must not block a valid event. */ }
         }
+        /* Only a Worker-verified eventConfig may seed local presentation.
+           These values are non-secret; unique event keys isolate the cache. */
+        try {
+          window.localStorage.setItem(namespaceV2318 + presentationStorageKeyV2338,
+            JSON.stringify({event:eventV2318,shortName:data.shortName,
+              longName:data.longName,homeImage:data.homeImage,infoImage:data.infoImage}));
+        } catch (_) {}
         updatePresentationV2318(data);
         return data;
       })();
@@ -806,12 +898,12 @@
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
-      FADE_1A_HOME_FULL: 0.25,
-      FADE_2_SCORECARD_LEADERBOARD: 0.30,
-      FADE_3_AFTER_PLAY: 0.30,
-      FADE_4_QUICK_GUIDE: 0.80,
-      FADE_5A_CC_ENTER_REFRESH: 0.25,
-      FADE_5B_SM_REFRESH: 0.30,
+      FADE_1A_HOME_FULL: 0.20,
+      FADE_2_SCORECARD_LEADERBOARD: 0.20,
+      FADE_3_AFTER_PLAY: 0.20,
+      FADE_4_QUICK_GUIDE: 0.20,
+      FADE_5A_CC_ENTER_REFRESH: 0.20,
+      FADE_5B_SM_REFRESH: 0.20,
       FADE_6A_ORIENTATION_WARNING_IN: 1.00,
       FADE_6B_ORIENTATION_CURTAIN_OUT: 1.00,
       SCORECARD_CLEAR_CUE: 0.10
@@ -15191,7 +15283,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.37</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.38</span></span>
         </button>
         <script>
           (function () {
@@ -17290,6 +17382,8 @@ let scoreTimingDetail =
       syncTeamQrLockedUi();
     }
     function removeQrAuthorization(){
+      /* V23.38 — explicit logout ends the fast-return session immediately. */
+      window.__sshcpFastTeamReturnV2338 = false;
       invalidateQrAuthRequestsV1631();
       clearQrAuthorization();
       sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
@@ -17300,6 +17394,8 @@ let scoreTimingDetail =
       updateHomeScorecardAccess();
     }
     function saveQrAuthorization(data, passkey){
+      /* Any new/manual authorization is an explicit session transition. */
+      window.__sshcpFastTeamReturnV2338 = false;
       const priorFingerprintV1979 = qrAuthorizationFingerprintV1979();
 
       sshcpLocalStorageV2318.removeItem(SSHCP_PREAUTHORIZE_ACTIVE_KEY);
@@ -17544,6 +17640,16 @@ let scoreTimingDetail =
     async function initializeQrAuthorization(){
       const params=new URLSearchParams(window.location.search);
       const incoming=String(params.get('passkey') || params.get('key') || '').trim();
+      if(window.__sshcpFastTeamReturnV2338){
+        if (incoming && incoming === String(getQrPasskey() || '').trim()) {
+          params.delete('passkey'); params.delete('key');
+          const q=params.toString();
+          history.replaceState(null,'',window.location.pathname+(q?'?'+q:'')+window.location.hash);
+        }
+        addTestLog('QR SESSION RESTORE','OK','LOCAL',
+          'RETURNING TEAM • '+String(getQrTeam()||'')+' • WORKER VERIFIES EACH SCORE WRITE');
+        return { incoming:false, restoredLocal:true, ok:true };
+      }
       if(incoming){
         const storedPasskeyV2144 = String(getQrPasskey() || '').trim();
         const returningStoredQrV2144 = !!(
@@ -23576,7 +23682,14 @@ let scoreTimingDetail =
          established fresh status read normally. */
       const prefetchedHomeStateV2078 = homeRefreshPrefetchV2078;
       homeRefreshPrefetchV2078 = null;
-      await (prefetchedHomeStateV2078 || refreshHomeTournamentStateV1831());
+      if (window.__sshcpFastTeamReturnV2338) {
+        // Status always reads fresh, but it does not prevent a returning golfer
+        // from seeing HOME. Its completion updates LIVE/FINAL action normally.
+        Promise.resolve(prefetchedHomeStateV2078 || refreshHomeTournamentStateV1831())
+          .catch(() => {});
+      } else {
+        await (prefetchedHomeStateV2078 || refreshHomeTournamentStateV1831());
+      }
       updateHomeScorecardAccess();
       fitHomeActionTypographyV197();
       if (typeof window.refreshHomeMenuV2054 === 'function') {
@@ -23598,6 +23711,16 @@ let scoreTimingDetail =
       /* V23.37 — the established HOME readiness gate has completed. Log stage
          timings (never credentials), then release delayed cold-load feedback
          behind the SAME established final white-to-HOME curtain. */
+      if (window.__sshcpFastTeamReturnV2338 &&
+          window.__sshcpStartupTraceV2337 &&
+          !window.__sshcpStartupTraceV2337.fastLoggedV2338) {
+        const tV2338=window.__sshcpStartupTraceV2337;
+        const elapsedV2338=(window.performance&&performance.now)
+          ? performance.now()-tV2338.started : Date.now()-tV2338.started;
+        addTestLog('HOME STARTUP','OK',(elapsedV2338/1000).toFixed(2)+'s',
+          'RETURNING TEAM • EVENT CACHED • QR CHECK SKIPPED • HOME STATUS BACKGROUND • LIVE SCORE WRITE AUTH');
+        tV2338.fastLoggedV2338=true;
+      }
       if (window.__sshcpStartupTraceV2337 &&
           window.__sshcpStartupTraceV2337.coldHome) {
         const tV2337=window.__sshcpStartupTraceV2337;
