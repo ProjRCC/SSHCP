@@ -1,4 +1,8 @@
-<!-- SSHCP | BASE KEY: 23.33-K6M4QW | BUILD KEY: 23.34-P8M4QX -->
+<!-- SSHCP | BASE KEY: 23.34-P8M4QX | BUILD KEY: 23.35-N6Q4RV -->
+<!-- SSHCP V23.35 — PWA re-open identity: stale installed MASTER launch URLs cannot
+     supersede the last successfully QR/MASTER-authorized event. Explicit incoming QR
+     URLs take precedence. Only a freshly selected event may initiate MASTER GO.
+     Existing per-event authorization, WELCOME, CC EVENT, scores/Worker unchanged. -->
 <!-- SSHCP V23.34 — popup/dropdown consistency, CC 1:2 EVENT/TEAM AUTH row, live team label.
      UI-only: existing auth, event, GEEK, scoring, Worker CF3.34 unchanged. -->
 <!-- SSHCP V23.33 — GEEK portrait layout capacity correction only.
@@ -331,15 +335,77 @@
        The ONLY unscoped item is the non-secret last-verified event key. */
     (function(){
       'use strict';
-      var queryV2318 = new URLSearchParams(window.location.search);
+       var queryV2318 = new URLSearchParams(window.location.search);
+       /* V23.35 — Android PWA installs can retain the URL used at installation.
+          In particular, a stale ?event=TEST-SSHCP&masterEntrance=1 must NOT
+          initiate MASTER GO after a golfer scanned SSHCP26's team QR.
+          Explicit incoming QR credentials always win. A new MASTER selection
+          proves its intent with a one-use, non-secret session marker. */
+       var verifiedEventKeyV2319 = 'SimpleScramble:lastVerifiedEvent:V2319';
+       var authorizedEventKeyV2335 = 'SimpleScramble:lastAuthorizedEvent:V2335';
+       var masterIntentKeyV2335 = 'SimpleScramble:pendingMasterEvent:V2335';
+       var validEventV2335 = /^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/;
+       var hasIncomingQrV2335 = queryV2318.has('passkey') || queryV2318.has('key');
+       var freshMasterEventV2335 = '';
+       try {
+         freshMasterEventV2335 = String(window.sessionStorage.getItem(masterIntentKeyV2335) || '');
+         window.sessionStorage.removeItem(masterIntentKeyV2335); // one use only
+       } catch (_) {}
+       var requestedMasterEventV2335 = String(queryV2318.get('event') || '');
+       var masterEntryV2326 = !hasIncomingQrV2335 &&
+         queryV2318.get('masterEntrance') === '1' &&
+         validEventV2335.test(requestedMasterEventV2335) &&
+         freshMasterEventV2335 === requestedMasterEventV2335;
+       var staleMasterLaunchV2335 = !hasIncomingQrV2335 &&
+         queryV2318.get('masterEntrance') === '1' && !masterEntryV2326;
+       var standaloneLaunchV2335 = false;
+       try {
+         standaloneLaunchV2335 = !!(
+           (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+           window.navigator.standalone === true
+         );
+       } catch (_) {}
+       function authorizedStoredEventV2335(candidate) {
+         var key = String(candidate || '');
+         if (!validEventV2335.test(key)) return '';
+         try {
+           var prefix = 'GolfAPP:' + key + ':';
+           var role = window.localStorage.getItem(prefix + 'sshcpQrRole');
+           var passkey = window.localStorage.getItem(prefix + 'sshcpQrPasskey');
+           return (passkey && (role === 'QR' || role === 'MASTER')) ? key : '';
+         } catch (_) { return ''; }
+       }
+       var preferredEventV2335 = '';
+       try {
+         preferredEventV2335 =
+           authorizedStoredEventV2335(window.localStorage.getItem(authorizedEventKeyV2335)) ||
+           authorizedStoredEventV2335(window.localStorage.getItem(verifiedEventKeyV2319));
+       } catch (_) {}
+       var forceMasterPickerV2335 = queryV2318.get('masterPicker') === '1';
+       /* Only stale launch paths or bare installed-PWA starts are restored.
+          Explicit event links and scans keep their established authority. */
+       if (staleMasterLaunchV2335) {
+         queryV2318.delete('masterEntrance');
+         if (preferredEventV2335) queryV2318.set('event', preferredEventV2335);
+         else if (!authorizedStoredEventV2335(requestedMasterEventV2335))
+           queryV2318.delete('event');
+       } else if (standaloneLaunchV2335 && !forceMasterPickerV2335 &&
+                  !hasIncomingQrV2335 && !queryV2318.has('event') &&
+                  preferredEventV2335) {
+         queryV2318.set('event', preferredEventV2335);
+       }
+       if (staleMasterLaunchV2335 ||
+           (standaloneLaunchV2335 && !forceMasterPickerV2335 && !hasIncomingQrV2335 &&
+            !window.location.search.includes('event=') && preferredEventV2335)) {
+         try {
+           var normalizedV2335 = new URL(window.location.href);
+           normalizedV2335.search = queryV2318.toString();
+           history.replaceState(history.state, '',
+             normalizedV2335.pathname + normalizedV2335.search + normalizedV2335.hash);
+         } catch (_) {}
+       }
        var explicitEventV2319 = queryV2318.has('event');
-       // V23.26 — no-event bookmark is a chooser, never implicit restoration.
-       // Direct QR and explicit ?event= links still use normal event bootstrap.
-       var masterPickerV2326 = !explicitEventV2319 &&
-         !queryV2318.has('passkey') && !queryV2318.has('key');
-       var masterEntryV2326 = !masterPickerV2326 &&
-         queryV2318.get('masterEntrance') === '1' && explicitEventV2319 &&
-         !queryV2318.has('passkey') && !queryV2318.has('key');
+       var masterPickerV2326 = !explicitEventV2319 && !hasIncomingQrV2335;
        window.__sshcpMasterPickerV2326 = masterPickerV2326;
        window.__sshcpMasterEntryV2326 = masterEntryV2326;
        // V23.29 — resolve only once HOME's existing data/image/fonts gate finishes.
@@ -17080,6 +17146,12 @@ let scoreTimingDetail =
         rememberSelectedTeam(data.team);
       }
       if (data.role === 'MASTER') sshcpLocalStorageV2318.removeItem('rotbAuthorizedTeam');
+      /* V23.35 — remember only a non-secret event ID after verified auth.
+         Required to restore the correct event from a stale Android PWA launcher. */
+      if ((data.role === 'QR' || data.role === 'MASTER') && window.GOLFAPP_EVENT_KEY) {
+        try { window.localStorage.setItem('SimpleScramble:lastAuthorizedEvent:V2335',
+          String(window.GOLFAPP_EVENT_KEY)); } catch (_) {}
+      }
 
       const nextFingerprintV1979 = qrAuthorizationFingerprintV1979();
       if (nextFingerprintV1979 && nextFingerprintV1979 !== priorFingerprintV1979) {
@@ -17559,7 +17631,7 @@ let scoreTimingDetail =
           window.SSHCP_FADE_TIMING_V2092.FADE_1A_HOME_FULL);
         const msV2331 = Number.isFinite(fadeV2331) && fadeV2331 >= 0
           ? Math.ceil(fadeV2331 * 1000) : 250;
-        window.setTimeout(() => window.location.assign(window.location.pathname), msV2331 + 60);
+        window.setTimeout(() => window.location.assign(window.location.pathname + '?masterPicker=1'), msV2331 + 60);
     }
 
     function showSwitchAuthorization(){
@@ -38597,7 +38669,7 @@ let scoreTimingDetail =
       let submittingV2329 = false;
       const back = makeModalButton('BACK','', () => {
         els.modalInput.oninput = null;
-        if (masterGoV2329) window.location.assign(window.location.pathname);
+        if (masterGoV2329) window.location.assign(window.location.pathname + '?masterPicker=1');
         else showBareEntryGateV1961();
       });
       async function authorizeBareMasterV2329() {
@@ -38794,6 +38866,10 @@ let scoreTimingDetail =
           picker.style.pointerEvents = 'none';
           trigger.disabled = true;
           const url = new URL(window.location.href);
+          /* A one-use marker distinguishes this deliberate picker selection
+             from an old PWA installation URL with the same masterEntrance flag. */
+          try { window.sessionStorage.setItem('SimpleScramble:pendingMasterEvent:V2335', key); } catch (_) {}
+          url.searchParams.delete('masterPicker');
           url.searchParams.set('event', key);
           url.searchParams.set('masterEntrance', '1');
           url.searchParams.delete('passkey'); url.searchParams.delete('key');
