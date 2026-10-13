@@ -1,4 +1,10 @@
-<!-- SSHCP | BASE KEY: 23.24-L7R4QM | BUILD KEY: 23.25-Q6M4RX -->
+<!-- SSHCP | BASE KEY: 23.25-Q6M4RX | BUILD KEY: 23.26-P7M4QX -->
+<!-- SSHCP V23.26 — universal bookmarked MASTER entry. No-event URL shows
+     the proven WELCOME with an active-tournament dropdown and no action buttons;
+     selection loads the event and its existing ENTER MASTER password popup.
+     QR competitor links bypass this entirely. All scoring, GEEK, PDF, auth
+     validation, CC gate, and event-scoped storage remain inherited unchanged.
+     Paired Worker: CF3.34 read-only eventList. TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.25 CONTROL CENTER EVENT IDENTITY — exact V23.24 donor / TEST / NOT GOLDEN.
      Capture the verified URL/bootstrap event key on every NEW Control Center log entry.
      COPY LOG reports current EVENT and adds an EVENT column to every entry, preserving
@@ -274,14 +280,23 @@
     (function(){
       'use strict';
       var queryV2318 = new URLSearchParams(window.location.search);
-      var explicitEventV2319 = queryV2318.has('event');
+       var explicitEventV2319 = queryV2318.has('event');
+       // V23.26 — no-event bookmark is a chooser, never implicit restoration.
+       // Direct QR and explicit ?event= links still use normal event bootstrap.
+       var masterPickerV2326 = !explicitEventV2319 &&
+         !queryV2318.has('passkey') && !queryV2318.has('key');
+       var masterEntryV2326 = !masterPickerV2326 &&
+         queryV2318.get('masterEntrance') === '1' && explicitEventV2319 &&
+         !queryV2318.has('passkey') && !queryV2318.has('key');
+       window.__sshcpMasterPickerV2326 = masterPickerV2326;
+       window.__sshcpMasterEntryV2326 = masterEntryV2326;
       var lastEventKeyV2319 = 'SimpleScramble:lastVerifiedEvent:V2319';
       var validEventKeyV2319 = /^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/;
       var eventV2318 = explicitEventV2319 ? String(queryV2318.get('event') || '').trim() : '';
       var restoredEventV2319 = false;
       // An explicitly supplied (even empty/invalid) event NEVER falls back.
-      if (!explicitEventV2319) {
-        try {
+       if (!explicitEventV2319 && !masterPickerV2326) {
+         try {
           var rememberedEventV2319 = String(window.localStorage.getItem(lastEventKeyV2319) || '');
           if (validEventKeyV2319.test(rememberedEventV2319)) {
             eventV2318 = rememberedEventV2319;
@@ -301,7 +316,10 @@
             return raw.getItem(namespaceV2318 + String(k));
           },
           setItem: function(k,v) {
-            if (!namespaceV2318) throw new Error('Missing event context.');
+             if (!namespaceV2318) {
+               if (masterPickerV2326) return; // chooser never saves fake tournament state
+               throw new Error('Missing event context.');
+             }
             return raw.setItem(namespaceV2318 + String(k), String(v));
           },
           removeItem: function(k) {
@@ -318,8 +336,11 @@
         if (url.origin !== 'https://rotbtest.projrcc.workers.dev') {
           return nativeFetchV2318(input, options);
         }
-        if (!validV2318) {
-          return Promise.reject(new Error('Required ?event=EVENTKEY is missing or invalid.'));
+         if (!validV2318) {
+           if (url.searchParams.get('action') === 'eventList' && masterPickerV2326) {
+             return nativeFetchV2318(url.toString(), options);
+           }
+           return Promise.reject(new Error('Required ?event=EVENTKEY is missing or invalid.'));
         }
         // Override any accidental conflicting value: URL context is authoritative.
         url.searchParams.set('event', eventV2318);
@@ -432,7 +453,8 @@
         else applyV2318();
       }
       window.__sshcpEventBootstrapV2318 = (async function(){
-        if (!validV2318) throw new Error('Open this page using ?event=EVENTKEY (a valid event key).');
+         if (masterPickerV2326) return await new Promise(function() {}); // no event APIs behind chooser
+         if (!validV2318) throw new Error('Open this page using ?event=EVENTKEY (a valid event key).');
         var response = await window.sshcpEventFetchV2318(
           'https://rotbtest.projrcc.workers.dev/?action=eventConfig',
           {cache:'no-store'}
@@ -586,20 +608,24 @@
           !hasIncomingQrWelcome && !hasSavedAuthorizationV180b
         );
 
-        window.__sshcpWelcomeModeV180b = hasIncomingQrWelcome
-          ? 'QR'
-          : (competitorWelcomeV180b ? 'COMPETITOR' : '');
+         window.__sshcpWelcomeModeV180b = window.__sshcpMasterPickerV2326 ? 'MASTER_PICKER'
+           : (window.__sshcpMasterEntryV2326 ? 'MASTER_ENTRY'
+           : (hasIncomingQrWelcome ? 'QR'
+           : (competitorWelcomeV180b ? 'MASTER_ENTRY' : '')));
 
         /* Preserve the established Welcome-active flag so Quick Guide and
            ENTER continue using the proven V17 presentation/dismissal path. */
         window.__sshcpIncomingQrWelcomeV170 = !!window.__sshcpWelcomeModeV180b;
         window.__sshcpQrWelcomeStartedAtV170 =
           (window.performance && performance.now) ? performance.now() : Date.now();
-        if (window.__sshcpIncomingQrWelcomeV170) {
-          document.documentElement.classList.add('sshcp-qr-welcome-v170');
-        }
+         if (window.__sshcpIncomingQrWelcomeV170) {
+           document.documentElement.classList.add('sshcp-qr-welcome-v170');
+           if (window.__sshcpMasterPickerV2326) document.documentElement.classList.add('sshcp-master-picker-v2326');
+           if (window.__sshcpMasterEntryV2326) document.documentElement.classList.add('sshcp-master-entry-v2326');
+         }
 
-        var rememberedView = sshcpSessionStorageV2318.getItem('rotbCurrentView') || 'home';
+         var rememberedView = window.__sshcpMasterEntryV2326 ? 'home' :
+           (sshcpSessionStorageV2318.getItem('rotbCurrentView') || 'home');
         window.__sshcpBootView = rememberedView;
         if (rememberedView === 'scorecard' || rememberedView === 'leaderboard') {
           document.documentElement.classList.add('sshcp-pre-' + rememberedView);
@@ -7635,6 +7661,25 @@ html.sshcp-qr-welcome-v170 .qr-welcome-title-v170{
 .qr-welcome-button-v170:active{
   filter:brightness(.92);
 }
+/* V23.26 — only the universal no-event chooser replaces TEAM lettering
+   with a native tournament select. WELCOME title + fades remain original. */
+html.sshcp-master-picker-v2326 .qr-welcome-actions-v170,
+html.sshcp-master-entry-v2326 .qr-welcome-actions-v170 { display:none!important; }
+html.sshcp-master-picker-v2326 .qr-welcome-team-v170 {
+  top:50%; transform:translate(-50%,-50%); overflow:visible;
+  width:min(85vw,500px); max-width:85vw; white-space:normal;
+}
+#sshcpEventSelectV2326 {
+  width:100%; height:clamp(54px,7.2dvh,70px);
+  border:3px solid var(--accent); border-radius:9px;
+  background:#fff; color:var(--accent);
+  font-family:Oswald,'Arial Narrow',Arial,sans-serif;
+  font-size:clamp(22px,5.5vw,33px); font-weight:600;
+  padding:0 12px; text-align:center; text-align-last:center;
+  box-sizing:border-box; appearance:auto;
+}
+#sshcpEventSelectV2326:disabled { opacity:.65; }
+
 @keyframes sshcpQrWelcomeFadeV170{
   from{opacity:0;}
   to{opacity:1;}
@@ -14674,7 +14719,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.25</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.26</span></span>
         </button>
         <script>
           (function () {
@@ -38221,7 +38266,8 @@ let scoreTimingDetail =
       els.modalInput.type = 'text';
       els.modalInput.autocapitalize = 'characters';
       els.modalInput.value = '';
-      const back = makeModalButton('BACK','',showBareEntryGateV1961);
+      const back = makeModalButton('BACK','',
+        (window.__sshcpMasterEntryV2326 || window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY') ? () => window.location.assign(window.location.pathname) : showBareEntryGateV1961);
       const enter = makeModalButton('ENTER','primary',async() => {
         if (String(els.modalInput.value || '').trim().toUpperCase() !== 'ENTER') {
           els.modalBody.textContent = 'INVALID PASSWORD';
@@ -38236,10 +38282,17 @@ let scoreTimingDetail =
         startLoadingLine();
         const ok = await validateQrPasskey(SSHCP_MASTER_TEST_KEY,true,true);
         completeLoadingLine();
-        if (ok) {
+        if (ok && isMasterQr()) {
           setPreAuthorizeEnabledV1958(true);
           scorecardHasLoaded = false;
           leaderboardHasLoaded = false;
+          if (window.__sshcpMasterEntryV2326) {
+            // The one-time master-entry query must not replay on refresh.
+            const url = new URL(window.location.href);
+            url.searchParams.delete('masterEntrance');
+            history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+            window.__sshcpMasterEntryV2326 = false;
+          }
           dismissQrWelcomeAnimatedV172();
         }
       });
@@ -38252,6 +38305,69 @@ let scoreTimingDetail =
       window.setTimeout(() => els.modalInput.focus(), 0);
     }
 
+    /* V23.26 — true root-only live event selector, never guessed from memory.
+       No score/auth operations can run until the selected event is verified. */
+    async function revealMasterEventPickerV2326(team, overlay) {
+      team.replaceChildren();
+      team.style.top = '50%';
+      team.style.transform = 'translate(-50%,-50%)';
+      const dropdown = document.createElement('select');
+      dropdown.id = 'sshcpEventSelectV2326';
+      dropdown.setAttribute('aria-label', 'SELECT TOURNAMENT');
+      dropdown.disabled = true;
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'LOADING TOURNAMENTS';
+      dropdown.appendChild(placeholder);
+      team.appendChild(dropdown);
+      overlay.classList.add('show-team');
+      try {
+        const response = await window.fetch(
+          'https://rotbtest.projrcc.workers.dev/?action=eventList',
+          { cache:'no-store' }
+        );
+        if (!response.ok) throw new Error('Tournament directory unavailable (HTTP '+response.status+').');
+        const data = await response.json();
+        if (!data || data.ok !== true || !Array.isArray(data.events)) throw new Error('Invalid tournament directory.');
+        dropdown.replaceChildren();
+        const prompt = document.createElement('option');
+        prompt.value=''; prompt.textContent='SELECT TOURNAMENT';
+        dropdown.appendChild(prompt);
+        const keys = new Set();
+        for (const item of data.events) {
+          const key = String(item && item.event || '');
+          if (!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(key)) continue;
+          if (keys.has(key)) continue;
+          keys.add(key);
+          const option = document.createElement('option');
+          option.value=key; option.textContent=key;
+          dropdown.appendChild(option);
+        }
+        if (!keys.size) {
+          prompt.textContent='NO ACTIVE TOURNAMENTS';
+          return;
+        }
+        dropdown.disabled = false;
+        dropdown.addEventListener('change', () => {
+          const selected = dropdown.value;
+          if (!keys.has(selected)) return;
+          dropdown.disabled=true;
+          const url = new URL(window.location.href);
+          url.searchParams.set('event', selected);
+          url.searchParams.set('masterEntrance', '1');
+          url.searchParams.delete('passkey'); url.searchParams.delete('key');
+          window.location.assign(url.pathname + url.search + url.hash);
+        });
+      } catch (err) {
+        dropdown.replaceChildren();
+        const failure = document.createElement('option');
+        failure.textContent='TOURNAMENTS UNAVAILABLE'; failure.value='';
+        dropdown.appendChild(failure);
+        dropdown.disabled = true;
+        try { console.error('Master tournament selection:',err); } catch (_) {}
+      }
+    }
+
     function revealQrWelcomeAfterAuthV170() {
       if (!window.__sshcpIncomingQrWelcomeV170) return;
       const overlay = document.getElementById('qrWelcomeOverlayV170');
@@ -38259,6 +38375,19 @@ let scoreTimingDetail =
       if (!overlay || !team) return;
 
       const mode = String(window.__sshcpWelcomeModeV180b || 'QR');
+      if (mode === 'MASTER_PICKER') {
+        const started = Number(window.__sshcpQrWelcomeStartedAtV170) || 0;
+        const now = (window.performance && performance.now) ? performance.now() : Date.now();
+        window.setTimeout(() => {
+          if (!window.__sshcpIncomingQrWelcomeV170) return;
+          revealMasterEventPickerV2326(team, overlay);
+        }, Math.max(0, 3100 - Math.max(0, now - started)));
+        return;
+      }
+      if (mode === 'MASTER_ENTRY') {
+        showBareEntryPasswordV1961();
+        return;
+      }
       let displayLabel = '';
 
       if (mode === 'QR') {
@@ -38269,6 +38398,9 @@ let scoreTimingDetail =
           return;
         }
         displayLabel = qrWelcomeDisplayTeamV170(getQrTeam());
+      }
+      else if (mode === 'MASTER_ENTRY') {
+        displayLabel = String(window.GOLFAPP_EVENT_KEY || '');
       }
       else if (mode === 'COMPETITOR') {
         /* The startup auth/state check has now completed. If authorization
@@ -38302,6 +38434,15 @@ let scoreTimingDetail =
           if (!window.__sshcpIncomingQrWelcomeV170) return;
           fitQrWelcomeTeamV170();
           overlay.classList.add('show-team');
+          if (mode === 'MASTER_ENTRY') {
+            window.setTimeout(() => {
+              if (window.__sshcpIncomingQrWelcomeV170 &&
+                  window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY') {
+                showBareEntryPasswordV1961();
+              }
+            }, 800);
+            return;
+          }
 
           window.setTimeout(() => {
             if (window.__sshcpIncomingQrWelcomeV170) {
@@ -38325,6 +38466,12 @@ let scoreTimingDetail =
     });
 
     async function initialize() {
+      if (window.__sshcpMasterPickerV2326) {
+        // No event context: initialize ONLY the existing WELCOME presentation.
+        setupQrWelcomeV170();
+        revealQrWelcomeAfterAuthV170();
+        return;
+      }
 
 
     window.addEventListener(
@@ -38361,8 +38508,7 @@ let scoreTimingDetail =
     );
 
 
-      const rememberedView =
-        getRememberedView();
+      const rememberedView = window.__sshcpMasterEntryV2326 ? 'home' : getRememberedView();
       const restoreTeamsPopupV1626 = false; /* V18.40: Control Center TEAMS row retired. */
       try {
         const savedControlCenterSnapshotV2128 = JSON.parse(
