@@ -1,4 +1,10 @@
-<!-- SSHCP | BASE KEY: 23.23-X8M4QZ | BUILD KEY: 23.24-L7R4QM -->
+<!-- SSHCP | BASE KEY: 23.24-L7R4QM | BUILD KEY: 23.25-Q6M4RX -->
+<!-- SSHCP V23.25 CONTROL CENTER EVENT IDENTITY — exact V23.24 donor / TEST / NOT GOLDEN.
+     Capture the verified URL/bootstrap event key on every NEW Control Center log entry.
+     COPY LOG reports current EVENT and adds an EVENT column to every entry, preserving
+     stored legacy entries with UNKNOWN (PRE-V23.25) rather than guessing their event.
+     Existing per-event storage, scoring, authorization, geometry, UI, Worker and GEEK unchanged.
+     HOME label advances to V23.25. -->
 <!-- SSHCP V23.24 CF3.32 EVENT DISCOVERY DIAGNOSTICS — exact V23.23 donor / TEST / NOT GOLDEN.
      Append Worker cache HIT / fresh DISCOVERY / in-flight WAIT and actual elapsed
      times to existing Control Center SCORECARD, LEADERBOARD, SAVE, QR log details.
@@ -14668,7 +14674,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.24</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.25</span></span>
         </button>
         <script>
           (function () {
@@ -18009,6 +18015,14 @@ let scoreTimingDetail =
 
     const TEST_LOG_KEY = 'rotbTestLogV75';
 
+    /* V23.25 — the bootstrap URL event key, not QR/team identity or the mutable
+       presentation label, is the event authority for each diagnostic entry. */
+    function currentControlCenterEventV2325() {
+      const key = String(window.GOLFAPP_EVENT_KEY || '').trim();
+      return /^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(key)
+        ? key : 'UNKNOWN';
+    }
+
     function getTestLog() {
       try {
         const parsed = JSON.parse(sshcpLocalStorageV2318.getItem(TEST_LOG_KEY) || '[]');
@@ -18025,6 +18039,7 @@ let scoreTimingDetail =
       log.unshift({
         time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
         timestamp: now.toISOString(),
+        event: currentControlCenterEventV2325(),
         action: String(action || ''),
         result: String(result || ''),
         total: total ? String(total) : '—',
@@ -20747,6 +20762,7 @@ let scoreTimingDetail =
         'Viewport: ' + controlCenterViewportLineV188(),
         'Scale: ' + controlCenterGeometryLineV188(),
         'Worker: ' + CLOUDFLARE_API_URL,
+        'Event: ' + currentControlCenterEventV2325(),
         'Authorization: ' + getQrRole() +
           (getQrTeam() ? ' / ' + getQrTeam() : ''),
         'QR cache: ' +
@@ -20757,13 +20773,14 @@ let scoreTimingDetail =
           (cacheTimeRaw ? new Date(cacheTimeRaw).toISOString() : '—'),
         'Log entries: ' + log.length,
         '',
-        'TIME | ACTION | RESULT | TOTAL | DETAIL'
+        'TIME | EVENT | ACTION | RESULT | TOTAL | DETAIL'
       ];
 
       log.slice().reverse().forEach(item => {
         lines.push(
           [
             item.timestamp || item.time || '',
+            item.event || 'UNKNOWN (PRE-V23.25)',
             item.action || '',
             item.result || '',
             item.total || '—',
