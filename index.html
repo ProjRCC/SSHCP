@@ -1,3 +1,12 @@
+<!-- SSHCP | BASE KEY: 23.45-K8M4QX | BUILD KEY: 23.46-P7M4QX -->
+<!-- SSHCP V23.46 — AUTO PUSH red-row visibility for TEAM QR only.
+     V23.45 colored the Scorecard team-selector button, but established QR-only
+     CSS hid its entire parent row. While a matching score auto-push session
+     is active, reveal that existing row using the already-approved MASTER
+     selector geometry; restore normal QR layout when retries finish/cancel.
+     All row geometry changes remain protected by the existing full-screen
+     Scorecard Fade 2 curtain. Preserve V23.45 retry/save/verification/auth,
+     HOME/CC/GEEK, CF3.35 and every other behavior. TEST / NOT GOLDEN. -->
 <!-- SSHCP | BASE KEY: 23.44-M7Q4VX | BUILD KEY: 23.45-K8M4QX -->
 <!-- SSHCP V23.45 — opt-in verified 10-second SCORE AUTO PUSH on save warning.
      Event+role+team-scoped persistent retry state; existing pending 18-hole card
@@ -15237,6 +15246,21 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 }
 </style>
 
+<style id="sshcp-auto-push-row-qr-v2346">
+/* QR-only Scorecard ordinarily hides the entire selector wrapper. Reuse that
+   same wrapper as the red cancel row ONLY during a matching active retry.
+   No permanent QR selector access or layout change is introduced. */
+body.team-qr-locked.sshcp-score-autopush-active-v2346 #scorecardView .score-team-select-wrap {
+  display:block!important;
+}
+body.team-qr-locked.sshcp-score-autopush-active-v2346 #scorecardView .score-table-head {
+  margin-top:0!important;
+}
+body.team-qr-locked.sshcp-score-autopush-active-v2346 #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v2345 {
+  cursor:pointer!important;
+}
+</style>
+
 <style id="sshcp-auto-push-v2345">
 /* The existing Scorecard selector occupies this identical grid row in ALL roles.
    Replace only its visible label and click target while retries are enabled. */
@@ -15385,7 +15409,7 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.45</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.46</span></span>
         </button>
         <script>
           (function () {
@@ -25893,7 +25917,8 @@ let scoreTimingDetail =
       const vars = geometry && geometry.vars ? geometry.vars : {};
       const navContextGap = Math.max(0, Number(vars['--v16-nav-context-gap']) || 0);
       const contextTableGap = Math.max(0, Number(vars['--v16-context-table-gap']) || 0);
-      const teamSelectorHidden = document.body.classList.contains('team-qr-locked');
+      const teamSelectorHidden = document.body.classList.contains('team-qr-locked') &&
+        !document.body.classList.contains('sshcp-score-autopush-active-v2346');
       const immediateTableGap = teamSelectorHidden
         ? navContextGap
         : contextTableGap;
@@ -26846,6 +26871,9 @@ let scoreTimingDetail =
     function paintScoreAutoPushRowV2345() {
       if (!els.scoreTeamSelectButton) return;
       const visible = scoreAutoPushDisplayV2345();
+      /* V23.46 — Team QR mode hides the *wrapper*, not just its button.
+         Expose the existing selector-height row only when AUTO PUSH is active. */
+      document.body.classList.toggle('sshcp-score-autopush-active-v2346', visible);
       if (visible) {
         closeScoreTeamDropdown();
         els.scoreTeamSelectButton.textContent = 'CANCEL SCORE AUTO PUSH';
