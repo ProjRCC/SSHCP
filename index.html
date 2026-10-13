@@ -1,4 +1,17 @@
-<!-- SSHCP | BASE KEY: 23.40-K7M4QV | BUILD KEY: 23.41-R6Q4VX -->
+<!-- SSHCP | BASE KEY: 23.42-V7M4QX | BUILD KEY: 23.43-T6Q4VX -->
+<!-- SSHCP V23.43 — MASTER label typography only.
+     In both CONTROL CENTER 1:2 auth buttons, MASTER replaces (M) with an
+     asterisk followed by a space, and both MASTER button labels appear italic.
+     Team QR labels remain unprefixed/upright. Keep button actions, width,
+     height, fitting, role/score/auth flows, Worker CF3.35 and fades unchanged.
+     TEST / NOT GOLDEN. -->
+<!-- SSHCP V23.42 — CONTROL CENTER AUTH BUTTON LABELS ONLY.
+     Left EVENT action shows active event's SHORT_NAME; right TEAM AUTH action
+     shows currently authorized team NAME. When role is MASTER, prefix BOTH
+     visible names with "(M) ". Preserve existing 1:2 button geometry,
+     actions, fitted typography, QR/master authorization, event isolation,
+     Control Center log, fade and scoring behavior. CF3.35 unchanged.
+     TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.41 — Control Center diagnostic log presentation ONLY.
      Center EVENT values horizontally within their existing column and use normal
      font weight for the time-of-day while preserving bold duration on line 2.
@@ -15201,6 +15214,11 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 }
 #testLogView #testRemoveAuthorizationButton{grid-column:1!important;}
 #testLogView #testSwitchAuthorizationButton{grid-column:2!important;}
+/* V23.43 — visual-only MASTER indicator, the same two existing buttons. */
+#testLogView .test-auth-button-row.master-authorized #testRemoveAuthorizationButton,
+#testLogView .test-auth-button-row.master-authorized #testSwitchAuthorizationButton{
+  font-style:italic!important;
+}
 </style>
 
 </head>
@@ -15331,7 +15349,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.41</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.43</span></span>
         </button>
         <script>
           (function () {
@@ -17359,32 +17377,41 @@ let scoreTimingDetail =
     }
 
     function syncTestAuthorizationToggle(){
-      const authorized = isMasterQr() || isTeamQr();
+      const masterV2342 = isMasterQr();
+      const authorized = masterV2342 || isTeamQr();
+      const masterPrefixV2342 = masterV2342 ? '* ' : '';
 
       if (els.testAuthorizationButtonRow) {
         els.testAuthorizationButtonRow.classList.toggle('authorized', authorized);
-        els.testAuthorizationButtonRow.classList.toggle('master-authorized', isMasterQr());
+        els.testAuthorizationButtonRow.classList.toggle('master-authorized', masterV2342);
+      }
+
+      /* V23.42 — only update the two Control Center action labels. A tournament
+         short name, not the previous generic EVENT caption, identifies the event.
+         Asterisk on BOTH labels indicates MASTER authorization. */
+      if (els.testRemoveAuthorizationButton) {
+        const shortNameV2342 = String(eventShortNameV2255() || window.GOLFAPP_EVENT_KEY || 'EVENT').trim();
+        const eventLabelV2342 = masterPrefixV2342 + shortNameV2342.toUpperCase();
+        els.testRemoveAuthorizationButton.textContent = eventLabelV2342;
+        els.testRemoveAuthorizationButton.setAttribute('aria-label', eventLabelV2342);
+        els.testRemoveAuthorizationButton.title = eventLabelV2342;
       }
 
       if (els.testSwitchAuthorizationButton) {
         els.testSwitchAuthorizationButton.classList.toggle('authorized', authorized);
         els.testSwitchAuthorizationButton.classList.toggle('gain-auth-v2136', !authorized);
 
-        /* V23.34 — show the current event-scoped authorized team inside the
-           existing 2/3-width TEAM AUTH action; MASTER without a team displays
-           its actual authorization role. The established CC button fitter
-           shrinks the full single-line label to fit the rendered button. */
-        const teamAuthNameV2334 = authorized
+        /* Keep the exact authoritative TEAM NAME (not a guessed slot index).
+           If MASTER has no currently selected team, retain MASTER as fallback. */
+        const teamAuthNameV2342 = authorized
           ? String(isTeamQr() ? getQrTeam() : getAuthorizedTeam() || '').trim()
           : '';
-        const teamAuthStatusV2334 = teamAuthNameV2334
-          ? compactTestAuthTeamLabel(teamAuthNameV2334)
-          : (isMasterQr() ? 'MASTER' : '');
-        const teamAuthLabelV2334 = 'TEAM AUTH' +
-          (teamAuthStatusV2334 ? ' · ' + teamAuthStatusV2334 : '');
-        els.testSwitchAuthorizationButton.textContent = teamAuthLabelV2334;
-        els.testSwitchAuthorizationButton.setAttribute('aria-label', teamAuthLabelV2334);
-        els.testSwitchAuthorizationButton.title = teamAuthLabelV2334;
+        const teamAuthLabelV2342 = teamAuthNameV2342
+          ? masterPrefixV2342 + compactTestAuthTeamLabel(teamAuthNameV2342)
+          : (masterV2342 ? '* MASTER' : 'TEAM AUTH');
+        els.testSwitchAuthorizationButton.textContent = teamAuthLabelV2342;
+        els.testSwitchAuthorizationButton.setAttribute('aria-label', teamAuthLabelV2342);
+        els.testSwitchAuthorizationButton.title = teamAuthLabelV2342;
       }
 
       requestAnimationFrame(fitTestPageButtonText);
