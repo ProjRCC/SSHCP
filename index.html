@@ -1,4 +1,11 @@
-<!-- SSHCP | BASE KEY: 23.31-M7Q4PX | BUILD KEY: 23.32-T7M4QX -->
+<!-- SSHCP | BASE KEY: 23.32-T7M4QX | BUILD KEY: 23.33-K6M4QW -->
+<!-- SSHCP V23.33 — GEEK portrait layout capacity correction only.
+     Preserve V22.0/V22.31 existing effective-viewport thresholds and 1X/2X
+     whole-CSS-pixel rows; measure real GEEK main height BEFORE deciding X and
+     subtract the header and physical shell borders. Never round up an X that
+     does not fit; leave residual room under the existing centered margin rule.
+     Existing V23.32 EVENT AUTH, WELCOME, Worker CF3.34, score and PDF paths
+     are unchanged. TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.32 — exact GEEK whole-X scroll viewport and EVENT AUTH access.
      Match the existing effective VPH×DPR / 22-20-18-16-14 unit rules; include
      the real table frame border in sizing and give the scroll viewport exactly
@@ -14859,7 +14866,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.32</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.33</span></span>
         </button>
         <script>
           (function () {
@@ -30107,37 +30114,26 @@ let scoreTimingDetail =
         headerRowV1919.style.setProperty('flex-basis', hv, 'important');
       }
       const scrollViewport = shell.querySelector('.geek-table-scroll-v180');
-      const measuredViewportHeight = scrollViewport
-        ? scrollViewport.getBoundingClientRect().height
-        : 0;
 
-      /* SSHCP V22.0 — GEEK viewport capacity is quantized by effective-display
-         size, not by squeezing the rows. 2034 effective px is the 22X reference.
-         V22.1 steps sooner near the reference: 22X at baseline-or-larger, 20X
-         below 100%, 18X below 95%, 16X below 90%, and 14X below 80%. X remains
-         a whole CSS pixel. Start from
-         the same 12px×M gap target and let the table consume that gap only down
-         to half-target; otherwise use the next smaller X. Leftover pixels stay
-         OUTSIDE the table, so a partial next stat row can never appear. */
+      /* V23.33 — V23.32 let the live scroller's prior flex height influence
+         capacity, then sometimes rounded X UP while borrowing nonexistent
+         space. That can leave FIELD cut off and inflate statistic rows after
+         Chrome toolbar/visualViewport changes. Read the final parent capacity
+         first. Nothing can be allocated to rows until the header and real
+         shell borders have been paid for. The 22/20/18/16/14 thresholds are
+         unchanged, and X remains an integer CSS pixel. */
       const geekMainV2097 = shell.closest('.geek-main-v180');
       const availableShellHeightV2097 = geekMainV2097
         ? geekMainV2097.getBoundingClientRect().height
         : height;
-      const shellDeltaV2097 = availableShellHeightV2097 - height;
       const targetUnitsV220 = geekViewportUnitsV220(sharedV187.metrics);
-      const targetGapV220 = Math.max(1, 12 * sharedV187.multiplier);
+      const shellStyleV2332 = getComputedStyle(shell);
+      const frameHeightV2332 = (parseFloat(shellStyleV2332.borderTopWidth) || 0) +
+        (parseFloat(shellStyleV2332.borderBottomWidth) || 0);
       const availableDataPixelsV2097 = Math.max(
-        targetUnitsV220,
-        measuredViewportHeight > 0
-          ? (measuredViewportHeight + shellDeltaV2097)
-          : (availableShellHeightV2097 - headerHeight)
+        0, availableShellHeightV2097 - headerHeight - frameHeightV2332
       );
-      const xFloorV220 = Math.max(1, Math.floor(availableDataPixelsV2097 / targetUnitsV220));
-      const xCeilV220 = Math.max(1, Math.ceil(availableDataPixelsV2097 / targetUnitsV220));
-      const ceilExtraV220 = (xCeilV220 * targetUnitsV220) - availableDataPixelsV2097;
-      const xUnit = (targetGapV220 - ceilExtraV220) + 0.001 >= (targetGapV220 * 0.50)
-        ? xCeilV220
-        : xFloorV220;
+      const xUnit = Math.max(1, Math.floor((availableDataPixelsV2097 + 0.0001) / targetUnitsV220));
       const categoryHeight = xUnit;
       const statHeight = xUnit * 2;
       const usedDataPixelsV2097 = xUnit * targetUnitsV220;
@@ -30146,13 +30142,6 @@ let scoreTimingDetail =
          above and below the table. The helper text keeps its existing 16px target
          and is shifted only enough to sit at the visual midpoint of the complete
          table-to-actions buffer. X/2X is never altered to manufacture spacing. */
-      /* V23.32: the 1px top/bottom frame belongs to the shell, not to
-         the 1X/2X data viewport. Previously the shell was 2px too short, and
-         re-fit after shorter browser viewport changes could leave a partial
-         next row visible. Preserve the exact existing X and unit decisions. */
-      const shellStyleV2332 = getComputedStyle(shell);
-      const frameHeightV2332 = (parseFloat(shellStyleV2332.borderTopWidth) || 0) +
-        (parseFloat(shellStyleV2332.borderBottomWidth) || 0);
       const exactShellHeightV2097 = Math.max(1, headerHeight + usedDataPixelsV2097 + frameHeightV2332);
       const exactShellValueV2097 = exactShellHeightV2097 + 'px';
       const totalRemainderV2231 = Math.max(0, availableShellHeightV2097 - exactShellHeightV2097);
