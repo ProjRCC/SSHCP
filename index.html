@@ -1,4 +1,9 @@
-<!-- SSHCP | BASE KEY: 23.22-N7R4QX | BUILD KEY: 23.23-X8M4QZ -->
+<!-- SSHCP | BASE KEY: 23.23-X8M4QZ | BUILD KEY: 23.24-L7R4QM -->
+<!-- SSHCP V23.24 CF3.32 EVENT DISCOVERY DIAGNOSTICS — exact V23.23 donor / TEST / NOT GOLDEN.
+     Append Worker cache HIT / fresh DISCOVERY / in-flight WAIT and actual elapsed
+     times to existing Control Center SCORECARD, LEADERBOARD, SAVE, QR log details.
+     Diagnostic response headers only; no changes to requests, scores, auth, views,
+     curtain, GEEK, orientation, or visual geometry. HOME label is V23.24. -->
 <!-- SSHCP V23.23 GEEK LANDSCAPE DETAIL CLOSE RETURN + BUTTON HEIGHT + HOME VERSION — exact V23.22 donor / TEST / NOT GOLDEN.
      Preserve landscape CLOSE as popup dismissal, then rebuild regular portrait GEEK on physical portrait return without reopening HOME.
      Landscape CLOSE height uses captured portrait detail button size, not the landscape viewport scale or the historic 62px minimum.
@@ -481,14 +486,14 @@
        CLEAR = SCORECARD CLEAR visual hold (stationary / no beauty-scroll)
        ========================================================= */
     window.SSHCP_FADE_TIMING_V2092 = {
-      FADE_1A_HOME_FULL: 0.20,
-      FADE_2_SCORECARD_LEADERBOARD: 0.20,
-      FADE_3_AFTER_PLAY: 0.20,
-      FADE_4_QUICK_GUIDE: 0.50,
-      FADE_5A_CC_ENTER_REFRESH: 0.20,
-      FADE_5B_SM_REFRESH: 0.20,
-      FADE_6A_ORIENTATION_WARNING_IN: 0.70,
-      FADE_6B_ORIENTATION_CURTAIN_OUT: 0.70,
+      FADE_1A_HOME_FULL: 0.25,
+      FADE_2_SCORECARD_LEADERBOARD: 0.30,
+      FADE_3_AFTER_PLAY: 0.30,
+      FADE_4_QUICK_GUIDE: 0.80,
+      FADE_5A_CC_ENTER_REFRESH: 0.25,
+      FADE_5B_SM_REFRESH: 0.30,
+      FADE_6A_ORIENTATION_WARNING_IN: 1.00,
+      FADE_6B_ORIENTATION_CURTAIN_OUT: 1.00,
       SCORECARD_CLEAR_CUE: 0.10
     };
 
@@ -14663,7 +14668,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.23</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.24</span></span>
         </button>
         <script>
           (function () {
@@ -16346,13 +16351,26 @@ let scoreTimingDetail =
     }
 
 
+    /* V23.24 — CF3.32 CORS-exposed request-local mapping timing.
+       Old Workers return no headers; their diagnostics remain unchanged. */
+    function formatEventDiscoveryV332(response) {
+      if (!response || !response.headers || typeof response.headers.get !== 'function') return '';
+      const status = response.headers.get('X-SSHCP-Event-Cache');
+      const rawMs = response.headers.get('X-SSHCP-Event-Discovery-Ms');
+      const ms = Number(rawMs);
+      if (!['HIT','MISS','WAIT'].includes(status) || rawMs === null || !Number.isFinite(ms) || ms < 0) return '';
+      const label = status === 'MISS' ? 'EVENT DISCOVERY' : status === 'WAIT' ? 'EVENT WAIT' : 'EVENT CACHE HIT';
+      return label + ' ' + (ms / 1000).toFixed(3) + 's';
+    }
+
     function buildBrowserTimingDetail(
       started,
       responseReceivedAt,
       jsonParsedAt,
       renderedAt,
       cloudflareTiming,
-      operation
+      operation,
+      responseV332
     ) {
 
       const parts = [
@@ -16388,6 +16406,8 @@ let scoreTimingDetail =
         parts.push(cf);
       }
 
+      const eventDiscovery = formatEventDiscoveryV332(responseV332);
+      if (eventDiscovery) parts.push(eventDiscovery);
       return parts.join(' • ');
 
     }
@@ -17160,7 +17180,8 @@ let scoreTimingDetail =
               validQrCount + ' VALID',
               assignedCount + ' ASSIGNED',
               unassignedCount + ' UNASSIGNED',
-              cfTotal
+              cfTotal,
+              formatEventDiscoveryV332(response)
             ].filter(Boolean).join(' • ')
           );
 
@@ -23612,7 +23633,8 @@ let scoreTimingDetail =
             jsonParsedAt,
             renderedAt,
             data.timing,
-            'read'
+            'read',
+            response
           );
 
         scorecardHasLoaded =
@@ -26587,7 +26609,8 @@ let scoreTimingDetail =
             jsonParsedAt,
             renderedAt,
             data.timing,
-            'save'
+            'save',
+            response
           );
 
         scoreSaveSeconds =
@@ -26968,7 +26991,8 @@ let scoreTimingDetail =
             jsonParsedAt,
             renderedAt,
             data.timing,
-            'read'
+            'read',
+            response
           );
 
         const seconds =
