@@ -1,4 +1,8 @@
-<!-- SSHCP | BASE KEY: 23.21-Q8M4VX | BUILD KEY: 23.22-N7R4QX -->
+<!-- SSHCP | BASE KEY: 23.22-N7R4QX | BUILD KEY: 23.23-X8M4QZ -->
+<!-- SSHCP V23.23 GEEK LANDSCAPE DETAIL CLOSE RETURN + BUTTON HEIGHT + HOME VERSION — exact V23.22 donor / TEST / NOT GOLDEN.
+     Preserve landscape CLOSE as popup dismissal, then rebuild regular portrait GEEK on physical portrait return without reopening HOME.
+     Landscape CLOSE height uses captured portrait detail button size, not the landscape viewport scale or the historic 62px minimum.
+     HOME label advances to V23.23. No scoring, GEEK values, PDF, Worker, other navigation or orientation fade changes. -->
 <!-- SSHCP V23.22 GEEK DETAIL POPUP CLOSE LABELS — exact V23.21 donor / TEST / NOT GOLDEN.
      The regular portrait GEEK DETAIL and landscape ALL TEAMS detail modal buttons say CLOSE,
      retaining their existing callbacks to dismiss only the detail overlay and reveal the
@@ -14231,6 +14235,15 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
 .modal-overlay.geek-all-teams-detail-v2238 .modal-actions .modal-btn{
   min-height:62px!important;
 }
+/* V23.23 — match the portrait GEEK DETAIL CLOSE button's measured height.
+   The original landscape-only 62px minimum enlarged the button and was
+   independent of portrait's device-scaled post-play button height. */
+.modal-overlay.geek-all-teams-detail-v2238 .modal-actions > .modal-btn.geek-all-teams-detail-back-v2238{
+  height:var(--v2323-geek-detail-close-height,50px)!important;
+  min-height:var(--v2323-geek-detail-close-height,50px)!important;
+  max-height:var(--v2323-geek-detail-close-height,50px)!important;
+  box-sizing:border-box!important;
+}
 .modal-overlay.geek-all-teams-detail-v2238 .geek-detail-teams-v180{
   width:100%!important;
   max-width:100%!important;
@@ -14650,7 +14663,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.21</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.23</span></span>
         </button>
         <script>
           (function () {
@@ -31143,6 +31156,22 @@ let scoreTimingDetail =
       return geekAllTeamsDetailFormatEvidenceV2238(geekTeamEvidenceV1920(stat, item));
     }
 
+    /* V23.23 — rotation can change the global height scale. Retain the height
+       that portrait GEEK DETAIL actually uses instead of its landscape 62px
+       minimum when a landscape team detail is opened. */
+    let geekPortraitDetailCloseHeightV2323 = 0;
+    let geekClosedLandscapeDetailAwaitingPortraitV2323 = false;
+
+    function portraitGeekDetailCloseHeightV2323() {
+      if (geekPortraitDetailCloseHeightV2323 > 0) return geekPortraitDetailCloseHeightV2323;
+      const vv = window.visualViewport;
+      const physicalPortraitHeight = Math.max(
+        Number(vv && vv.width) || window.innerWidth || 1,
+        Number(vv && vv.height) || window.innerHeight || 1
+      );
+      return Math.round(50 * globalViewportDprScaleV220(physicalPortraitHeight, window.devicePixelRatio || 1));
+    }
+
     function clearGeekAllTeamsTeamDetailModalV2238() {
       els.modalOverlay.classList.remove('open', 'geek-detail-v180', 'geek-all-teams-detail-v2238');
       if (els.modalBox) els.modalBox.classList.remove('geek-detail-expanded-v1920');
@@ -31156,6 +31185,11 @@ let scoreTimingDetail =
 
     function returnToGeekAllTeamsFromDetailV2238() {
       const curtain = beginAfterPlayCurtainV2086('after-play-geek-all-teams-detail-return-v2238');
+      /* V23.23 — CLOSE leaves the landscape ALL TEAMS view in place. Its
+         shared portrait modal currently contains the detail card, not the
+         regular GEEK shell. Mark the deferred portrait reconstruction so
+         rotating after CLOSE returns to GEEK MODE instead of HOME. */
+      geekClosedLandscapeDetailAwaitingPortraitV2323 = true;
       clearGeekAllTeamsTeamDetailModalV2238();
       requestAnimationFrame(() => {
         syncGeekAllTeamsColumnGeometryV2216(() => {
@@ -31172,6 +31206,7 @@ let scoreTimingDetail =
 
     function showGeekAllTeamsTeamDetailV2238(stat, teamName) {
       if (!stat || !teamName || !geekAllTeamsOpenV2216) return;
+      geekClosedLandscapeDetailAwaitingPortraitV2323 = false;
       const curtain = beginAfterPlayCurtainV2086('after-play-geek-all-teams-team-detail-v2238');
       const found = geekAllTeamsResultForV2216(stat, teamName);
       const item = Object.assign({}, found || {}, { team:String(teamName) });
@@ -31212,6 +31247,9 @@ let scoreTimingDetail =
         '</ul>';
 
       const back = makeModalButton('CLOSE', 'geek-detail-back-v182 geek-all-teams-detail-back-v2238', returnToGeekAllTeamsFromDetailV2238);
+      els.modalOverlay.style.setProperty(
+        '--v2323-geek-detail-close-height', portraitGeekDetailCloseHeightV2323() + 'px'
+      );
       /* V22.53 — portrait GEEK fitting owns an inline !important margin-top:0 on
          the shared modalActions node. In-place rotation keeps that node alive,
          so clear the portrait-only override before the first ALL TEAMS detail. */
@@ -31373,6 +31411,7 @@ let scoreTimingDetail =
     }
 
     function closeGeekAllTeamsV2216() {
+      geekClosedLandscapeDetailAwaitingPortraitV2323 = false;
       geekAllTeamsOpenV2216 = false;
       cancelGeekAllTeamsSnapV2248();
       geekAllTeamsSnapArmedV2248 = false;
@@ -31778,7 +31817,10 @@ let scoreTimingDetail =
         els.modalOverlay.classList.contains('geek-all-teams-detail-v2238')
       );
 
-      if (fromAllTeamsDetailV2251) {
+      if (fromAllTeamsDetailV2251 || geekClosedLandscapeDetailAwaitingPortraitV2323) {
+        /* V23.23 — both direct rotation from the detail and the sequence
+           detail > CLOSE > rotate must rebuild the same portrait GEEK shell. */
+        geekClosedLandscapeDetailAwaitingPortraitV2323 = false;
         clearGeekAllTeamsTeamDetailModalV2238();
         closeGeekAllTeamsV2216();
         renderGeekMainShellV180();
@@ -33219,6 +33261,16 @@ let scoreTimingDetail =
     async function openGeekModeV180() {
       setHomeHamburgerVisibleV2055(false);
       syncSharedGeometryV187();
+      /* V23.23 — capture the genuine portrait action height BEFORE any
+         landscape orientation recalculates --v187-post-button-h. */
+      if (!isLandscapeOrientationV2225()) {
+        const portraitActionH = parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue('--v187-post-button-h')
+        );
+        if (Number.isFinite(portraitActionH) && portraitActionH > 0) {
+          geekPortraitDetailCloseHeightV2323 = portraitActionH;
+        }
+      }
       /* V23.15 — pre-mount the invisible white orientation layer as soon as GEEK
          entry begins so a later physical rotation never has to create it mid-spin. */
       primeGeekOrientationCurtainV2315();
