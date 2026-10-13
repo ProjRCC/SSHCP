@@ -1,5 +1,5 @@
 <!-- SSHCP | BASE KEY: 23.33-K6M4QW | BUILD KEY: 23.34-P8M4QX -->
-<!-- SSHCP V23.34 — popup/dropdown presentation consistency and CC 1:2 EVENT/TEAM AUTH row.
+<!-- SSHCP V23.34 — popup/dropdown consistency, CC 1:2 EVENT/TEAM AUTH row, live team label.
      UI-only: existing auth, event, GEEK, scoring, Worker CF3.34 unchanged. -->
 <!-- SSHCP V23.33 — GEEK portrait layout capacity correction only.
      Preserve V22.0/V22.31 existing effective-viewport thresholds and 1X/2X
@@ -16997,9 +16997,21 @@ let scoreTimingDetail =
         els.testSwitchAuthorizationButton.classList.toggle('authorized', authorized);
         els.testSwitchAuthorizationButton.classList.toggle('gain-auth-v2136', !authorized);
 
-        /* V23.34 — button label describes its ACTION, not the current QR role.
-           Actual authorization state remains in the underlying event-scoped model. */
-        els.testSwitchAuthorizationButton.textContent = 'TEAM AUTH';
+        /* V23.34 — show the current event-scoped authorized team inside the
+           existing 2/3-width TEAM AUTH action; MASTER without a team displays
+           its actual authorization role. The established CC button fitter
+           shrinks the full single-line label to fit the rendered button. */
+        const teamAuthNameV2334 = authorized
+          ? String(isTeamQr() ? getQrTeam() : getAuthorizedTeam() || '').trim()
+          : '';
+        const teamAuthStatusV2334 = teamAuthNameV2334
+          ? compactTestAuthTeamLabel(teamAuthNameV2334)
+          : (isMasterQr() ? 'MASTER' : '');
+        const teamAuthLabelV2334 = 'TEAM AUTH' +
+          (teamAuthStatusV2334 ? ' · ' + teamAuthStatusV2334 : '');
+        els.testSwitchAuthorizationButton.textContent = teamAuthLabelV2334;
+        els.testSwitchAuthorizationButton.setAttribute('aria-label', teamAuthLabelV2334);
+        els.testSwitchAuthorizationButton.title = teamAuthLabelV2334;
       }
 
       requestAnimationFrame(fitTestPageButtonText);
