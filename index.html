@@ -1,4 +1,10 @@
-<!-- SSHCP | BASE KEY: 23.27-R8Q4MN | BUILD KEY: 23.28-N7M4QX -->
+<!-- SSHCP | BASE KEY: 23.28-N7M4QX | BUILD KEY: 23.29-K8M4RX -->
+<!-- SSHCP V23.29 — MASTER GO auto-entry and protected WELCOME -> HOME curtain.
+     Only universal/master ENTER-password gate changes: typing GO auto-verifies
+     using the existing MASTER QR backend path. The established full-screen HOME
+     1A white curtain covers auth and HOME readiness; no WELCOME replay/ghost.
+     Other QR and scoring paths, original WELCOME reveal, modal geometry, CF3.34
+     and every event/session storage namespace remain unchanged. TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.28 — original WELCOME reveal contract for master tournament selection.
      WELCOME renders immediately; tournament picker is inserted and faded only
      after live active tournament data has loaded AND the original 3.1s TEAM slot.
@@ -303,6 +309,13 @@
          !queryV2318.has('passkey') && !queryV2318.has('key');
        window.__sshcpMasterPickerV2326 = masterPickerV2326;
        window.__sshcpMasterEntryV2326 = masterEntryV2326;
+       // V23.29 — resolve only once HOME's existing data/image/fonts gate finishes.
+       // The selected-event MASTER curtain may outlive the auth request.
+       if (masterEntryV2326) {
+         window.__sshcpMasterHomeReadyV2329 = new Promise(function(resolve) {
+           window.__sshcpResolveMasterHomeReadyV2329 = resolve;
+         });
+       }
       var lastEventKeyV2319 = 'SimpleScramble:lastVerifiedEvent:V2319';
       var validEventKeyV2319 = /^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/;
       var eventV2318 = explicitEventV2319 ? String(queryV2318.get('event') || '').trim() : '';
@@ -14770,7 +14783,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.28</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.29</span></span>
         </button>
         <script>
           (function () {
@@ -23129,6 +23142,13 @@ let scoreTimingDetail =
       } catch (error) {
         window.__sshcpReportHomeLogoErrorV2320(error);
         return;
+      }
+
+      // V23.29 — signal the already-existing HOME readiness milestone to the
+      // MASTER handoff. Normal HOME navigation never waits on this promise.
+      if (typeof window.__sshcpResolveMasterHomeReadyV2329 === 'function') {
+        window.__sshcpResolveMasterHomeReadyV2329();
+        window.__sshcpResolveMasterHomeReadyV2329 = null;
       }
 
       /* V21.45 fallback — a full-screen runtime 1A curtain is expected on HOME
@@ -38311,46 +38331,92 @@ let scoreTimingDetail =
 
     function showBareEntryPasswordV1961() {
       closeModal();
+      const masterGoV2329 = !!(
+        window.__sshcpMasterEntryV2326 ||
+        window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY'
+      );
       els.modalTitle.textContent = 'ENTER PASSWORD';
       els.modalBody.textContent = '';
       els.modalInput.style.display = '';
       els.modalInput.type = 'text';
       els.modalInput.autocapitalize = 'characters';
       els.modalInput.value = '';
-      const back = makeModalButton('BACK','',
-        (window.__sshcpMasterEntryV2326 || window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY') ? () => window.location.assign(window.location.pathname) : showBareEntryGateV1961);
-      const enter = makeModalButton('ENTER','primary',async() => {
-        if (String(els.modalInput.value || '').trim().toUpperCase() !== 'ENTER') {
+      let submittingV2329 = false;
+      const back = makeModalButton('BACK','', () => {
+        els.modalInput.oninput = null;
+        if (masterGoV2329) window.location.assign(window.location.pathname);
+        else showBareEntryGateV1961();
+      });
+      async function authorizeBareMasterV2329() {
+        if (submittingV2329) return;
+        const expected = masterGoV2329 ? 'GO' : 'ENTER';
+        if (String(els.modalInput.value || '').trim().toUpperCase() !== expected) {
           els.modalBody.textContent = 'INVALID PASSWORD';
           els.modalInput.select();
           return;
         }
+        submittingV2329 = true;
+        els.modalInput.oninput = null;
 
-        /* V19.66 — the successful bare-entry password is the same real MASTER
-           authorization used by Control Center AUTHORIZE MASTER, with PREAUTH
-           enabled for immediate team switching. QR/direct-link entry is untouched. */
+        /* V23.29 — take over with the original HOME full-screen white curtain
+           BEFORE removing the modal or WELCOME. It must stay opaque while the
+           existing Worker MASTER authorization AND HOME data/logo settle. */
+        const curtainV2329 = masterGoV2329 ? beginHomeFullRevealV1986() : null;
+        if (masterGoV2329 && curtainV2329) dismissQrWelcomeV170();
+        els.modalInput.blur();
         closeModal();
         startLoadingLine();
-        const ok = await validateQrPasskey(SSHCP_MASTER_TEST_KEY,true,true);
-        completeLoadingLine();
+        let ok = false;
+        try {
+          ok = await validateQrPasskey(SSHCP_MASTER_TEST_KEY,true,true);
+        } finally {
+          completeLoadingLine();
+        }
         if (ok && isMasterQr()) {
           setPreAuthorizeEnabledV1958(true);
           scorecardHasLoaded = false;
           leaderboardHasLoaded = false;
           if (window.__sshcpMasterEntryV2326) {
-            // The one-time master-entry query must not replay on refresh.
+            // One-time chooser navigation must not repeat after refresh.
             const url = new URL(window.location.href);
             url.searchParams.delete('masterEntrance');
             history.replaceState(history.state, '', url.pathname + url.search + url.hash);
             window.__sshcpMasterEntryV2326 = false;
           }
-          dismissQrWelcomeAnimatedV172();
+          if (curtainV2329) {
+            // The normal HOME initialization is already in flight underneath.
+            // Wait for its existing data / logo / font gate before fading 1A.
+            if (window.__sshcpMasterHomeReadyV2329)
+              await window.__sshcpMasterHomeReadyV2329;
+            updateHomeScorecardAccess();
+            fitHomeActionTypographyV197();
+            if (typeof window.refreshHomeMenuV2054 === 'function')
+              window.refreshHomeMenuV2054();
+            await revealDataShieldAfterLayoutV177('home-full-v1986', curtainV2329, 2);
+          } else {
+            dismissQrWelcomeAnimatedV172();
+          }
+        } else if (curtainV2329) {
+          // Preserve the same password retry screen on validation failure.
+          window.__sshcpIncomingQrWelcomeV170 = true;
+          window.__sshcpWelcomeModeV180b = 'MASTER_ENTRY';
+          document.documentElement.classList.add('sshcp-qr-welcome-v170');
+          removeDataRevealShieldV177('home-full-v1986', curtainV2329);
+          showBareEntryPasswordV1961();
+          els.modalBody.textContent = 'AUTHORIZATION FAILED';
         }
-      });
+      }
+      const enter = makeModalButton(masterGoV2329 ? 'GO' : 'ENTER','primary',authorizeBareMasterV2329);
       els.modalActions.className = 'modal-actions';
       els.modalActions.replaceChildren(back,enter);
+      // V23.29 — as soon as G + O is entered, submit without a tap or Enter.
+      // This includes paste, lowercase and autofill; duplicate events are gated.
+      els.modalInput.oninput = masterGoV2329 ? () => {
+        if (String(els.modalInput.value || '').trim().toUpperCase() === 'GO')
+          authorizeBareMasterV2329();
+      } : null;
       els.modalInput.onkeydown = event => {
-        if (event.key === 'Enter') { event.preventDefault(); enter.click(); }
+        if (event.key === 'Enter') { event.preventDefault(); authorizeBareMasterV2329(); }
       };
       els.modalOverlay.classList.add('open');
       window.setTimeout(() => els.modalInput.focus(), 0);
