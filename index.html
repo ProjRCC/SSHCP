@@ -1,4 +1,11 @@
-<!-- SSHCP | BASE KEY: 23.26-P7M4QX | BUILD KEY: 23.27-R8Q4MN -->
+<!-- SSHCP | BASE KEY: 23.27-R8Q4MN | BUILD KEY: 23.28-N7M4QX -->
+<!-- SSHCP V23.28 — original WELCOME reveal contract for master tournament selection.
+     WELCOME renders immediately; tournament picker is inserted and faded only
+     after live active tournament data has loaded AND the original 3.1s TEAM slot.
+     On selecting a tournament, the unchanged ENTER password modal opens as soon
+     as its existing event bootstrap verifies, independent of HOME initialization.
+     No new auth path, scoring, Worker, team QR flow, or presentation changes.
+     CF3.34 unchanged. TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.27 — MASTER WELCOME dropdown geometry, bespoke app-themed
      tournament menu, and immediate verified-event ENTER password gate.
      Fixes V23.26 native Android select and delayed/stranded password handoff.
@@ -14763,7 +14770,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.27</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.28</span></span>
         </button>
         <script>
           (function () {
@@ -38349,13 +38356,46 @@ let scoreTimingDetail =
       window.setTimeout(() => els.modalInput.focus(), 0);
     }
 
-    /* V23.27 — custom on-page selector: no OS dropdown/radio sheet. Clicking
-       an option proceeds directly to that event's existing MASTER password.
-       Only the Worker-verified root eventList supplies the options. */
+    /* V23.28 — original QR TEAM WELCOME contract: the title appears at first
+       paint; never show an empty or LOADING dropdown. Fetch directory now, then
+       expose the prepared selector once BOTH data and the original 3.1s TEAM
+       reveal slot are ready. Keep the V23.27 app-styled dropdown unchanged. */
     async function revealMasterEventPickerV2326(team, overlay) {
-      team.replaceChildren();
-      team.style.top = '';
-      team.style.transform = '';
+      const started = Number(window.__sshcpQrWelcomeStartedAtV170) || 0;
+      const elapsed = (window.performance && performance.now) ?
+        Math.max(0, performance.now() - started) : 0;
+      const scheduledReveal = new Promise(resolve =>
+        window.setTimeout(resolve, Math.max(0, 3100 - elapsed)));
+      let keys = new Set();
+      try {
+        const response = await window.fetch(
+          'https://rotbtest.projrcc.workers.dev/?action=eventList',
+          { cache:'no-store' }
+        );
+        if (!response.ok) throw new Error('Tournament directory unavailable (HTTP '+response.status+').');
+        const data = await response.json();
+        if (!data || data.ok !== true || !Array.isArray(data.events))
+          throw new Error('Invalid tournament directory.');
+        for (const item of data.events) {
+          const key = String(item && item.event || '');
+          if (/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(key)) keys.add(key);
+        }
+        if (!keys.size) throw new Error('No active tournaments.');
+        await scheduledReveal;
+        if (document.fonts && document.fonts.ready) {
+          try { await document.fonts.ready; } catch (_) {}
+        }
+      } catch(err) {
+        await scheduledReveal;
+        if (!window.__sshcpIncomingQrWelcomeV170 ||
+            window.__sshcpWelcomeModeV180b !== 'MASTER_PICKER') return;
+        team.textContent = 'TOURNAMENTS UNAVAILABLE';
+        overlay.classList.add('show-team');
+        try { console.error('Master tournament selection:',err); } catch (_) {}
+        return;
+      }
+      if (!window.__sshcpIncomingQrWelcomeV170 ||
+          window.__sshcpWelcomeModeV180b !== 'MASTER_PICKER') return;
       const picker = document.createElement('div');
       picker.className = 'sshcp-event-picker-v2327';
       const trigger = document.createElement('button');
@@ -38364,9 +38404,8 @@ let scoreTimingDetail =
       trigger.setAttribute('aria-label', 'SELECT TOURNAMENT');
       trigger.setAttribute('aria-haspopup', 'listbox');
       trigger.setAttribute('aria-expanded', 'false');
-      trigger.disabled = true;
       const caption = document.createElement('span');
-      caption.textContent = 'LOADING TOURNAMENTS';
+      caption.textContent = 'SELECT TOURNAMENT';
       const svgNsV2327 = 'http://www.w3.org/2000/svg';
       const chevron = document.createElementNS(svgNsV2327,'svg');
       chevron.classList.add('sshcp-event-chevron-v2327');
@@ -38382,8 +38421,6 @@ let scoreTimingDetail =
       options.setAttribute('role','listbox');
       options.hidden = true;
       picker.append(trigger, options);
-      team.appendChild(picker);
-      overlay.classList.add('show-team');
       const close = () => {
         options.hidden = true;
         picker.classList.remove('open');
@@ -38402,43 +38439,26 @@ let scoreTimingDetail =
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape' && !options.hidden) { close(); trigger.focus(); }
       });
-      try {
-        const response = await window.fetch(
-          'https://rotbtest.projrcc.workers.dev/?action=eventList',
-          { cache:'no-store' }
-        );
-        if (!response.ok) throw new Error('Tournament directory unavailable (HTTP '+response.status+').');
-        const data = await response.json();
-        if (!data || data.ok !== true || !Array.isArray(data.events)) throw new Error('Invalid tournament directory.');
-        const keys = new Set();
-        for (const item of data.events) {
-          const key = String(item && item.event || '');
-          if (!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(key) || keys.has(key)) continue;
-          keys.add(key);
-          const option = document.createElement('button');
-          option.type = 'button';
-          option.className = 'sshcp-event-option-v2327';
-          option.setAttribute('role','option');
-          option.textContent = key;
-          option.addEventListener('click', () => {
-            trigger.disabled = true;
-            caption.textContent = key;
-            close();
-            const url = new URL(window.location.href);
-            url.searchParams.set('event', key);
-            url.searchParams.set('masterEntrance', '1');
-            url.searchParams.delete('passkey'); url.searchParams.delete('key');
-            window.location.assign(url.pathname + url.search + url.hash);
-          });
-          options.appendChild(option);
-        }
-        caption.textContent = keys.size ? 'SELECT TOURNAMENT' : 'NO ACTIVE TOURNAMENTS';
-        trigger.disabled = !keys.size;
-      } catch (err) {
-        caption.textContent = 'TOURNAMENTS UNAVAILABLE';
-        trigger.disabled = true;
-        try { console.error('Master tournament selection:',err); } catch (_) {}
+      for (const key of keys) {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'sshcp-event-option-v2327';
+        option.setAttribute('role','option');
+        option.textContent = key;
+        option.addEventListener('click', () => {
+          trigger.disabled = true;
+          caption.textContent = key;
+          close();
+          const url = new URL(window.location.href);
+          url.searchParams.set('event', key);
+          url.searchParams.set('masterEntrance', '1');
+          url.searchParams.delete('passkey'); url.searchParams.delete('key');
+          window.location.assign(url.pathname + url.search + url.hash);
+        });
+        options.appendChild(option);
       }
+      team.replaceChildren(picker);
+      overlay.classList.add('show-team');
     }
 
     function revealQrWelcomeAfterAuthV170() {
@@ -38449,12 +38469,9 @@ let scoreTimingDetail =
 
       const mode = String(window.__sshcpWelcomeModeV180b || 'QR');
       if (mode === 'MASTER_PICKER') {
-        const started = Number(window.__sshcpQrWelcomeStartedAtV170) || 0;
-        const now = (window.performance && performance.now) ? performance.now() : Date.now();
-        window.setTimeout(() => {
-          if (!window.__sshcpIncomingQrWelcomeV170) return;
-          revealMasterEventPickerV2326(team, overlay);
-        }, Math.max(0, 3100 - Math.max(0, now - started)));
+        // WELCOME is already visible. Fetch immediately; existing TEAM reveal
+        // timing occurs only AFTER options are verified and ready to display.
+        revealMasterEventPickerV2326(team, overlay);
         return;
       }
       if (mode === 'MASTER_ENTRY') {
@@ -38463,7 +38480,8 @@ let scoreTimingDetail =
            HOME image decoding, or a second WELCOME animation. */
         window.__sshcpEventBootstrapV2318.then(() => {
           if (window.__sshcpIncomingQrWelcomeV170 &&
-              window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY') {
+              window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY' &&
+              !els.modalOverlay.classList.contains('open')) {
             showBareEntryPasswordV1961();
           }
         }).catch(() => { /* bootstrap displays the event error */ });
@@ -38552,6 +38570,18 @@ let scoreTimingDetail =
         setupQrWelcomeV170();
         revealQrWelcomeAfterAuthV170();
         return;
+      }
+      if (window.__sshcpMasterEntryV2326) {
+        /* V23.28 — selected event is now being verified. The EXISTING
+           ENTER-password popup must be reachable even if other initializers or
+           HOME data requests are slow. No new password or authorization path. */
+        window.__sshcpEventBootstrapV2318.then(() => {
+          if (window.__sshcpIncomingQrWelcomeV170 &&
+              window.__sshcpWelcomeModeV180b === 'MASTER_ENTRY' &&
+              !els.modalOverlay.classList.contains('open')) {
+            showBareEntryPasswordV1961();
+          }
+        }).catch(() => { /* existing bootstrap error presentation */ });
       }
 
 
