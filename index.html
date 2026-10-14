@@ -1,3 +1,10 @@
+<!-- SSHCP V23.59 TEST — exact V23.58-M7Q4VX donor, frontend-only.
+     SCORE NOT SAVED now shares GEEK DETAIL's fully OPAQUE Gray 3 curtain,
+     SOLID white borderless card, card radius, shadow, width and padding.
+     No backdrop blur or translucency. Red title, black message and blue OKAY
+     remain unique; preserve Gray-first acquisition, footer white Fade 2,
+     scoring, retries, Worker, and protected V23.57 GOLDEN. -->
+<!-- SSHCP | BASE KEY: 23.58-M7Q4VX | BUILD KEY: 23.59-Q7M4VX -->
 <!-- SSHCP V23.58 TEST — exact V23.57 GOLDEN donor.
      SCORE NOT SAVED warning backdrop now uses 7px background blur, matching
      manual score-entry popup while preserving Gray 3 at 95% opacity,
@@ -15356,18 +15363,28 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
  background:#fff!important;z-index:9000!important;
  transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.3s) ease-out!important
 }
-/* V23.58: retain quiet Gray 3 backdrop/borderless popup, match manual Score Entry 7px blur. */
+/* V23.59: match the existing GEEK DETAIL popup FAMILY, not the manual
+   score-entry blur popup. Solid full-screen Gray 3 ABOVE the white footer
+   curtain, before any Red recovery state is exposed. */
 .modal-overlay.score-save-warning{
- /* Stay ABOVE the established opaque WHITE footer curtain (z=9000).
-    Gray must be visible FIRST; footer Red is prepared completely underneath. */
  z-index:9100!important;
- background:rgba(232,232,232,.95)!important;
- backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important;
+ padding:18px!important;
+ background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
  opacity:1;transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out!important
 }
 .modal-overlay.score-save-warning .modal-box{
- border:0!important;box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
- background:rgba(255,255,255,.95)!important
+ position:relative!important;
+ width:min(96vw,740px)!important;
+ height:auto!important;
+ min-height:0!important;
+ margin:auto!important;
+ padding:18px!important;
+ box-sizing:border-box!important;
+ border:0!important;
+ border-radius:18px!important;
+ box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
+ background:#fff!important
 }
 .modal-overlay.score-save-warning .modal-title{
  color:#c62f35!important;-webkit-text-fill-color:#c62f35!important
@@ -15512,7 +15529,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.58</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.59</span></span>
         </button>
         <script>
           (function () {
