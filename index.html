@@ -1,3 +1,11 @@
+<!-- SSHCP V23.62 TEST — exact V23.61-K7Q4MV donor, frontend-only.
+     SCORE NOT SAVED unverified-save watch now 1.0s from ENTER/CLEAR
+     (V23.61 used 1.3s). Intended as an online slow-save stress test:
+     verification may legitimately arrive after the warning begins.
+     Preserve in-flight late-success reconciliation, existing Gray curtain,
+     5-second AUTO PUSH, scoring snapshots, Worker and all other UI.
+     Protected GOLDEN V23.60 remains unmodified; TEST, not promoted. -->
+<!-- SSHCP | BASE KEY: 23.61-K7Q4MV | BUILD KEY: 23.62-R8Q4MX -->
 <!-- SSHCP V23.61 TEST — exact protected V23.60-P7M4QX GOLDEN donor, frontend-only.
      SCORE NOT SAVED Gray-curtain acquisition threshold now 1.3 seconds from
      ENTER/CLEAR when the save remains unverified (previously 2.0 seconds).
@@ -15542,7 +15550,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.61</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.62</span></span>
         </button>
         <script>
           (function () {
@@ -16789,7 +16797,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
     */
     const SCORE_AFTER_SCROLL_VISUAL_DELAY_V1835 = 100;
     const SCORE_NO_SCROLL_VISUAL_DELAY_V1835 = 100;
-    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 1300;
+    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 1000;
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
 
@@ -27748,8 +27756,8 @@ let scoreTimingDetail =
         '&passkey='+encodeURIComponent(passkey)+'&refresh='+Date.now();
       startLoadingLine();
       let success=false, errorStatus=0;
-      /* V23.61: 1.3 seconds from the actual ENTER/CLEAR, not after fetch rejects.
-         V23.60 GOLDEN retains the previous two-second threshold. This is an
+      /* V23.62 TEST: 1.0 seconds from the actual ENTER/CLEAR, not after fetch rejects.
+         V23.60 GOLDEN retains 2.0s; V23.61 TEST used 1.3s. This is an
          unverified-score notice, not a network timeout: the original save
          remains in flight and authoritative.
          AUTO PUSH will not overlap it. A late verified save cleans up recovery. */
