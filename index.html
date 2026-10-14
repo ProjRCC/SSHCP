@@ -1,3 +1,11 @@
+<!-- SSHCP V23.64 TEST — exact V23.63-M7Q4VX donor, frontend-only.
+     Restore unverified-score warning threshold from 0.9s to 2.0s after
+     ENTER/CLEAR. Add a small italic note beneath SCORE NOT SAVED's existing
+     message: keep phone awake with SCORECARD open for auto-save attempts.
+     Preserve tested non-clickable AUTO SAVE footer, 5s retry bar, Worker,
+     pop-up OKAY/automatic dismissal, scoring safeguards and protected V23.60
+     GOLDEN. TEST / requires phone validation. -->
+<!-- SSHCP | BASE KEY: 23.63-M7Q4VX | BUILD KEY: 23.64-N8Q4VX -->
 <!-- SSHCP V23.63 TEST — exact V23.62-R8Q4MX donor, frontend-only.
      Unverified-save warning watch now 0.9s after ENTER/CLEAR (previously 1.0s).
      Recovery footer keeps existing 1/3–2/3 geometry: left is non-clickable
@@ -15423,6 +15431,19 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 .modal-overlay.score-save-warning .modal-text{
  text-transform:none!important
 }
+/* V23.64: a readable, noninteractive instruction belongs ONLY to the
+   SCORE NOT SAVED informational card. Its existing title/message/OKAY remain. */
+.modal-overlay.score-save-warning .sshcp-score-warning-hint-v2364{
+ display:block!important;
+ margin-top:10px!important;
+ color:#333!important;-webkit-text-fill-color:#333!important;
+ font-style:italic!important;
+ font-weight:400!important;
+ font-size:.78em!important;
+ line-height:1.3!important;
+ text-transform:none!important;
+ text-align:center!important;
+}
 .modal-overlay.score-save-warning.sshcp-score-warning-prep-v2353 .modal-box{
  opacity:0!important;pointer-events:none!important
 }
@@ -15558,7 +15579,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.63</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.64</span></span>
         </button>
         <script>
           (function () {
@@ -16806,7 +16827,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
     */
     const SCORE_AFTER_SCROLL_VISUAL_DELAY_V1835 = 100;
     const SCORE_NO_SCROLL_VISUAL_DELAY_V1835 = 100;
-    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 900;
+    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 2000;
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
 
@@ -16975,6 +16996,13 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
          styling or footer mutation. First frame is ONLY Gray, not Red.
          The text panel appears once the entire card and footer are settled. */
       showMessageModal('SCORE NOT SAVED', '5s AUTO SCORE PUSH ACTIVATED');
+      /* V23.64: the note is appended only to this warning. The shared
+         showMessageModal textContent reset clears it for every other popup. */
+      const autoSaveNoteV2364 = document.createElement('span');
+      autoSaveNoteV2364.className = 'sshcp-score-warning-hint-v2364';
+      autoSaveNoteV2364.textContent =
+        'PHONE MUST STAY AWAKE WITH SCORECARD OPEN FOR AUTO SAVE ATTEMPTS.';
+      els.modalBody.appendChild(autoSaveNoteV2364);
       const overlay = els.modalOverlay;
       overlay.classList.add('score-save-warning', 'sshcp-score-warning-prep-v2353');
       els.modalActions.className='modal-actions single';
@@ -27752,8 +27780,9 @@ let scoreTimingDetail =
         '&passkey='+encodeURIComponent(passkey)+'&refresh='+Date.now();
       startLoadingLine();
       let success=false, errorStatus=0;
-      /* V23.63 TEST: 0.9 seconds from the actual ENTER/CLEAR, not after fetch rejects.
-         V23.60 GOLDEN retains 2.0s; V23.62 TEST used 1.0s. This is an
+      /* V23.64 TEST: 2.0 seconds from actual ENTER/CLEAR, not after fetch rejects.
+         This restores V23.60 GOLDEN's notice threshold; V23.63 TEST used 0.9s.
+         This is an
          unverified-score notice, not a network timeout: the original save
          remains in flight and authoritative.
          AUTO PUSH will not overlap it. A late verified save cleans up recovery. */
