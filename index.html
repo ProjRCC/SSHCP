@@ -1,3 +1,12 @@
+<!-- SSHCP V23.63 TEST — exact V23.62-R8Q4MX donor, frontend-only.
+     Unverified-save warning watch now 0.9s after ENTER/CLEAR (previously 1.0s).
+     Recovery footer keeps existing 1/3–2/3 geometry: left is non-clickable
+     borderless AUTO SAVE label plus existing 5s red retry progress bar;
+     right stays LEADERBOARD. Remove CANCEL and auto-enable retries even when
+     an old cancelled-retry preference was stored. Preserve pause off Scorecard,
+     manual SCORE ENTRY pause, non-overlap, 429 backoff and late verification.
+     Worker unchanged; protected V23.60 GOLDEN untouched. NOT GOLDEN. -->
+<!-- SSHCP | BASE KEY: 23.62-R8Q4MX | BUILD KEY: 23.63-M7Q4VX -->
 <!-- SSHCP V23.62 TEST — exact V23.61-K7Q4MV donor, frontend-only.
      SCORE NOT SAVED unverified-save watch now 1.0s from ENTER/CLEAR
      (V23.61 used 1.3s). Intended as an online slow-save stress test:
@@ -15322,7 +15331,10 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 </style>
 
 <style id="sshcp-v2351-score-recovery-style">
-/* V23.51: exactly the existing Scorecard footer and its existing NESR cues. */
+/* V23.63: recovery keeps the protected 1/3–2/3 Scorecard footer grid.
+   AUTO SAVE is read-only, borderless text with the EXISTING 5s retry bar;
+   it occupies no more height than LEADERBOARD. The progress animation and
+   pause/retry safety remain in the existing JS scheduler. */
 #scorecardView #scoreRecoveryActionV2351{display:none!important}
 body.sshcp-recovery-v2351 #scorecardView .score-bottom-actions{
  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;
@@ -15333,22 +15345,18 @@ body.sshcp-recovery-v2351 #scorecardView #scoreRecoveryActionV2351{
  align-items:center!important;justify-content:center!important;
  width:100%!important;height:var(--v16-footer-h,70px)!important;
  min-height:var(--v16-footer-h,70px)!important;max-height:var(--v16-footer-h,70px)!important;
- margin:0!important;padding:4px 5px 8px!important;box-sizing:border-box!important;
- border-radius:9px!important;border:2px solid #c62f35!important;background:#c62f35!important;
- color:white!important;-webkit-text-fill-color:white!important;
- font-size:clamp(11px,3.5vw,16px)!important;line-height:1.05!important;
- font-weight:800!important;text-align:center!important;white-space:normal!important;overflow:hidden!important;
- transition:background-color var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out,
-  border-color var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out!important
-}
-body.sshcp-recovery-v2351.sshcp-retry-on-v2351 #scorecardView #scoreRecoveryActionV2351{
- background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
- border-color:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
- color:#c62f35!important;-webkit-text-fill-color:#c62f35!important
+ margin:0!important;padding:2px 3px!important;box-sizing:border-box!important;
+ border:0!important;outline:0!important;border-radius:0!important;
+ background:transparent!important;box-shadow:none!important;
+ color:#c62f35!important;-webkit-text-fill-color:#c62f35!important;
+ font-size:clamp(12px,3.5vw,16px)!important;line-height:1.1!important;
+ font-weight:800!important;text-align:center!important;white-space:nowrap!important;
+ overflow:hidden!important;pointer-events:none!important
 }
 #scorecardView .score-retry-track-v2351{
- display:none;position:absolute;bottom:2px;left:4px;right:4px;height:4px;
- background:rgba(198,47,53,.18);border-radius:3px;overflow:hidden;pointer-events:none
+ display:none;position:relative;width:100%;height:4px;flex:0 0 4px;
+ margin:6px 0 0;background:rgba(198,47,53,.18);border-radius:3px;
+ overflow:hidden;pointer-events:none
 }
 body.sshcp-retry-on-v2351 #scorecardView .score-retry-track-v2351{display:block}
 #scorecardView #scoreRetryFillV2351{display:block;width:100%;height:100%;background:#c62f35;transform-origin:left;transform:scaleX(0)}
@@ -15550,7 +15558,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.62</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.63</span></span>
         </button>
         <script>
           (function () {
@@ -15740,10 +15748,11 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <div class="score-bottom-actions">
 
-          <button id="scoreRecoveryActionV2351" type="button" class="bottom-action"
-            aria-label="Auto push scores"><span id="scoreRecoveryActionTextV2351">AUTO PUSH SCORES</span>
+          <div id="scoreRecoveryActionV2351" class="sshcp-auto-save-status-v2363"
+            role="status" aria-label="Automatic score saving active">
+            <span id="scoreRecoveryActionTextV2351">AUTO SAVE</span>
             <span class="score-retry-track-v2351" aria-hidden="true"><span id="scoreRetryFillV2351"></span></span>
-          </button>
+          </div>
 
           <button
             id="scoreLeaderboardButton"
@@ -16797,7 +16806,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
     */
     const SCORE_AFTER_SCROLL_VISUAL_DELAY_V1835 = 100;
     const SCORE_NO_SCROLL_VISUAL_DELAY_V1835 = 100;
-    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 1000;
+    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 900;
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
 
@@ -27048,7 +27057,8 @@ let scoreTimingDetail =
       const scope=scoreScopeV2351();
       scoreRecoveryV2351=!!scope && sshcpLocalStorageV2318.getItem(scoreRecoveryKeyV2351(scope))==='1';
       scoreReconcileV2351=!!scope && sshcpLocalStorageV2318.getItem(scoreReconcileKeyV2351(scope))==='1';
-      scoreRetryEnabledV2351=!!scope && sshcpLocalStorageV2318.getItem(scoreRetryKeyV2351(scope))==='1';
+      /* V23.63: old CANCEL choices never suppress hands-off recovery on restore. */
+      scoreRetryEnabledV2351=scoreRecoveryV2351;
       try {
         const indices=JSON.parse(sshcpLocalStorageV2318.getItem(scoreClearsKeyV2351(scope))||'[]');
         scoreUnverifiedClearV2351=new Set((Array.isArray(indices)?indices:[]).filter(i=>Number.isInteger(i)&&i>=0&&i<18));
@@ -27058,8 +27068,9 @@ let scoreTimingDetail =
       if (scoreRecoveryV2351 && !scorePendingV2351()) {
         scoreRecoveryV2351=false;scoreRetryEnabledV2351=false;
         scoreUnverifiedClearV2351.clear();
-        scoreStoreStateV2351();
       }
+      /* Migrate any formerly cancelled recovery state to automatic retries. */
+      scoreStoreStateV2351();
       scorePaintFooterV2351();
     }
     function scorePendingV2351() {
@@ -27092,9 +27103,9 @@ let scoreTimingDetail =
       const active=scoreRecoveryV2351 && scoreRetryEnabledV2351;
       document.body.classList.toggle('sshcp-retry-on-v2351',active);
       if (els.scoreRecoveryActionTextV2351)
-        els.scoreRecoveryActionTextV2351.textContent=active?'CANCEL AUTO PUSH':'AUTO PUSH SCORES';
+        els.scoreRecoveryActionTextV2351.textContent='AUTO SAVE';
       if (els.scoreRecoveryActionV2351)
-        els.scoreRecoveryActionV2351.setAttribute('aria-label',active?'Cancel auto push':'Enable auto push');
+        els.scoreRecoveryActionV2351.setAttribute('aria-label','Automatic score saving active');
     }
     function scoreClearRetryTimerV2351() {
       if (scoreRetryTimerV2351) {
@@ -27156,8 +27167,8 @@ let scoreTimingDetail =
       await scoreFooterTransitionV2351(() => {
         if (identity!==scoreScopeV2351() || !scorePendingV2351()) return;
         scoreRecoveryV2351=true;
-        /* First failed save defaults to automatic 5s retry; the footer's
-           CANCEL control lets the player opt out, without leaving recovery. */
+        /* V23.63: automatic 5s retry is always enabled in recovery;
+           the footer is an informational label/bar, not a CANCEL control. */
         scoreRetryEnabledV2351=true;
         resetScoreVisualStateV1619();
         scoreStoreStateV2351();
@@ -27190,21 +27201,6 @@ let scoreTimingDetail =
           scoreDismissWarningV2352();
       });
     }
-    function scoreToggleRetryV2351() {
-      if (!scoreRecoveryV2351 || !selectedTeam) return;
-      const identity=scoreScopeV2351();
-      scoreClearRetryTimerV2351();
-      void scoreFooterTransitionV2351(() => {
-        if (!scoreRecoveryV2351 || scoreScopeV2351()!==identity) return;
-        scoreRetryEnabledV2351=!scoreRetryEnabledV2351;
-        scoreStoreStateV2351();scorePaintFooterV2351();
-      },false).then(() => {
-        if (scoreScopeV2351()===identity && scoreRetryEnabledV2351)
-          scoreScheduleRetryV2351();
-      });
-    }
-
-
     function updateSubmitButtonState() {
       els.submitBtn.disabled = saveInProgress || !hasPendingScores();
     }
@@ -27756,8 +27752,8 @@ let scoreTimingDetail =
         '&passkey='+encodeURIComponent(passkey)+'&refresh='+Date.now();
       startLoadingLine();
       let success=false, errorStatus=0;
-      /* V23.62 TEST: 1.0 seconds from the actual ENTER/CLEAR, not after fetch rejects.
-         V23.60 GOLDEN retains 2.0s; V23.61 TEST used 1.3s. This is an
+      /* V23.63 TEST: 0.9 seconds from the actual ENTER/CLEAR, not after fetch rejects.
+         V23.60 GOLDEN retains 2.0s; V23.62 TEST used 1.0s. This is an
          unverified-score notice, not a network timeout: the original save
          remains in flight and authoritative.
          AUTO PUSH will not overlap it. A late verified save cleans up recovery. */
@@ -38884,7 +38880,6 @@ let scoreTimingDetail =
         'click',
         showLeaderboard
       );
-    els.scoreRecoveryActionV2351.addEventListener('click',scoreToggleRetryV2351);
 
 
     els.leaderRefreshButton
