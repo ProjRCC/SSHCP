@@ -1,3 +1,11 @@
+<!-- SSHCP V23.52 TEST — exact V23.51 donor, no Worker changes.
+  V23.51 phone-feedback patch only: game-mode gray hole circles have BLACK numerals;
+  NESR red hole-cell retains BLUE score-box outline in unsaved mode; first failed
+  save enables 10-second AUTO PUSH by default (manual CANCEL still available);
+  SCORE NOT SAVED has RED title, one Blue OKAY button, Gray 3 opaque backdrop,
+  borderless card, no blur, and Fade 2 (0.20s) dismiss; active CANCEL button
+  uses canonical Gray 3 with red text/progress. TEST / NOT GOLDEN. -->
+<!-- SSHCP | BASE KEY: 23.51-K7M4QV | BUILD KEY: 23.52-N8Q4RM -->
 <!-- SSHCP V23.51 TEST — EXACT SSHCP V23.44 DONOR, NOT V23.50. -->
 <!-- After failed Worker save: one Blue OKAY warning, 1:2 AUTO PUSH footer,
      complete local 18-hole snapshot on every ENTER/CLEAR, compare with verified
@@ -15254,11 +15262,13 @@ body.sshcp-recovery-v2351 #scorecardView #scoreRecoveryActionV2351{
  border-radius:9px!important;border:2px solid #c62f35!important;background:#c62f35!important;
  color:white!important;-webkit-text-fill-color:white!important;
  font-size:clamp(11px,3.5vw,16px)!important;line-height:1.05!important;
- font-weight:800!important;text-align:center!important;white-space:normal!important;overflow:hidden!important
+ font-weight:800!important;text-align:center!important;white-space:normal!important;overflow:hidden!important;
+ transition:background-color var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out,
+  border-color var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out!important
 }
 body.sshcp-recovery-v2351.sshcp-retry-on-v2351 #scorecardView #scoreRecoveryActionV2351{
- background:var(--sshcp-gray-3-v1842,#bcbcbc)!important;
- border-color:var(--sshcp-gray-3-v1842,#bcbcbc)!important;
+ background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+ border-color:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
  color:#c62f35!important;-webkit-text-fill-color:#c62f35!important
 }
 #scorecardView .score-retry-track-v2351{
@@ -15272,13 +15282,18 @@ body.sshcp-retry-on-v2351 #scorecardView .score-retry-track-v2351{display:block}
 body.sshcp-recovery-v2351 #scorecardView .hole-cell.next-hole-cell{
  background:#c62f35!important;color:white!important;border-color:#c62f35!important
 }
-body.sshcp-recovery-v2351 #scorecardView .hole-cell.next-hole-cell .hole-number,
-body.sshcp-recovery-v2351 #scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
+body.sshcp-recovery-v2351 #scorecardView .hole-cell.next-hole-cell .hole-number{
  color:white!important;-webkit-text-fill-color:white!important
 }
-/* Existing NEXT SCORE BOX blue/gold outline is also RED in recovery. */
+/* The Gray circular GAME-mode hole marker remains Gray with a BLACK number,
+   including when that row is the red NESR. Do not color the circle's number white. */
+body.sshcp-recovery-v2351 #scorecardView .hole-cell.game-mode-hole-v2026 .hole-number,
+body.sshcp-recovery-v2351 #scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
+ color:#000!important;-webkit-text-fill-color:#000!important
+}
+/* The NESR HOLE CELL becomes RED, but the NESR SCORE BOX outline is BLUE. */
 body.sshcp-recovery-v2351 #scorecardView .score-button.active-hole-score{
- border:3px solid #c62f35!important
+ border:3px solid var(--accent)!important
 }
 /* A deliberately CLEARED, previously saved value is locally blank but PENDING.
    Paint its EMPTY score box GRAY, and only remove this class when Worker confirms
@@ -15288,11 +15303,27 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351{
  border-color:var(--sshcp-gray-4-v1842,#747474)!important
 }
 body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.active-hole-score{
- border:3px solid #c62f35!important
+ border:3px solid var(--accent)!important
 }
 .sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-footer-curtain-v2351{
  background:#fff!important;z-index:9000!important;
  transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.3s) ease-out!important
+}
+/* Match GEEK DETAIL's quiet Gray 3 backdrop, with no blur/border. */
+.modal-overlay.score-save-warning{
+ background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ opacity:1;transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out!important
+}
+.modal-overlay.score-save-warning .modal-box{
+ border:0!important;box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
+ background:#fff!important
+}
+.modal-overlay.score-save-warning .modal-title{
+ color:#c62f35!important;-webkit-text-fill-color:#c62f35!important
+}
+.modal-overlay.score-save-warning.sshcp-score-warning-exit-v2352{
+ opacity:0!important;pointer-events:none!important
 }
 </style>
 </head>
@@ -15423,7 +15454,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.51</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.52</span></span>
         </button>
         <script>
           (function () {
@@ -16840,8 +16871,25 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
         showMessageModal('SCORE NOT SAVED', 'SCORE WAS NOT SAVED.');
         els.modalOverlay.classList.add('score-save-warning');
         els.modalActions.className='modal-actions single';
-        els.modalActions.replaceChildren(makeModalButton('OKAY', 'primary', closeModal));
+        els.modalActions.replaceChildren(makeModalButton('OKAY', 'primary', scoreDismissWarningV2352));
       });
+    }
+
+    /* Only the SCORE NOT SAVED informational overlay uses Fade 2 on OKAY.
+       Shared other modals keep their exact established close contract. */
+    function scoreDismissWarningV2352() {
+      const overlay=els.modalOverlay;
+      if (!overlay || !overlay.classList.contains('score-save-warning')) {
+        closeModal();return;
+      }
+      overlay.classList.add('sshcp-score-warning-exit-v2352');
+      const seconds=Number((window.SSHCP_FADE_TIMING_V2092||{}).FADE_2_SCORECARD_LEADERBOARD);
+      window.setTimeout(() => {
+        /* Avoid closing a different dialog if navigation replaced the warning. */
+        if (overlay.classList.contains('score-save-warning') &&
+            overlay.classList.contains('sshcp-score-warning-exit-v2352')) closeModal();
+        overlay.classList.remove('sshcp-score-warning-exit-v2352');
+      },Math.max(0,(Number.isFinite(seconds)?seconds:.20)*1000)+20);
     }
 
     function scheduleScoreFailureNoticeV1619(
@@ -26972,12 +27020,17 @@ let scoreTimingDetail =
       await scoreFooterTransitionV2351(() => {
         if (identity!==scoreScopeV2351() || !scorePendingV2351()) return;
         scoreRecoveryV2351=true;
+        /* First failed save defaults to automatic 10s retry; the footer's
+           CANCEL control lets the player opt out, without leaving recovery. */
+        scoreRetryEnabledV2351=true;
         resetScoreVisualStateV1619();
         scoreStoreStateV2351();
         scorePaintFooterV2351();
         renderScorecard();
       });
-      return scoreRecoveryV2351 && identity===scoreScopeV2351();
+      const correct=scoreRecoveryV2351 && identity===scoreScopeV2351();
+      if (correct && scoreRetryEnabledV2351) scoreScheduleRetryV2351();
+      return correct;
     }
     function scoreFinishRecoveryV2351(identity) {
       if (!scoreRecoveryV2351 || scorePendingV2351()) return;
@@ -38068,6 +38121,7 @@ let scoreTimingDetail =
           'geek-detail-v180',
           'geek-all-teams-detail-v2238',
           'score-save-warning',
+          'sshcp-score-warning-exit-v2352',
           'welcome-competitor-v1985',
           'master-go-gate-v2331'
         );
