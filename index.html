@@ -1,12 +1,13 @@
-<!-- SSHCP V23.50 TEST — exact V23.44 donor. Normal optimistic score/NESR
-     remains intact until the first failed save. In recovery mode, the
-     verified Worker card is the only Blue authority; local NESR advances
-     immediately and its hole number is Red. 1:2 and 2:1 footer changes,
-     and 2:2 AUTO PUSH controls, use existing opaque white Fade 2 curtain
-     before layout mutation, then NESR positioning after fade starts/ends.
-     Ten-second opt-in retries; current complete card per ENTER/CLEAR;
-     stale request and team/passkey guards; CF unchanged. NOT GOLDEN. -->
-<!-- SSHCP | BASE KEY: 23.44-M7Q4VX | BUILD KEY: 23.50-Q8M4VX -->
+<!-- SSHCP V23.51 TEST — EXACT SSHCP V23.44 DONOR, NOT V23.50. -->
+<!-- After failed Worker save: one Blue OKAY warning, 1:2 AUTO PUSH footer,
+     complete local 18-hole snapshot on every ENTER/CLEAR, compare with verified
+     Worker card, Gray unsaved scores AND deliberately cleared blank score boxes,
+     Red NESR HOLE CELL / Red NESR SCORE-BOX BORDER (white hole number), no
+     optimistic Blue in two-button mode; verified clears restore white empty.
+     10s optional retry, in-flight latest-card reconciliation, established full
+     white Fade 2 curtain before footer mutation then NESR positioning.
+     Never modify Worker or protected GOLDEN. TEST / NOT GOLDEN. -->
+<!-- SSHCP | BASE KEY: 23.44-M7Q4VX | BUILD KEY: 23.51-K7M4QV -->
 <!-- SSHCP | BASE KEY: 23.43-T6Q4VX | BUILD KEY: 23.44-M7Q4VX -->
 <!-- SSHCP V23.44 — Control Center MASTER team display correction only.
      As on HOME, resolve the visible MASTER team from current scoring
@@ -15237,47 +15238,61 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 }
 </style>
 
-<style id="sshcp-score-recovery-v2350">
-/* V23.50 — only Scorecard footer. MASTER/TEAM selector is untouched. */
-#scorecardView #scoreAutoPushFooterButtonV2350{display:none!important;}
-body.sshcp-score-recovery-v2350 #scorecardView .score-bottom-actions{
- display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;gap:8px!important;
+<style id="sshcp-v2351-score-recovery-style">
+/* V23.51: exactly the existing Scorecard footer and its existing NESR cues. */
+#scorecardView #scoreRecoveryActionV2351{display:none!important}
+body.sshcp-recovery-v2351 #scorecardView .score-bottom-actions{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;
+ gap:8px!important
 }
-body.sshcp-score-recovery-v2350 #scorecardView #scoreAutoPushFooterButtonV2350{
- display:flex!important;position:relative!important;align-items:center!important;justify-content:center!important;
- background:#c93333!important;border:2px solid #c93333!important;
- color:#fff!important;-webkit-text-fill-color:#fff!important;
- box-shadow:none!important;padding:3px 4px 9px!important;box-sizing:border-box!important;
- overflow:hidden!important;white-space:normal!important;text-align:center!important;
- font-size:clamp(11px,3.1vw,17px)!important;font-weight:800!important;line-height:1.05!important;
+body.sshcp-recovery-v2351 #scorecardView #scoreRecoveryActionV2351{
+ display:flex!important;position:relative!important;flex-direction:column!important;
+ align-items:center!important;justify-content:center!important;
+ width:100%!important;height:var(--v16-footer-h,70px)!important;
+ min-height:var(--v16-footer-h,70px)!important;max-height:var(--v16-footer-h,70px)!important;
+ margin:0!important;padding:4px 5px 8px!important;box-sizing:border-box!important;
+ border-radius:9px!important;border:2px solid #c62f35!important;background:#c62f35!important;
+ color:white!important;-webkit-text-fill-color:white!important;
+ font-size:clamp(11px,3.5vw,16px)!important;line-height:1.05!important;
+ font-weight:800!important;text-align:center!important;white-space:normal!important;overflow:hidden!important
 }
-body.sshcp-score-recovery-active-v2350 #scorecardView #scoreAutoPushFooterButtonV2350{
- background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
- border-color:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
- color:#c93333!important;-webkit-text-fill-color:#c93333!important;
+body.sshcp-recovery-v2351.sshcp-retry-on-v2351 #scorecardView #scoreRecoveryActionV2351{
+ background:var(--sshcp-gray-3-v1842,#bcbcbc)!important;
+ border-color:var(--sshcp-gray-3-v1842,#bcbcbc)!important;
+ color:#c62f35!important;-webkit-text-fill-color:#c62f35!important
 }
-#scorecardView .sshcp-auto-push-progress-v2350{
- position:absolute;bottom:2px;left:4px;right:4px;height:4px;
- background:rgba(201,51,51,.18);border-radius:3px;overflow:hidden;display:none;pointer-events:none;
+#scorecardView .score-retry-track-v2351{
+ display:none;position:absolute;bottom:2px;left:4px;right:4px;height:4px;
+ background:rgba(198,47,53,.18);border-radius:3px;overflow:hidden;pointer-events:none
 }
-body.sshcp-score-recovery-active-v2350 #scorecardView .sshcp-auto-push-progress-v2350{display:block;}
-#scorecardView .sshcp-auto-push-progress-fill-v2350{
- display:block;width:100%;height:100%;background:#c93333;
- transform-origin:left center;transform:scaleX(0);
+body.sshcp-retry-on-v2351 #scorecardView .score-retry-track-v2351{display:block}
+#scorecardView #scoreRetryFillV2351{display:block;width:100%;height:100%;background:#c62f35;transform-origin:left;transform:scaleX(0)}
+@keyframes sshcp-retry-fill-v2351{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+/* The existing NESR BLUE HOLE CELL becomes RED, not its number text. */
+body.sshcp-recovery-v2351 #scorecardView .hole-cell.next-hole-cell{
+ background:#c62f35!important;color:white!important;border-color:#c62f35!important
 }
-@keyframes sshcpAutoPushCountdownV2350{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-/* Red is applied to the entire next expected HOLE NUMBER, including game holes.
-   Only the number changes color; no optimistic Blue score in this mode. */
-body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.next-hole-cell{
- background:#fff!important;color:#c93333!important;border-color:#c93333!important;
+body.sshcp-recovery-v2351 #scorecardView .hole-cell.next-hole-cell .hole-number,
+body.sshcp-recovery-v2351 #scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
+ color:white!important;-webkit-text-fill-color:white!important
 }
-body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.next-hole-cell .hole-number,
-body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.game-mode-hole-v2026.next-hole-cell .hole-number{
- background:transparent!important;color:#c93333!important;-webkit-text-fill-color:#c93333!important;
+/* Existing NEXT SCORE BOX blue/gold outline is also RED in recovery. */
+body.sshcp-recovery-v2351 #scorecardView .score-button.active-hole-score{
+ border:3px solid #c62f35!important
 }
-.modal-overlay.score-save-warning .modal-btn.sshcp-ill-save-v2350{
- background:#c93333!important;border-color:#c93333!important;
- color:#fff!important;-webkit-text-fill-color:#fff!important;
+/* A deliberately CLEARED, previously saved value is locally blank but PENDING.
+   Paint its EMPTY score box GRAY, and only remove this class when Worker confirms
+   a blank. The default .empty box then returns to transparent / WHITE. */
+body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351{
+ background:var(--sshcp-gray-4-v1842,#747474)!important;
+ border-color:var(--sshcp-gray-4-v1842,#747474)!important
+}
+body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.active-hole-score{
+ border:3px solid #c62f35!important
+}
+.sshcp-data-reveal-shield-v177.full-screen-v177.sshcp-footer-curtain-v2351{
+ background:#fff!important;z-index:9000!important;
+ transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.3s) ease-out!important
 }
 </style>
 </head>
@@ -15408,7 +15423,7 @@ body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.game-mode-hole-v2026.n
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.50</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.51</span></span>
         </button>
         <script>
           (function () {
@@ -15598,12 +15613,9 @@ body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.game-mode-hole-v2026.n
 
         <div class="score-bottom-actions">
 
-          <button id="scoreAutoPushFooterButtonV2350" class="bottom-action" type="button"
-                  aria-label="Enable automatic score saving every ten seconds">
-            <span id="scoreAutoPushFooterLabelV2350">AUTO PUSH<br>SCORES</span>
-            <span class="sshcp-auto-push-progress-v2350" aria-hidden="true">
-              <span id="scoreAutoPushProgressFillV2350" class="sshcp-auto-push-progress-fill-v2350"></span>
-            </span>
+          <button id="scoreRecoveryActionV2351" type="button" class="bottom-action"
+            aria-label="Auto push scores"><span id="scoreRecoveryActionTextV2351">AUTO PUSH SCORES</span>
+            <span class="score-retry-track-v2351" aria-hidden="true"><span id="scoreRetryFillV2351"></span></span>
           </button>
 
           <button
@@ -16308,12 +16320,9 @@ body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.game-mode-hole-v2026.n
       scoreLeaderboardButton:
         document.getElementById('scoreLeaderboardButton'),
 
-      scoreAutoPushFooterButtonV2350:
-        document.getElementById('scoreAutoPushFooterButtonV2350'),
-      scoreAutoPushFooterLabelV2350:
-        document.getElementById('scoreAutoPushFooterLabelV2350'),
-      scoreAutoPushProgressFillV2350:
-        document.getElementById('scoreAutoPushProgressFillV2350'),
+      scoreRecoveryActionV2351: document.getElementById('scoreRecoveryActionV2351'),
+      scoreRecoveryActionTextV2351: document.getElementById('scoreRecoveryActionTextV2351'),
+      scoreRetryFillV2351: document.getElementById('scoreRetryFillV2351'),
 
       submitBtn:
         document.getElementById('submitBtn'),
@@ -16764,8 +16773,7 @@ body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.game-mode-hole-v2026.n
         }
 
         state.timer = 0;
-        /* Recovery is authoritative-only, even if ENTER's original timer fires. */
-        if (scoreRecoveryV2350) {
+        if (scoreRecoveryV2351) {
           state.blue = false;
           renderScorecard();
           return;
@@ -16784,14 +16792,14 @@ body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.game-mode-hole-v2026.n
     }
 
     function scoreIsVisuallyBlueV1619(index, localValue, savedValue) {
-      if (scoreRecoveryV2350) return localValue !== null && localValue === savedValue;
+      if (scoreRecoveryV2351) return localValue !== null && localValue === savedValue;
       const state = scoreVisualStateV1619[index];
       if (state && localValue === state.value) return state.blue === true;
       return localValue === savedValue;
     }
 
     function scoreVisualProgressV1619() {
-      if (scoreRecoveryV2350) return normalizeScores(localScores);
+      if (scoreRecoveryV2351) return normalizeScores(localScores);
       const visual = normalizeScores(savedScores);
 
       scoreVisualStateV1619.forEach((state, index) => {
@@ -16821,48 +16829,39 @@ body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.game-mode-hole-v2026.n
     }
 
     function showScoreSaveFailureModalV1621(context) {
-      if (!selectedTeam || scoreRecoveryV2350) return;
-      const teamKey = scoreRecoveryIdentityV2350();
-      if (!teamKey || teamKey === scoreFailureWarningTeamV2350) return;
-      scoreFailureWarningTeamV2350 = teamKey;
-      void scoreRecoveryTransitionV2350(() => {
-        if (scoreRecoveryIdentityV2350() !== teamKey) return;
-        scoreRecoveryV2350 = true;
-        storeScoreRecoveryV2350();
-        resetScoreVisualStateV1619();
-        renderScorecard();
-      }, true);
-
-      showMessageModal('SCORE NOT SAVED', 'Score was not saved.');
-      els.modalOverlay.classList.add('score-save-warning');
-      const start = makeModalButton('AUTO PUSH EVERY 10 SECONDS', 'primary', () => {
-        enableScoreAutoPushV2350();
-      });
-      const manual = makeModalButton("I'LL SAVE", 'sshcp-ill-save-v2350', closeModal);
-      els.modalActions.className = 'modal-actions single';
-      els.modalActions.replaceChildren(start, manual);
-      requestAnimationFrame(() => {
-        if (start.isConnected) start.style.fontSize = Math.min(18, Math.max(12, start.clientHeight * .30)) + 'px';
+      if (scoreRecoveryWarningShownV2351 || !selectedTeam) return;
+      const identity = scoreScopeV2351();
+      if (!identity || !scorePendingV2351()) return;
+      scoreRecoveryWarningShownV2351 = true;
+      void scoreShowRecoveryV2351(identity).then(shown => {
+        if (!shown) {scoreRecoveryWarningShownV2351=false;return;}
+        if (!shown || !selectedTeam || scoreScopeV2351() !== identity ||
+            currentView !== 'scorecard') return;
+        showMessageModal('SCORE NOT SAVED', 'SCORE WAS NOT SAVED.');
+        els.modalOverlay.classList.add('score-save-warning');
+        els.modalActions.className='modal-actions single';
+        els.modalActions.replaceChildren(makeModalButton('OKAY', 'primary', closeModal));
       });
     }
 
     function scheduleScoreFailureNoticeV1619(
       expectedScores, savedAtRequest, requestGenerations, failureReferenceAt,
-      failureContextV1621 = 'enter', requestIdentityV2350 = '', editSerialV2350 = scoreScoreEditSerialV2350
+      failureContextV1621 = 'enter', identityV2351 = scoreScopeV2351(),
+      serialV2351 = scoreEditSerialV2351
     ) {
-      if (failureContextV1621 === 'auto' || scoreRecoveryV2350) return;
-      const targetAt = failureContextV1621 === 'refresh'
+      if (scoreRecoveryV2351 || scoreRecoveryWarningShownV2351 ||
+          failureContextV1621 === 'auto') return;
+      const deadline = failureContextV1621 === 'refresh'
         ? performance.now()
         : failureReferenceAt + SCORE_FAILURE_NOTICE_DELAY_V1619;
       window.setTimeout(() => {
-        if (!selectedTeam || scoreRecoveryV2350 ||
-            requestIdentityV2350 !== scoreRecoveryIdentityV2350() ||
-            editSerialV2350 !== scoreScoreEditSerialV2350 ||
-            !scoreRecoveryDirtyV2350()) return;
-        /* A failed request is not proof of an applied save. Always compare
-           the local card against the last VERIFIED Worker snapshot. */
+        /* A later successful save or a newer edit makes this warning obsolete. */
+        if (!selectedTeam || scoreScopeV2351() !== identityV2351 ||
+            serialV2351 !== scoreEditSerialV2351 ||
+            !scorePendingV2351() || scoreRecoveryV2351) return;
+        resetScoreVisualStateV1619();
         showScoreSaveFailureModalV1621(failureContextV1621);
-      }, Math.max(0, targetAt - performance.now()));
+      }, Math.max(0,deadline-performance.now()));
     }
 
 
@@ -16921,19 +16920,20 @@ body.sshcp-score-recovery-v2350 #scorecardView .hole-cell.game-mode-hole-v2026.n
     let saveQueuedFailureContextV1621 =
       null;
 
-    /* V23.50 — recovery is scoped to event (via scoped storage), TEAM and QR role/id.
-       A later CLEAR remains pending even when it returns to the OLD saved card
-       while an earlier ENTER write is still in flight. */
-    let scoreNeedsReconcileV2350 = false;
-    let scoreInFlightV2350 = null;
-    let scoreRecoveryV2350 = false;
-    let scoreAutoPushV2350 = null;
-    let scoreAutoPushTimerV2350 = 0;
-    let scoreAutoPushNextDelayV2350 = 10000;
-    let scoreRecoveryTransitionQueueV2350 = Promise.resolve();
-    let scoreFailureWarningTeamV2350 = '';
-    let scoreScoreEditSerialV2350 = 0;
-    const SCORE_AUTO_PUSH_INTERVAL_V2350 = 10000;
+    /* V23.51 — separate intended LOCAL snapshot and WORKER-VERIFIED snapshot.
+       Storage is event-scoped by sshcpLocalStorageV2318 and team+QR role keyed. */
+    let scoreRecoveryV2351 = false;
+    let scoreRetryEnabledV2351 = false;
+    let scoreRetryTimerV2351 = 0;
+    let scoreReconcileV2351 = false;
+    let scoreLatestSnapshotV2351 = Array(18).fill(null);
+    let scoreEditSerialV2351 = 0;
+    let scoreInFlightV2351 = null;
+    let scoreUnverifiedClearV2351 = new Set();
+    let scoreSelectionEpochV2351 = 0;
+    let scoreFooterQueueV2351 = Promise.resolve();
+    let scoreRecoveryWarningShownV2351 = false;
+    const SCORE_RETRY_MS_V2351 = 10000;
 
 
     /* V16.5 — if LIVE LEADERBOARD is tapped while a score write is still
@@ -23368,9 +23368,6 @@ let scoreTimingDetail =
         view
       );
 
-      if (view !== 'scorecard') clearScoreAutoPushTimerV2350();
-      else if(scoreAutoPushMatchesV2350()) scheduleScoreAutoPushV2350();
-
       if (typeof scheduleScreenLayoutLogCaptureV238 === 'function') {
         scheduleScreenLayoutLogCaptureV238('VIEW ' + view);
       }
@@ -23800,6 +23797,7 @@ let scoreTimingDetail =
     }
 
     async function showHome() {
+      scoreClearRetryTimerV2351();
 
       /* V19.88 — extend the proven V19.86/V19.87 HOME double-curtain entry
          to the remaining in-app HOME routes: CONTROL CENTER (testlog) and
@@ -24164,7 +24162,7 @@ let scoreTimingDetail =
             ? timingMsV2092(timingV2092.FADE_6B_ORIENTATION_CURTAIN_OUT, 1.00)
             : key === 'home-full-v1986'
               ? timingMsV2092(timingV2092.FADE_1A_HOME_FULL, 0.25)
-              : (key === 'scorecard' || key === 'leaderboard')
+              : (key === 'scorecard' || key === 'leaderboard' || key === 'score-footer-v2351')
                   ? timingMsV2092(timingV2092.FADE_2_SCORECARD_LEADERBOARD, 0.30)
                   : afterPlayKeyV2092
                     ? timingMsV2092(timingV2092.FADE_3_AFTER_PLAY, 0.30)
@@ -24394,6 +24392,7 @@ let scoreTimingDetail =
     }
 
     async function showLeaderboard() {
+      scoreClearRetryTimerV2351();
 
       /* V20.69 — arm the same full-screen white curtain before switching views.
          The fresh Leaderboard build and all layout changes stay hidden until the
@@ -24562,7 +24561,6 @@ let scoreTimingDetail =
 
         buildTeamSelect();
         restoreOrSelectTeam();
-        paintScoreRecoveryV2350();
         renderScorecard();
 
         /* V19.79 — FIRST Scorecard entrance after a new authorization only:
@@ -24625,7 +24623,7 @@ let scoreTimingDetail =
           Sheets state first. Any still-different local score is then
           written once through the normal verified Cloudflare save path.
         */
-        if (scoreRecoveryDirtyV2350()) {
+        if (scorePendingV2351()) {
           setTimeout(
             () => submitScores('refresh'),
             0
@@ -24635,6 +24633,8 @@ let scoreTimingDetail =
         /* V22.99 — Tips & Tricks removed; keep the established Scorecard
            curtain contract and position only after the normal reveal finishes. */
         await scorecardRevealDoneV179;
+        if (scoreRecoveryV2351 && scoreRetryEnabledV2351)
+          scoreScheduleRetryV2351();
 
       }
       catch (error) {
@@ -24814,13 +24814,15 @@ let scoreTimingDetail =
     function selectTeam(slot, scrollToTop = true) {
       const team = teams.find(item => Number(item.slot) === Number(slot));
       if (!team) return;
+      scoreClearRetryTimerV2351();
+      ++scoreSelectionEpochV2351;
       resetScoreVisualStateV1619();
       selectedTeam = team;
       localScores = normalizeScores(team.scores);
       savedScores = normalizeScores(team.scores);
       const pendingScores = readPendingScores(team);
       if (pendingScores) localScores = [...pendingScores];
-      restoreScoreRecoveryV2350();
+      scoreRestoreStateV2351();
       rememberSelectedTeam(team.name);
       updateScoreTeamSelectButton();
       renderScorecard();
@@ -24828,14 +24830,15 @@ let scoreTimingDetail =
     }
 
     function clearSelectedTeam() {
+      scoreClearRetryTimerV2351();
+      ++scoreSelectionEpochV2351;
       resetScoreVisualStateV1619();
       selectedTeam = null;
-      scoreRecoveryV2350 = false;
-      scoreNeedsReconcileV2350 = false;
-      clearScoreAutoPushTimerV2350();
-      paintScoreRecoveryV2350();
       localScores = Array(18).fill(null);
       savedScores = Array(18).fill(null);
+      scoreRecoveryV2351=false;scoreRetryEnabledV2351=false;scoreReconcileV2351=false;
+      scoreUnverifiedClearV2351.clear();
+      scorePaintFooterV2351();
       updateScoreTeamSelectButton();
       renderScorecard();
     }
@@ -26345,7 +26348,7 @@ let scoreTimingDetail =
       const localNextHoleIndexV1834 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
       const visualProgressScoresV1619 = scoreVisualProgressV1619();
       const visualNextHoleIndexV1834 = scorecardActiveHoleIndexV16(visualProgressScoresV1619, selectedTeam);
-      const holdNextHoleVisualV1834 = scoreVisualStateV1619.some((state, stateIndex) => (
+      const holdNextHoleVisualV1834 = !scoreRecoveryV2351 && scoreVisualStateV1619.some((state, stateIndex) => (
         !!state &&
         state.blue !== true &&
         localScores[stateIndex] === state.value
@@ -26364,15 +26367,15 @@ let scoreTimingDetail =
         savedScores[localNextHoleIndexV1834] !== ''
       );
 
-      const nextHoleIndex = scoreRecoveryV2350
-        ? localNextHoleIndexV1834
-        : (holdNextHoleVisualV1834 ? visualNextHoleIndexV1834 : localNextHoleIndexV1834);
-      const showVerifiedNextHoleBorder = scoreRecoveryV2350 || immediateClearNesrV2083
+      const nextHoleIndex = scoreRecoveryV2351 ? localNextHoleIndexV1834 : (holdNextHoleVisualV1834
+        ? visualNextHoleIndexV1834
+        : localNextHoleIndexV1834);
+      const showVerifiedNextHoleBorder = scoreRecoveryV2351 ? true : (immediateClearNesrV2083
         ? true
         : (
           !holdNextHoleVisualV1834 &&
           localNextHoleIndexV1834 === visualNextHoleIndexV1834
-        );
+        ));
 
       /* V18.38 — Starting Hole owns the visual nine-hole landmarks. */
       const playOrderV1836 = scorecardPlayOrderV16(selectedTeam);
@@ -26443,7 +26446,7 @@ let scoreTimingDetail =
             'hole-cell';
 
           if (index === nextHoleIndex) {
-            if (scorecardEntryCueHoldV1981) {
+            if (scorecardEntryCueHoldV1981 && !scoreRecoveryV2351) {
               holeCell.dataset.entryHoleCueV1981 = '1';
             } else {
               holeCell.classList.add(
@@ -26606,7 +26609,7 @@ let scoreTimingDetail =
             'score-button';
 
           if (showVerifiedNextHoleBorder && index === nextHoleIndex) {
-            if (scorecardEntryCueHoldV1981) {
+            if (scorecardEntryCueHoldV1981 && !scoreRecoveryV2351) {
               button.dataset.entryScoreCueV1981 = '1';
             } else {
               button.classList.add('active-hole-score');
@@ -26649,13 +26652,12 @@ let scoreTimingDetail =
               local === null
             ) {
 
-              button.classList.add(
-                'empty'
-              );
-
-
-              button.textContent =
-                '';
+              button.classList.add('empty');
+              if (scoreRecoveryV2351 && (saved !== null || scoreUnverifiedClearV2351.has(index))) {
+                /* This is a DELIBERATE pending CLEAR, not a white unused hole. */
+                button.classList.add('pending-clear-v2351');
+              }
+              button.textContent = '';
 
             }
             else {
@@ -26814,7 +26816,7 @@ let scoreTimingDetail =
       const key = pendingScoresKey(selectedTeam);
       if (!key) return;
 
-      if (hasPendingScores() || scoreNeedsReconcileV2350) {
+      if (scorePendingV2351()) {
         sshcpLocalStorageV2318.setItem(key, JSON.stringify(localScores));
       }
       else {
@@ -26828,171 +26830,188 @@ let scoreTimingDetail =
       return localScores.some((score,index) => score !== savedScores[index]);
     }
 
+    /* =========================================================
+       V23.51 — LOCAL CARD / VERIFIED CARD RECOVERY MODEL
+       ========================================================= */
+    function scoreScopeV2351(team=selectedTeam) {
+      if (!team) return '';
+      return String(team.slot) + ':' + (isMasterQr()?'MASTER':'TEAM');
+    }
+    function scoreRecoveryKeyV2351(scope=scoreScopeV2351()) {
+      return 'scoreRecoveryV2351:' + scope;
+    }
+    function scoreReconcileKeyV2351(scope=scoreScopeV2351()) {
+      return 'scoreReconcileV2351:' + scope;
+    }
+    function scoreRetryKeyV2351(scope=scoreScopeV2351()) {
+      return 'scoreRetryV2351:' + scope;
+    }
+    function scoreClearsKeyV2351(scope=scoreScopeV2351()) {
+      return 'scoreUnverifiedClearsV2351:' + scope;
+    }
+    function scoreStoreStateV2351() {
+      const scope = scoreScopeV2351();
+      if (!scope) return;
+      if (scoreUnverifiedClearV2351.size)
+        sshcpLocalStorageV2318.setItem(scoreClearsKeyV2351(scope),JSON.stringify([...scoreUnverifiedClearV2351]));
+      else sshcpLocalStorageV2318.removeItem(scoreClearsKeyV2351(scope));
+      for (const [key,on] of [
+        [scoreRecoveryKeyV2351(scope),scoreRecoveryV2351],
+        [scoreReconcileKeyV2351(scope),scoreReconcileV2351],
+        [scoreRetryKeyV2351(scope),scoreRetryEnabledV2351]]) {
+        if (on) sshcpLocalStorageV2318.setItem(key,'1');
+        else sshcpLocalStorageV2318.removeItem(key);
+      }
+    }
+    function scoreRestoreStateV2351() {
+      scoreClearRetryTimerV2351();
+      const scope=scoreScopeV2351();
+      scoreRecoveryV2351=!!scope && sshcpLocalStorageV2318.getItem(scoreRecoveryKeyV2351(scope))==='1';
+      scoreReconcileV2351=!!scope && sshcpLocalStorageV2318.getItem(scoreReconcileKeyV2351(scope))==='1';
+      scoreRetryEnabledV2351=!!scope && sshcpLocalStorageV2318.getItem(scoreRetryKeyV2351(scope))==='1';
+      try {
+        const indices=JSON.parse(sshcpLocalStorageV2318.getItem(scoreClearsKeyV2351(scope))||'[]');
+        scoreUnverifiedClearV2351=new Set((Array.isArray(indices)?indices:[]).filter(i=>Number.isInteger(i)&&i>=0&&i<18));
+      } catch(_) {scoreUnverifiedClearV2351=new Set();}
+      scoreRecoveryWarningShownV2351=scoreRecoveryV2351;
+      scoreLatestSnapshotV2351=normalizeScores(localScores);
+      if (scoreRecoveryV2351 && !scorePendingV2351()) {
+        scoreRecoveryV2351=false;scoreRetryEnabledV2351=false;
+        scoreUnverifiedClearV2351.clear();
+        scoreStoreStateV2351();
+      }
+      scorePaintFooterV2351();
+    }
+    function scorePendingV2351() {
+      return !!selectedTeam && (scoreReconcileV2351 || scoreUnverifiedClearV2351.size>0 || !scoresEqual(localScores,savedScores));
+    }
+    function scoreCaptureSnapshotV2351(index,value) {
+      if (Number.isInteger(index) && index>=0 && index<18) {
+        if (value===null && (savedScores[index]!==null ||
+            (scoreInFlightV2351 && scoreInFlightV2351.identity===scoreScopeV2351() &&
+              scoreInFlightV2351.scores[index]!==null)))
+          scoreUnverifiedClearV2351.add(index);
+        if (value!==null) scoreUnverifiedClearV2351.delete(index);
+      }
+      ++scoreEditSerialV2351;
+      scoreLatestSnapshotV2351=normalizeScores(localScores);
+      if (scoreInFlightV2351 && scoreInFlightV2351.identity===scoreScopeV2351()) {
+        /* Even a CLEAR that returns to the old verified value must be
+           submitted AFTER an older in-flight ENTER may have reached Sheets. */
+        scoreReconcileV2351=true;
+        saveQueued=true;
+        saveQueuedFailureContextV1621='enter';
+      }
+      scoreStoreStateV2351();
+      scoreClearRetryTimerV2351();
+      if (scoreRetryEnabledV2351 && scoreRecoveryV2351)
+        scoreScheduleRetryV2351(SCORE_RETRY_MS_V2351);
+    }
+    function scorePaintFooterV2351() {
+      document.body.classList.toggle('sshcp-recovery-v2351',scoreRecoveryV2351);
+      const active=scoreRecoveryV2351 && scoreRetryEnabledV2351;
+      document.body.classList.toggle('sshcp-retry-on-v2351',active);
+      if (els.scoreRecoveryActionTextV2351)
+        els.scoreRecoveryActionTextV2351.textContent=active?'CANCEL AUTO PUSH':'AUTO PUSH SCORES';
+      if (els.scoreRecoveryActionV2351)
+        els.scoreRecoveryActionV2351.setAttribute('aria-label',active?'Cancel auto push':'Enable auto push');
+    }
+    function scoreClearRetryTimerV2351() {
+      if (scoreRetryTimerV2351) {
+        window.clearTimeout(scoreRetryTimerV2351);
+        scoreRetryTimerV2351=0;
+      }
+      if (els.scoreRetryFillV2351) {
+        els.scoreRetryFillV2351.style.animation='none';
+        els.scoreRetryFillV2351.style.transform='scaleX(0)';
+      }
+    }
+    function scoreScheduleRetryV2351(delay=SCORE_RETRY_MS_V2351) {
+      scoreClearRetryTimerV2351();
+      if (!scoreRecoveryV2351 || !scoreRetryEnabledV2351 ||
+          !scorePendingV2351() || currentView!=='scorecard') return;
+      const scope=scoreScopeV2351(),passkey=getQrPasskey();
+      const ms=Math.max(1000,Number(delay)||SCORE_RETRY_MS_V2351);
+      if (els.scoreRetryFillV2351) {
+        void els.scoreRetryFillV2351.offsetWidth;
+        els.scoreRetryFillV2351.style.animation='sshcp-retry-fill-v2351 '+ms+'ms linear forwards';
+      }
+      scoreRetryTimerV2351=window.setTimeout(() => {
+        scoreRetryTimerV2351=0;
+        if (currentView!=='scorecard' || !selectedTeam ||
+            scoreScopeV2351()!==scope || getQrPasskey()!==passkey ||
+            !scoreRetryEnabledV2351 || !scorePendingV2351()) return;
+        if (saveInProgress) {scoreScheduleRetryV2351();return;}
+        void submitScores('auto');
+      },ms);
+    }
+    /* Every FOOTER mutation happens under fully opaque, full-screen WHITE.
+       Continue existing Fade 2, then restore NESR position AFTER fade finishes. */
+    function scoreFooterTransitionV2351(mutator,withScroll=true) {
+      const work=async () => {
+        const visible=currentView==='scorecard' && scorecardHasLoaded;
+        const shield=visible ? beginDataRevealShieldV177('score-footer-v2351',[],'#fff',true,9000):null;
+        if (shield) shield.classList.add('sshcp-footer-curtain-v2351');
+        try {
+          mutator();
+          if (visible && shield) {
+            await revealDataShieldAfterLayoutV177('score-footer-v2351',shield,2);
+            if (withScroll && currentView==='scorecard') restoreScorePosition(true);
+          }
+        } finally {
+          if (shield && shield.isConnected)
+            removeDataRevealShieldV177('score-footer-v2351',shield);
+        }
+      };
+      scoreFooterQueueV2351=scoreFooterQueueV2351.then(work,work);
+      return scoreFooterQueueV2351;
+    }
+    async function scoreShowRecoveryV2351(identity) {
+      if (scoreRecoveryV2351) return true;
+      if (!identity || identity!==scoreScopeV2351() || !scorePendingV2351()) return false;
+      await scoreFooterTransitionV2351(() => {
+        if (identity!==scoreScopeV2351() || !scorePendingV2351()) return;
+        scoreRecoveryV2351=true;
+        resetScoreVisualStateV1619();
+        scoreStoreStateV2351();
+        scorePaintFooterV2351();
+        renderScorecard();
+      });
+      return scoreRecoveryV2351 && identity===scoreScopeV2351();
+    }
+    function scoreFinishRecoveryV2351(identity) {
+      if (!scoreRecoveryV2351 || scorePendingV2351()) return;
+      scoreClearRetryTimerV2351();
+      void scoreFooterTransitionV2351(() => {
+        if (!selectedTeam || scoreScopeV2351()!==identity || scorePendingV2351()) return;
+        scoreRecoveryV2351=false;
+        scoreRetryEnabledV2351=false;
+        scoreRecoveryWarningShownV2351=false;
+        resetScoreVisualStateV1619();
+        scoreStoreStateV2351();
+        scorePaintFooterV2351();
+        renderScorecard();
+      });
+    }
+    function scoreToggleRetryV2351() {
+      if (!scoreRecoveryV2351 || !selectedTeam) return;
+      const identity=scoreScopeV2351();
+      scoreClearRetryTimerV2351();
+      void scoreFooterTransitionV2351(() => {
+        if (!scoreRecoveryV2351 || scoreScopeV2351()!==identity) return;
+        scoreRetryEnabledV2351=!scoreRetryEnabledV2351;
+        scoreStoreStateV2351();scorePaintFooterV2351();
+      },false).then(() => {
+        if (scoreScopeV2351()===identity && scoreRetryEnabledV2351)
+          scoreScheduleRetryV2351();
+      });
+    }
+
+
     function updateSubmitButtonState() {
       els.submitBtn.disabled = saveInProgress || !hasPendingScores();
     }
 
-
-    /* =========================================================
-       V23.50 — ONLY TWO SCORING MODES.
-       Normal V23.44 optimistic scoring until first failure. Two-button recovery
-       compares localScores against savedScores, the last exact Worker readback.
-       ========================================================= */
-    function scoreRecoveryIdentityV2350(team=selectedTeam) {
-      if (!team || !getQrPasskey()) return '';
-      const role = getQrRole();
-      if (role !== 'QR' && role !== 'MASTER') return '';
-      if (role === 'QR' && normalizeName(team.name) !== normalizeName(getQrTeam())) return '';
-      return role + ':' + String(sshcpLocalStorageV2318.getItem('sshcpQrId') || '') + ':' + String(team.slot);
-    }
-    function scoreRecoveryKeyV2350(team=selectedTeam) {
-      return team ? 'sshcpScoreRecoveryV2350:' + String(team.slot) : '';
-    }
-    function scoreReconcileKeyV2350(team=selectedTeam) {
-      return team ? 'sshcpScoreReconcileV2350:' + String(team.slot) : '';
-    }
-    function storeScoreRecoveryV2350() {
-      const key = scoreRecoveryKeyV2350();
-      if (!key) return;
-      if (scoreRecoveryV2350) sshcpLocalStorageV2318.setItem(key,scoreRecoveryIdentityV2350());
-      else sshcpLocalStorageV2318.removeItem(key);
-    }
-    function storeScoreReconcileV2350() {
-      const key = scoreReconcileKeyV2350();
-      if (!key) return;
-      if (scoreNeedsReconcileV2350) sshcpLocalStorageV2318.setItem(key,scoreRecoveryIdentityV2350());
-      else sshcpLocalStorageV2318.removeItem(key);
-    }
-    function scoreRecoveryDirtyV2350() {
-      return !!(selectedTeam && (hasPendingScores() || scoreNeedsReconcileV2350 ||
-        (saveInProgress && scoreInFlightV2350 &&
-          scoreInFlightV2350.identity === scoreRecoveryIdentityV2350() &&
-          !scoresEqual(scoreInFlightV2350.scores,localScores))));
-    }
-    function scoreAutoPushMatchesV2350() {
-      return !!(scoreAutoPushV2350 &&
-        scoreAutoPushV2350.identity === scoreRecoveryIdentityV2350() &&
-        scoreRecoveryV2350 && selectedTeam &&
-        (isMasterQr() || (isTeamQr() && normalizeName(selectedTeam.name) === normalizeName(getQrTeam()))));
-    }
-    function paintScoreRecoveryV2350() {
-      document.body.classList.toggle('sshcp-score-recovery-v2350', !!scoreRecoveryV2350);
-      const active = scoreAutoPushMatchesV2350();
-      document.body.classList.toggle('sshcp-score-recovery-active-v2350', active);
-      if (els.scoreAutoPushFooterLabelV2350) {
-        els.scoreAutoPushFooterLabelV2350.innerHTML = active ? 'CANCEL<br>AUTO PUSH' : 'AUTO PUSH<br>SCORES';
-      }
-      if (els.scoreAutoPushFooterButtonV2350) {
-        els.scoreAutoPushFooterButtonV2350.setAttribute('aria-label',
-          active ? 'Cancel automatic score retries' : 'Start automatic score retries every 10 seconds');
-      }
-    }
-    /* Existing Fade 2 always covers 1->2, 2->1 and 2->2 changes.
-       Geometry settles beneath opaque curtain; NESR movement follows the fade. */
-    function scoreRecoveryTransitionV2350(change, scrollAfter=false) {
-      const task = scoreRecoveryTransitionQueueV2350.catch(() => {}).then(async () => {
-        const visible = currentView === 'scorecard';
-        const shield = visible ? beginMainFullRevealV2069('scorecard') : null;
-        change();
-        paintScoreRecoveryV2350();
-        if (visible) {
-          await revealDataShieldAfterLayoutV177('scorecard',shield,2);
-          if (scrollAfter && currentView === 'scorecard') restoreScorePosition(false);
-        }
-      });
-      scoreRecoveryTransitionQueueV2350 = task.catch(error =>
-        addTestLog('AUTO PUSH','CURTAIN ERROR','—',String(error && error.message || error)));
-      return task;
-    }
-    function clearScoreAutoPushTimerV2350() {
-      if (scoreAutoPushTimerV2350) clearTimeout(scoreAutoPushTimerV2350);
-      scoreAutoPushTimerV2350 = 0;
-      if (els.scoreAutoPushProgressFillV2350) {
-        els.scoreAutoPushProgressFillV2350.style.animation='none';
-      }
-    }
-    function scheduleScoreAutoPushV2350(delay=SCORE_AUTO_PUSH_INTERVAL_V2350) {
-      clearScoreAutoPushTimerV2350();
-      scoreAutoPushNextDelayV2350 = delay;
-      if (!scoreAutoPushMatchesV2350() || currentView!=='scorecard' ||
-          document.visibilityState==='hidden') return;
-      const bar=els.scoreAutoPushProgressFillV2350;
-      if(bar) {
-        void bar.offsetWidth;
-        bar.style.animation='sshcpAutoPushCountdownV2350 '+delay+'ms linear forwards';
-      }
-      scoreAutoPushTimerV2350=window.setTimeout(() => {
-        scoreAutoPushTimerV2350=0;
-        if(!scoreAutoPushMatchesV2350() || currentView!=='scorecard') return;
-        if(!scoreRecoveryDirtyV2350()) { completeScoreRecoveryV2350(); return; }
-        if(saveInProgress || saveQueued || scorecardLoadInProgress || !navigator.onLine ||
-           document.visibilityState==='hidden') { scheduleScoreAutoPushV2350();return; }
-        submitScores('auto');
-      },delay);
-    }
-    function enableScoreAutoPushV2350() {
-      if (!selectedTeam || !scoreRecoveryV2350 || !scoreRecoveryDirtyV2350() ||
-          !scoreRecoveryIdentityV2350()) return;
-      const activationId=scoreRecoveryIdentityV2350();
-      void scoreRecoveryTransitionV2350(() => {
-        if(!activationId || activationId!==scoreRecoveryIdentityV2350() ||
-           !scoreRecoveryV2350 || !scoreRecoveryDirtyV2350()) return;
-        scoreAutoPushV2350 = {identity:activationId};
-        sshcpLocalStorageV2318.setItem('sshcpScoreAutoPushV2350',JSON.stringify(scoreAutoPushV2350));
-        closeModal();
-        addTestLog('AUTO PUSH','ENABLED','10s','Pending score card retained');
-        scheduleScoreAutoPushV2350();
-      });
-    }
-    function stopScoreAutoPushV2350() {
-      if(!scoreAutoPushV2350) return;
-      clearScoreAutoPushTimerV2350();
-      void scoreRecoveryTransitionV2350(() => {
-        scoreAutoPushV2350=null;
-        sshcpLocalStorageV2318.removeItem('sshcpScoreAutoPushV2350');
-        addTestLog('AUTO PUSH','CANCELLED','—','Unsaved score card retained');
-      });
-    }
-    function completeScoreRecoveryV2350() {
-      if(!selectedTeam || !scoreRecoveryV2350 || scoreRecoveryDirtyV2350()) return;
-      const finishingIdentity=scoreRecoveryIdentityV2350();
-      clearScoreAutoPushTimerV2350();
-      void scoreRecoveryTransitionV2350(() => {
-        if(!finishingIdentity || scoreRecoveryIdentityV2350()!==finishingIdentity) return;
-        if(scoreRecoveryDirtyV2350()) { scheduleScoreAutoPushV2350();return; }
-        scoreAutoPushV2350=null;
-        sshcpLocalStorageV2318.removeItem('sshcpScoreAutoPushV2350');
-        scoreRecoveryV2350=false;
-        storeScoreRecoveryV2350();
-        scoreFailureWarningTeamV2350='';
-        renderScorecard();
-      },true);
-    }
-    function restoreScoreRecoveryV2350() {
-      clearScoreAutoPushTimerV2350();
-      scoreRecoveryV2350 = false;
-      scoreNeedsReconcileV2350 = false;
-      if (!selectedTeam) {paintScoreRecoveryV2350();return;}
-      const id=scoreRecoveryIdentityV2350();
-      scoreNeedsReconcileV2350=!!(id && sshcpLocalStorageV2318.getItem(scoreReconcileKeyV2350())===id);
-      const persisted=sshcpLocalStorageV2318.getItem(scoreRecoveryKeyV2350());
-      scoreRecoveryV2350=!!(id && persisted===id && scoreRecoveryDirtyV2350());
-      if(!scoreRecoveryV2350 && scoreRecoveryDirtyV2350()) {
-        /* Reload with an unsaved local card starts directly in recovery: no
-           optimistic blue before the first refreshed Worker verification. */
-        scoreRecoveryV2350=true;storeScoreRecoveryV2350();
-      }
-      try {
-        const saved=JSON.parse(sshcpLocalStorageV2318.getItem('sshcpScoreAutoPushV2350')||'null');
-        scoreAutoPushV2350=(saved && saved.identity===id && scoreRecoveryV2350) ? saved : null;
-      } catch(_) {scoreAutoPushV2350=null;}
-      paintScoreRecoveryV2350();
-      if(scoreAutoPushMatchesV2350() && currentView==='scorecard') scheduleScoreAutoPushV2350();
-    }
-    document.addEventListener('visibilitychange', () => {
-      if(document.visibilityState==='hidden') clearScoreAutoPushTimerV2350();
-      else if(scoreAutoPushMatchesV2350() && currentView==='scorecard') scheduleScoreAutoPushV2350();
-    });
 
     /* =========================================================
        AUTHORIZATION
@@ -27233,14 +27252,14 @@ let scoreTimingDetail =
         /* SSHCP V20.89 — CLEAR holds the existing visual state for 0.10s
            (or the top-panel CLEAR value), then reveals the recalculated NESR.
            It remains stationary and the backend blank/save begins immediately. */
-        beginClearVisualHoldV1836();
+        if (!scoreRecoveryV2351) beginClearVisualHoldV1836();
+        else resetClearVisualHoldV1836();
 
         localScores[
           index
         ] =
           null;
-
-
+        scoreCaptureSnapshotV2351(index,null);
         renderScorecard();
         syncPendingScoresStorage();
 
@@ -27291,14 +27310,14 @@ let scoreTimingDetail =
         /* SSHCP V20.89 — CLEAR holds the existing visual state for 0.10s
            (or the top-panel CLEAR value), then reveals the recalculated NESR.
            It remains stationary and the backend blank/save begins immediately. */
-        beginClearVisualHoldV1836();
+        if (!scoreRecoveryV2351) beginClearVisualHoldV1836();
+        else resetClearVisualHoldV1836();
 
         localScores[
           index
         ] =
           null;
-
-
+        scoreCaptureSnapshotV2351(index,null);
         renderScorecard();
         syncPendingScoresStorage();
 
@@ -27324,11 +27343,12 @@ let scoreTimingDetail =
         index
       ] =
         value;
+      scoreCaptureSnapshotV2351(index,value);
 
       /* V18.34 — establish the pending visual gate before the first render so
          the old/current hole cue remains stable while the scorecard scrolls. */
-      if (!scoreRecoveryV2350) beginScoreVisualCadenceV1619(index, value);
-      else clearScoreVisualStateV1619(index);
+      if (scoreRecoveryV2351) clearScoreVisualStateV1619(index);
+      else beginScoreVisualCadenceV1619(index, value);
 
       renderScorecard();
       syncPendingScoresStorage();
@@ -27423,14 +27443,16 @@ let scoreTimingDetail =
           top-panel 0.10s visual hold before its recalculated NESR is painted.
           Backend verification remains authoritative.
         */
-        if (!commitResult.cleared) {
+        if (!commitResult.cleared && scoreRecoveryV2351) {
+          /* No optimistic-blue timer: move NESR and paint RED immediately. */
+          restoreScorePosition(true);
+        } else if (!commitResult.cleared) {
           const visualStateV1834 = scoreVisualStateV1619[commitResult.index];
           const visualGenerationV1834 = visualStateV1834
             ? visualStateV1834.generation
             : null;
 
           restoreScorePosition(true, resultV1835 => {
-            if (scoreRecoveryV2350) return;
             const visualDelayV1835 = resultV1835 && resultV1835.scrolled
               ? SCORE_AFTER_SCROLL_VISUAL_DELAY_V1835
               : SCORE_NO_SCROLL_VISUAL_DELAY_V1835;
@@ -27447,14 +27469,6 @@ let scoreTimingDetail =
           cancelScoreEnterBeautyScrollV1618();
         }
 
-        scoreScoreEditSerialV2350++;
-        if(saveInProgress && scoreInFlightV2350 &&
-           scoreInFlightV2350.identity===scoreRecoveryIdentityV2350()) {
-          scoreNeedsReconcileV2350=true;
-          storeScoreReconcileV2350();
-          syncPendingScoresStorage();
-        }
-        if (scoreRecoveryV2350 && scoreAutoPushMatchesV2350()) scheduleScoreAutoPushV2350();
         submitScores('enter');
 
       }
@@ -27498,130 +27512,124 @@ let scoreTimingDetail =
 
 
     async function submitScores(failureContextV1621 = 'enter') {
-      if(!selectedTeam || !scoreRecoveryIdentityV2350()) return;
-      if(saveInProgress) {
+      if (!selectedTeam) return;
+      if (saveInProgress) {
         saveQueued=true;
-        if(failureContextV1621 === 'enter' || saveQueuedFailureContextV1621 !== 'enter')
+        if (failureContextV1621==='enter' || saveQueuedFailureContextV1621!=='enter')
           saveQueuedFailureContextV1621=failureContextV1621;
         return;
       }
-      if(!hasPendingScores() && !scoreNeedsReconcileV2350) {
-        if(scoreRecoveryV2350) completeScoreRecoveryV2350();
+      if (!scorePendingV2351()) {
+        if (scoreRecoveryV2351) scoreFinishRecoveryV2351(scoreScopeV2351());
         return;
       }
-      if(els.scoreEntryOverlay.classList.contains('open')) closeScoreEntry(true);
+      if (els.scoreEntryOverlay.classList.contains('open')) closeScoreEntry(true);
       saveInProgress=true;
       els.submitBtn.disabled=true;
       const started=timerStart();
-      const expectedScores=normalizeScores(localScores);
-      const savedAtRequest=normalizeScores(savedScores);
-      const gens=scoreVisualStateV1619.map(st=>st?st.generation:null);
-      const enteredTimes=scoreVisualStateV1619.map((st,i)=>(st && gens[i]===st.generation &&
-        expectedScores[i]!==savedAtRequest[i])?st.enteredAt:null).filter(Number.isFinite);
-      const failureAt=enteredTimes.length?Math.max(...enteredTimes):started;
-      const slot=Number(selectedTeam.slot);
-      const identity=scoreRecoveryIdentityV2350();
-      const passkey=getQrPasskey();
-      const editSerial=scoreScoreEditSerialV2350;
-      const request={slot,identity,passkey,scores:expectedScores,editSerial};
-      scoreInFlightV2350=request;
-      const apiScores=expectedScores.map(score=>score===null?'':score);
+      const requestScores=normalizeScores(scoreLatestSnapshotV2351);
+      const originalVerified=normalizeScores(savedScores);
+      const generations=scoreVisualStateV1619.map(state=>state?state.generation:null);
+      const enteredTimes=scoreVisualStateV1619.map((state,i)=>
+        state && generations[i]===state.generation &&
+        requestScores[i]!==originalVerified[i]?state.enteredAt:null).filter(Number.isFinite);
+      const failureReference=enteredTimes.length?Math.max(...enteredTimes):started;
+      const slot=Number(selectedTeam.slot), identity=scoreScopeV2351();
+      const passkey=getQrPasskey(),editSerial=scoreEditSerialV2351;
+      const selectionEpoch=scoreSelectionEpochV2351;
+      const snapshot={identity,slot,passkey,editSerial,scores:requestScores};
+      scoreInFlightV2351=snapshot;
       const url=CLOUDFLARE_API_URL+'?action=saveScores'+
         '&slot='+encodeURIComponent(slot)+
-        '&scores='+encodeURIComponent(JSON.stringify(apiScores))+
+        '&scores='+encodeURIComponent(JSON.stringify(requestScores.map(v=>v===null?'':v)))+
         '&passkey='+encodeURIComponent(passkey)+'&refresh='+Date.now();
       startLoadingLine();
-      let verifiedForCurrent=false;
-      let lastError=null;
+      let success=false, errorStatus=0;
       try {
         const response=await sshcpEventFetchV2318(url,{cache:'no-store'});
-        const responseReceivedAt=timerStart();
-        if(!response.ok) {
-          const error=new Error('Save request failed ('+response.status+').');
-          error.statusV2350=response.status;
-          throw error;
+        const receivedAt=timerStart();
+        if (!response.ok) {
+          errorStatus=response.status;
+          throw new Error('Save request failed ('+response.status+').');
         }
         const data=await response.json();
-        const jsonParsedAt=timerStart();
-        if(!data || data.ok!==true || data.verified!==true)
-          throw new Error((data&&data.error)||'Scores were not verified.');
-        const confirmedScores=normalizeScores(data.verifiedScores);
-        if(!scoresEqual(confirmedScores,expectedScores))
-          throw new Error('Verified scores did not match submitted scores.');
-        /* The request's original QR authority and team MUST still match. */
-        if(!selectedTeam || scoreRecoveryIdentityV2350()!==identity ||
-           Number(selectedTeam.slot)!==slot || getQrPasskey()!==passkey) return;
-        verifiedForCurrent=true;
-        const shouldAutoPositionAfterSave=expectedScores.some((score,i)=>
-          score!==null && score!==savedScores[i]);
-        savedScores=[...confirmedScores];
-        markScoreVisualVerificationV1619(confirmedScores,gens);
+        const parsedAt=timerStart();
+        if (!data || data.ok!==true || data.verified!==true ||
+            !Array.isArray(data.verifiedScores) || data.verifiedScores.length!==18)
+          throw new Error((data&&data.error)||'Scores not verified.');
+        const confirmed=normalizeScores(data.verifiedScores);
+        if (!scoresEqual(confirmed,requestScores))
+          throw new Error('Worker-verified scores differ from submitted snapshot.');
+        success=true;
+        /* Update server snapshot for the REQUEST'S TEAM. Never select that team
+           when MASTER has moved away during the network request. */
         const teamIndex=teams.findIndex(team=>Number(team.slot)===slot);
-        if(teamIndex>=0) {
-          teams[teamIndex].scores=[...confirmedScores];
-          selectedTeam=teams[teamIndex];
+        if (teamIndex>=0) teams[teamIndex].scores=[...confirmed];
+        const stillSame=selectedTeam && scoreScopeV2351()===identity &&
+          getQrPasskey()===passkey && Number(selectedTeam.slot)===slot &&
+          scoreSelectionEpochV2351===selectionEpoch;
+        if (stillSame) {
+          const shouldAutoPositionAfterSave=requestScores.some((v,i)=>v!==null && v!==savedScores[i]);
+          savedScores=[...confirmed];
+          markScoreVisualVerificationV1619(confirmed,generations);
+          if (teamIndex>=0) selectedTeam=teams[teamIndex];
+          if (scoreEditSerialV2351===editSerial && scoresEqual(localScores,confirmed)) {
+            scoreReconcileV2351=false;
+            scoreUnverifiedClearV2351.clear();
+          } else {
+            scoreReconcileV2351=true;
+            saveQueued=true;
+            saveQueuedFailureContextV1621='enter';
+          }
+          scoreStoreStateV2351();
+          syncPendingScoresStorage();
+          const holdNormalEnterRender= !scoreRecoveryV2351 && failureContextV1621==='enter' &&
+            generations.some((generation,i)=>generation!==null && requestScores[i]!==originalVerified[i]);
+          if (!holdNormalEnterRender) renderScorecard();
+          if (shouldAutoPositionAfterSave && failureContextV1621!=='enter' &&
+              !scoreRecoveryV2351) restoreScorePosition();
         }
-        /* A later ENTER/CLEAR cannot be overwritten or marked verified by an
-           earlier response. Its latest 18-hole card is still owed to Worker. */
-        if(scoreScoreEditSerialV2350===editSerial && scoresEqual(localScores,confirmedScores)) {
-          scoreNeedsReconcileV2350=false;
-        } else {
-          scoreNeedsReconcileV2350=true;
-          saveQueued=true;
-          saveQueuedFailureContextV1621='enter';
-        }
-        storeScoreReconcileV2350();
-        syncPendingScoresStorage();
-        const holdVerificationRender=(!scoreRecoveryV2350 && failureContextV1621==='enter' &&
-          gens.some((g,i)=>g!==null && expectedScores[i]!==savedAtRequest[i]));
-        if(!holdVerificationRender) renderScorecard();
-        if(shouldAutoPositionAfterSave && failureContextV1621!=='enter' &&
-           !scoreRecoveryV2350) restoreScorePosition();
-        scoreTimingDetail=buildBrowserTimingDetail(started,responseReceivedAt,jsonParsedAt,
+        scoreTimingDetail=buildBrowserTimingDetail(started,receivedAt,parsedAt,
           timerStart(),data.timing,'save',response);
         scoreSaveSeconds=timerSeconds(started);
         updateScoreTiming();
         addTestLog('ENTER SCORES','VERIFIED',scoreSaveSeconds+'s',scoreTimingDetail);
         completeLoadingLine();
       } catch(error) {
-        lastError=error;
         scoreSaveSeconds=timerSeconds(started);
         updateScoreTiming();
         addTestLog('ENTER SCORES','FAILED',scoreSaveSeconds+'s',String(error&&error.message||'Save failed'));
         stopLoadingLine();
-        if(selectedTeam && scoreRecoveryIdentityV2350()===identity &&
-           getQrPasskey()===passkey) {
-          if(scoreScoreEditSerialV2350!==editSerial) {
-            scoreNeedsReconcileV2350=true;
-            storeScoreReconcileV2350();
+        if (selectedTeam && scoreScopeV2351()===identity &&
+            getQrPasskey()===passkey) {
+          if (scoreEditSerialV2351!==editSerial) {
+            scoreReconcileV2351=true;
+            scoreStoreStateV2351();
             syncPendingScoresStorage();
           }
-          if(!scoreRecoveryV2350) scheduleScoreFailureNoticeV1619(
-            expectedScores,savedAtRequest,gens,failureAt,failureContextV1621,identity,editSerial);
+          if (!scoreRecoveryV2351)
+            scheduleScoreFailureNoticeV1619(requestScores,originalVerified,generations,
+              failureReference,failureContextV1621,identity,editSerial);
         }
       } finally {
         saveInProgress=false;
-        scoreInFlightV2350=null;
+        scoreInFlightV2351=null;
         updateSubmitButtonState();
-        const sameTeam=!!(selectedTeam && scoreRecoveryIdentityV2350()===identity &&
-          getQrPasskey()===passkey);
-        const followUp=saveQueued && sameTeam &&
-          (hasPendingScores() || scoreNeedsReconcileV2350);
+        const same=selectedTeam && scoreScopeV2351()===identity &&
+          getQrPasskey()===passkey;
+        const queued=saveQueued && same && scorePendingV2351();
         const nextContext=saveQueuedFailureContextV1621||'enter';
         saveQueued=false;
         saveQueuedFailureContextV1621=null;
-        if(followUp) window.setTimeout(()=>submitScores(nextContext),0);
-        else if(!sameTeam && selectedTeam && scoreRecoveryDirtyV2350())
-          window.setTimeout(()=>submitScores('enter'),0);
-        else if(sameTeam && verifiedForCurrent && scoreRecoveryV2350 &&
-                !scoreRecoveryDirtyV2350()) completeScoreRecoveryV2350();
-        else if(sameTeam && scoreAutoPushMatchesV2350()) {
-          scheduleScoreAutoPushV2350(lastError && lastError.statusV2350===429?30000:10000);
-        }
-        if(leaderboardRefreshAfterScoreSave && !followUp) {
-          const refresh=currentView==='leaderboard';
+        if (queued) window.setTimeout(()=>submitScores(nextContext),0);
+        else if (same && success && scoreRecoveryV2351 && !scorePendingV2351())
+          scoreFinishRecoveryV2351(identity);
+        else if (same && scoreRecoveryV2351 && scoreRetryEnabledV2351)
+          scoreScheduleRetryV2351(errorStatus===429?30000:SCORE_RETRY_MS_V2351);
+        if (leaderboardRefreshAfterScoreSave && !queued) {
+          const shouldRefresh=currentView==='leaderboard';
           leaderboardRefreshAfterScoreSave=false;
-          if(refresh) setTimeout(()=>loadLeaderboard(false,false),0);
+          if (shouldRefresh) window.setTimeout(()=>loadLeaderboard(false,false),0);
           else stopLoadingLine();
         }
       }
@@ -38640,11 +38648,7 @@ let scoreTimingDetail =
         'click',
         showLeaderboard
       );
-
-    els.scoreAutoPushFooterButtonV2350.addEventListener('click', () => {
-      if(scoreAutoPushMatchesV2350()) stopScoreAutoPushV2350();
-      else if(scoreRecoveryV2350 && scoreRecoveryDirtyV2350()) enableScoreAutoPushV2350();
-    });
+    els.scoreRecoveryActionV2351.addEventListener('click',scoreToggleRetryV2351);
 
 
     els.leaderRefreshButton
