@@ -1,3 +1,10 @@
+<!-- SSHCP V23.58 TEST — exact V23.57 GOLDEN donor.
+     SCORE NOT SAVED warning backdrop now uses 7px background blur, matching
+     manual score-entry popup while preserving Gray 3 at 95% opacity,
+     borderless popup at 95% opacity and the existing Fade 2 sequence.
+     No change to scoring, saved/unsaved state, footer white curtains,
+     auto-push timing, warning wording, Worker, or protected GOLDEN. -->
+<!-- SSHCP | BASE KEY: 23.57-T6Q4MX | BUILD KEY: 23.58-M7Q4VX -->
 <!-- SSHCP V23.57 TEST — exact V23.56 donor, frontend only.
      Pause Scorecard AUTO PUSH countdown/progress while the manual SCORE ENTRY
      popup is OPEN; no automatic save attempts while entering a score. On
@@ -15349,13 +15356,13 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
  background:#fff!important;z-index:9000!important;
  transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.3s) ease-out!important
 }
-/* Match GEEK DETAIL's quiet Gray 3 backdrop, with no blur/border. */
+/* V23.58: retain quiet Gray 3 backdrop/borderless popup, match manual Score Entry 7px blur. */
 .modal-overlay.score-save-warning{
  /* Stay ABOVE the established opaque WHITE footer curtain (z=9000).
     Gray must be visible FIRST; footer Red is prepared completely underneath. */
  z-index:9100!important;
  background:rgba(232,232,232,.95)!important;
- backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important;
  opacity:1;transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out!important
 }
 .modal-overlay.score-save-warning .modal-box{
@@ -15505,7 +15512,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.57</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.58</span></span>
         </button>
         <script>
           (function () {
