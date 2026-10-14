@@ -1,3 +1,10 @@
+<!-- SSHCP V23.61 TEST — exact protected V23.60-P7M4QX GOLDEN donor, frontend-only.
+     SCORE NOT SAVED Gray-curtain acquisition threshold now 1.3 seconds from
+     ENTER/CLEAR when the save remains unverified (previously 2.0 seconds).
+     Original in-flight write, late-verification cleanup, 5-second AUTO PUSH,
+     existing opacity/curtain/popup geometry, and Worker remain unchanged.
+     V23.60 GOLDEN is protected. TEST; requires phone validation. -->
+<!-- SSHCP | BASE KEY: 23.60-P7M4QX | BUILD KEY: 23.61-K7Q4MV -->
 <!-- SSHCP V23.60 TEST — exact V23.59-Q7M4VX donor, frontend-only.
      SCORE NOT SAVED: two-second unverified-score warning watch starts at ENTER/CLEAR,
      independent of network request failure. Original write continues; no
@@ -15535,7 +15542,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.60</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.61</span></span>
         </button>
         <script>
           (function () {
@@ -16782,7 +16789,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
     */
     const SCORE_AFTER_SCROLL_VISUAL_DELAY_V1835 = 100;
     const SCORE_NO_SCROLL_VISUAL_DELAY_V1835 = 100;
-    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 2000;
+    const SCORE_FAILURE_NOTICE_DELAY_V1619 = 1300;
     let scoreVisualGenerationV1619 = 0;
     let scoreVisualStateV1619 = Array(18).fill(null);
 
@@ -27741,9 +27748,10 @@ let scoreTimingDetail =
         '&passkey='+encodeURIComponent(passkey)+'&refresh='+Date.now();
       startLoadingLine();
       let success=false, errorStatus=0;
-      /* V23.60: two seconds from the actual ENTER/CLEAR, not two seconds
-         AFTER fetch rejects. This is an unverified-score notice, not a
-         network timeout: the original save remains in flight and authoritative.
+      /* V23.61: 1.3 seconds from the actual ENTER/CLEAR, not after fetch rejects.
+         V23.60 GOLDEN retains the previous two-second threshold. This is an
+         unverified-score notice, not a network timeout: the original save
+         remains in flight and authoritative.
          AUTO PUSH will not overlap it. A late verified save cleans up recovery. */
       let warningWatchV2360=0;
       if (failureContextV1621==='enter' && !scoreRecoveryV2351 &&
