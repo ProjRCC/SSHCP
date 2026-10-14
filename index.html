@@ -1,3 +1,13 @@
+<!-- SSHCP V23.53 TEST — exact V23.52 donor, no Worker changes.
+     SCORE NOT SAVED notice explicitly reads 10s AUTO SCORE PUSH ACTIVATED;
+     acquire an opaque light-Gray warning curtain and paint it BEFORE any
+     recovery Red/Gray scorecard mutation. Hold borderless popup hidden until
+     the existing footer curtain finishes and the NESR is positioned behind it.
+     Reveal the Red title/Blue OKAY popup on Gray; OKAY fades the entire gray
+     curtain away with established Scorecard Fade 2 (0.20s). Scoring/save,
+     10s retries, normal/unsaved semantics, other dialogs, and GOLDEN unchanged.
+     TEST / NOT GOLDEN. -->
+<!-- SSHCP | BASE KEY: 23.52-N8Q4RM | BUILD KEY: 23.53-H7Q4VX -->
 <!-- SSHCP V23.52 TEST — exact V23.51 donor, no Worker changes.
   V23.51 phone-feedback patch only: game-mode gray hole circles have BLACK numerals;
   NESR red hole-cell retains BLUE score-box outline in unsaved mode; first failed
@@ -15311,6 +15321,9 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 }
 /* Match GEEK DETAIL's quiet Gray 3 backdrop, with no blur/border. */
 .modal-overlay.score-save-warning{
+ /* Stay ABOVE the established opaque WHITE footer curtain (z=9000).
+    Gray must be visible FIRST; footer Red is prepared completely underneath. */
+ z-index:9100!important;
  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
  opacity:1;transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out!important
@@ -15321,6 +15334,9 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 }
 .modal-overlay.score-save-warning .modal-title{
  color:#c62f35!important;-webkit-text-fill-color:#c62f35!important
+}
+.modal-overlay.score-save-warning.sshcp-score-warning-prep-v2353 .modal-box{
+ opacity:0!important;pointer-events:none!important
 }
 .modal-overlay.score-save-warning.sshcp-score-warning-exit-v2352{
  opacity:0!important;pointer-events:none!important
@@ -15454,7 +15470,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.52</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.53</span></span>
         </button>
         <script>
           (function () {
@@ -16860,19 +16876,44 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
     }
 
     function showScoreSaveFailureModalV1621(context) {
-      if (scoreRecoveryWarningShownV2351 || !selectedTeam) return;
+      if (scoreRecoveryWarningShownV2351 || !selectedTeam ||
+          currentView !== 'scorecard') return;
       const identity = scoreScopeV2351();
       if (!identity || !scorePendingV2351()) return;
       scoreRecoveryWarningShownV2351 = true;
-      void scoreShowRecoveryV2351(identity).then(shown => {
-        if (!shown) {scoreRecoveryWarningShownV2351=false;return;}
-        if (!shown || !selectedTeam || scoreScopeV2351() !== identity ||
-            currentView !== 'scorecard') return;
-        showMessageModal('SCORE NOT SAVED', 'SCORE WAS NOT SAVED.');
-        els.modalOverlay.classList.add('score-save-warning');
-        els.modalActions.className='modal-actions single';
-        els.modalActions.replaceChildren(makeModalButton('OKAY', 'primary', scoreDismissWarningV2352));
-      });
+
+      /* V23.53: acquire the OPAQUE GRAY backdrop before ANY red recovery
+         styling or footer mutation. First frame is ONLY Gray, not Red.
+         The text panel appears once the entire card and footer are settled. */
+      showMessageModal('SCORE NOT SAVED', '10s AUTO SCORE PUSH ACTIVATED');
+      const overlay = els.modalOverlay;
+      overlay.classList.add('score-save-warning', 'sshcp-score-warning-prep-v2353');
+      els.modalActions.className='modal-actions single';
+      els.modalActions.replaceChildren(makeModalButton('OKAY','primary',scoreDismissWarningV2352));
+
+      void (async () => {
+        /* Two real paint opportunities: a computed style read alone is NOT
+           sufficient to ensure the user sees Gray before recovery Red. */
+        await new Promise(resolve => requestAnimationFrame(() =>
+          requestAnimationFrame(resolve)));
+        const stillCurrent = () => selectedTeam && scoreScopeV2351()===identity &&
+          currentView==='scorecard' && overlay.classList.contains('score-save-warning');
+        if (!stillCurrent() || !scorePendingV2351()) {
+          if (overlay.classList.contains('score-save-warning')) closeModal();
+          scoreRecoveryWarningShownV2351=false;
+          return;
+        }
+        /* This calls the EXISTING full-screen white Footer Fade 2 curtain.
+           It runs behind the higher-z Gray overlay and positions NESR before
+           the informational popup is permitted to become visible. */
+        const shown=await scoreShowRecoveryV2351(identity);
+        if (!shown || !stillCurrent()) {
+          if (overlay.classList.contains('score-save-warning')) closeModal();
+          if (!shown) scoreRecoveryWarningShownV2351=false;
+          return;
+        }
+        overlay.classList.remove('sshcp-score-warning-prep-v2353');
+      })();
     }
 
     /* Only the SCORE NOT SAVED informational overlay uses Fade 2 on OKAY.
@@ -16907,7 +16948,8 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
         if (!selectedTeam || scoreScopeV2351() !== identityV2351 ||
             serialV2351 !== scoreEditSerialV2351 ||
             !scorePendingV2351() || scoreRecoveryV2351) return;
-        resetScoreVisualStateV1619();
+        /* Do NOT remove optimistic Blue until the Gray curtain is painted.
+           scoreShowRecoveryV2351 resets it inside the hidden footer mutation. */
         showScoreSaveFailureModalV1621(failureContextV1621);
       }, Math.max(0,deadline-performance.now()));
     }
@@ -38121,6 +38163,7 @@ let scoreTimingDetail =
           'geek-detail-v180',
           'geek-all-teams-detail-v2238',
           'score-save-warning',
+          'sshcp-score-warning-prep-v2353',
           'sshcp-score-warning-exit-v2352',
           'welcome-competitor-v1985',
           'master-go-gate-v2331'
