@@ -1,9 +1,17 @@
+<!-- SSHCP V23.57 TEST — exact V23.56 donor, frontend only.
+     Pause Scorecard AUTO PUSH countdown/progress while the manual SCORE ENTRY
+     popup is OPEN; no automatic save attempts while entering a score. On
+     ENTER/CLEAR retain immediate intentional save, restarting retry countdown
+     only if it is still needed; dismissal without an edit also resumes it.
+     SCORE NOT SAVED Gray backdrop and borderless White popup are each 95%
+     opaque, with all warning text/button content full opacity. No other changes.
+     TEST / NOT GOLDEN. -->
 <!-- SSHCP V23.56 TEST — exact SSHCP V23.55 donor; Scorecard-only AUTO PUSH cadence changed from 10s to 5s.
      Retry progress bar, SCORE NOT SAVED warning, and Quick Guide interval text now reflect 5s.
      Retries remain paused off Scorecard; preserve existing 30s backoff for HTTP 429,
      no overlapping saves, snapshot verification, curtain, score visuals, and Worker unchanged.
      TEST / NOT GOLDEN. -->
-<!-- SSHCP | BASE KEY: 23.55-R6Q4MN | BUILD KEY: 23.56-K8Q4VX -->
+<!-- SSHCP | BASE KEY: 23.56-K8Q4VX | BUILD KEY: 23.57-T6Q4MX -->
 <!-- SSHCP V23.55 TEST — Quick Guide SCORECARD save-status legend ONLY.
      Red warning: GRAY scores have NOT been saved to server; automatic save
      attempts run every 10s by default. BLUE scores are saved to server.
@@ -15346,13 +15354,13 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
  /* Stay ABOVE the established opaque WHITE footer curtain (z=9000).
     Gray must be visible FIRST; footer Red is prepared completely underneath. */
  z-index:9100!important;
- background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+ background:rgba(232,232,232,.95)!important;
  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
  opacity:1;transition:opacity var(--sshcp-fade-2-scorecard-leaderboard,.2s) ease-out!important
 }
 .modal-overlay.score-save-warning .modal-box{
  border:0!important;box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
- background:#fff!important
+ background:rgba(255,255,255,.95)!important
 }
 .modal-overlay.score-save-warning .modal-title{
  color:#c62f35!important;-webkit-text-fill-color:#c62f35!important
@@ -15497,7 +15505,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.56</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.57</span></span>
         </button>
         <script>
           (function () {
@@ -27045,8 +27053,11 @@ let scoreTimingDetail =
     }
     function scoreScheduleRetryV2351(delay=SCORE_RETRY_MS_V2351) {
       scoreClearRetryTimerV2351();
+      /* V23.57: manual score entry has priority over background retry.
+         Do not run (or animate) the AUTO PUSH countdown behind the popup. */
       if (!scoreRecoveryV2351 || !scoreRetryEnabledV2351 ||
-          !scorePendingV2351() || currentView!=='scorecard') return;
+          !scorePendingV2351() || currentView!=='scorecard' ||
+          els.scoreEntryOverlay.classList.contains('open')) return;
       const scope=scoreScopeV2351(),passkey=getQrPasskey();
       const ms=Math.max(1000,Number(delay)||SCORE_RETRY_MS_V2351);
       if (els.scoreRetryFillV2351) {
@@ -27057,7 +27068,8 @@ let scoreTimingDetail =
         scoreRetryTimerV2351=0;
         if (currentView!=='scorecard' || !selectedTeam ||
             scoreScopeV2351()!==scope || getQrPasskey()!==passkey ||
-            !scoreRetryEnabledV2351 || !scorePendingV2351()) return;
+            !scoreRetryEnabledV2351 || !scorePendingV2351() ||
+            els.scoreEntryOverlay.classList.contains('open')) return;
         if (saveInProgress) {scoreScheduleRetryV2351();return;}
         void submitScores('auto');
       },ms);
@@ -27330,6 +27342,10 @@ let scoreTimingDetail =
           'open'
         );
 
+      /* V23.57: stop five-second AUTO PUSH and reset its progress immediately.
+         A manually entered score must never be interrupted by a retry. */
+      if (scoreRecoveryV2351 && scoreRetryEnabledV2351)
+        scoreClearRetryTimerV2351();
 
       // V7-CF.14: keyboard stays closed by default.
       els.scoreEntryInput.blur();
@@ -27593,6 +27609,11 @@ let scoreTimingDetail =
 
         submitScores('enter');
 
+      } else if (scoreRecoveryV2351 && scoreRetryEnabledV2351) {
+        /* Closing without ENTER/CLEAR also resumes a fresh full five-second
+           countdown. ENTER/CLEAR use their immediate save path; that path
+           restarts retry only when the resulting card remains unverified. */
+        scoreScheduleRetryV2351();
       }
 
 
@@ -27634,6 +27655,11 @@ let scoreTimingDetail =
 
 
     async function submitScores(failureContextV1621 = 'enter') {
+      /* V23.57 safety gate: an already-fired AUTO PUSH callback may not
+         commit/close a manual score entry popup. Intentional ENTER/CLEAR
+         still uses the normal immediate submit path after the popup closes. */
+      if (failureContextV1621==='auto' &&
+          els.scoreEntryOverlay.classList.contains('open')) return;
       if (!selectedTeam) return;
       if (saveInProgress) {
         saveQueued=true;
