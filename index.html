@@ -1,4 +1,14 @@
-<!-- SSHCP | BASE KEY: 23.46-P7M4QX | BUILD KEY: 23.47-M8Q4VX -->
+<!-- SSHCP | BASE KEY: 23.47-M8Q4VX | BUILD KEY: 23.48-T7Q4MN -->
+<!-- SSHCP V23.48 TEST — AUTO PUSH is controlled by the existing Scorecard
+     footer, split 1/3 control + 2/3 Leaderboard only with a pending card.
+     Gray 3 / red cancel and red activate; red NESR only while active.
+     Retry progress is a real 10-second countdown (30 seconds on HTTP 429);
+     retries pause off the Scorecard and restart upon return. Additional ENTER
+     saves are immediate; pending scores stay gray until Worker verification.
+     The failure warning appears once per pending batch. Every footer state
+     change is covered by the existing full-screen 0.20-second Fade 2 curtain.
+     Worker, authorization, events, scores and GOLDEN unchanged. -->
+
 <!-- SSHCP V23.47 — auto-push successful save resumes normal Scorecard NESR scroll.
      The 10-second retry remains unchanged. After a verified nonblank AUTO
      score save, use the established V18.35 next-expected-row positioning:
@@ -15256,40 +15266,62 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
 }
 </style>
 
-<style id="sshcp-auto-push-row-qr-v2346">
-/* QR-only Scorecard ordinarily hides the entire selector wrapper. Reuse that
-   same wrapper as the red cancel row ONLY during a matching active retry.
-   No permanent QR selector access or layout change is introduced. */
-body.team-qr-locked.sshcp-score-autopush-active-v2346 #scorecardView .score-team-select-wrap {
-  display:block!important;
+<style id="sshcp-auto-push-footer-v2348">
+/* V23.48 — only the existing footer is split. The old QR selector row
+   remains permanently unchanged; the existing Leaderboard remains in place. */
+#scorecardView #scoreAutoPushFooterButtonV2348 { display:none!important; }
+body.sshcp-auto-push-footer-split-v2348 #scorecardView .score-bottom-actions {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,2fr)!important;
+  gap:8px!important;
 }
-body.team-qr-locked.sshcp-score-autopush-active-v2346 #scorecardView .score-table-head {
-  margin-top:0!important;
-}
-body.team-qr-locked.sshcp-score-autopush-active-v2346 #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v2345 {
-  cursor:pointer!important;
-}
-</style>
-
-<style id="sshcp-auto-push-v2345">
-/* The existing Scorecard selector occupies this identical grid row in ALL roles.
-   Replace only its visible label and click target while retries are enabled. */
-#scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v2345,
-#scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v2345.has-team,
-body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v2345,
-body:not(.master-qr) #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v2345 {
+body.sshcp-auto-push-footer-split-v2348 #scorecardView #scoreAutoPushFooterButtonV2348 {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  position:relative!important;
   background:#c93333!important;
-  border-color:#c93333!important;
+  border:2px solid #c93333!important;
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
-  font-style:normal!important;
-  font-weight:800!important;
+  box-shadow:none!important;
+  padding:3px 4px 9px!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  white-space:normal!important;
   text-align:center!important;
-  padding:0 12px!important;
-  cursor:pointer!important;
+  font-size:clamp(11px,3.1vw,17px)!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+  letter-spacing:0!important;
 }
-#scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v2345::after,
-body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v2345::after {display:none!important;}
+body.sshcp-auto-push-footer-active-v2348 #scorecardView #scoreAutoPushFooterButtonV2348 {
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  border-color:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  color:#c93333!important;
+  -webkit-text-fill-color:#c93333!important;
+}
+#scorecardView .sshcp-auto-push-progress-v2348 {
+  position:absolute;bottom:2px;left:4px;right:4px;height:4px;
+  background:rgba(201,51,51,.18);border-radius:3px;
+  overflow:hidden;display:none;pointer-events:none;
+}
+body.sshcp-auto-push-footer-active-v2348 #scorecardView .sshcp-auto-push-progress-v2348 {display:block;}
+#scorecardView .sshcp-auto-push-progress-fill-v2348 {
+  display:block;width:100%;height:100%;background:#c93333;
+  transform-origin:left center;transform:scaleX(0);
+}
+@keyframes sshcpAutoPushCountdownV2348 {
+  from{transform:scaleX(0);}to{transform:scaleX(1);}
+}
+/* NESR red only while the active, matching team's scores are awaiting save. */
+body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cell {
+  background:#c93333!important;border-color:#c93333!important;
+}
+body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cell .hole-number {
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  background:transparent!important;
+}
 </style>
 </head>
 
@@ -15419,7 +15451,7 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.47</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.48</span></span>
         </button>
         <script>
           (function () {
@@ -15608,6 +15640,15 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
       <div class="score-fixed-bottom">
 
         <div class="score-bottom-actions">
+
+          <button id="scoreAutoPushFooterButtonV2348"
+            class="bottom-action sshcp-auto-push-button-v2348"
+            type="button" aria-label="Auto push scores">
+            <span id="scoreAutoPushFooterLabelV2348">AUTO PUSH<br>SCORES</span>
+            <span class="sshcp-auto-push-progress-v2348" aria-hidden="true">
+              <span id="scoreAutoPushProgressFillV2348" class="sshcp-auto-push-progress-fill-v2348"></span>
+            </span>
+          </button>
 
           <button
             id="scoreLeaderboardButton"
@@ -16311,6 +16352,15 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
       scoreLeaderboardButton:
         document.getElementById('scoreLeaderboardButton'),
 
+      scoreAutoPushFooterButtonV2348:
+        document.getElementById('scoreAutoPushFooterButtonV2348'),
+
+      scoreAutoPushFooterLabelV2348:
+        document.getElementById('scoreAutoPushFooterLabelV2348'),
+
+      scoreAutoPushProgressFillV2348:
+        document.getElementById('scoreAutoPushProgressFillV2348'),
+
       submitBtn:
         document.getElementById('submitBtn'),
 
@@ -16751,6 +16801,9 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
         ? Math.max(0, delayMs)
         : SCORE_NO_SCROLL_VISUAL_DELAY_V1835;
 
+      /* V23.48: AUTO PUSH scores are never optimistically Blue. An ENTER
+         still scrolls and writes immediately; only verification paints Blue. */
+      if (scoreAutoPushV2345 && scoreAutoPushMatchesV2345()) return;
       state.releaseAt = performance.now() + releaseDelayV1835;
       state.timer = window.setTimeout(() => {
         if (scoreVisualStateV1619[index] !== state) return;
@@ -16760,6 +16813,12 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
         }
 
         state.timer = 0;
+        if (scoreAutoPushV2345 && scoreAutoPushMatchesV2345() &&
+            savedScores[index] !== state.value) {
+          state.blue = false;
+          renderScorecard();
+          return;
+        }
         state.blue = true;
 
         /* If the backend already verified this exact value, native savedScores
@@ -16809,7 +16868,13 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
     }
 
     function showScoreSaveFailureModalV1621(context) {
-      if (scoreAutoPushV2345) return; // No repetitive warnings during retries.
+      if (scoreAutoPushV2345 || scoreFailureWarningShownV2348 ||
+          (selectedTeam && hasPendingScores() &&
+           scoreAutoPushOfferSlotV2348 === Number(selectedTeam.slot))) return;
+      scoreFailureWarningShownV2348 = true;
+      void scoreAutoPushRowTransitionV2345(() => {
+        scoreAutoPushOfferSlotV2348 = selectedTeam ? Number(selectedTeam.slot) : null;
+      });
       if (context === 'refresh') {
         showMessageModal('GREY SCORES\nremain UNSAVED', '');
       } else {
@@ -16873,7 +16938,7 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
           return true;
         });
 
-        if (!unresolved.length || scoreAutoPushV2345) return;
+        if (!unresolved.length || scoreAutoPushV2345 || scoreFailureWarningShownV2348) return;
 
         unresolved.forEach(index => {
           const state = scoreVisualStateV1619[index];
@@ -16953,6 +17018,10 @@ body.master-qr #scorecardView #scoreTeamSelectButton.sshcp-auto-push-cancel-v234
     let scoreAutoPushV2345 = null;
     let scoreAutoPushTimerV2345 = 0;
     let scoreAutoPushTransitionV2345 = false;
+    let scoreAutoPushTransitionQueueV2348 = Promise.resolve();
+    let scoreAutoPushOfferSlotV2348 = null;
+    let scoreFailureWarningShownV2348 = false;
+    let scoreAutoPushPaintedModeV2348 = 'normal';
     try {
       const rawV2345 = JSON.parse(sshcpLocalStorageV2318.getItem(SCORE_AUTO_PUSH_KEY_V2345) || 'null');
       if (rawV2345 && Number.isInteger(rawV2345.slot) && rawV2345.slot >= 1 && rawV2345.slot <= 36 &&
@@ -23395,6 +23464,9 @@ let scoreTimingDetail =
         view
       );
 
+      /* V23.48: do not retry when Scorecard is not visible. */
+      if (view !== 'scorecard' && scoreAutoPushV2345) clearScoreAutoPushTimerV2345();
+
       if (typeof scheduleScreenLayoutLogCaptureV238 === 'function') {
         scheduleScreenLayoutLogCaptureV238('VIEW ' + view);
       }
@@ -24629,6 +24701,7 @@ let scoreTimingDetail =
 
         scorecardHasLoaded =
           true;
+        paintScoreAutoPushRowV2345();
 
         scorecardLoadSeconds =
           timerSeconds(
@@ -24651,6 +24724,8 @@ let scoreTimingDetail =
         if (scoreAutoPushV2345) {
           restoreScoreAutoPushAfterLoadV2345();
         } else if (hasPendingScores()) {
+          scoreAutoPushOfferSlotV2348 = selectedTeam ? Number(selectedTeam.slot) : null;
+          paintScoreAutoPushRowV2345();
           setTimeout(
             () => submitScores('refresh'),
             0
@@ -24754,8 +24829,8 @@ let scoreTimingDetail =
       els.scoreTeamSelectButton.setAttribute('aria-haspopup', masterSelector ? 'listbox' : 'false');
       if (!masterSelector) els.scoreTeamSelectButton.setAttribute('aria-expanded', 'false');
 
-      if (scoreAutoPushV2345) paintScoreAutoPushRowV2345();
-      else requestAnimationFrame(fitScoreTeamSelectName);
+      paintScoreAutoPushRowV2345();
+      requestAnimationFrame(fitScoreTeamSelectName);
     }
 
     function closeScoreTeamDropdown() {
@@ -24823,10 +24898,6 @@ let scoreTimingDetail =
     }
 
     function toggleScoreTeamDropdown() {
-      if (els.scoreTeamSelectButton.classList.contains('sshcp-auto-push-cancel-v2345')) {
-        stopScoreAutoPushV2345('cancelled');
-        return;
-      }
       if (!(isMasterQr() || isPreAuthorizeEnabledV1958())) return;
       if (els.scoreTeamDropdown.classList.contains('open')) closeScoreTeamDropdown();
       else openScoreTeamDropdown();
@@ -26369,7 +26440,8 @@ let scoreTimingDetail =
       const localNextHoleIndexV1834 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
       const visualProgressScoresV1619 = scoreVisualProgressV1619();
       const visualNextHoleIndexV1834 = scorecardActiveHoleIndexV16(visualProgressScoresV1619, selectedTeam);
-      const holdNextHoleVisualV1834 = scoreVisualStateV1619.some((state, stateIndex) => (
+      const holdNextHoleVisualV1834 = !scoreAutoPushDisplayV2345() &&
+        scoreVisualStateV1619.some((state, stateIndex) => (
         !!state &&
         state.blue !== true &&
         localScores[stateIndex] === state.value
@@ -26872,75 +26944,93 @@ let scoreTimingDetail =
     function clearScoreAutoPushTimerV2345() {
       if (scoreAutoPushTimerV2345) clearTimeout(scoreAutoPushTimerV2345);
       scoreAutoPushTimerV2345 = 0;
+      if (els.scoreAutoPushProgressFillV2348) {
+        els.scoreAutoPushProgressFillV2348.style.animation = 'none';
+      }
     }
 
     function scoreAutoPushDisplayV2345() {
       return scoreAutoPushMatchesV2345() && hasPendingScores();
     }
 
+    function scoreAutoPushFooterModeV2348() {
+      if (!selectedTeam || !hasPendingScores()) return 'normal';
+      if (scoreAutoPushDisplayV2345()) return 'active';
+      return scoreAutoPushOfferSlotV2348 === Number(selectedTeam.slot)
+        ? 'offer' : 'normal';
+    }
+
     function paintScoreAutoPushRowV2345() {
-      if (!els.scoreTeamSelectButton) return;
-      const visible = scoreAutoPushDisplayV2345();
-      /* V23.46 — Team QR mode hides the *wrapper*, not just its button.
-         Expose the existing selector-height row only when AUTO PUSH is active. */
-      document.body.classList.toggle('sshcp-score-autopush-active-v2346', visible);
-      if (visible) {
-        closeScoreTeamDropdown();
-        els.scoreTeamSelectButton.textContent = 'CANCEL SCORE AUTO PUSH';
-        els.scoreTeamSelectButton.dataset.fullTeamName = 'CANCEL SCORE AUTO PUSH';
-        els.scoreTeamSelectButton.classList.add('sshcp-auto-push-cancel-v2345');
-        els.scoreTeamSelectButton.setAttribute('aria-haspopup', 'false');
-        els.scoreTeamSelectButton.setAttribute('aria-expanded', 'false');
-        els.scoreTeamSelectButton.removeAttribute('disabled');
-        requestAnimationFrame(() => {
-          if (!els.scoreTeamSelectButton.classList.contains('sshcp-auto-push-cancel-v2345')) return;
-          els.scoreTeamSelectButton.style.fontSize = Math.min(21, Math.max(12, els.scoreTeamSelectButton.clientHeight * .40)) + 'px';
-          fitSingleLineTeamTextV58(els.scoreTeamSelectButton, els.scoreTeamSelectButton,
-            'CANCEL SCORE AUTO PUSH', Math.min(21, els.scoreTeamSelectButton.clientHeight * .40), 10,
-            {horizontalPad:24,verticalPad:4,lineHeight:1,ignoreHeight:true});
-        });
-      } else {
+      /* V23.48 intentionally retires the old selector-row substitution.
+         Restore its normal team name and role-specific interactions. */
+      document.body.classList.remove('sshcp-score-autopush-active-v2346');
+      if (els.scoreTeamSelectButton &&
+          els.scoreTeamSelectButton.classList.contains('sshcp-auto-push-cancel-v2345')) {
         els.scoreTeamSelectButton.classList.remove('sshcp-auto-push-cancel-v2345');
         els.scoreTeamSelectButton.style.removeProperty('font-size');
-        els.scoreTeamSelectButton.textContent = selectedTeam ? displayTeamName(selectedTeam.name) : 'SELECT TEAM';
+        els.scoreTeamSelectButton.textContent = selectedTeam
+          ? displayTeamName(selectedTeam.name) : 'SELECT TEAM';
         if (selectedTeam) els.scoreTeamSelectButton.dataset.fullTeamName = displayTeamName(selectedTeam.name);
         else delete els.scoreTeamSelectButton.dataset.fullTeamName;
         const selectable = isMasterQr() || isPreAuthorizeEnabledV1958();
         els.scoreTeamSelectButton.setAttribute('aria-haspopup', selectable ? 'listbox' : 'false');
         requestAnimationFrame(fitScoreTeamSelectName);
       }
+      const mode = scoreAutoPushFooterModeV2348();
+      scoreAutoPushPaintedModeV2348 = mode;
+      const active = mode === 'active';
+      document.body.classList.toggle('sshcp-auto-push-footer-split-v2348', mode !== 'normal');
+      document.body.classList.toggle('sshcp-auto-push-footer-active-v2348', active);
+      if (els.scoreAutoPushFooterLabelV2348) {
+        els.scoreAutoPushFooterLabelV2348.innerHTML = active
+          ? 'CANCEL<br>AUTO PUSH' : 'AUTO PUSH<br>SCORES';
+      }
+      if (els.scoreAutoPushFooterButtonV2348) {
+        els.scoreAutoPushFooterButtonV2348.setAttribute('aria-label',
+          active ? 'Cancel automatic score retries' : 'Auto push scores every 10 seconds');
+      }
     }
 
-    async function scoreAutoPushRowTransitionV2345(change, verifiedScrollV2347 = false) {
-      if (scoreAutoPushTransitionV2345) return;
-      scoreAutoPushTransitionV2345 = true;
-      /* MUST mount the same white full-viewport Scorecard curtain BEFORE any
-         modal close, class switch or geometry mutation. */
-      const scorecardVisible = currentView === 'scorecard';
-      const shield = scorecardVisible ? beginMainFullRevealV2069('scorecard') : null;
-      try {
-        change();
-        paintScoreAutoPushRowV2345();
-        /* V23.47: a successfully recovered ENTER may be the LAST pending
-           score. Removing the red selector changes the table viewport. Settle
-           the normal NESR against that FINAL geometry while fully covered;
-           don't calculate scroll from the now-retired red-row height. The
-           existing Fade 2 duration is not changed. */
-        if (scorecardVisible && verifiedScrollV2347 && shield && selectedTeam) {
-          await new Promise(resolve => restoreScorePosition(false, resolve));
-        }
-        if (scorecardVisible) await revealDataShieldAfterLayoutV177('scorecard', shield, 2);
-      } finally { scoreAutoPushTransitionV2345 = false; }
+    /* Serialize all footer changes; never skip a cancellation just because an
+       activation curtain is still fading. The white layer is mounted BEFORE
+       changing from 1->2, 2->2, or 2->1, using existing 0.20s Fade 2. */
+    function scoreAutoPushRowTransitionV2345(change, verifiedScrollV2347 = false) {
+      const task = scoreAutoPushTransitionQueueV2348.catch(() => {}).then(async () => {
+        scoreAutoPushTransitionV2345 = true;
+        const scorecardVisible = currentView === 'scorecard';
+        const shield = scorecardVisible ? beginMainFullRevealV2069('scorecard') : null;
+        try {
+          change();
+          paintScoreAutoPushRowV2345();
+          if (scorecardVisible && verifiedScrollV2347 && shield && selectedTeam) {
+            await new Promise(resolve => restoreScorePosition(false, resolve));
+          }
+          if (scorecardVisible) await revealDataShieldAfterLayoutV177('scorecard', shield, 2);
+        } finally { scoreAutoPushTransitionV2345 = false; }
+      });
+      scoreAutoPushTransitionQueueV2348 = task.catch(error => {
+        addTestLog('SCORE AUTO PUSH', 'UI ERROR', '—', String(error && error.message || error));
+      });
+      return task;
     }
 
     function scoreAutoPushPlanNextV2345(delay = SCORE_AUTO_PUSH_INTERVAL_V2345) {
       clearScoreAutoPushTimerV2345();
-      if (!scoreAutoPushV2345) return;
+      if (!scoreAutoPushV2345 || currentView !== 'scorecard' ||
+          document.visibilityState === 'hidden') return;
+      /* One visible progress bar per actual scheduled check, not an unrelated
+         animation. An HTTP 429 visibly extends this cycle to 30 seconds. */
+      const bar = els.scoreAutoPushProgressFillV2348;
+      if (bar) {
+        void bar.offsetWidth;
+        bar.style.animation = 'sshcpAutoPushCountdownV2348 '+delay+'ms linear forwards';
+      }
       scoreAutoPushTimerV2345 = window.setTimeout(() => {
         scoreAutoPushTimerV2345 = 0;
-        if (!scoreAutoPushV2345) return;
+        if (!scoreAutoPushV2345 || currentView !== 'scorecard') return;
         if (!scoreAutoPushMatchesV2345() || !scorecardHasLoaded || scorecardLoadInProgress ||
-            saveInProgress || saveQueued || !navigator.onLine) {
+            saveInProgress || saveQueued || !navigator.onLine ||
+            document.visibilityState === 'hidden') {
           scoreAutoPushPlanNextV2345();
           return;
         }
@@ -26960,6 +27050,13 @@ let scoreTimingDetail =
         };
         sshcpLocalStorageV2318.setItem(SCORE_AUTO_PUSH_KEY_V2345, JSON.stringify(scoreAutoPushV2345));
         closeModal();
+        /* Keep existing pending verification gates, but never display an
+           unsaved score as optimistic Blue during this retry session. */
+        scoreVisualStateV1619.forEach((state,index) => {
+          if (state && localScores[index] !== savedScores[index]) clearScoreVisualStateV1619(index);
+        });
+        renderScorecard();
+        scoreAutoPushOfferSlotV2348 = Number(selectedTeam.slot);
         addTestLog('SCORE AUTO PUSH', 'ENABLED', '10s', 'Team '+scoreAutoPushV2345.slot+' • pending card retained locally');
         scoreAutoPushPlanNextV2345();
       });
@@ -26969,9 +27066,16 @@ let scoreTimingDetail =
       if (!scoreAutoPushV2345) return;
       clearScoreAutoPushTimerV2345();
       void scoreAutoPushRowTransitionV2345(() => {
-        const slot=scoreAutoPushV2345 ? scoreAutoPushV2345.slot : '';
-        scoreAutoPushV2345=null;
+        const slot = scoreAutoPushV2345 ? scoreAutoPushV2345.slot : '';
+        if (reason !== 'verified' && selectedTeam && hasPendingScores()) {
+          scoreAutoPushOfferSlotV2348 = Number(selectedTeam.slot);
+        }
+        scoreAutoPushV2345 = null;
         sshcpLocalStorageV2318.removeItem(SCORE_AUTO_PUSH_KEY_V2345);
+        if (!hasPendingScores()) {
+          scoreAutoPushOfferSlotV2348 = null;
+          scoreFailureWarningShownV2348 = false;
+        }
         addTestLog('SCORE AUTO PUSH', reason==='verified'?'VERIFIED':'CANCELLED', '—',
           'Team '+slot+(reason==='verified'?' • all pending scores confirmed':' • gray scores retained'));
       }, reason === 'verified' && verifiedScrollV2347);
@@ -26979,20 +27083,29 @@ let scoreTimingDetail =
 
     function restoreScoreAutoPushAfterLoadV2345() {
       if (!scoreAutoPushV2345) return;
-      if (!scoreAutoPushMatchesV2345()) { paintScoreAutoPushRowV2345(); scoreAutoPushPlanNextV2345(); return; }
+      if (!scoreAutoPushMatchesV2345()) {
+        paintScoreAutoPushRowV2345();
+        clearScoreAutoPushTimerV2345();
+        return;
+      }
       if (!hasPendingScores()) {
-        /* The normal Scorecard-load white curtain is already covering this
-           state update; do not mount/reveal a competing second shield. */
         clearScoreAutoPushTimerV2345();
         scoreAutoPushV2345 = null;
         sshcpLocalStorageV2318.removeItem(SCORE_AUTO_PUSH_KEY_V2345);
+        scoreAutoPushOfferSlotV2348 = null;
+        scoreFailureWarningShownV2348 = false;
         paintScoreAutoPushRowV2345();
         return;
       }
+      scoreAutoPushOfferSlotV2348 = Number(selectedTeam.slot);
       paintScoreAutoPushRowV2345();
       scoreAutoPushPlanNextV2345();
     }
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') clearScoreAutoPushTimerV2345();
+      else if (scoreAutoPushDisplayV2345() && currentView === 'scorecard') scoreAutoPushPlanNextV2345();
+    });
 
     /* =========================================================
        AUTHORIZATION
@@ -27521,6 +27634,8 @@ let scoreTimingDetail =
       saveInProgress =
         true;
 
+      if (scoreAutoPushV2345) clearScoreAutoPushTimerV2345();
+
       els.submitBtn.disabled =
         true;
 
@@ -27667,7 +27782,8 @@ let scoreTimingDetail =
         /* A previously failed ENTER has its optimistic-Blue timer cancelled.
            After a later AUTO retry is truly verified, discard that stale gray
            visual gate so native verified Blue appears immediately. */
-        if (sameTeamAtVerifyV2345 && failureContextV1621 === 'auto') {
+        if (sameTeamAtVerifyV2345 && (failureContextV1621 === 'auto' ||
+              scoreAutoPushMatchesV2345())) {
           scoreVisualStateV1619.forEach((state, index) => {
             if (state && localScores[index] === confirmedScores[index]) {
               clearScoreVisualStateV1619(index);
@@ -27715,7 +27831,7 @@ let scoreTimingDetail =
            handoff render applies the verified/optimistic Blue state. REFRESH
            and non-cadence saves still repaint immediately. */
         const holdVerificationRenderV1834 = (
-          failureContextV1621 === 'enter' &&
+          !scoreAutoPushMatchesV2345() && failureContextV1621 === 'enter' &&
           visualGenerationsAtRequestV1619.some((generation, index) => (
             generation !== null &&
             generation !== undefined &&
@@ -27832,6 +27948,20 @@ let scoreTimingDetail =
               restoreScorePosition(true);
             }
             if (!scoreAutoPushTimerV2345) scoreAutoPushPlanNextV2345();
+          }
+        }
+
+        /* An inactive/red AUTO PUSH offer is removed ONLY after the whole card
+           is verified; any one->two / two->one transition uses Fade 2. */
+        if (!hasPendingScores() && !scoreAutoPushV2345 && !queuedAnotherSave) {
+          if (scoreAutoPushPaintedModeV2348 !== 'normal') {
+            void scoreAutoPushRowTransitionV2345(() => {
+              scoreAutoPushOfferSlotV2348 = null;
+              scoreFailureWarningShownV2348 = false;
+            }, autoPushVerifiedEnteredScoreV2347);
+          } else {
+            scoreAutoPushOfferSlotV2348 = null;
+            scoreFailureWarningShownV2348 = false;
           }
         }
 
@@ -38870,6 +39000,11 @@ let scoreTimingDetail =
         'click',
         showLeaderboard
       );
+
+    els.scoreAutoPushFooterButtonV2348.addEventListener('click', () => {
+      if (scoreAutoPushDisplayV2345()) stopScoreAutoPushV2345('cancelled');
+      else if (hasPendingScores()) enableScoreAutoPushV2345();
+    });
 
 
     els.leaderRefreshButton
