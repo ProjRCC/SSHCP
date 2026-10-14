@@ -1,4 +1,10 @@
-<!-- SSHCP | BASE KEY: 23.47-M8Q4VX | BUILD KEY: 23.48-T7Q4MN -->
+<!-- SSHCP V23.49 TEST — consistent ENTER/CLEAR authoritative verification; no stale
+     save response may show an obsolete blue mark or lose a later CLEAR. Pending
+     ENTER and pending CLEAR both light NESR red; empty cleared boxes stay gray.
+     AUTO PUSH footer retains existing 1:2 curtain transitions, progress runs
+     only inside CANCEL and resets on ENTER/CLEAR and Scorecard navigation.
+     First failure only offers AUTO PUSH / red I'LL SAVE. Worker unchanged. -->
+<!-- SSHCP | BASE KEY: 23.48-T7Q4MN | BUILD KEY: 23.49-R7M4QX -->
 <!-- SSHCP V23.48 TEST — AUTO PUSH is controlled by the existing Scorecard
      footer, split 1/3 control + 2/3 Leaderboard only with a pending card.
      Gray 3 / red cancel and red activate; red NESR only while active.
@@ -15314,13 +15320,18 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .sshcp-auto-push-progres
 @keyframes sshcpAutoPushCountdownV2348 {
   from{transform:scaleX(0);}to{transform:scaleX(1);}
 }
-/* NESR red only while the active, matching team's scores are awaiting save. */
-body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cell {
+/* V23.49: RED whenever latest edits are unverified, even if retries were cancelled. */
+body.sshcp-score-pending-v2349 #scorecardView .hole-cell.next-hole-cell {
   background:#c93333!important;border-color:#c93333!important;
 }
-body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cell .hole-number {
+body.sshcp-score-pending-v2349 #scorecardView .hole-cell.next-hole-cell .hole-number {
   color:#fff!important;-webkit-text-fill-color:#fff!important;
   background:transparent!important;
+}
+/* Only I'LL SAVE in the failure modal has red background / white text. */
+.modal-overlay.score-save-warning .modal-btn.sshcp-ill-save-v2349 {
+  background:#c93333!important;border-color:#c93333!important;
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
 }
 </style>
 </head>
@@ -15451,7 +15462,7 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.48</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.49</span></span>
         </button>
         <script>
           (function () {
@@ -16724,6 +16735,8 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
     let clearVisualHoldActiveV1836 = false;
     let clearVisualHoldHoleIndexV1836 = null;
     let clearVisualHoldTimerV1836 = 0;
+    /* V23.49 — a recently cleared hole must have no carried-over Blue NESR border. */
+    const clearedBlankIndicesV2349 = new Set();
 
     function resetClearVisualHoldV1836() {
       if (clearVisualHoldTimerV1836) window.clearTimeout(clearVisualHoldTimerV1836);
@@ -16801,52 +16814,31 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
         ? Math.max(0, delayMs)
         : SCORE_NO_SCROLL_VISUAL_DELAY_V1835;
 
-      /* V23.48: AUTO PUSH scores are never optimistically Blue. An ENTER
-         still scrolls and writes immediately; only verification paints Blue. */
-      if (scoreAutoPushV2345 && scoreAutoPushMatchesV2345()) return;
+      /* V23.49: a visual-timing callback is NOT proof that the write saved.
+         Keep gray until Worker verifiedScores confirms this specific value. */
       state.releaseAt = performance.now() + releaseDelayV1835;
       state.timer = window.setTimeout(() => {
         if (scoreVisualStateV1619[index] !== state) return;
+        state.timer = 0;
         if (localScores[index] !== state.value) {
           clearScoreVisualStateV1619(index);
           return;
         }
-
-        state.timer = 0;
-        if (scoreAutoPushV2345 && scoreAutoPushMatchesV2345() &&
-            savedScores[index] !== state.value) {
-          state.blue = false;
-          renderScorecard();
-          return;
-        }
-        state.blue = true;
-
-        /* If the backend already verified this exact value, native savedScores
-           styling takes over from this same render onward. */
-        if (state.verified && savedScores[index] === state.value) {
-          scoreVisualStateV1619[index] = null;
-        }
-
-        /* One render, one moment: score Blue + NESR hole gray + NESR box Blue. */
+        if (savedScores[index] === state.value) clearScoreVisualStateV1619(index);
         renderScorecard();
       }, releaseDelayV1835);
     }
 
     function scoreIsVisuallyBlueV1619(index, localValue, savedValue) {
-      const state = scoreVisualStateV1619[index];
-      if (state && localValue === state.value) return state.blue === true;
-      return localValue === savedValue;
+      /* An exact, confirmed nonblank match is the ONLY way to paint Blue.
+         Pending blanks and stale optimistic state never qualify. */
+      return localValue !== null && savedValue !== null && localValue === savedValue;
     }
 
     function scoreVisualProgressV1619() {
-      const visual = normalizeScores(savedScores);
-
-      scoreVisualStateV1619.forEach((state, index) => {
-        if (!state || localScores[index] !== state.value) return;
-        visual[index] = state.blue ? state.value : state.previousSavedValue;
-      });
-
-      return visual;
+      /* Next expected hole is navigational and always follows the user's
+         LATEST local ENTER/CLEAR, never an old in-flight Worker snapshot. */
+      return normalizeScores(localScores);
     }
 
     function markScoreVisualVerificationV1619(confirmedScores, requestGenerations) {
@@ -16860,7 +16852,7 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
         /* Verification never releases the visual state early. The NESR
            handoff owns that moment. If that handoff already happened, native
            savedScores styling can take over without another repaint. */
-        if (state.blue) {
+        if (localScores[index] === state.value) {
           if (state.timer) window.clearTimeout(state.timer);
           scoreVisualStateV1619[index] = null;
         }
@@ -16869,7 +16861,7 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
 
     function showScoreSaveFailureModalV1621(context) {
       if (scoreAutoPushV2345 || scoreFailureWarningShownV2348 ||
-          (selectedTeam && hasPendingScores() &&
+          (selectedTeam && hasUnverifiedScoreChangesV2349() &&
            scoreAutoPushOfferSlotV2348 === Number(selectedTeam.slot))) return;
       scoreFailureWarningShownV2348 = true;
       void scoreAutoPushRowTransitionV2345(() => {
@@ -16886,7 +16878,7 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
         els.modalBody.replaceChildren(lineOne, lineTwo);
       }
       els.modalOverlay.classList.add('score-save-warning');
-      const close = makeModalButton('CLOSE', '', closeModal);
+      const close = makeModalButton("I'LL SAVE", 'sshcp-ill-save-v2349', closeModal);
       const enable = makeModalButton('AUTO PUSH EVERY 10 SECONDS', 'primary', () => {
         enableScoreAutoPushV2345();
       });
@@ -16908,7 +16900,7 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
       failureContextV1621 = 'enter'
     ) {
       const affected = expectedScores
-        .map((score, index) => score !== savedAtRequest[index] ? index : -1)
+        .map((score, index) => (score !== savedAtRequest[index] || scoreNeedsReconcileV2349) ? index : -1)
         .filter(index => index >= 0);
 
       if (!affected.length) return;
@@ -16927,7 +16919,7 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
       window.setTimeout(() => {
         const unresolved = affected.filter(index => {
           if (localScores[index] !== expectedScores[index]) return false;
-          if (savedScores[index] === expectedScores[index]) return false;
+          if (savedScores[index] === expectedScores[index] && !scoreNeedsReconcileV2349) return false;
 
           const requestGeneration = requestGenerations[index];
           if (requestGeneration !== null && requestGeneration !== undefined) {
@@ -17010,6 +17002,25 @@ body.sshcp-auto-push-footer-active-v2348 #scorecardView .hole-cell.next-hole-cel
 
     let saveQueuedFailureContextV1621 =
       null;
+
+    /* Capture requests separately from the evolving local card. A CLEAR that
+       equals the OLD saved state is still pending when an older ENTER is on
+       the network; it must be queued and retained locally until reconciled. */
+    let scoreSaveInFlightSnapshotV2349 = null;
+    let scoreSaveInFlightSlotV2349 = null;
+    let scoreSaveInFlightPasskeyV2349 = '';
+    let scoreNeedsReconcileV2349 = false;
+    let scoreForceWriteInProgressV2349 = false;
+
+    function scoreReconcileKeyV2349(team = selectedTeam) {
+      return team ? 'rotbPendingReconcileV2349:' + String(team.slot) : '';
+    }
+    function storeScoreReconcileV2349() {
+      const key = scoreReconcileKeyV2349();
+      if (!key) return;
+      if (scoreNeedsReconcileV2349) sshcpLocalStorageV2318.setItem(key,'1');
+      else sshcpLocalStorageV2318.removeItem(key);
+    }
 
     /* V23.45 — one opt-in retry session for the CURRENT event/team. The
        existing event-prefixed storage wrapper enforces tournament isolation. */
@@ -23466,6 +23477,7 @@ let scoreTimingDetail =
 
       /* V23.48: do not retry when Scorecard is not visible. */
       if (view !== 'scorecard' && scoreAutoPushV2345) clearScoreAutoPushTimerV2345();
+      if (view === 'scorecard' && scoreAutoPushDisplayV2345()) scoreAutoPushPlanNextV2345();
 
       if (typeof scheduleScreenLayoutLogCaptureV238 === 'function') {
         scheduleScreenLayoutLogCaptureV238('VIEW ' + view);
@@ -24723,7 +24735,7 @@ let scoreTimingDetail =
         */
         if (scoreAutoPushV2345) {
           restoreScoreAutoPushAfterLoadV2345();
-        } else if (hasPendingScores()) {
+        } else if (hasUnverifiedScoreChangesV2349()) {
           scoreAutoPushOfferSlotV2348 = selectedTeam ? Number(selectedTeam.slot) : null;
           paintScoreAutoPushRowV2345();
           setTimeout(
@@ -24914,7 +24926,11 @@ let scoreTimingDetail =
       const team = teams.find(item => Number(item.slot) === Number(slot));
       if (!team) return;
       resetScoreVisualStateV1619();
+      if (!selectedTeam || Number(selectedTeam.slot) !== Number(team.slot)) {
+        clearedBlankIndicesV2349.clear();
+      }
       selectedTeam = team;
+      scoreNeedsReconcileV2349 = sshcpLocalStorageV2318.getItem(scoreReconcileKeyV2349(team)) === '1';
       localScores = normalizeScores(team.scores);
       savedScores = normalizeScores(team.scores);
       const pendingScores = readPendingScores(team);
@@ -24927,6 +24943,8 @@ let scoreTimingDetail =
 
     function clearSelectedTeam() {
       resetScoreVisualStateV1619();
+      clearedBlankIndicesV2349.clear();
+      scoreNeedsReconcileV2349 = false;
       selectedTeam = null;
       localScores = Array(18).fill(null);
       savedScores = Array(18).fill(null);
@@ -25378,6 +25396,7 @@ let scoreTimingDetail =
 
       localScores = normalizeScores(snapshot.localScores);
       savedScores = normalizeScores(snapshot.savedScores);
+      scoreNeedsReconcileV2349 = sshcpLocalStorageV2318.getItem(scoreReconcileKeyV2349()) === '1';
       scorecardHasLoaded = true;
       scorecardHydratedFromSnapshotV53 = true;
       scorecardHydratedScrollTopV53 = Math.max(0, Number(snapshot.scrollTop) || 0);
@@ -26420,6 +26439,8 @@ let scoreTimingDetail =
         ? els.scoreScroll.scrollTop
         : null;
 
+      document.body.classList.toggle('sshcp-score-pending-v2349',
+        hasUnverifiedScoreChangesV2349());
       els.scoreRows.innerHTML =
         '';
 
@@ -26440,35 +26461,12 @@ let scoreTimingDetail =
       const localNextHoleIndexV1834 = scorecardActiveHoleIndexV16(localScores, selectedTeam);
       const visualProgressScoresV1619 = scoreVisualProgressV1619();
       const visualNextHoleIndexV1834 = scorecardActiveHoleIndexV16(visualProgressScoresV1619, selectedTeam);
-      const holdNextHoleVisualV1834 = !scoreAutoPushDisplayV2345() &&
-        scoreVisualStateV1619.some((state, stateIndex) => (
-        !!state &&
-        state.blue !== true &&
-        localScores[stateIndex] === state.value
-      ));
+      /* V23.49: immediate navigational NESR always follows the local card;
+         a pending ENTER or CLEAR must not borrow the old verified Blue border. */
+      const nextHoleIndex = localNextHoleIndexV1834;
+      const showVerifiedNextHoleBorder = !hasUnverifiedScoreChangesV2349() &&
+        !clearedBlankIndicesV2349.has(nextHoleIndex);
 
-      /* SSHCP V20.89 — ENTER keeps the established V18.35 pending/verified NESR
-         handoff. CLEAR remains stationary; after its short top-panel visual hold,
-         the local blank becomes NESR with its normal HOLE cue and Blue score-box
-         outline. A pending clear is identified only when the current local NESR
-         is blank but that same slot is still nonblank in savedScores. */
-      const immediateClearNesrV2083 = (
-        Number.isInteger(localNextHoleIndexV1834) &&
-        localScores[localNextHoleIndexV1834] === null &&
-        savedScores[localNextHoleIndexV1834] !== null &&
-        savedScores[localNextHoleIndexV1834] !== undefined &&
-        savedScores[localNextHoleIndexV1834] !== ''
-      );
-
-      const nextHoleIndex = holdNextHoleVisualV1834
-        ? visualNextHoleIndexV1834
-        : localNextHoleIndexV1834;
-      const showVerifiedNextHoleBorder = immediateClearNesrV2083
-        ? true
-        : (
-          !holdNextHoleVisualV1834 &&
-          localNextHoleIndexV1834 === visualNextHoleIndexV1834
-        );
 
       /* V18.38 — Starting Hole owns the visual nine-hole landmarks. */
       const playOrderV1836 = scorecardPlayOrderV16(selectedTeam);
@@ -26910,7 +26908,8 @@ let scoreTimingDetail =
       const key = pendingScoresKey(selectedTeam);
       if (!key) return;
 
-      if (hasPendingScores()) {
+      storeScoreReconcileV2349();
+      if (hasUnverifiedScoreChangesV2349()) {
         sshcpLocalStorageV2318.setItem(key, JSON.stringify(localScores));
       }
       else {
@@ -26922,6 +26921,14 @@ let scoreTimingDetail =
     function hasPendingScores() {
       if (!selectedTeam) return false;
       return localScores.some((score,index) => score !== savedScores[index]);
+    }
+
+    function hasUnverifiedScoreChangesV2349() {
+      if (!selectedTeam) return false;
+      if (hasPendingScores() || scoreNeedsReconcileV2349 || saveQueued) return true;
+      return !!(saveInProgress && scoreSaveInFlightSnapshotV2349 &&
+        scoreSaveInFlightSlotV2349 === Number(selectedTeam.slot) &&
+        scoreSaveInFlightSnapshotV2349.some((score,index) => score !== localScores[index]));
     }
 
     function updateSubmitButtonState() {
@@ -26950,11 +26957,11 @@ let scoreTimingDetail =
     }
 
     function scoreAutoPushDisplayV2345() {
-      return scoreAutoPushMatchesV2345() && hasPendingScores();
+      return scoreAutoPushMatchesV2345() && hasUnverifiedScoreChangesV2349();
     }
 
     function scoreAutoPushFooterModeV2348() {
-      if (!selectedTeam || !hasPendingScores()) return 'normal';
+      if (!selectedTeam || !hasUnverifiedScoreChangesV2349()) return 'normal';
       if (scoreAutoPushDisplayV2345()) return 'active';
       return scoreAutoPushOfferSlotV2348 === Number(selectedTeam.slot)
         ? 'offer' : 'normal';
@@ -26976,6 +26983,8 @@ let scoreTimingDetail =
         els.scoreTeamSelectButton.setAttribute('aria-haspopup', selectable ? 'listbox' : 'false');
         requestAnimationFrame(fitScoreTeamSelectName);
       }
+      document.body.classList.toggle('sshcp-score-pending-v2349',
+        hasUnverifiedScoreChangesV2349());
       const mode = scoreAutoPushFooterModeV2348();
       scoreAutoPushPaintedModeV2348 = mode;
       const active = mode === 'active';
@@ -27034,13 +27043,13 @@ let scoreTimingDetail =
           scoreAutoPushPlanNextV2345();
           return;
         }
-        if (!hasPendingScores()) { stopScoreAutoPushV2345('verified'); return; }
+        if (!hasUnverifiedScoreChangesV2349()) { stopScoreAutoPushV2345('verified'); return; }
         submitScores('auto');
       }, delay);
     }
 
     function enableScoreAutoPushV2345() {
-      if (!selectedTeam || !hasPendingScores() || !getQrPasskey()) return;
+      if (!selectedTeam || !hasUnverifiedScoreChangesV2349() || !getQrPasskey()) return;
       void scoreAutoPushRowTransitionV2345(() => {
         const role = getQrRole();
         if (role !== 'QR' && role !== 'MASTER') return;
@@ -27067,12 +27076,12 @@ let scoreTimingDetail =
       clearScoreAutoPushTimerV2345();
       void scoreAutoPushRowTransitionV2345(() => {
         const slot = scoreAutoPushV2345 ? scoreAutoPushV2345.slot : '';
-        if (reason !== 'verified' && selectedTeam && hasPendingScores()) {
+        if (reason !== 'verified' && selectedTeam && hasUnverifiedScoreChangesV2349()) {
           scoreAutoPushOfferSlotV2348 = Number(selectedTeam.slot);
         }
         scoreAutoPushV2345 = null;
         sshcpLocalStorageV2318.removeItem(SCORE_AUTO_PUSH_KEY_V2345);
-        if (!hasPendingScores()) {
+        if (!hasUnverifiedScoreChangesV2349()) {
           scoreAutoPushOfferSlotV2348 = null;
           scoreFailureWarningShownV2348 = false;
         }
@@ -27088,7 +27097,7 @@ let scoreTimingDetail =
         clearScoreAutoPushTimerV2345();
         return;
       }
-      if (!hasPendingScores()) {
+      if (!hasUnverifiedScoreChangesV2349()) {
         clearScoreAutoPushTimerV2345();
         scoreAutoPushV2345 = null;
         sshcpLocalStorageV2318.removeItem(SCORE_AUTO_PUSH_KEY_V2345);
@@ -27343,10 +27352,10 @@ let scoreTimingDetail =
         raw === ''
       ) {
 
-        /* SSHCP V20.89 — CLEAR holds the existing visual state for 0.10s
-           (or the top-panel CLEAR value), then reveals the recalculated NESR.
-           It remains stationary and the backend blank/save begins immediately. */
-        beginClearVisualHoldV1836();
+        /* V23.49 CLEAR instantly reveals a wholly gray/empty score box. */
+        resetClearVisualHoldV1836();
+        clearScoreVisualStateV1619(index);
+        clearedBlankIndicesV2349.add(index);
 
         localScores[
           index
@@ -27401,10 +27410,10 @@ let scoreTimingDetail =
         value === 0
       ) {
 
-        /* SSHCP V20.89 — CLEAR holds the existing visual state for 0.10s
-           (or the top-panel CLEAR value), then reveals the recalculated NESR.
-           It remains stationary and the backend blank/save begins immediately. */
-        beginClearVisualHoldV1836();
+        /* V23.49 CLEAR instantly reveals a wholly gray/empty score box. */
+        resetClearVisualHoldV1836();
+        clearScoreVisualStateV1619(index);
+        clearedBlankIndicesV2349.add(index);
 
         localScores[
           index
@@ -27437,6 +27446,7 @@ let scoreTimingDetail =
         index
       ] =
         value;
+      clearedBlankIndicesV2349.delete(index);
 
       /* V18.34 — establish the pending visual gate before the first render so
          the old/current hole cue remains stable while the scorecard scrolls. */
@@ -27535,6 +27545,9 @@ let scoreTimingDetail =
           top-panel 0.10s visual hold before its recalculated NESR is painted.
           Backend verification remains authoritative.
         */
+        /* CLEAR already painted gray; ENTER has its usual beauty scroll.
+           Restart the visible 10s countdown from this user-triggered attempt. */
+        if (scoreAutoPushDisplayV2345()) scoreAutoPushPlanNextV2345();
         if (!commitResult.cleared) {
           const visualStateV1834 = scoreVisualStateV1619[commitResult.index];
           const visualGenerationV1834 = visualStateV1834
@@ -27600,22 +27613,31 @@ let scoreTimingDetail =
        ========================================================= */
 
 
-    async function submitScores(failureContextV1621 = 'enter') {
+    async function submitScores(failureContextV1621 = 'enter', forceReconcileV2349 = false) {
 
-      if (
-        !selectedTeam ||
-        !hasPendingScores()
-      ) {
-        return;
-      }
+      if (!selectedTeam) return;
 
+      /* A new ENTER/CLEAR ALWAYS queues behind an older in-flight save,
+         even when latest localScores temporarily matches old savedScores. */
       if (saveInProgress) {
+        if (failureContextV1621 === 'auto') return;
         saveQueued = true;
+        scoreNeedsReconcileV2349 = true;
         /* A queued real ENTER is the more specific user action. Otherwise
            preserve REFRESH so a failed refresh retry gets refresh-only copy. */
         if (failureContextV1621 === 'enter' || saveQueuedFailureContextV1621 !== 'enter') {
           saveQueuedFailureContextV1621 = failureContextV1621;
         }
+        if (scoreAutoPushDisplayV2345()) scoreAutoPushPlanNextV2345();
+        syncPendingScoresStorage();
+        document.body.classList.toggle('sshcp-score-pending-v2349', true);
+        return;
+      }
+
+      if (!hasPendingScores() && !scoreNeedsReconcileV2349 && !forceReconcileV2349) {
+        /* A standalone CLEAR of an already-blank hole needs no redundant
+           Worker transaction; nothing remains to verify. */
+        paintScoreAutoPushRowV2345();
         return;
       }
 
@@ -27633,8 +27655,11 @@ let scoreTimingDetail =
 
       saveInProgress =
         true;
+      scoreForceWriteInProgressV2349 = !!forceReconcileV2349;
 
-      if (scoreAutoPushV2345) clearScoreAutoPushTimerV2345();
+      /* Start the next interval from this real attempt, not completion of a
+         previous request; the same reset applies to ENTER and CLEAR. */
+      if (scoreAutoPushDisplayV2345()) scoreAutoPushPlanNextV2345();
 
       els.submitBtn.disabled =
         true;
@@ -27646,6 +27671,9 @@ let scoreTimingDetail =
         normalizeScores(
           localScores
         );
+      scoreSaveInFlightSnapshotV2349 = expectedScores;
+      scoreSaveInFlightSlotV2349 = Number(selectedTeam.slot);
+      scoreSaveInFlightPasskeyV2349 = String(getQrPasskey());
 
       const savedScoresAtRequestV1619 = normalizeScores(savedScores);
       const visualGenerationsAtRequestV1619 = scoreVisualStateV1619.map(
@@ -27769,10 +27797,18 @@ let scoreTimingDetail =
               score !== savedScores[index]
           );
 
-        const sameTeamAtVerifyV2345 = !!(selectedTeam && Number(selectedTeam.slot) === expectedSlot);
+        const sameTeamAtVerifyV2345 = !!(selectedTeam &&
+          Number(selectedTeam.slot) === expectedSlot &&
+          String(getQrPasskey()) === scoreSaveInFlightPasskeyV2349);
         autoPushVerifiedEnteredScoreV2347 = !!(sameTeamAtVerifyV2345 &&
           failureContextV1621 === 'auto' && shouldAutoPositionAfterSave);
-        if (sameTeamAtVerifyV2345) savedScores = [...confirmedScores];
+        if (sameTeamAtVerifyV2345) {
+          savedScores = [...confirmedScores];
+          if (!saveQueued && scoresEqual(localScores, confirmedScores)) {
+            scoreNeedsReconcileV2349 = false;
+          }
+          storeScoreReconcileV2349();
+        }
 
         if (sameTeamAtVerifyV2345) markScoreVisualVerificationV1619(
           confirmedScores,
@@ -27830,18 +27866,9 @@ let scoreTimingDetail =
            rows while NESR motion / handoff timing is active. The single NESR
            handoff render applies the verified/optimistic Blue state. REFRESH
            and non-cadence saves still repaint immediately. */
-        const holdVerificationRenderV1834 = (
-          !scoreAutoPushMatchesV2345() && failureContextV1621 === 'enter' &&
-          visualGenerationsAtRequestV1619.some((generation, index) => (
-            generation !== null &&
-            generation !== undefined &&
-            expectedScores[index] !== savedScoresAtRequestV1619[index]
-          ))
-        );
-
-        if (sameTeamAtVerifyV2345 && !holdVerificationRenderV1834) {
-          renderScorecard();
-        }
+        /* V23.49: verified reply may paint only matching local values blue.
+           The confirmation snapshot cannot restore any newer CLEAR/ENTER. */
+        if (sameTeamAtVerifyV2345) renderScorecard();
 
         /*
           V15.9 — only an entered/verified score advances the visible
@@ -27916,6 +27943,10 @@ let scoreTimingDetail =
 
         saveInProgress =
           false;
+        scoreSaveInFlightSnapshotV2349 = null;
+        scoreSaveInFlightSlotV2349 = null;
+        scoreSaveInFlightPasskeyV2349 = '';
+        scoreForceWriteInProgressV2349 = false;
 
         updateSubmitButtonState();
 
@@ -27926,10 +27957,10 @@ let scoreTimingDetail =
           const queuedFailureContextV1621 = saveQueuedFailureContextV1621 || 'enter';
           saveQueuedFailureContextV1621 = null;
 
-          if (hasPendingScores()) {
+          if (hasPendingScores() || scoreNeedsReconcileV2349) {
             queuedAnotherSave = true;
             setTimeout(
-              () => submitScores(queuedFailureContextV1621),
+              () => submitScores(queuedFailureContextV1621, true),
               0
             );
           }
@@ -27938,7 +27969,7 @@ let scoreTimingDetail =
         /* V23.45 — one in-flight request at a time. Verified cards stop the
            retry session; unanswered writes wait for the next 10-second slot. */
         if (scoreAutoPushV2345 && !queuedAnotherSave && scoreAutoPushMatchesV2345()) {
-          if (!hasPendingScores()) {
+          if (!hasUnverifiedScoreChangesV2349()) {
             stopScoreAutoPushV2345('verified', autoPushVerifiedEnteredScoreV2347);
           } else {
             /* More than one pending change can remain if the golfer keeps
@@ -27953,7 +27984,7 @@ let scoreTimingDetail =
 
         /* An inactive/red AUTO PUSH offer is removed ONLY after the whole card
            is verified; any one->two / two->one transition uses Fade 2. */
-        if (!hasPendingScores() && !scoreAutoPushV2345 && !queuedAnotherSave) {
+        if (!hasUnverifiedScoreChangesV2349() && !scoreAutoPushV2345 && !queuedAnotherSave) {
           if (scoreAutoPushPaintedModeV2348 !== 'normal') {
             void scoreAutoPushRowTransitionV2345(() => {
               scoreAutoPushOfferSlotV2348 = null;
@@ -27964,6 +27995,9 @@ let scoreTimingDetail =
             scoreFailureWarningShownV2348 = false;
           }
         }
+        if (selectedTeam) syncPendingScoresStorage();
+        if (currentView === 'scorecard') document.body.classList.toggle(
+          'sshcp-score-pending-v2349', hasUnverifiedScoreChangesV2349());
 
         /* If the player moved to LIVE LEADERBOARD while this score was being
            verified, refresh immediately after the final queued save attempt.
@@ -39003,7 +39037,7 @@ let scoreTimingDetail =
 
     els.scoreAutoPushFooterButtonV2348.addEventListener('click', () => {
       if (scoreAutoPushDisplayV2345()) stopScoreAutoPushV2345('cancelled');
-      else if (hasPendingScores()) enableScoreAutoPushV2345();
+      else if (hasUnverifiedScoreChangesV2349()) enableScoreAutoPushV2345();
     });
 
 
