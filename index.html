@@ -1,3 +1,15 @@
+<!-- SSHCP V23.65 TEST — exact V23.64-N8Q4VX donor, frontend-only.
+     Event presentation cache freshness only. Any QR/passkey URL forces current
+     eventConfig discovery and the real event logo/info image (not stored
+     presentation); repeat QR scans are not mistaken for a fast TEAM return.
+     Returning TEAM PWA presentation fast path is valid for 60 minutes max.
+     On fresh discovery, bypass image HTTP cache and replace the target event's
+     public HOME logo CacheStorage record; migrate away from old V23.38 logo
+     cache. Preserve event-isolated auth/QR/team/score storage, native PWA
+     startup routes, confirmation/curtain timing, Worker CF3.35, scoring,
+     leaderboard, tiebreak, skins, GEEK, and protected V23.60 GOLDEN.
+     TEST / NOT GOLDEN / PHONE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.64-N8Q4VX | BUILD KEY: 23.65-Q8M4VX -->
 <!-- SSHCP V23.64 TEST — exact V23.63-M7Q4VX donor, frontend-only.
      Restore unverified-score warning threshold from 0.9s to 2.0s after
      ENTER/CLEAR. Add a small italic note beneath SCORE NOT SAVED's existing
@@ -665,10 +677,19 @@
       var fastTeamReturnV2338 = false;
       var fastPresentationV2338 = null;
       var presentationStorageKeyV2338 = 'sshcpVerifiedPresentationV2338';
+      /* V23.65: explicit QR/passkey URLs ALWAYS require verified live event
+         discovery, even if this passkey matches an installed PWA launcher.
+         Short-lived event-only presentation may fast-open without changing
+         authentication, team selection, scores, or other event namespaces. */
+      var forceFreshPresentationV2365 = hasIncomingQrV2336;
+      var presentationMaxAgeV2365 = 60 * 60 * 1000;
+      var logoFreshNonceV2365 = Date.now().toString(36) + '-' +
+        Math.random().toString(36).slice(2,9);
       var oldQrInLaunchV2338 = String(queryV2318.get('passkey') || queryV2318.get('key') || '').trim();
       try {
         if (standaloneLaunchV2336 && validV2318 && !masterEntryV2326 &&
             !masterPickerV2326 && !forceMasterPickerV2336 &&
+            !forceFreshPresentationV2365 &&
             window.localStorage.getItem('SimpleScramble:lastAuthorizedEvent:V2335') === eventV2318 &&
             window.localStorage.getItem(namespaceV2318 + 'sshcpQrRole') === 'QR') {
           var savedTeamKeyV2338 = String(window.localStorage.getItem(namespaceV2318 + 'sshcpQrPasskey') || '').trim();
@@ -677,7 +698,11 @@
           var savedTeamSlotV2338 = Number(window.localStorage.getItem(namespaceV2318 + 'sshcpQrSlot'));
           var savedPresentationRawV2338 = window.localStorage.getItem(namespaceV2318 + presentationStorageKeyV2338);
           var cachedCandidateV2338 = savedPresentationRawV2338 ? JSON.parse(savedPresentationRawV2338) : null;
+          var candidateVerifiedAtV2365 = cachedCandidateV2338 && Number(cachedCandidateV2338.verifiedAt);
+          var candidateAgeV2365 = Date.now() - candidateVerifiedAtV2365;
           if (savedTeamKeyV2338 && savedTeamIdV2338 && savedTeamNameV2338 &&
+              Number.isFinite(candidateVerifiedAtV2365) && candidateVerifiedAtV2365 > 0 &&
+              candidateAgeV2365 >= 0 && candidateAgeV2365 <= presentationMaxAgeV2365 &&
               Number.isInteger(savedTeamSlotV2338) && savedTeamSlotV2338 >= 1 &&
               savedTeamSlotV2338 <= 36 &&
               (!oldQrInLaunchV2338 || oldQrInLaunchV2338 === savedTeamKeyV2338) &&
@@ -721,7 +746,7 @@
           var imageStartedV2337 = startupClockV2337();
           var warmImageV2337 = new window.Image();
           var warmImageUrlV2337 = 'https://rotbtest.projrcc.workers.dev/?event=' +
-            encodeURIComponent(eventV2318) + '&action=eventImage&kind=home';
+            encodeURIComponent(eventV2318) + '&action=eventImage&kind=home&fresh=' + logoFreshNonceV2365;
           warmImageV2337.addEventListener('load',function(){
             startupTraceV2337.homeImageMs = startupClockV2337() - imageStartedV2337;
           },{once:true});
@@ -878,12 +903,27 @@
         try { console.error('SSHCP HOME image readiness failed:', error); } catch (_) {}
       };
 
-      function warmStableHomeLogoV2338(url) {
+      /* V23.65: re-warm even when a previous logo exists. Cache the freshly
+         resolved image under the stable per-event URL only after a verified
+         eventConfig, never restore an image from the retired V23.38 cache. */
+      /* Clear ONLY this event's non-secret HOME image record on any fresh
+         event discovery. The promise orders cache deletion before re-warming
+         so a slower async delete cannot discard the newly fetched logo. */
+      var clearTargetHomeLogoV2365 = Promise.resolve();
+      if (!fastTeamReturnV2338 && validV2318 && window.caches) {
+        clearTargetHomeLogoV2365 = Promise.resolve().then(async function(){
+          var cache = await window.caches.open('GolfAPP:public-home-logos:V2365');
+          var url = 'https://rotbtest.projrcc.workers.dev/?event=' +
+            encodeURIComponent(eventV2318) + '&action=eventImage&kind=home';
+          await cache.delete(url);
+        }).catch(function(){});
+      }
+      function warmStableHomeLogoV2338(url,freshUrl) {
         if (!window.caches || !url) return;
         Promise.resolve().then(async function(){
-          var cache = await window.caches.open('GolfAPP:public-home-logos:V2338');
-          if (await cache.match(url)) return;
-          var response = await nativeFetchV2318(url, {cache:'force-cache'});
+          await clearTargetHomeLogoV2365;
+          var cache = await window.caches.open('GolfAPP:public-home-logos:V2365');
+          var response = await nativeFetchV2318(freshUrl || url, {cache:'no-store'});
           if (response.ok && /image\/jpeg/i.test(response.headers.get('content-type') || ''))
             await cache.put(url,response);
         }).catch(function(){});
@@ -891,14 +931,17 @@
       function restoreStableHomeLogoV2338(img,url) {
         if (!fastTeamReturnV2338 || !window.caches) { img.src=url; return; }
         Promise.resolve().then(async function(){
-          var cache = await window.caches.open('GolfAPP:public-home-logos:V2338');
+          var cache = await window.caches.open('GolfAPP:public-home-logos:V2365');
           var response = await cache.match(url);
-          if (!response) { img.src=url; return; }
+          /* A missing/invalid new cache must NEVER fall back to an old HTTP
+             image after a fresh eventConfig was accepted. */
+          var safeFallbackV2365 = url + '&fresh=' + logoFreshNonceV2365;
+          if (!response) { img.src=safeFallbackV2365; return; }
           var blob = await response.blob();
-          if (!blob.type.startsWith('image/')) { img.src=url; return; }
+          if (!blob.type.startsWith('image/')) { img.src=safeFallbackV2365; return; }
           var objectUrl=URL.createObjectURL(blob);
           img.src=objectUrl;
-        }).catch(function(){ img.src=url; });
+        }).catch(function(){ img.src=url + '&fresh=' + logoFreshNonceV2365; });
       }
       function updatePresentationV2318(data) {
         function applyV2318() {
@@ -918,6 +961,10 @@
             homeImage=preflightImageV2337.element;
           }
           var baseUrl = 'https://rotbtest.projrcc.workers.dev/?event=' + encodeURIComponent(eventV2318) + '&action=eventImage&kind=';
+          /* Fresh QR or expired event metadata must retrieve the CURRENT image,
+             while valid fast returns use the event's last verified image. */
+          var freshSuffixV2365 = fastTeamReturnV2338 ? '' : '&fresh=' + logoFreshNonceV2365;
+          var desiredHomeUrlV2365 = baseUrl + 'home' + freshSuffixV2365;
           if (homeImage) {
             homeImage.alt = data.longName;
             var logoTimerV2320 = 0;
@@ -942,7 +989,8 @@
                 }
               }).then(function() {
                 releaseLogoWatchV2320(null);
-                if (!fastTeamReturnV2338) warmStableHomeLogoV2338(baseUrl+'home');
+                 if (!fastTeamReturnV2338)
+                   warmStableHomeLogoV2338(baseUrl+'home',desiredHomeUrlV2365);
               }, releaseLogoWatchV2320);
             }
             homeImage.addEventListener('load', logoLoadedV2320, {once:true});
@@ -953,7 +1001,9 @@
               releaseLogoWatchV2320(new Error('Event HOME image request timed out.'));
             }, 20000);
             if (fastTeamReturnV2338) restoreStableHomeLogoV2338(homeImage,baseUrl+'home');
-            else if (homeImage.src !== baseUrl + 'home') homeImage.src = baseUrl + 'home';
+            else if (!preflightImageV2337 || homeImage !== preflightImageV2337.element) {
+              if (homeImage.src !== desiredHomeUrlV2365) homeImage.src = desiredHomeUrlV2365;
+            }
             // Cached images can already be complete before a load event is queued.
             if (homeImage.complete && homeImage.naturalWidth > 0) logoLoadedV2320();
           } else {
@@ -961,7 +1011,7 @@
           }
           if (infoImage) {
             infoImage.alt = data.longName + ' event information';
-            infoImage.src = baseUrl + 'info';
+            infoImage.src = baseUrl + 'info' + freshSuffixV2365;
           }
         }
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyV2318, {once:true});
@@ -1008,7 +1058,8 @@
         try {
           window.localStorage.setItem(namespaceV2318 + presentationStorageKeyV2338,
             JSON.stringify({event:eventV2318,shortName:data.shortName,
-              longName:data.longName,homeImage:data.homeImage,infoImage:data.infoImage}));
+              longName:data.longName,homeImage:data.homeImage,infoImage:data.infoImage,
+              verifiedAt:Date.now()}));
         } catch (_) {}
         updatePresentationV2318(data);
         return data;
@@ -15579,7 +15630,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.64</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.65</span></span>
         </button>
         <script>
           (function () {
