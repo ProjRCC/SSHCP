@@ -1,3 +1,13 @@
+<!-- SSHCP V23.66 TEST — exact V23.65-Q8M4VX donor, frontend-only.
+     Central adjDPR = max(2.00, reported DPR). Use adjDPR for ALL DPR-based
+     layout/sizing/effective-viewport calculations, including boot, responsive
+     shell, GEEK and landscape ALL TEAMS. Devices reporting DPR >= 2.00 are
+     mathematically unchanged. The real DPR is retained solely for diagnostics;
+     Control Center and SCREEN LOG report raw DPR and adjDPR separately.
+     No alterations to Worker, event discovery/QR cache freshness, scoring,
+     leaderboard, tiebreak, skins, GEEK stats, curtain timings, or protected
+     V23.60 GOLDEN. TEST / PHONE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.65-Q8M4VX | BUILD KEY: 23.66-R8Q4MX -->
 <!-- SSHCP V23.65 TEST — exact V23.64-N8Q4VX donor, frontend-only.
      Event presentation cache freshness only. Any QR/passkey URL forces current
      eventConfig discovery and the real event logo/info image (not stored
@@ -516,6 +526,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+  <script>
+    /* V23.66 — single, centrally controlled DPR floor for all layout math. */
+    window.SSHCP_MIN_ADJ_DPR_V2366 = 2.00;
+    window.sshcpAdjustedDPRV2366 = function (rawValue) {
+      const measured = Number(rawValue === undefined ? window.devicePixelRatio : rawValue);
+      const actual = Number.isFinite(measured) && measured > 0 ? measured : 1;
+      return Math.max(window.SSHCP_MIN_ADJ_DPR_V2366, actual);
+    };
+  </script>
 
   <script>
     /* CF3.31 / V23.19 — strict event/bootstrap plus verified event restoration.
@@ -1369,7 +1389,8 @@
           );
           var bootV16Vars = null;
 
-          if (savedV16Shell && savedV16Shell.v188 === true && savedV16Shell.vars) {
+          if (savedV16Shell && savedV16Shell.v188 === true && savedV16Shell.vars &&
+              Number(window.devicePixelRatio || 1) >= window.SSHCP_MIN_ADJ_DPR_V2366) {
             var v16CloseW = Math.abs((savedV16Shell.w || 0) - v16NowW) <= 8;
             var v16CloseH = Math.abs((savedV16Shell.h || 0) - v16NowH) <= 12;
             if (v16CloseW && v16CloseH) {
@@ -1377,7 +1398,7 @@
             }
           }
 
-          var v188Dpr = Math.max(0.1, Number(window.devicePixelRatio) || 1);
+          var v188Dpr = window.sshcpAdjustedDPRV2366();
           var v188ScreenW = Math.max(1, Number(window.screen && screen.width) || v16NowW);
           var v188ScreenH = Math.max(1, Number(window.screen && screen.height) || v16NowH);
           var v188PhysShort = Math.min(v188ScreenW, v188ScreenH) * v188Dpr;
@@ -15630,7 +15651,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.65</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.66</span></span>
         </button>
         <script>
           (function () {
@@ -19226,7 +19247,7 @@ let scoreTimingDetail =
         Number(metrics.multiplier) || 1
       );
       const shellScale = stableSvh > 0
-        ? globalViewportDprScaleV220(stableSvh, metrics.dpr)
+        ? globalViewportDprScaleV220(stableSvh, metrics.adjDPR)
         : viewScale;
       const sy = value => Math.max(1, Math.round(Number(value) * shellScale));
 
@@ -19253,8 +19274,9 @@ let scoreTimingDetail =
         innerHeight: Math.round(metrics.innerHeight),
         visualWidth: Number(metrics.visualWidth) || Number(metrics.innerWidth) || 0,
         visualHeight: Number(metrics.visualHeight) || Number(metrics.innerHeight) || 0,
-        effectiveHeight: Number(metrics.effectiveHeight) || ((Number(metrics.visualHeight) || 0) * (Number(metrics.dpr) || 1)),
+        effectiveHeight: Number(metrics.effectiveHeight) || ((Number(metrics.visualHeight) || 0) * (Number(metrics.adjDPR) || 2)),
         dpr: Number(metrics.dpr) || 1,
+        adjDPR: Number(metrics.adjDPR) || 2,
         viewScale,
         shellScale,
         nav: sy(35),
@@ -19283,7 +19305,7 @@ let scoreTimingDetail =
       return (
         'VIEW ' + snap.innerWidth + '×' + snap.innerHeight +
         ' • VPH ' + Math.round(snap.visualHeight || snap.innerHeight) +
-        ' • DPR ' + snap.dpr.toFixed(2) +
+        ' • DPR ' + snap.dpr.toFixed(2) + ' • adjDPR ' + snap.adjDPR.toFixed(2) +
         ' • ' + snap.mode +
         ' • ' + (snap.settled ? 'SETTLED' : 'SETTLING')
       );
@@ -19293,10 +19315,10 @@ let scoreTimingDetail =
       const snap = controlCenterViewportSnapshotV2128 ||
         buildControlCenterViewportSnapshotV2128(false);
       const effectiveHeight = Number(snap.effectiveHeight) ||
-        ((Number(snap.visualHeight) || Number(snap.innerHeight) || 0) * (Number(snap.dpr) || 1));
+        ((Number(snap.visualHeight) || Number(snap.innerHeight) || 0) * (Number(snap.adjDPR) || 2));
       return (
         'EFFECTIVE ' + Math.round(effectiveHeight) +
-        ' = VPH×DPR • BASE ' + V220_EFFECTIVE_HEIGHT_BASELINE +
+        ' = VPH×adjDPR • BASE ' + V220_EFFECTIVE_HEIGHT_BASELINE +
         ' • SCALE ×' + snap.viewScale.toFixed(3)
       );
     }
@@ -19506,12 +19528,12 @@ let scoreTimingDetail =
       const stableSvh = standalone ? getStandaloneSmallViewportHeightV2066() : 0;
       const globalScale = Math.max(V220_MIN_GLOBAL_MULTIPLIER, Number(metrics.multiplier) || 1);
       const shellScale = stableSvh > 0
-        ? globalViewportDprScaleV220(stableSvh, metrics.dpr)
+        ? globalViewportDprScaleV220(stableSvh, metrics.adjDPR)
         : globalScale;
       const shellWidth = Math.max(1, Math.min(760, Number(window.innerWidth) || 1));
       const widthScale = Math.max(0.38, Math.min(1.00, shellWidth / 756));
       const vph = Number(metrics.visualHeight) || Number(metrics.innerHeight) || 0;
-      const effective = vph * (Number(metrics.dpr) || 1);
+      const effective = vph * (Number(metrics.adjDPR) || 2);
       return { metrics, standalone, stableSvh, globalScale, shellScale, widthScale, vph, effective };
     }
 
@@ -19526,10 +19548,10 @@ let scoreTimingDetail =
         'DEVICE / SCALE',
         'View: ' + Math.round(m.innerWidth) + '×' + Math.round(m.innerHeight) +
           ' • Visual: ' + screenLayoutRoundV238(m.visualWidth, 1) + '×' + screenLayoutRoundV238(scale.vph, 1) +
-          ' • DPR ' + screenLayoutRoundV238(m.dpr, 2) +
+          ' • DPR ' + screenLayoutRoundV238(m.dpr, 2) + ' • adjDPR ' + screenLayoutRoundV238(m.adjDPR, 2) +
           ' • ' + (scale.standalone ? 'PWA' : 'WEB'),
         'Effective height: ' + screenLayoutRoundV238(scale.effective, 1) +
-          ' (' + screenLayoutRoundV238(scale.vph, 1) + ' VPH × ' + screenLayoutRoundV238(m.dpr, 2) + ' DPR)',
+          ' (' + screenLayoutRoundV238(scale.vph, 1) + ' VPH × ' + screenLayoutRoundV238(m.adjDPR, 2) + ' adjDPR)',
         'Global scale: ×' + screenLayoutRoundV238(scale.globalScale, 4) +
           ' (max 0.70, effective ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
         'Shell scale: ×' + screenLayoutRoundV238(scale.shellScale, 4) +
@@ -20203,7 +20225,7 @@ let scoreTimingDetail =
         'Copied: ' + new Date().toISOString(),
         'Entries: ' + screenLayoutLogEntriesV238.length,
         'Units: actual CSS pixels unless noted.',
-        'Global scale formula: max(0.70, VPH × DPR ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
+        'Global scale formula: max(0.70, VPH × adjDPR ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + '); adjDPR = max(2.00, DPR)',
         'Typography: representative samples only; actual computed font sizes are paired with governing target/fit rules when known.',
         'Capture settling: automatic entries are committed only after the same structural signature remains stable across the confirmation window.',
         'AUTHORIZATION / CONFIRMATION NOTE: popup geometry is a coarse sanity check only; ignore detailed sizing unless specifically requested.',
@@ -25789,10 +25811,10 @@ let scoreTimingDetail =
 
     function globalViewportDprScaleV220(viewportHeightValue, dprValue) {
       const viewportHeight = Math.max(1, Number(viewportHeightValue) || 1);
-      const dpr = Math.max(0.1, Number(dprValue) || 1);
+      const adjDPR = window.sshcpAdjustedDPRV2366(dprValue);
       return Math.max(
         V220_MIN_GLOBAL_MULTIPLIER,
-        (viewportHeight * dpr) / V220_EFFECTIVE_HEIGHT_BASELINE
+        (viewportHeight * adjDPR) / V220_EFFECTIVE_HEIGHT_BASELINE
       );
     }
 
@@ -25843,10 +25865,11 @@ let scoreTimingDetail =
         Number(window.visualViewport && window.visualViewport.height) || innerHeight
       );
       const dpr = Math.max(0.1, Number(window.devicePixelRatio) || 1);
+      const adjDPR = window.sshcpAdjustedDPRV2366(dpr);
       const screenWidth = Math.max(1, Number(window.screen && screen.width) || innerWidth);
       const screenHeight = Math.max(1, Number(window.screen && screen.height) || innerHeight);
-      const physicalShort = Math.min(screenWidth, screenHeight) * dpr;
-      const physicalLong = Math.max(screenWidth, screenHeight) * dpr;
+      const physicalShort = Math.min(screenWidth, screenHeight) * adjDPR;
+      const physicalLong = Math.max(screenWidth, screenHeight) * adjDPR;
       const isS25 =
         Math.abs(physicalShort - V188_S25_PHYSICAL_W) <= 140 &&
         Math.abs(physicalLong - V188_S25_PHYSICAL_H) <= 180;
@@ -25864,8 +25887,8 @@ let scoreTimingDetail =
       /* V22.0 — global VPH × DPR scale. Shortened browser height remains real
          layout capacity, while Android system zoom no longer masquerades as a
          physically smaller device. */
-      const effectiveHeightV220 = visualHeight * dpr;
-      const multiplier = globalViewportDprScaleV220(visualHeight, dpr);
+      const effectiveHeightV220 = visualHeight * adjDPR;
+      const multiplier = globalViewportDprScaleV220(visualHeight, adjDPR);
 
       return {
         innerWidth,
@@ -25876,6 +25899,7 @@ let scoreTimingDetail =
         screenHeight,
         screenLong,
         dpr,
+        adjDPR,
         physicalShort,
         physicalLong,
         isS25,
@@ -26186,7 +26210,7 @@ let scoreTimingDetail =
       const metrics = metricsValue || getVerticalMetricsV188();
       const effectiveHeight = Math.max(
         0,
-        Number(metrics.effectiveHeight) || ((Number(metrics.visualHeight) || 0) * (Number(metrics.dpr) || 1))
+        Number(metrics.effectiveHeight) || ((Number(metrics.visualHeight) || 0) * (Number(metrics.adjDPR) || 2))
       );
       const ratio = effectiveHeight / V220_EFFECTIVE_HEIGHT_BASELINE;
       if (ratio < 0.80) return 14;
@@ -26243,7 +26267,7 @@ let scoreTimingDetail =
       const sx = Math.max(0.38, Math.min(1.00, width / 756));
       const metricsV188 = getVerticalMetricsV188();
       const sy = stableStandaloneHeightV2066 > 0
-        ? globalViewportDprScaleV220(stableStandaloneHeightV2066, metricsV188.dpr)
+        ? globalViewportDprScaleV220(stableStandaloneHeightV2066, metricsV188.adjDPR)
         : metricsV188.multiplier;
 
       const px = value => Math.max(1, value * sx);
@@ -32170,7 +32194,7 @@ let scoreTimingDetail =
          current settled viewport by the existing V22.52 orientation handoff. */
       const availableHeight = Math.max(1, scroll.clientHeight || 1);
       const headerExtraV2242 = 4;
-      const dprV2314 = Math.max(0.1, Number(window.devicePixelRatio) || 1);
+      const dprV2314 = window.sshcpAdjustedDPRV2366();
       const vphV2314 = Math.max(1, Number(window.visualViewport && window.visualViewport.height) || Number(window.innerHeight) || 1);
       const effectiveHeightV2314 = vphV2314 * dprV2314;
       const baselineEffectiveHeightV2314 = 995;
@@ -32202,7 +32226,7 @@ let scoreTimingDetail =
            visible physical width = STATpx + (visibleTeams × TEAMpx)
            visibleTeams           = min(9, assigned teams)
            full physical width    = STATpx + (N × TEAMpx) */
-      const dprV2245 = Math.max(1, Number(window.devicePixelRatio) || 1);
+      const dprV2245 = window.sshcpAdjustedDPRV2366();
       const visibleTeamCountV2249 = Math.max(1, Math.min(9, teamCount));
       const baseRightGutterCssV2254 = 5;
       const scrollComputedV2245 = window.getComputedStyle(scroll);
@@ -32448,7 +32472,7 @@ let scoreTimingDetail =
         Number(vv && vv.width) || window.innerWidth || 1,
         Number(vv && vv.height) || window.innerHeight || 1
       );
-      return Math.round(50 * globalViewportDprScaleV220(physicalPortraitHeight, window.devicePixelRatio || 1));
+      return Math.round(50 * globalViewportDprScaleV220(physicalPortraitHeight, window.sshcpAdjustedDPRV2366()));
     }
 
     function clearGeekAllTeamsTeamDetailModalV2238() {
