@@ -1,3 +1,12 @@
+<!-- SSHCP V23.74 TEST — exact V23.73-P7M4QX donor; frontend only.
+     MAX ZOOM REACHED is Scorecard-only: compare the real nine-hole row height
+     against HOME, GUIDE, and footer LEADERBOARD button heights. Do not warn on
+     other views or popups. Keep all V23.72 responsive text/layout improvements.
+     GAME MODE re-fit complete game names (e.g. CLOSEST TO PIN) when browser
+     zoom or viewport geometry changes; preserve all rows/data/game rules.
+     No DPR, Worker, auth, scoring, timing, ranking or event changes.
+     TEST / PHONE VALIDATION REQUIRED; V23.66 GOLDEN untouched. -->
+<!-- SSHCP | BASE KEY: 23.73-P7M4QX | BUILD KEY: 23.74-R6M4QX -->
 <!-- SSHCP V23.73 TEST — exact V23.72-K8M4QV donor, frontend-only.
      MAX ZOOM must NEVER be caused by intentional dropdown/popover layering.
      Exclude dropdown option controls from generic collision pairs; keep real
@@ -15893,7 +15902,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.73</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.74</span></span>
         </button>
         <script>
           (function () {
@@ -35670,6 +35679,19 @@ let scoreTimingDetail =
       }
     }
 
+    /* V23.74 — the initial GAME fit already measures full text correctly.
+       Re-run that same fitter for GAME names as CSS viewport width changes:
+       normal font target stays 50% of each real row height; the whole label
+       shrinks only when needed. No text editing or table-column changes. */
+    window.sshcpRefitGameNamesV2374 = function(){
+      if (!els.modalOverlay.classList.contains('game-mode-results-v2026')) return;
+      els.modalBody.querySelectorAll('.game-mode-row-v2026.games:not(.header)').forEach(row => {
+        const game = row.querySelector('.game-name-v2026');
+        if (game) fitIntactSingleLineV2027(game, game,
+          row.getBoundingClientRect().height * 0.50, 10, 1);
+      });
+    };
+
     function buildGameModeSkinsTableV2026(results, unavailable = false) {
       let html =
         '<div class="game-mode-section-v2026">' +
@@ -41091,6 +41113,8 @@ let scoreTimingDetail =
   var scorecard=document.getElementById('scorecardView');
   var scoreHome=scorecard && scorecard.querySelector('#scoreHomeButton');
   var scoreGuide=scorecard && scorecard.querySelector('.score-nav > button[data-guide]');
+  /* V23.74: footer LEADERBOARD height participates in Scorecard's sole limit. */
+  var scoreLeaderboard=scorecard && scorecard.querySelector('#scoreLeaderboardButton');
   var scoreScroll=scorecard && scorecard.querySelector('#scoreScroll');
   var scoreRows=scorecard && scorecard.querySelector('#scoreRows');
   /* V23.71: Leaderboard/Final Results use the same physical nav-vs-row
@@ -41201,7 +41225,9 @@ let scoreTimingDetail =
     if(!visible(scoreHome)||!visible(scoreGuide)||!visible(scoreScroll))return false;
     var homeH=scoreHome.getBoundingClientRect().height;
     var guideH=scoreGuide.getBoundingClientRect().height;
-    var buttonH=Math.max(homeH,guideH);
+    var footerH=visible(scoreLeaderboard) ?
+      scoreLeaderboard.getBoundingClientRect().height : 0;
+    var buttonH=Math.max(homeH,guideH,footerH);
     var first=scoreRows && scoreRows.querySelector('.score-row');
     var rowH=first && visible(first) ? first.getBoundingClientRect().height :
       scoreScroll.getBoundingClientRect().height/9;
@@ -41254,48 +41280,17 @@ let scoreTimingDetail =
   }
   function assess(){
     queued=false;
-    /* V23.72: page-specific modal rules take priority; return null for
-       screens governed by the existing V23.71 HOME/CC/SM/SC/LB rules. */
-    if(typeof window.sshcpExtraMaxZoomV2372==='function') {
-      var extra=window.sshcpExtraMaxZoomV2372(shown);
-      if(extra!==null && extra!==undefined){setWarning(!!extra);return;}
-    }
-    var isHome=home.classList.contains('active');
-    var isCC=cc && cc.classList.contains('active');
-    var isSM=sm && sm.classList.contains('active');
-    var isScore=scorecard && scorecard.classList.contains('active');
-    var isLeader=leader && leader.classList.contains('active');
-    if((!isHome&&!isCC&&!isSM&&!isScore&&!isLeader)||competingModal()){
-      if(shown)setWarning(false);
+    /* V23.74 — HOME remains responsive, but NO warning outside Scorecard.
+       The earlier modal/HOME/CC/SM/Leader-specific interference thresholds
+       are deliberately retired, not converted to a global zoom calculation. */
+    if(home.classList.contains('active')) fitEventName();
+    var scoreActive=scorecard && scorecard.classList.contains('active');
+    if(!scoreActive || competingModal()){
+      setWarning(false);
       return;
     }
-    var view=visualBounds();
-    var slack=shown?clearTolerance:overlapTolerance;
-    var bad=false;
-    if(isScore){
-      bad=scorecardNavTooTall();
-    }else if(isLeader){
-      bad=leaderboardNavTooTall();
-    }else if(isCC){
-      bad=logCollapsed(ccLog,ccLogHead,ccStack,view,slack);
-    }else if(isSM){
-      bad=logCollapsed(smLog,smLogHead,smStack,view,slack);
-    }else if(isHome){
-      bad=homeLogoTooShort(view);
-      if(visible(toggle)){
-        fitEventName();
-        var isMenuOpen=panel.classList.contains('open') && visible(panel);
-        if(isMenuOpen){
-          bad=bad||errorInOpenMenu(view,slack);
-        }else if(visible(summary)){
-          var a=toggle.getBoundingClientRect(),b=summary.getBoundingClientRect();
-          bad=bad||(shown ? (a.right>b.left-clearTolerance && b.right>a.left-clearTolerance &&
-                         a.bottom>b.top-clearTolerance && b.bottom>a.top-clearTolerance)
-                     : intersects(a,b,overlapTolerance));
-        }
-      }
-    }
-    setWarning(bad);
+    /* Only physical Scorecard HOME/GUIDE/LEADERBOARD vs nine-hole row. */
+    setWarning(scorecardNavTooTall());
   }
   function setWarning(bad){
     if(bad===shown)return;
@@ -41327,7 +41322,7 @@ let scoreTimingDetail =
   if(window.ResizeObserver){
     var resize=new ResizeObserver(schedule);
     [home,toggle,summary,panel,eventName,logoZone,logoImage,
-      scorecard,scoreHome,scoreGuide,scoreScroll,scoreRows,
+      scorecard,scoreHome,scoreGuide,scoreLeaderboard,scoreScroll,scoreRows,
       leader,leaderHome,leaderGuide,leaderScroll,leaderRows,
       cc,ccLog,ccStack,sm,smLog,smStack]
       .forEach(function(node){if(node)resize.observe(node);});
@@ -41688,12 +41683,16 @@ let scoreTimingDetail =
    }
    return null;
  }
- window.sshcpExtraMaxZoomV2372=evaluate;
+ /* V23.74: diagnostic modal guards retired; responsive fitters remain.
+    MAX ZOOM now belongs solely to the Scorecard warning engine. */
  function act(){
    scheduled=false;
    if(modal&&modal.classList.contains('quick-guide')){fitGuide();attachGuideProgress();}
    else {if(guideObserver){guideObserver.disconnect();guideObserver=null;}guideScroller=null;}
-   fitGameHeaders();fitGeekHelper();fitWelcome();fitCompletion();
+   fitGameHeaders();
+   if(typeof window.sshcpRefitGameNamesV2374==='function')
+     window.sshcpRefitGameNamesV2374();
+   fitGeekHelper();fitWelcome();fitCompletion();
    if(typeof window.sshcpScheduleZoomCheckV2367==='function')window.sshcpScheduleZoomCheckV2367();
  }
  function schedule(){
