@@ -1,3 +1,13 @@
+<!-- SSHCP V23.69 TEST — exact V23.68-M8Q4VX donor; frontend-only.
+     MAX ZOOM REACHED gains page-specific physical geometry limits:
+     SCORECARD: real HOME/GUIDE button height cannot reach the rendered
+     nine-hole row height; HOME: visible event-logo height must remain at
+     least 10% of the live visual viewport height. Retain V23.68's HOME
+     hamburger/summary collision, fitted seven-button drawer, CC and Scramble
+     collapsed-log limits, header-row cap, and existing self-dismissal.
+     No change to the DPR scale, actual layout, navigation/scoring/Worker,
+     other pages, auth, results or protected GOLDEN. NOT GOLDEN. -->
+<!-- SSHCP | BASE KEY: 23.68-M8Q4VX | BUILD KEY: 23.69-Q7M4VX -->
 <!-- SSHCP V23.68 TEST — exact V23.67-H7M4QX donor; frontend-only.
      HOME drawer stays fully visible: seven actions share available height,
      preserving established size when it fits; show MAX ZOOM REACHED only if
@@ -15779,7 +15789,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.68</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.69</span></span>
         </button>
         <script>
           (function () {
@@ -40918,7 +40928,7 @@ let scoreTimingDetail =
 </style>
 
 <script id="sshcp-v2367-home-max-zoom">
-/* V23.68 HOME + CC/SM actual-geometry watchdog. No Worker calls or persisted data. */
+/* V23.69 HOME/Scorecard/CC/SM actual-geometry watchdog. No Worker calls or persisted data. */
 (function(){
   'use strict';
   var home=document.getElementById('homeView');
@@ -40945,6 +40955,15 @@ let scoreTimingDetail =
   var smLog=sm && sm.querySelector('.scramble-activity-v1938');
   var smLogHead=smLog && smLog.querySelector('.scramble-activity-head-v1938');
   var smStack=sm && sm.querySelector('.scramble-bottom-stack-v1938');
+  /* V23.69: read rendered bounds, never infer a Chrome zoom percentage.
+     These are references only: no edits to page geometry or the image. */
+  var scorecard=document.getElementById('scorecardView');
+  var scoreHome=scorecard && scorecard.querySelector('#scoreHomeButton');
+  var scoreGuide=scorecard && scorecard.querySelector('.score-nav > button[data-guide]');
+  var scoreScroll=scorecard && scorecard.querySelector('#scoreScroll');
+  var scoreRows=scorecard && scorecard.querySelector('#scoreRows');
+  var logoZone=home.querySelector('.splash-image-wrap');
+  var logoImage=home.querySelector('.splash-image');
   var shown=false, queued=false, generation=0;
   var overlapTolerance=1.25, clearTolerance=2;
   function visible(el){
@@ -41037,32 +41056,81 @@ let scoreTimingDetail =
     return bottom.bottom>view.bottom+slack || bottom.top<box.bottom-slack;
   }
 
+  /* V23.69 — the *rendered* nine-hole row is the Scorecard reference.
+     If rows are not yet inserted, the live scroll viewport's ninth is the
+     identical calculated reference; no static font/zoom/DPR threshold. */
+  function scorecardNavTooTall(){
+    if(!visible(scoreHome)||!visible(scoreGuide)||!visible(scoreScroll))return false;
+    var homeH=scoreHome.getBoundingClientRect().height;
+    var guideH=scoreGuide.getBoundingClientRect().height;
+    var buttonH=Math.max(homeH,guideH);
+    var first=scoreRows && scoreRows.querySelector('.score-row');
+    var rowH=first && visible(first) ? first.getBoundingClientRect().height :
+      scoreScroll.getBoundingClientRect().height/9;
+    if(!(buttonH>0))return false;
+    if(!(rowH>0))return true;
+    /* Enter at physical equality; require a little breathing room to exit. */
+    return buttonH >= rowH-(shown?1.75:0.25);
+  }
+  /* V23.69 HOME minimum-logo rule: ten percent of the *visual* viewport
+     height, applied to the actually visible image rather than its full CSS
+     height when object-fit:contain is letterboxing an extreme aspect ratio.
+     While a fresh event image is loading, the visible logo-zone height is
+     the only grounded measure; it avoids a spurious 0px-image warning. */
+  function homeLogoTooShort(view){
+    if(!visible(logoZone))return false;
+    var viewportH=Math.max(0,view.bottom-view.top);
+    if(!(viewportH>0))return false;
+    var zone=logoZone.getBoundingClientRect();
+    var top=Math.max(zone.top,view.top);
+    var bottom=Math.min(zone.bottom,view.bottom);
+    if(logoImage && logoImage.complete && logoImage.naturalWidth>0 &&
+       logoImage.naturalHeight>0 && visible(logoImage)){
+      var box=logoImage.getBoundingClientRect();
+      /* HOME uses object-fit:contain and object-position:center top. */
+      var paintH=Math.min(box.height,
+        box.width*logoImage.naturalHeight/logoImage.naturalWidth);
+      top=Math.max(top,box.top);
+      bottom=Math.min(bottom,box.top+paintH);
+    }
+    var visibleLogoH=Math.max(0,bottom-top);
+    var minimumH=viewportH*0.10;
+    /* Only CSS-pixel settling tolerance; no percentage/zoom trigger.
+       When shown, allow small hysteresis before automatic dismissal. */
+    return visibleLogoH<minimumH+(shown?1.5:-0.25);
+  }
   function assess(){
     queued=false;
     var isHome=home.classList.contains('active');
     var isCC=cc && cc.classList.contains('active');
     var isSM=sm && sm.classList.contains('active');
-    if((!isHome&&!isCC&&!isSM)||competingModal()){
+    var isScore=scorecard && scorecard.classList.contains('active');
+    if((!isHome&&!isCC&&!isSM&&!isScore)||competingModal()){
       if(shown)setWarning(false);
       return;
     }
     var view=visualBounds();
     var slack=shown?clearTolerance:overlapTolerance;
     var bad=false;
-    if(isCC){
+    if(isScore){
+      bad=scorecardNavTooTall();
+    }else if(isCC){
       bad=logCollapsed(ccLog,ccLogHead,ccStack,view,slack);
     }else if(isSM){
       bad=logCollapsed(smLog,smLogHead,smStack,view,slack);
-    }else if(visible(toggle)){
-      fitEventName();
-      var isMenuOpen=panel.classList.contains('open') && visible(panel);
-      if(isMenuOpen){
-        bad=errorInOpenMenu(view,slack);
-      }else if(visible(summary)){
-        var a=toggle.getBoundingClientRect(),b=summary.getBoundingClientRect();
-        bad=shown ? (a.right>b.left-clearTolerance && b.right>a.left-clearTolerance &&
-                      a.bottom>b.top-clearTolerance && b.bottom>a.top-clearTolerance)
-                  : intersects(a,b,overlapTolerance);
+    }else if(isHome){
+      bad=homeLogoTooShort(view);
+      if(visible(toggle)){
+        fitEventName();
+        var isMenuOpen=panel.classList.contains('open') && visible(panel);
+        if(isMenuOpen){
+          bad=bad||errorInOpenMenu(view,slack);
+        }else if(visible(summary)){
+          var a=toggle.getBoundingClientRect(),b=summary.getBoundingClientRect();
+          bad=bad||(shown ? (a.right>b.left-clearTolerance && b.right>a.left-clearTolerance &&
+                         a.bottom>b.top-clearTolerance && b.bottom>a.top-clearTolerance)
+                     : intersects(a,b,overlapTolerance));
+        }
       }
     }
     setWarning(bad);
@@ -41096,13 +41164,18 @@ let scoreTimingDetail =
   }
   if(window.ResizeObserver){
     var resize=new ResizeObserver(schedule);
-    [home,toggle,summary,panel,eventName,cc,ccLog,ccStack,sm,smLog,smStack]
+    [home,toggle,summary,panel,eventName,logoZone,logoImage,
+      scorecard,scoreHome,scoreGuide,scoreScroll,scoreRows,
+      cc,ccLog,ccStack,sm,smLog,smStack]
       .forEach(function(node){if(node)resize.observe(node);});
   }
   var mutation=new MutationObserver(schedule);
   mutation.observe(eventName,{childList:true,characterData:true,subtree:true});
   mutation.observe(panel,{childList:true,characterData:true,subtree:true});
   mutation.observe(home,{attributes:true,attributeFilter:['class']});
+  if(scorecard)mutation.observe(scorecard,{attributes:true,attributeFilter:['class']});
+  if(scoreRows)mutation.observe(scoreRows,{childList:true});
+  if(logoImage)mutation.observe(logoImage,{attributes:true,attributeFilter:['src']});
   if(cc)mutation.observe(cc,{attributes:true,attributeFilter:['class']});
   if(sm)mutation.observe(sm,{attributes:true,attributeFilter:['class']});
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
