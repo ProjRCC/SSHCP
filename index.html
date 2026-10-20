@@ -1,3 +1,11 @@
+<!-- SSHCP V23.67 TEST — exact protected V23.66-R8Q4MX GOLDEN donor.
+     HOME full-event-name width fitting; all seven hamburger-menu labels, panel
+     width/height containment, and actual-layout MAX ZOOM REACHED detection.
+     Automatic recovery after zoom reduction; no fixed zoom/DPR trigger.
+     Frontend only. Preserve V23.66 global scaling, Worker, all other views,
+     navigation, auth, scoring, timing, data and older protected GOLDEN files.
+     TEST / NOT GOLDEN / REAL DEVICE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.66-R8Q4MX | BUILD KEY: 23.67-H7M4QX -->
 <!-- SSHCP V23.66 TEST — exact V23.65-Q8M4VX donor, frontend-only.
      Central adjDPR = max(2.00, reported DPR). Use adjDPR for ALL DPR-based
      layout/sizing/effective-viewport calculations, including boot, responsive
@@ -15523,6 +15531,93 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
  opacity:0!important;pointer-events:none!important
 }
 </style>
+
+<style id="sshcp-v2367-home-zoom-fit">
+/* V23.67: only HOME event name and HOME hamburger drawer. */
+#homeView .home-event-test-hotspot .home-event-info{
+  overflow:hidden!important;
+  min-width:0!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+}
+.home-menu-panel-v2054{
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:contain!important;
+  scrollbar-width:thin;
+}
+.home-menu-item-v2054{
+  min-width:0!important;
+  max-width:100%!important;
+  flex-shrink:0!important;
+  text-overflow:clip!important;
+}
+#sshcpMaxZoomV2367{
+  display:none!important;
+  position:fixed!important;
+  inset:0!important;
+  box-sizing:border-box!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483000!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:6px!important;
+  overflow:auto!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+#sshcpMaxZoomV2367.sshcp-max-zoom-open-v2367{display:flex!important;}
+#sshcpMaxZoomCardV2367{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:clamp(4px,2.5vw,14px)!important;
+  box-sizing:border-box!important;
+  width:min(520px,calc(100vw - 12px))!important;
+  max-width:100%!important;
+  max-height:calc(100dvh - 12px)!important;
+  overflow:auto!important;
+  margin:auto!important;
+  padding:clamp(7px,4vw,24px)!important;
+  border:0!important;
+  border-radius:clamp(7px,3vw,18px)!important;
+  background:#fff!important;
+  opacity:1!important;
+  box-shadow:0 7px 24px rgba(0,0,0,.14)!important;
+  font-family:"Oswald",Arial,sans-serif!important;
+  text-align:center!important;
+}
+#sshcpMaxZoomTitleV2367{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  color:#133362!important;
+  -webkit-text-fill-color:#133362!important;
+  font-size:clamp(8px,5vw,30px)!important;
+  font-weight:900!important;
+  line-height:1.12!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+#sshcpMaxZoomBodyV2367{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  color:#111!important;
+  -webkit-text-fill-color:#111!important;
+  font-size:clamp(8px,3.4vw,19px)!important;
+  font-weight:400!important;
+  line-height:1.25!important;
+  text-transform:none!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+</style>
 </head>
 
 
@@ -15651,7 +15746,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.66</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.67</span></span>
         </button>
         <script>
           (function () {
@@ -40515,66 +40610,75 @@ let scoreTimingDetail =
       }
     }
 
-    /* SSHCP V20.80 — HOME drawer long-team-name containment.
-       Preserve the drawer's existing content-driven width for normal labels.
-       When SCORECARD - TEAM NAME reaches the drawer's viewport cap, lock the
-       already-resolved drawer width, constrain only that row to the panel, and
-       locally shrink only that row's text until it fits on one line. */
+    /* V23.67 — retain V20.80's normal intrinsic-width menu, but clamp the
+       complete drawer to the actual visual viewport and fit EVERY action's
+       complete text (not only the SCORECARD team label). No ellipses. */
     function resetScorecardMenuFitV2080(){
       panel.style.removeProperty('width');
+      panel.style.removeProperty('max-height');
+      panel.style.removeProperty('top');
       panel.style.removeProperty('visibility');
-      scorecard.style.removeProperty('min-width');
-      scorecard.style.removeProperty('max-width');
-      scorecard.style.removeProperty('width');
-      scorecard.style.removeProperty('font-size');
-      scorecard.style.removeProperty('text-overflow');
+      Array.prototype.forEach.call(panel.querySelectorAll('.home-menu-item-v2054'), function(button){
+        button.style.removeProperty('min-width');
+        button.style.removeProperty('max-width');
+        button.style.removeProperty('width');
+        button.style.removeProperty('font-size');
+        button.style.removeProperty('text-overflow');
+      });
     }
 
     function fitScorecardMenuNameV2080(){
       if (!panel.classList.contains('open')) return;
-
-      /* Measure the V20.79 drawer first, while its intrinsic content sizing is
-         still intact. This keeps short-name drawer width pixel-for-pixel. */
-      scorecard.style.removeProperty('min-width');
-      scorecard.style.removeProperty('max-width');
-      scorecard.style.removeProperty('width');
-      scorecard.style.removeProperty('font-size');
-      scorecard.style.removeProperty('text-overflow');
+      var items = Array.prototype.slice.call(panel.querySelectorAll('.home-menu-item-v2054'));
+      var vv = window.visualViewport;
+      var viewHeight = vv ? vv.height : window.innerHeight;
+      var viewTop = vv ? vv.offsetTop : 0;
+      // Reset intrinsic dimensions before each pass; preserve normal menu sizing.
       panel.style.removeProperty('width');
-
+      items.forEach(function(button){ button.style.removeProperty('font-size'); });
+      // Stay below the existing hamburger location. Scrolling is deliberate
+      // whenever all seven full-height buttons cannot display simultaneously.
+      var rect = panel.getBoundingClientRect();
+      var availableHeight = Math.max(0, viewTop + viewHeight - rect.top - 6);
+      panel.style.setProperty('max-height', availableHeight.toFixed(2) + 'px', 'important');
       var resolvedPanelWidth = panel.getBoundingClientRect().width;
       if (!(resolvedPanelWidth > 0)) return;
-
+      // Lock the measured (already max-width capped) width while fitting text.
       panel.style.setProperty('width', resolvedPanelWidth + 'px', 'important');
-      scorecard.style.setProperty('min-width', '0', 'important');
-      scorecard.style.setProperty('max-width', '100%', 'important');
-      scorecard.style.setProperty('width', '100%', 'important');
-
-      var computed = getComputedStyle(scorecard);
-      var targetPx = parseFloat(computed.fontSize) || 18;
-      var minPx = Math.max(10, targetPx * 0.55);
-      var low = minPx;
-      var high = targetPx;
-      var best = minPx;
-
-      scorecard.style.setProperty('font-size', targetPx + 'px', 'important');
-      if (scorecard.scrollWidth <= scorecard.clientWidth + 0.5) {
-        best = targetPx;
-      } else {
-        for (var i = 0; i < 12; i++) {
-          var mid = (low + high) / 2;
-          scorecard.style.setProperty('font-size', mid + 'px', 'important');
-          if (scorecard.scrollWidth <= scorecard.clientWidth + 0.5) {
-            best = mid;
-            low = mid;
-          } else {
-            high = mid;
-          }
+      items.forEach(function(button){
+        button.style.setProperty('min-width', '0', 'important');
+        button.style.setProperty('max-width', '100%', 'important');
+        button.style.setProperty('width', '100%', 'important');
+        button.style.setProperty('text-overflow', 'clip', 'important');
+        var style = getComputedStyle(button);
+        var target = parseFloat(style.fontSize) || 18;
+        // 6 px is a readability floor, not a browser-zoom threshold. If the
+        // FULL label cannot fit at that size, geometry watcher shows warning.
+        var floor = Math.min(target, 6);
+        var usable = button.clientWidth -
+          (parseFloat(style.paddingLeft)||0) - (parseFloat(style.paddingRight)||0) - 2;
+        var range = document.createRange();
+        range.selectNodeContents(button);
+        function textWidth(px){
+          button.style.setProperty('font-size', px.toFixed(3) + 'px','important');
+          return range.getBoundingClientRect().width;
         }
+        if (usable > 0 && textWidth(target) <= usable + .6) {
+          button.style.removeProperty('font-size');
+        } else {
+          var lo = floor, hi = target;
+          for(var n=0;n<15;n++){
+            var mid=(lo+hi)/2;
+            if(textWidth(mid) <= usable + .6) lo=mid;
+            else hi=mid;
+          }
+          button.style.setProperty('font-size', lo.toFixed(3) + 'px', 'important');
+        }
+        range.detach();
+      });
+      if (typeof window.sshcpScheduleZoomCheckV2367 === 'function') {
+        window.sshcpScheduleZoomCheckV2367();
       }
-
-      scorecard.style.setProperty('font-size', best.toFixed(3) + 'px', 'important');
-      scorecard.style.setProperty('text-overflow', 'ellipsis', 'important');
     }
 
     function closeMenuV2054(){
@@ -40674,6 +40778,7 @@ let scoreTimingDetail =
     });
 
     window.refreshHomeMenuV2054 = refreshMenuV2054;
+    window.sshcpFitHomeMenuV2367 = fitScorecardMenuNameV2080;
     if (typeof setHomeHamburgerVisibleV2055 === 'function') {
       setHomeHamburgerVisibleV2055(true);
     }
@@ -40688,5 +40793,165 @@ let scoreTimingDetail =
 })();
 </script>
 
+
+<script id="sshcp-v2367-home-max-zoom">
+/* V23.67 HOME-only rendered-geometry watchdog. No Worker calls or persistent data. */
+(function(){
+  'use strict';
+  var home=document.getElementById('homeView');
+  var eventName=document.getElementById('homeEventInfoV2255');
+  var toggle=document.getElementById('homeMenuToggleV2054');
+  var summary=document.getElementById('homeLeaderboardButton');
+  var panel=document.getElementById('homeMenuPanelV2054');
+  if(!home || !eventName || !toggle || !summary || !panel) return;
+  var curtain=document.createElement('div');
+  curtain.id='sshcpMaxZoomV2367';
+  curtain.setAttribute('role','alert');
+  curtain.setAttribute('aria-live','assertive');
+  curtain.setAttribute('aria-hidden','true');
+  curtain.innerHTML='<div id="sshcpMaxZoomCardV2367">' +
+    '<div id="sshcpMaxZoomTitleV2367">MAX ZOOM REACHED</div>' +
+    '<div id="sshcpMaxZoomBodyV2367">Reset Chrome or browser zoom to 100%.</div>' +
+    '</div>';
+  document.body.appendChild(curtain);
+  var shown=false, queued=false, generation=0;
+  var overlapTolerance=1.25, clearTolerance=2;
+  function visible(el){
+    if(!el || !el.isConnected) return false;
+    var style=getComputedStyle(el);
+    return style.display!=='none' && style.visibility!=='hidden' &&
+      parseFloat(style.opacity||'1')>0 && el.getClientRects().length>0;
+  }
+  function competingModal(){
+    if(document.documentElement.classList.contains('sshcp-qr-welcome-v170') ||
+       document.body.classList.contains('team-info-open-v2032')) return true;
+    var layers=document.querySelectorAll(
+      '.modal-overlay.open,.tips-overlay-v2154.open,.team-info-overlay-v2032.open,'+
+      '.qr-welcome-overlay-v170.show-team,.qr-welcome-overlay-v170.show-actions');
+    for(var i=0;i<layers.length;i++) if(visible(layers[i])) return true;
+    return false;
+  }
+  function textWidth(node){
+    var range=document.createRange();
+    range.selectNodeContents(node);
+    var width=range.getBoundingClientRect().width;
+    range.detach();
+    return width;
+  }
+  function fitEventName(){
+    if(!visible(eventName)) return;
+    eventName.style.removeProperty('font-size');
+    var style=getComputedStyle(eventName);
+    var full=parseFloat(style.fontSize)||15.5;
+    var usable=eventName.clientWidth - (parseFloat(style.paddingLeft)||0) -
+       (parseFloat(style.paddingRight)||0) - 1;
+    if(usable<=0 || !eventName.textContent.trim()) return;
+    if(textWidth(eventName)<=usable+.6) return;
+    var lo=.1,hi=full;
+    for(var i=0;i<17;i++){
+      var mid=(lo+hi)/2;
+      eventName.style.setProperty('font-size',mid.toFixed(4)+'px','important');
+      if(textWidth(eventName)<=usable+.6) lo=mid;
+      else hi=mid;
+    }
+    eventName.style.setProperty('font-size',lo.toFixed(4)+'px','important');
+  }
+  function visualBounds(){
+    var vv=window.visualViewport;
+    return {
+      left:vv?vv.offsetLeft:0, top:vv?vv.offsetTop:0,
+      right:(vv?vv.offsetLeft+vv.width:window.innerWidth),
+      bottom:(vv?vv.offsetTop+vv.height:window.innerHeight)
+    };
+  }
+  function intersects(a,b,extra){
+    return Math.min(a.right,b.right)-Math.max(a.left,b.left)>extra &&
+      Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>extra;
+  }
+  function errorInOpenMenu(view,slack){
+    var p=panel.getBoundingClientRect();
+    if(p.width<=0 || p.height<=0 ||
+       p.left<view.left-slack || p.right>view.right+slack ||
+       p.top<view.top-slack || p.bottom>view.bottom+slack) return true;
+    var items=Array.prototype.slice.call(panel.querySelectorAll('.home-menu-item-v2054'));
+    if(!items.length) return true;
+    var usableHeight=panel.clientHeight;
+    var tallest=Math.max.apply(null,items.map(function(b){return b.getBoundingClientRect().height;}));
+    // All items are accessible by vertical scrolling while one complete button
+    // and the panel's scroll port remain visible. Never warn just for scrolling.
+    if(usableHeight + slack < tallest || panel.clientWidth<=0) return true;
+    for(var i=0;i<items.length;i++){
+      var b=items[i],r=b.getBoundingClientRect(),style=getComputedStyle(b);
+      if(r.left<p.left-slack || r.right>p.right+slack) return true;
+      var contentWidth=b.clientWidth-(parseFloat(style.paddingLeft)||0)-
+        (parseFloat(style.paddingRight)||0)-2;
+      if(contentWidth<=0 || textWidth(b)>contentWidth+slack) return true;
+    }
+    // No required button may be clipped outside the panel's own scroll content.
+    var last=items[items.length-1];
+    if(last.offsetTop+last.offsetHeight>panel.scrollHeight+slack) return true;
+    return false;
+  }
+  function assess(){
+    queued=false;
+    if(!home.classList.contains('active') || !visible(toggle) || competingModal()){
+      if(shown) setWarning(false);
+      return;
+    }
+    fitEventName();
+    var view=visualBounds();
+    var slack=shown?clearTolerance:overlapTolerance;
+    var isMenuOpen=panel.classList.contains('open') && visible(panel);
+    var bad=false;
+    if(isMenuOpen){
+      bad=errorInOpenMenu(view,slack);
+    }else if(visible(summary)){
+      var a=toggle.getBoundingClientRect(),b=summary.getBoundingClientRect();
+      // Show on real intersection. Clear only after a small physical gap.
+      bad=shown ? (a.right>b.left-clearTolerance && b.right>a.left-clearTolerance &&
+                    a.bottom>b.top-clearTolerance && b.bottom>a.top-clearTolerance)
+                : intersects(a,b,overlapTolerance);
+    }
+    setWarning(bad);
+  }
+  function setWarning(bad){
+    if(bad===shown)return;
+    shown=bad;
+    curtain.classList.toggle('sshcp-max-zoom-open-v2367',bad);
+    curtain.setAttribute('aria-hidden',bad?'false':'true');
+  }
+  function schedule(){
+    generation++;
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(function(){requestAnimationFrame(assess);});
+  }
+  function scheduleResize(){
+    if(panel.classList.contains('open') && typeof window.sshcpFitHomeMenuV2367==='function'){
+      window.sshcpFitHomeMenuV2367();
+    }
+    schedule();
+  }
+  window.sshcpScheduleZoomCheckV2367=schedule;
+  window.addEventListener('resize',scheduleResize,{passive:true});
+  window.addEventListener('orientationchange',schedule,{passive:true});
+  window.addEventListener('pageshow',schedule,{passive:true});
+  window.addEventListener('load',schedule,{passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',scheduleResize,{passive:true});
+    window.visualViewport.addEventListener('scroll',schedule,{passive:true});
+  }
+  if(window.ResizeObserver){
+    var resize=new ResizeObserver(schedule);
+    [home,toggle,summary,panel,eventName].forEach(function(node){resize.observe(node);});
+  }
+  var mutation=new MutationObserver(schedule);
+  mutation.observe(eventName,{childList:true,characterData:true,subtree:true});
+  mutation.observe(panel,{childList:true,characterData:true,subtree:true});
+  mutation.observe(home,{attributes:true,attributeFilter:['class']});
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  schedule();
+})();
+</script>
 </body>
 </html>
