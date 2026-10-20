@@ -1,3 +1,20 @@
+<!-- SSHCP V23.72 TEST — exact V23.71-T8Q4MN donor.
+     Consolidated UI zoom protection, Summary / NET SCORE fitting, GAME header
+     and row limits, portrait GEEK helper/header / DETAIL/FILTER interference,
+     Quick Guide wrap + progress rail, WELCOME and SCRAMBLE COMPLETE text fitting,
+     and generic modal interaction guard. Landscape ALL TEAMS unchanged.
+     No scoring, event/QR, Worker, GEEK data, PDF, rankings or DPR changes.
+     Protected V23.66 GOLDEN remains untouched. TEST / PHONE VALIDATION. -->
+<!-- SSHCP | BASE KEY: 23.71-T8Q4MN | BUILD KEY: 23.72-K8M4QV -->
+<!-- SSHCP V23.71 TEST — exact V23.70-N6Q4VX donor, frontend-only.
+     LIVE LEADERBOARD and FINAL RESULTS: cap dynamic table header height at
+     one actual visible standings-row height (up to eight, fewer when needed).
+     Trigger the shared MAX ZOOM REACHED warning when rendered HOME or GUIDE
+     navigation height reaches a visible standings row, exactly as Scorecard.
+     Continue real-geometry automatic recovery; preserve normal-zoom design,
+     row equalization, rankings, tiebreaks, totals, scoring, auth, Worker,
+     PDF, all other page rules, and protected V23.66 GOLDEN. TEST only. -->
+<!-- SSHCP | BASE KEY: 23.70-N6Q4VX | BUILD KEY: 23.71-T8Q4MN -->
 <!-- SSHCP V23.70 TEST — exact V23.69-Q7M4VX donor, frontend-only.
      SCORE ENTRY popup: use current GEEK DETAIL family (fully opaque Gray 3
      curtain, solid white borderless rounded card, centered responsive layout).
@@ -15727,6 +15744,20 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
   #scoreEntryOverlay .score-entry-actions{width:100%!important;}
 }
 </style>
+
+<style id="sshcp-v2372-zoom-typography">
+/* Only the named V23.72 views. The historic normal-zoom presentation remains. */
+.modal-overlay.quick-guide .modal-title{white-space:nowrap!important;overflow:hidden!important;min-width:0!important}
+.modal-overlay.quick-guide .quick-guide-legend-row-v2050{align-items:flex-start!important;min-height:0!important;height:auto!important}
+.modal-overlay.quick-guide .quick-guide-legend-copy-v2050{white-space:normal!important;overflow:visible!important;overflow-wrap:normal!important;min-width:0!important;flex:1 1 auto!important}
+.modal-overlay.quick-guide .quick-guide-legend-v2050{min-width:0!important}
+.modal-overlay.geek-mode-v180 .geek-bottom-helper-v2229{white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;min-width:0!important}
+.qr-welcome-title-v170{max-width:100vw!important;box-sizing:border-box!important;white-space:nowrap!important;overflow:hidden!important}
+.qr-welcome-guide-v170{white-space:nowrap!important;overflow:hidden!important;min-width:0!important;text-overflow:clip!important}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-summary-v2215{min-width:0!important;white-space:nowrap!important;text-overflow:clip!important}
+.tips-overlay-v2154.tips-scramble-complete-v2215 .tips-line-v2154{white-space:normal!important;overflow-wrap:normal!important}
+.modal-overlay.game-mode-results-v2026 .game-mode-row-v2026.header .game-mode-cell-v2026{min-width:0!important;white-space:nowrap!important;overflow:hidden!important}
+</style>
 </head>
 
 
@@ -15855,7 +15886,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.70</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.72</span></span>
         </button>
         <script>
           (function () {
@@ -29691,11 +29722,13 @@ let scoreTimingDetail =
       fitTextToBoxV5(els.modalTitle, els.modalTitle, summaryTitleTargetV221, 0.001, {
         horizontalPad: 12,
         verticalPad: 0,
-        wrap: true,
+        wrap: false,
         lineHeight: 0.92,
         ignoreHeight: true,
         noMin: true
       });
+      els.modalTitle.style.setProperty('white-space','nowrap','important');
+      els.modalTitle.style.setProperty('overflow','hidden','important');
 
       /* V18.10 popup top inset remains unchanged. */
       const popupTopInsetV1810 = Math.max(1, Math.round(12 * getVerticalMetricsV188().multiplier));
@@ -29929,6 +29962,29 @@ let scoreTimingDetail =
         }
       }
 
+      /* V23.72 — when screen width itself is the limiter, the prior
+         last-place PLACE font floor can consume the whole NET SCORE track.
+         Retain V22.64 sizing whenever it fits; otherwise reduce strokes only
+         far enough to reserve room for the established NET +/- hierarchy.
+         Never alter any numeric value, ranking or score data. */
+      if (strokesTrackV2264 > maxStrokeTrackForFullNetV2264 + 0.5 &&
+          netRegionWidthV2264 > 2) {
+        const reserveV2372 = Math.min(desiredNetTrackV2264,
+                                      netRegionWidthV2264 * 0.76);
+        const strokeBudgetV2372 = Math.max(1,
+                                           netRegionWidthV2264-reserveV2372);
+        if (strokesTrackV2264 > strokeBudgetV2372) {
+          let lowerV2372=0.001, upperV2372=strokesSizeV2264;
+          for(let i=0;i<26;i++) {
+            const guess=(lowerV2372+upperV2372)/2;
+            if(requiredStrokeTrackV2264(guess)<=strokeBudgetV2372)
+              lowerV2372=guess;
+            else upperV2372=guess;
+          }
+          strokesSizeV2264=Math.max(0.001,lowerV2372);
+          strokesTrackV2264=requiredStrokeTrackV2264(strokesSizeV2264);
+        }
+      }
       strokesTrackV2264 = Math.max(
         1,
         Math.min(strokesTrackV2264, Math.max(1, netRegionWidthV2264 - 1))
@@ -37194,12 +37250,36 @@ let scoreTimingDetail =
       footer.style.setProperty('padding-top', sharedFooterGapV237 + 'px', 'important');
       window.SSHCP_SHARED_LOWER_GAP_V237 = sharedFooterGapV237;
 
-      const headerHeight = geometry.sharedV187
+      const preferredHeaderHeightV2371 = geometry.sharedV187
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
 
-      els.leaderboardView.style.setProperty('--v5-leader-head-h', headerHeight + 'px');
+      /* V23.71 — the standings header and up-to-eight visible result rows
+         compete for the SAME live vertical table budget. First restore the
+         original multiplier-driven header to avoid retaining a previous
+         high-zoom cap when Chrome zoom is reduced. Then cap only if the
+         original row would be shorter than that header. This is the same
+         equal-height budget rule as V23.68 Scorecard (N visible rows instead
+         of always nine); no arbitrary zoom threshold or table redesign. */
+      els.leaderboardView.style.setProperty(
+        '--v5-leader-head-h', preferredHeaderHeightV2371 + 'px'
+      );
       els.leaderContent.style.setProperty('--v16-visible-row-count', String(rowCount));
+      const initialRowsHeightV2371 = Math.max(
+        0, els.leaderContent.getBoundingClientRect().height
+      );
+      const equalHeightCeilingV2371 =
+        (preferredHeaderHeightV2371 + initialRowsHeightV2371) / (rowCount + 1);
+      /* Match Scorecard's quarter-pixel rounding safety clearance. */
+      const headerHeight = Math.min(
+        preferredHeaderHeightV2371,
+        Math.max(0, equalHeightCeilingV2371 - 0.25)
+      );
+      if (headerHeight < preferredHeaderHeightV2371 - 0.01) {
+        els.leaderboardView.style.setProperty(
+          '--v5-leader-head-h', headerHeight.toFixed(4) + 'px'
+        );
+      }
 
       requestAnimationFrame(() => {
         const actualViewportHeight = Math.max(rowCount, Number(els.leaderContent.clientHeight) || rowCount);
@@ -37644,38 +37724,16 @@ let scoreTimingDetail =
        only as much as the longest cue needs so PRIMARY NAVIGATION, SECONDARY
        NAVIGATION and AFTER-PLAY FEATURES each remain on one line. */
     function fitQuickGuideVisualCueCopyV2079() {
-      const copies = Array.from(
-        els.modalBody.querySelectorAll('.quick-guide-legend-copy-v2050')
-      );
-      if (!copies.length) return false;
-
-      copies.forEach(copy => {
+      const copies=Array.from(els.modalBody.querySelectorAll('.quick-guide-legend-copy-v2050'));
+      if(!copies.length)return false;
+      copies.forEach(copy=>{
         copy.style.removeProperty('font-size');
-        copy.style.setProperty('white-space', 'nowrap', 'important');
-        copy.style.setProperty('overflow', 'hidden', 'important');
-        copy.style.setProperty('text-align', 'left', 'important');
+        copy.style.setProperty('white-space','normal','important');
+        copy.style.setProperty('overflow','visible','important');
+        copy.style.setProperty('overflow-wrap','normal','important');
+        copy.style.setProperty('line-height','1.08','important');
+        copy.style.setProperty('text-align','left','important');
       });
-
-      const targetPx = Math.min(...copies.map(copy =>
-        parseFloat(getComputedStyle(copy).fontSize) || 1
-      ));
-      let size = targetPx;
-      const minimum = Math.max(8, targetPx * 0.70);
-
-      const applySharedSize = value => {
-        copies.forEach(copy => {
-          copy.style.setProperty('font-size', value + 'px', 'important');
-        });
-      };
-      const allFit = () => copies.every(copy =>
-        !(copy.clientWidth > 0) || copy.scrollWidth <= copy.clientWidth + 0.5
-      );
-
-      applySharedSize(size);
-      while (size > minimum && !allFit()) {
-        size = Math.max(minimum, size - 0.25);
-        applySharedSize(size);
-      }
       return true;
     }
 
@@ -41028,6 +41086,13 @@ let scoreTimingDetail =
   var scoreGuide=scorecard && scorecard.querySelector('.score-nav > button[data-guide]');
   var scoreScroll=scorecard && scorecard.querySelector('#scoreScroll');
   var scoreRows=scorecard && scorecard.querySelector('#scoreRows');
+  /* V23.71: Leaderboard/Final Results use the same physical nav-vs-row
+     maximum-zoom rule as Scorecard, but with their own live row count. */
+  var leader=document.getElementById('leaderboardView');
+  var leaderHome=leader && leader.querySelector('#leaderHomeButton');
+  var leaderGuide=leader && leader.querySelector('.leader-nav > button[data-guide]');
+  var leaderScroll=leader && leader.querySelector('.leader-content');
+  var leaderRows=leader && leader.querySelector('#leaderRows');
   var logoZone=home.querySelector('.splash-image-wrap');
   var logoImage=home.querySelector('.splash-image');
   var shown=false, queued=false, generation=0;
@@ -41138,6 +41203,21 @@ let scoreTimingDetail =
     /* Enter at physical equality; require a little breathing room to exit. */
     return buttonH >= rowH-(shown?1.75:0.25);
   }
+  function leaderboardNavTooTall(){
+    if(!visible(leaderHome)||!visible(leaderGuide)||!visible(leaderScroll))return false;
+    var buttonH=Math.max(leaderHome.getBoundingClientRect().height,
+                          leaderGuide.getBoundingClientRect().height);
+    var allRows=leaderRows && leaderRows.querySelectorAll('.leader-row');
+    var count=Math.max(1,Math.min(8,allRows && allRows.length || 1));
+    var first=allRows && allRows.length && allRows[0];
+    var rowH=first && visible(first) ? first.getBoundingClientRect().height :
+      leaderScroll.getBoundingClientRect().height/count;
+    if(!(buttonH>0))return false;
+    if(!(rowH>0))return true;
+    /* Enter at equality; dismiss only when the geometry has recovered
+       beyond the existing shared tolerance, without a forced 100% reset. */
+    return buttonH >= rowH-(shown?1.75:0.25);
+  }
   /* V23.69 HOME minimum-logo rule: ten percent of the *visual* viewport
      height, applied to the actually visible image rather than its full CSS
      height when object-fit:contain is letterboxing an extreme aspect ratio.
@@ -41167,11 +41247,18 @@ let scoreTimingDetail =
   }
   function assess(){
     queued=false;
+    /* V23.72: page-specific modal rules take priority; return null for
+       screens governed by the existing V23.71 HOME/CC/SM/SC/LB rules. */
+    if(typeof window.sshcpExtraMaxZoomV2372==='function') {
+      var extra=window.sshcpExtraMaxZoomV2372(shown);
+      if(extra!==null && extra!==undefined){setWarning(!!extra);return;}
+    }
     var isHome=home.classList.contains('active');
     var isCC=cc && cc.classList.contains('active');
     var isSM=sm && sm.classList.contains('active');
     var isScore=scorecard && scorecard.classList.contains('active');
-    if((!isHome&&!isCC&&!isSM&&!isScore)||competingModal()){
+    var isLeader=leader && leader.classList.contains('active');
+    if((!isHome&&!isCC&&!isSM&&!isScore&&!isLeader)||competingModal()){
       if(shown)setWarning(false);
       return;
     }
@@ -41180,6 +41267,8 @@ let scoreTimingDetail =
     var bad=false;
     if(isScore){
       bad=scorecardNavTooTall();
+    }else if(isLeader){
+      bad=leaderboardNavTooTall();
     }else if(isCC){
       bad=logCollapsed(ccLog,ccLogHead,ccStack,view,slack);
     }else if(isSM){
@@ -41232,6 +41321,7 @@ let scoreTimingDetail =
     var resize=new ResizeObserver(schedule);
     [home,toggle,summary,panel,eventName,logoZone,logoImage,
       scorecard,scoreHome,scoreGuide,scoreScroll,scoreRows,
+      leader,leaderHome,leaderGuide,leaderScroll,leaderRows,
       cc,ccLog,ccStack,sm,smLog,smStack]
       .forEach(function(node){if(node)resize.observe(node);});
   }
@@ -41241,6 +41331,8 @@ let scoreTimingDetail =
   mutation.observe(home,{attributes:true,attributeFilter:['class']});
   if(scorecard)mutation.observe(scorecard,{attributes:true,attributeFilter:['class']});
   if(scoreRows)mutation.observe(scoreRows,{childList:true});
+  if(leader)mutation.observe(leader,{attributes:true,attributeFilter:['class']});
+  if(leaderRows)mutation.observe(leaderRows,{childList:true});
   if(logoImage)mutation.observe(logoImage,{attributes:true,attributeFilter:['src']});
   if(cc)mutation.observe(cc,{attributes:true,attributeFilter:['class']});
   if(sm)mutation.observe(sm,{attributes:true,attributeFilter:['class']});
@@ -41297,6 +41389,293 @@ let scoreTimingDetail =
   if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule,{passive:true});
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
   schedule();
+})();
+</script>
+
+<script id="sshcp-v2372-remaining-views-zoom">
+/* V23.72: modal and after-play presentation only. Live bounds, not zoom %. */
+(function(){
+ 'use strict';
+ const overlay=document.getElementById('modalOverlay');
+ const modal=document.querySelector('.modal-overlay');
+ const welcome=document.getElementById('qrWelcomeOverlayV170');
+ const curtain=document.getElementById('sshcpMaxZoomV2367');
+ const scoreEntry=document.getElementById('scoreEntryOverlay');
+ const skipView=document.getElementById('geekAllTeamsViewV2216');
+ let scheduled=false,guideScroller=null,guideObserver=null;
+ function shown(node){
+   if(!node||!node.isConnected||!node.getClientRects().length)return false;
+   const c=getComputedStyle(node);
+   return c.display!=='none'&&c.visibility!=='hidden'&&Number(c.opacity||1)>0;
+ }
+ function box(node){return node&&node.getBoundingClientRect();}
+ function viewport(){
+   const v=window.visualViewport;
+   return v?{left:v.offsetLeft,top:v.offsetTop,right:v.offsetLeft+v.width,
+            bottom:v.offsetTop+v.height,height:v.height}: 
+            {left:0,top:0,right:innerWidth,bottom:innerHeight,height:innerHeight};
+ }
+ function outside(a,b,tol=1.25){return !a||!b||a.left<b.left-tol||a.right>b.right+tol||a.top<b.top-tol||a.bottom>b.bottom+tol;}
+ function overlap(a,b,tol=1.25){return !!(a&&b&&Math.min(a.right,b.right)-Math.max(a.left,b.left)>tol&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>tol);}
+ function visibleChildren(root,sel){return Array.from(root.querySelectorAll(sel)).filter(shown);}
+ function textWidth(node){
+   const range=document.createRange();range.selectNodeContents(node);
+   const width=range.getBoundingClientRect().width;range.detach();return width;
+ }
+ function fitOneLine(node,minimum=0.75){
+   if(!shown(node)||!node.textContent.trim())return;
+   // Baseline is the normal computed style. This routine owns ONLY inline size.
+   node.style.removeProperty('font-size');
+   const c=getComputedStyle(node), target=parseFloat(c.fontSize)||16;
+   const usable=node.clientWidth-(parseFloat(c.paddingLeft)||0)-(parseFloat(c.paddingRight)||0)-2;
+   if(usable<=0)return;
+   if(textWidth(node)<=usable+0.5)return;
+   let lo=minimum,hi=target;
+   for(let n=0;n<17;n++){
+     const x=(lo+hi)/2;
+     node.style.setProperty('font-size',x.toFixed(3)+'px','important');
+     if(textWidth(node)<=usable+0.5)lo=x;else hi=x;
+   }
+   node.style.setProperty('font-size',lo.toFixed(3)+'px','important');
+ }
+ function textClipped(node,tol=1.5){
+   if(!shown(node)||!node.textContent.trim())return false;
+   const c=getComputedStyle(node);
+   // An intended wrapped paragraph is valid. It only fails if its bounding
+   // text outgrows a clipping box after current fit.
+   if(c.whiteSpace!=='nowrap'&&c.whiteSpace!=='pre'){
+     return ['hidden','clip'].includes(c.overflowY)&&node.scrollHeight>node.clientHeight+tol;
+   }
+   const padding=(parseFloat(c.paddingLeft)||0)+(parseFloat(c.paddingRight)||0);
+   return textWidth(node)>node.clientWidth-padding+tol;
+ }
+ function fitGuide(){
+   if(!modal||!modal.classList.contains('quick-guide'))return;
+   const title=modal.querySelector('.modal-title');
+   if(title)fitOneLine(title,.75);
+   // Wrapping now supplies real row height instead of the V23.1 one-line min.
+   visibleChildren(modal,'.quick-guide-legend-copy-v2050').forEach(n=>{
+     n.style.setProperty('white-space','normal','important');
+     n.style.setProperty('overflow','visible','important');
+     n.style.removeProperty('font-size');
+   });
+   if(typeof window.sshcpRefreshGuideProgressV2372==='function')
+     window.sshcpRefreshGuideProgressV2372();
+ }
+ function attachGuideProgress(){
+   if(!modal||!modal.classList.contains('quick-guide'))return;
+   const scroll=modal.querySelector('.quick-guide-scroll-v2050');
+   const rail=modal.querySelector('.quick-guide-progress-v2050');
+   if(!scroll||!rail)return;
+   if(scroll!==guideScroller){
+     if(guideObserver){guideObserver.disconnect();guideObserver=null;}
+     guideScroller=scroll;
+     if('ResizeObserver' in window){
+       guideObserver=new ResizeObserver(()=>{
+         // Keep original scroll listener/progress calculation as source of truth;
+         // invoke scroll event only when text reflow changes content size.
+         scroll.dispatchEvent(new Event('scroll'));
+       });
+       guideObserver.observe(scroll);
+       const content=scroll.querySelector('.quick-guide-lines-v172');
+       if(content)guideObserver.observe(content);
+     }
+   }
+   window.sshcpRefreshGuideProgressV2372=function(){
+     if(!shown(scroll))return;
+     // Existing V20.50 scroll listener updates rail size AND position.
+     scroll.dispatchEvent(new Event('scroll'));
+   };
+   window.sshcpRefreshGuideProgressV2372();
+ }
+ function fitGameHeaders(){
+   if(!modal||!modal.classList.contains('game-mode-results-v2026'))return;
+   visibleChildren(modal,'.game-mode-row-v2026.header .game-mode-cell-v2026')
+     .forEach(n=>fitOneLine(n,.5));
+ }
+ function fitGeekHelper(){
+   if(!modal||!modal.classList.contains('geek-mode-v180'))return;
+   const helper=modal.querySelector('.geek-bottom-helper-v2229');
+   if(helper)fitOneLine(helper,.5);
+ }
+ function fitWelcome(){
+   if(!welcome||!document.documentElement.classList.contains('sshcp-qr-welcome-v170'))return;
+   const title=welcome.querySelector('.qr-welcome-title-v170');
+   const guide=welcome.querySelector('#qrWelcomeGuideV170');
+   const enter=welcome.querySelector('#qrWelcomeEnterV170');
+   const team=welcome.querySelector('#qrWelcomeTeamV170');
+   if(title)fitOneLine(title,.5);
+   if(guide)fitOneLine(guide,.5);
+   if(enter)fitOneLine(enter,.5);
+   if(team&&team.textContent.trim()&&shown(team)){
+     // Original fitter intentionally enforces 18px min. Shrink only if it
+     // still spills outside the currently visible team element.
+     const c=getComputedStyle(team);
+     const w=team.clientWidth-(parseFloat(c.paddingLeft)||0)-(parseFloat(c.paddingRight)||0)-2;
+     if(w>0&&textWidth(team)>w+.5){
+       const high=parseFloat(c.fontSize)||18;
+       let lo=.75,hi=high;
+       for(let i=0;i<17;i++){
+         const test=(lo+hi)/2;
+         team.style.setProperty('font-size',test.toFixed(3)+'px','important');
+         if(textWidth(team)<=w+.5)lo=test;else hi=test;
+       }
+       team.style.setProperty('font-size',lo.toFixed(3)+'px','important');
+     }
+   }
+ }
+ function fitCompletion(){
+   const tip=document.querySelector('.tips-overlay-v2154.tips-scramble-complete-v2215.open-v2154');
+   if(!tip)return;
+   visibleChildren(tip,'.tips-title-v2154,.tips-summary-v2215,.tips-ok-v2154').forEach(n=>fitOneLine(n,.5));
+ }
+ function checkWelcome(v,slack){
+   if(!document.documentElement.classList.contains('sshcp-qr-welcome-v170')||!shown(welcome))return null;
+   // WELCOME entrance keyframes are intentional, not collisions.
+   if(welcome.getAnimations({subtree:true}).some(a=>a.playState==='running'))return false;
+   const els=visibleChildren(welcome,'.qr-welcome-title-v170,#qrWelcomeTeamV170,.qr-welcome-actions-v170 button');
+   if(els.some(n=>outside(box(n),v,slack)))return true;
+   const meaningful=els.filter(n=>n.textContent.trim());
+   if(meaningful.some(n=>textClipped(n)))return true;
+   for(let i=0;i<meaningful.length;i++)for(let j=i+1;j<meaningful.length;j++){
+     if(overlap(box(meaningful[i]),box(meaningful[j]),slack))return true;
+   }
+   return false;
+ }
+ function checkSummary(v,slack){
+   if(!modal.classList.contains('tournament-summary'))return null;
+   const title=modal.querySelector('.modal-title');
+   const grid=modal.querySelector('.tournament-summary-grid');
+   const hdr=grid&&grid.querySelector('.tournament-summary-row.header');
+   const rows=grid&&visibleChildren(grid,'.tournament-summary-row.place-1,.tournament-summary-row.place-2,.tournament-summary-row.place-3');
+   if(!title||!hdr||!shown(hdr)||!rows.length)return false;
+   const smallest=Math.min(...rows.map(r=>box(r).height));
+   const trigger=box(hdr).height>0&&smallest>0&&box(hdr).height>=smallest-(slack*.5);
+   return trigger||textClipped(title,1.5);
+ }
+ function checkGame(v,slack){
+   if(!modal.classList.contains('game-mode-results-v2026'))return null;
+   const rows=visibleChildren(modal,'.game-mode-row-v2026:not(.header)');
+   if(rows.some(n=>box(n).height>=v.height*0.1-slack*.2))return true;
+   return visibleChildren(modal,'.game-mode-row-v2026.header .game-mode-cell-v2026').some(n=>textClipped(n));
+ }
+ function checkGeek(v,slack){
+   if(modal.classList.contains('geek-detail-v180')){
+     const card=modal.querySelector('.modal-box');
+     const nodes=visibleChildren(modal,'.geek-detail-description-v180,.geek-detail-proof-v1920,.geek-detail-result-v180,.geek-detail-team-name-v1920,.modal-title,.geek-detail-back-v182');
+     if(nodes.some(n=>textClipped(n)))return true;
+     if(card && outside(box(card),v,slack) && getComputedStyle(card).overflowY!=='auto')return true;
+     const result=modal.querySelector('.geek-detail-result-card-v1928');
+     if(result&&card&&outside(box(result),box(card),slack))return true;
+     return interfereButtons(modal,slack);
+   }
+   if(!modal.classList.contains('geek-mode-v180'))return null;
+   const filter=modal.querySelector('.geek-filter-popover-v186.open');
+   if(filter){
+     const card=modal.querySelector('.modal-box');
+     if(!card||outside(box(filter),box(card),slack))return true;
+     const buttons=visibleChildren(filter,'.geek-filter-choice-v186,.geek-filter-apply-v186');
+     if(buttons.some(n=>outside(box(n),box(filter),slack)))return true;
+     if(buttons.some(n=>textClipped(n)))return true;
+     for(let i=0;i<buttons.length;i++)for(let j=i+1;j<buttons.length;j++){
+       if(overlap(box(buttons[i]),box(buttons[j]),slack))return true;
+     }
+     return false;
+   }
+   const header=modal.querySelector('.geek-row-v180.header');
+   const stat=modal.querySelector('.geek-row-v180.stat');
+   if(header&&shown(header)&&stat&&shown(stat)){
+     // A stat occupies 2X of the shared unit on portrait GEEK.
+     // Use a *real rendered stat row*, never a Chrome zoom threshold.
+     if(box(header).height>=box(stat).height-slack*.4)return true;
+   }
+   const helper=modal.querySelector('.geek-bottom-helper-v2229');
+   return !!(helper&&shown(helper)&&textClipped(helper));
+ }
+ function interfereButtons(root,slack){
+   const buttons=visibleChildren(root,'.modal-actions .modal-btn, .tips-summary-v2215, .tips-ok-v2154,button:not(.geek-team-button-v180)');
+   const actionable=buttons.filter(n=>!n.closest('.quick-guide-scroll-v2050'));
+   for(let i=0;i<actionable.length;i++){
+     const a=box(actionable[i]);
+     for(let j=i+1;j<actionable.length;j++){
+       // Children inside a button are never separate controls.
+       if(actionable[i].contains(actionable[j])||actionable[j].contains(actionable[i]))continue;
+       if(overlap(a,box(actionable[j]),slack))return true;
+     }
+   }
+   return false;
+ }
+ function checkGeneric(root,v,slack){
+   // The generic guard is intentionally conservative. No scorecard data, table
+   // scrolling, keyframes or transitional white curtains count as collisions.
+   if(!root)return false;
+   const card=root.querySelector('.modal-box,.tips-card-v2154,.score-entry-box');
+   if(!shown(card))return false;
+   if(outside(box(card),v,slack) && !['auto','scroll'].includes(getComputedStyle(card).overflowY))return true;
+   const titles=visibleChildren(card,'.modal-title,.tips-title-v2154');
+   if(titles.some(n=>textClipped(n)))return true;
+   // Other modal prose may wrap/scroll legitimately. Flag only clipped text
+   // in a non-scrollable region, never normal scrolling or long instructions.
+   const textBodies=visibleChildren(card,'.modal-text,.tips-body-v2154');
+   if(textBodies.some(n=>{
+     const st=getComputedStyle(n);
+     return ['hidden','clip'].includes(st.overflowY)&&
+            n.scrollHeight>n.clientHeight+2;
+   }))return true;
+   const buttons=visibleChildren(card,'.modal-actions .modal-btn,.tips-summary-v2215,.tips-ok-v2154,.score-entry-actions button,.score-entry-control button');
+   if(buttons.some(n=>textClipped(n)))return true;
+   if(buttons.some(n=>outside(box(n),box(card),slack)))return true;
+   // Text flowing into controls is an actual interference, but ordinary
+   // scrollable modal-body content is permitted to be taller than its box.
+   const descriptions=visibleChildren(card,'.tips-body-v2154 .tips-line-v2154');
+   for(const desc of descriptions){
+     if(textClipped(desc))return true;
+     if(buttons.some(b=>overlap(box(desc),box(b),slack)))return true;
+   }
+   return interfereButtons(card,slack);
+ }
+ function evaluate(wasShown){
+   // All Teams landscape was intentionally excluded by explicit user request.
+   if(skipView&&shown(skipView)&&skipView.getAttribute('aria-hidden')!=='true')return null;
+   const v=viewport(),slack=wasShown?2:1.25;
+   const w=checkWelcome(v,slack);if(w!==null)return w;
+   const tips=document.querySelector('.tips-overlay-v2154.open-v2154');
+   if(tips&&shown(tips))return checkGeneric(tips,v,slack);
+   if(scoreEntry&&scoreEntry.classList.contains('open')&&shown(scoreEntry))return checkGeneric(scoreEntry,v,slack);
+   if(modal&&modal.classList.contains('open')&&shown(modal)){
+     if(modal.classList.contains('quick-guide'))return false; // NO maximum for guide.
+     const checks=[checkSummary(v,slack),checkGame(v,slack),checkGeek(v,slack)];
+     for(const c of checks)if(c!==null)return !!c;
+     return checkGeneric(modal,v,slack);
+   }
+   return null;
+ }
+ window.sshcpExtraMaxZoomV2372=evaluate;
+ function act(){
+   scheduled=false;
+   if(modal&&modal.classList.contains('quick-guide')){fitGuide();attachGuideProgress();}
+   else {if(guideObserver){guideObserver.disconnect();guideObserver=null;}guideScroller=null;}
+   fitGameHeaders();fitGeekHelper();fitWelcome();fitCompletion();
+   if(typeof window.sshcpScheduleZoomCheckV2367==='function')window.sshcpScheduleZoomCheckV2367();
+ }
+ function schedule(){
+   if(scheduled)return;scheduled=true;
+   requestAnimationFrame(()=>requestAnimationFrame(act));
+ }
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('orientationchange',schedule,{passive:true});
+ window.addEventListener('pageshow',schedule,{passive:true});
+ if(window.visualViewport){window.visualViewport.addEventListener('resize',schedule,{passive:true});window.visualViewport.addEventListener('scroll',schedule,{passive:true});}
+ if(window.ResizeObserver){
+   const ro=new ResizeObserver(schedule);
+   [modal,welcome,scoreEntry].filter(Boolean).forEach(node=>ro.observe(node));
+ }
+ if(modal){new MutationObserver(schedule).observe(modal,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});}
+ if(welcome){new MutationObserver(schedule).observe(welcome,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});}
+ const tipsOverlay=document.querySelector('.tips-overlay-v2154');
+ if(tipsOverlay)new MutationObserver(schedule).observe(tipsOverlay,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
+ schedule();
 })();
 </script>
 </body>
