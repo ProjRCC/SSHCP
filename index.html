@@ -1,3 +1,17 @@
+<!-- SSHCP V23.68 TEST — exact V23.67-H7M4QX donor; frontend-only.
+     HOME drawer stays fully visible: seven actions share available height,
+     preserving established size when it fits; show MAX ZOOM REACHED only if
+     the fitted controls become overlapped, clipped, or unusable.
+     CONTROL CENTER and SCRAMBLE MODE: preserve ALL original geometry; show
+     the same warning when their log area has collapsed before buttons leave
+     the visible viewport. Automatic recovery as real log room returns.
+     SCORECARD: cap dynamic header only once nine-hole rows would be shorter;
+     refit running gross/net boxes within the capped header and vertically
+     center top-nav middle labels on narrow CSS viewports.
+     No edits to V23.66 GOLDEN, V23.67 TEST, Worker, scoring, results, GEEK,
+     QR/auth, scrolling on other views, or centralized DPR/global scale.
+     TEST / NOT GOLDEN / REAL-DEVICE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.67-H7M4QX | BUILD KEY: 23.68-M8Q4VX -->
 <!-- SSHCP V23.67 TEST — exact protected V23.66-R8Q4MX GOLDEN donor.
      HOME full-event-name width fitting; all seven hamburger-menu labels, panel
      width/height containment, and actual-layout MAX ZOOM REACHED detection.
@@ -15617,6 +15631,25 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
   white-space:normal!important;
   overflow-wrap:anywhere!important;
 }
+
+/* V23.68: clamp the OPEN HOME drawer's complete seven-action stack to the
+   true visible screen, then reject actual button collisions; never silently
+   hide lower buttons with a vertical scroll area at excessive zoom. */
+#homeMenuPanelV2054.sshcp-menu-fit-v2368{
+  overflow-y:visible!important;
+}
+#homeMenuPanelV2054.sshcp-menu-fit-v2368.open{
+  gap:var(--v2368-menu-gap,var(--v2074-menu-panel-gap,7px))!important;
+  padding-top:var(--v2368-menu-pad,var(--v2074-menu-panel-pad,8px))!important;
+  padding-bottom:var(--v2368-menu-pad,var(--v2074-menu-panel-pad,8px))!important;
+}
+#homeMenuPanelV2054.sshcp-menu-fit-v2368 .home-menu-item-v2054{
+  min-height:var(--v2368-menu-height,var(--v2074-menu-item-h,50px))!important;
+  height:var(--v2368-menu-height,var(--v2074-menu-item-h,50px))!important;
+  max-height:var(--v2368-menu-height,var(--v2074-menu-item-h,50px))!important;
+  padding-top:var(--v2368-menu-vpad,var(--v2074-menu-item-pad-y,8px))!important;
+  padding-bottom:var(--v2368-menu-vpad,var(--v2074-menu-item-pad-y,8px))!important;
+}
 </style>
 </head>
 
@@ -15746,7 +15779,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.67</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.68</span></span>
         </button>
         <script>
           (function () {
@@ -26507,9 +26540,17 @@ let scoreTimingDetail =
       const screenHeight = screen.clientHeight;
       if (!Number.isFinite(screenHeight) || screenHeight <= 0) return;
 
-      const headerHeight = geometry.sharedV187
+      const preferredHeaderHeightV2368 = geometry.sharedV187
         ? geometry.sharedV187.tableHeader
         : syncSharedGeometryV187().tableHeader;
+
+      /* V23.68 — begin each layout pass at the original scale-driven header;
+         a prior high-zoom cap must NOT persist after the browser zoom recovers.
+         The header consumes real vertical space, so cap against the final
+         nine-hole row size, not against an unrelated fixed pixel limit. */
+      els.scorecardView.style.setProperty(
+        '--v5-score-head-h', preferredHeaderHeightV2368 + 'px'
+      );
 
       /* SSHCP V23.7 — the fixed bottom button is never moved or resized. The
          footer's top padding alone establishes the shared lower-shell gap; the
@@ -26520,6 +26561,24 @@ let scoreTimingDetail =
       const sharedFooterGapV237 = sharedLowerShellGapV237(geometry);
       bottom.style.setProperty('padding-top', sharedFooterGapV237 + 'px', 'important');
 
+      /* V23.68 — preferred header H and initially visible rows V share a
+         constant table budget (H + V). With nine equal rows, the largest
+         permissible header is (H + V)/10. This is active ONLY when the
+         ordinary 9-row height V/9 is shorter than H. After changing the
+         header, remeasure the flexible scroll viewport so nine rows still
+         exactly fill the space, preserving the V23.7 footer boundary. */
+      const initialRowsHeightV2368 = Math.max(0, els.scoreScroll.getBoundingClientRect().height);
+      const maximumEqualHeaderV2368 =
+        (preferredHeaderHeightV2368 + initialRowsHeightV2368) / 10;
+      /* A quarter CSS pixel of rounding clearance guarantees that the
+         rendered header never becomes fractionally taller than a 9-hole row. */
+      const headerHeight = Math.min(preferredHeaderHeightV2368,
+                                    Math.max(0, maximumEqualHeaderV2368 - 0.25));
+      const reducedHeaderV2368 = headerHeight < preferredHeaderHeightV2368 - 0.01;
+      if (reducedHeaderV2368) {
+        els.scorecardView.style.setProperty('--v5-score-head-h',
+          headerHeight.toFixed(4) + 'px');
+      }
       const scoreViewportHeightV237 = Math.max(9, Number(els.scoreScroll.clientHeight) || 9);
       const rowHeight = scoreViewportHeightV237 / 9;
       window.SSHCP_SHARED_LOWER_GAP_V237 = sharedFooterGapV237;
@@ -26609,22 +26668,33 @@ let scoreTimingDetail =
           });
         }
 
-        let boxWidth = Math.max(24, Math.round(headerHeight * 0.78));
-        let boxHeight = Math.max(24, Math.round(headerHeight * 0.78));
-        let boxRadius = Math.max(5, Math.round(boxHeight * 0.18));
+        /* V23.68 — preserve the 24px minimum at ordinary zoom. Once
+           the nine-row cap is active, the running-score boxes must share the
+           header's smaller real height rather than spilling over its edges. */
+        const runningBoxFloorV2368 = reducedHeaderV2368 ? 1 : 24;
+        let boxWidth = Math.max(runningBoxFloorV2368, Math.round(headerHeight * 0.78));
+        let boxHeight = Math.max(runningBoxFloorV2368, Math.round(headerHeight * 0.78));
+        let boxRadius = Math.max(reducedHeaderV2368 ? 1 : 5,
+                                 Math.round(boxHeight * 0.18));
 
         if (parts[1]) {
           const runningRect = running.getBoundingClientRect();
           const scoreRect = parts[1].getBoundingClientRect();
-          const sideGap = Math.max(2, Math.round(headerHeight * 0.04));
+          const sideGap = Math.max(reducedHeaderV2368 ? 0.25 : 2,
+                                   Math.round(headerHeight * 0.04));
           const leftZoneWidth = Math.max(0, (scoreRect.left - runningRect.left) - (sideGap * 2));
           const rightZoneWidth = Math.max(0, (runningRect.right - scoreRect.right) - (sideGap * 2));
           const zoneWidth = Math.max(0, Math.min(leftZoneWidth, rightZoneWidth));
-          /* V18.57: 82% ceiling tightens the white surround a hair from V18.56's 85%. */
-          const maxHeightFromRow = Math.max(20, Math.round(headerHeight * 0.82));
-          boxHeight = Math.max(20, Math.min(maxHeightFromRow, zoneWidth || maxHeightFromRow));
-          boxWidth = Math.max(boxHeight, Math.min(Math.round(boxHeight * 1.20), Math.max(boxHeight, Math.round(zoneWidth || boxHeight))));
-          boxRadius = Math.max(5, Math.min(Math.round(boxHeight * 0.18), Math.round(boxHeight / 2)));
+          /* V18.57: keep the original 82% ceiling/20px floor unless the
+             shrinking header forces the total boxes to become smaller. */
+          const runningCapFloorV2368 = reducedHeaderV2368 ? 1 : 20;
+          const maxHeightFromRow = Math.max(runningCapFloorV2368, Math.round(headerHeight * 0.82));
+          boxHeight = Math.max(runningCapFloorV2368,
+            Math.min(maxHeightFromRow, zoneWidth || (reducedHeaderV2368 ? 1 : maxHeightFromRow)));
+          boxWidth = Math.max(boxHeight, Math.min(Math.round(boxHeight * 1.20),
+            Math.max(boxHeight, Math.round(zoneWidth || (reducedHeaderV2368 ? 1 : boxHeight)))));
+          boxRadius = Math.max(reducedHeaderV2368 ? 1 : 5,
+            Math.min(Math.round(boxHeight * 0.18), Math.round(boxHeight / 2)));
         }
 
         els.scorecardView.style.setProperty('--v1855-running-box-w', boxWidth + 'px');
@@ -40618,6 +40688,9 @@ let scoreTimingDetail =
       panel.style.removeProperty('max-height');
       panel.style.removeProperty('top');
       panel.style.removeProperty('visibility');
+      panel.classList.remove('sshcp-menu-fit-v2368');
+      ['--v2368-menu-gap','--v2368-menu-pad','--v2368-menu-height',
+       '--v2368-menu-vpad'].forEach(function(key){ panel.style.removeProperty(key); });
       Array.prototype.forEach.call(panel.querySelectorAll('.home-menu-item-v2054'), function(button){
         button.style.removeProperty('min-width');
         button.style.removeProperty('max-width');
@@ -40630,55 +40703,88 @@ let scoreTimingDetail =
     function fitScorecardMenuNameV2080(){
       if (!panel.classList.contains('open')) return;
       var items = Array.prototype.slice.call(panel.querySelectorAll('.home-menu-item-v2054'));
-      var vv = window.visualViewport;
-      var viewHeight = vv ? vv.height : window.innerHeight;
-      var viewTop = vv ? vv.offsetTop : 0;
-      // Reset intrinsic dimensions before each pass; preserve normal menu sizing.
+      if(!items.length) return;
+      var vv=window.visualViewport;
+      var screenBottom=vv ? vv.offsetTop+vv.height : window.innerHeight;
+      // Remove ONLY our previous pass before measuring the donor layout.
+      panel.classList.remove('sshcp-menu-fit-v2368');
+      ['--v2368-menu-gap','--v2368-menu-pad','--v2368-menu-height',
+       '--v2368-menu-vpad'].forEach(function(key){panel.style.removeProperty(key);});
       panel.style.removeProperty('width');
-      items.forEach(function(button){ button.style.removeProperty('font-size'); });
-      // Stay below the existing hamburger location. Scrolling is deliberate
-      // whenever all seven full-height buttons cannot display simultaneously.
-      var rect = panel.getBoundingClientRect();
-      var availableHeight = Math.max(0, viewTop + viewHeight - rect.top - 6);
-      panel.style.setProperty('max-height', availableHeight.toFixed(2) + 'px', 'important');
-      var resolvedPanelWidth = panel.getBoundingClientRect().width;
-      if (!(resolvedPanelWidth > 0)) return;
-      // Lock the measured (already max-width capped) width while fitting text.
-      panel.style.setProperty('width', resolvedPanelWidth + 'px', 'important');
+      items.forEach(function(b){b.style.removeProperty('font-size');});
+      var rect=panel.getBoundingClientRect();
+      var heightBudget=Math.max(0,screenBottom-rect.top-6);
+      panel.style.setProperty('max-height',heightBudget.toFixed(2)+'px','important');
+      var resolvedWidth=panel.getBoundingClientRect().width;
+      if(!(resolvedWidth>0)) return;
+      panel.style.setProperty('width',resolvedWidth.toFixed(2)+'px','important');
+
+      var cs=getComputedStyle(panel), firstStyle=getComputedStyle(items[0]);
+      var naturalButton=parseFloat(firstStyle.minHeight)||50;
+      var naturalGap=parseFloat(cs.gap)||7;
+      var naturalPad=parseFloat(cs.paddingTop)||8;
+      var naturalVPad=parseFloat(firstStyle.paddingTop)||8;
+      var borderTop=parseFloat(cs.borderTopWidth)||0;
+      var borderBottom=parseFloat(cs.borderBottomWidth)||0;
+      var count=items.length, gapCount=Math.max(0,count-1);
+      var naturalTotal=naturalButton*count+naturalGap*gapCount+
+        2*naturalPad+borderTop+borderBottom;
+      // The complete visible stack remains in the viewport. Below its usable
+      // minimum, deliberately leave true geometry colliding with the boundary
+      // so the shared actual-geometry warning can identify MAX ZOOM.
+      var targetH=naturalButton, targetGap=naturalGap, targetPad=naturalPad;
+      if(heightBudget<naturalTotal){
+        var floorH=Math.min(naturalButton,26);
+        var floorGap=Math.min(naturalGap,3);
+        var floorPad=Math.min(naturalPad,4);
+        var minimum= floorH*count+floorGap*gapCount+
+          floorPad*2+borderTop+borderBottom;
+        var t=minimum>=naturalTotal?0:
+          Math.max(0,Math.min(1,(heightBudget-minimum)/(naturalTotal-minimum)));
+        targetH=floorH+(naturalButton-floorH)*t;
+        targetGap=floorGap+(naturalGap-floorGap)*t;
+        targetPad=floorPad+(naturalPad-floorPad)*t;
+      }
+      var targetVPad=Math.min(naturalVPad,Math.max(1,(targetH-10)/4));
+      panel.classList.add('sshcp-menu-fit-v2368');
+      panel.style.setProperty('--v2368-menu-height',targetH.toFixed(3)+'px');
+      panel.style.setProperty('--v2368-menu-gap',targetGap.toFixed(3)+'px');
+      panel.style.setProperty('--v2368-menu-pad',targetPad.toFixed(3)+'px');
+      panel.style.setProperty('--v2368-menu-vpad',targetVPad.toFixed(3)+'px');
       items.forEach(function(button){
-        button.style.setProperty('min-width', '0', 'important');
-        button.style.setProperty('max-width', '100%', 'important');
-        button.style.setProperty('width', '100%', 'important');
-        button.style.setProperty('text-overflow', 'clip', 'important');
-        var style = getComputedStyle(button);
-        var target = parseFloat(style.fontSize) || 18;
-        // 6 px is a readability floor, not a browser-zoom threshold. If the
-        // FULL label cannot fit at that size, geometry watcher shows warning.
-        var floor = Math.min(target, 6);
-        var usable = button.clientWidth -
-          (parseFloat(style.paddingLeft)||0) - (parseFloat(style.paddingRight)||0) - 2;
-        var range = document.createRange();
+        button.style.setProperty('min-width','0','important');
+        button.style.setProperty('max-width','100%','important');
+        button.style.setProperty('width','100%','important');
+        button.style.setProperty('text-overflow','clip','important');
+        var style=getComputedStyle(button);
+        var target=parseFloat(style.fontSize)||18;
+        var floor=Math.min(target,6);
+        var usable=button.clientWidth-(parseFloat(style.paddingLeft)||0)-
+          (parseFloat(style.paddingRight)||0)-2;
+        var maxLine=Math.max(.1,(targetH-2*targetVPad-2)/1.05);
+        target=Math.min(target,maxLine);
+        floor=Math.min(floor,target);
+        var range=document.createRange();
         range.selectNodeContents(button);
-        function textWidth(px){
-          button.style.setProperty('font-size', px.toFixed(3) + 'px','important');
+        function width(px){
+          button.style.setProperty('font-size',px.toFixed(3)+'px','important');
           return range.getBoundingClientRect().width;
         }
-        if (usable > 0 && textWidth(target) <= usable + .6) {
+        if(usable>0 && width(target)<=usable+.6 &&
+           Math.abs(target-(parseFloat(style.fontSize)||target))<.001){
           button.style.removeProperty('font-size');
-        } else {
-          var lo = floor, hi = target;
-          for(var n=0;n<15;n++){
+        }else{
+          var lo=floor,hi=target;
+          for(var n=0;n<16;n++){
             var mid=(lo+hi)/2;
-            if(textWidth(mid) <= usable + .6) lo=mid;
-            else hi=mid;
+            if(width(mid)<=usable+.6)lo=mid;else hi=mid;
           }
-          button.style.setProperty('font-size', lo.toFixed(3) + 'px', 'important');
+          button.style.setProperty('font-size',lo.toFixed(3)+'px','important');
         }
         range.detach();
       });
-      if (typeof window.sshcpScheduleZoomCheckV2367 === 'function') {
+      if(typeof window.sshcpScheduleZoomCheckV2367==='function')
         window.sshcpScheduleZoomCheckV2367();
-      }
     }
 
     function closeMenuV2054(){
@@ -40794,8 +40900,25 @@ let scoreTimingDetail =
 </script>
 
 
+</style>
+
+<style id="sshcp-v2368-nav-middle-vertical-centering">
+/* At <=340px the old 2em label max-height overrides the full nav-row
+   height, leaving the short name at the top. Restore the existing flex
+   centering throughout the actual HOME/GUIDE button row at all zooms. */
+#scorecardView .score-nav > #scoreTiming,
+#leaderboardView .leader-nav > #leaderTiming {
+  height:100%!important;
+  max-height:none!important;
+  align-self:stretch!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+</style>
+
 <script id="sshcp-v2367-home-max-zoom">
-/* V23.67 HOME-only rendered-geometry watchdog. No Worker calls or persistent data. */
+/* V23.68 HOME + CC/SM actual-geometry watchdog. No Worker calls or persisted data. */
 (function(){
   'use strict';
   var home=document.getElementById('homeView');
@@ -40814,6 +40937,14 @@ let scoreTimingDetail =
     '<div id="sshcpMaxZoomBodyV2367">Reset Chrome or browser zoom to 100%.</div>' +
     '</div>';
   document.body.appendChild(curtain);
+  var cc=document.getElementById('testLogView');
+  var sm=document.getElementById('scrambleModeView');
+  var ccLog=cc && cc.querySelector('.test-log-table');
+  var ccLogHead=ccLog && ccLog.querySelector('.test-log-row.header');
+  var ccStack=cc && cc.querySelector('.control-center-bottom-stack');
+  var smLog=sm && sm.querySelector('.scramble-activity-v1938');
+  var smLogHead=smLog && smLog.querySelector('.scramble-activity-head-v1938');
+  var smStack=sm && sm.querySelector('.scramble-bottom-stack-v1938');
   var shown=false, queued=false, generation=0;
   var overlapTolerance=1.25, clearTolerance=2;
   function visible(el){
@@ -40874,43 +41005,65 @@ let scoreTimingDetail =
        p.left<view.left-slack || p.right>view.right+slack ||
        p.top<view.top-slack || p.bottom>view.bottom+slack) return true;
     var items=Array.prototype.slice.call(panel.querySelectorAll('.home-menu-item-v2054'));
-    if(!items.length) return true;
-    var usableHeight=panel.clientHeight;
-    var tallest=Math.max.apply(null,items.map(function(b){return b.getBoundingClientRect().height;}));
-    // All items are accessible by vertical scrolling while one complete button
-    // and the panel's scroll port remain visible. Never warn just for scrolling.
-    if(usableHeight + slack < tallest || panel.clientWidth<=0) return true;
+    if(items.length!==7) return true;
+    var prev=null;
     for(var i=0;i<items.length;i++){
       var b=items[i],r=b.getBoundingClientRect(),style=getComputedStyle(b);
-      if(r.left<p.left-slack || r.right>p.right+slack) return true;
+      if(r.height<25.5 || r.left<p.left-slack || r.right>p.right+slack ||
+         r.top<p.top-slack || r.bottom>p.bottom+slack) return true;
+      if(prev && r.top<prev.bottom+0.8) return true;
       var contentWidth=b.clientWidth-(parseFloat(style.paddingLeft)||0)-
         (parseFloat(style.paddingRight)||0)-2;
       if(contentWidth<=0 || textWidth(b)>contentWidth+slack) return true;
+      prev=r;
     }
-    // No required button may be clipped outside the panel's own scroll content.
-    var last=items[items.length-1];
-    if(last.offsetTop+last.offsetHeight>panel.scrollHeight+slack) return true;
     return false;
   }
+  /* No CC or Scramble layout modifications: the flex log itself is the early
+     physical failure sensor. A log reduced to its sticky header has no usable
+     body; do not wait for the first bottom-row button to fall off the page. */
+  function logCollapsed(log,head,stack,view,slack){
+    if(!visible(log)||!visible(head)||!visible(stack))return false;
+    var box=log.getBoundingClientRect(),hdr=head.getBoundingClientRect();
+    var bottom=stack.getBoundingClientRect();
+    var border=getComputedStyle(log);
+    var borders=(parseFloat(border.borderTopWidth)||0)+
+       (parseFloat(border.borderBottomWidth)||0);
+    var bodySpace=box.height-hdr.height-borders;
+    var minimumRoom=shown?4:1.5; // hysteresis in actual CSS geometry, not zoom %
+    if(bodySpace<=minimumRoom) return true;
+    // Secondary safety gate if the stack would run offscreen before the log
+    // contracts on an unfamiliar screen: no controls may become inaccessible.
+    return bottom.bottom>view.bottom+slack || bottom.top<box.bottom-slack;
+  }
+
   function assess(){
     queued=false;
-    if(!home.classList.contains('active') || !visible(toggle) || competingModal()){
-      if(shown) setWarning(false);
+    var isHome=home.classList.contains('active');
+    var isCC=cc && cc.classList.contains('active');
+    var isSM=sm && sm.classList.contains('active');
+    if((!isHome&&!isCC&&!isSM)||competingModal()){
+      if(shown)setWarning(false);
       return;
     }
-    fitEventName();
     var view=visualBounds();
     var slack=shown?clearTolerance:overlapTolerance;
-    var isMenuOpen=panel.classList.contains('open') && visible(panel);
     var bad=false;
-    if(isMenuOpen){
-      bad=errorInOpenMenu(view,slack);
-    }else if(visible(summary)){
-      var a=toggle.getBoundingClientRect(),b=summary.getBoundingClientRect();
-      // Show on real intersection. Clear only after a small physical gap.
-      bad=shown ? (a.right>b.left-clearTolerance && b.right>a.left-clearTolerance &&
-                    a.bottom>b.top-clearTolerance && b.bottom>a.top-clearTolerance)
-                : intersects(a,b,overlapTolerance);
+    if(isCC){
+      bad=logCollapsed(ccLog,ccLogHead,ccStack,view,slack);
+    }else if(isSM){
+      bad=logCollapsed(smLog,smLogHead,smStack,view,slack);
+    }else if(visible(toggle)){
+      fitEventName();
+      var isMenuOpen=panel.classList.contains('open') && visible(panel);
+      if(isMenuOpen){
+        bad=errorInOpenMenu(view,slack);
+      }else if(visible(summary)){
+        var a=toggle.getBoundingClientRect(),b=summary.getBoundingClientRect();
+        bad=shown ? (a.right>b.left-clearTolerance && b.right>a.left-clearTolerance &&
+                      a.bottom>b.top-clearTolerance && b.bottom>a.top-clearTolerance)
+                  : intersects(a,b,overlapTolerance);
+      }
     }
     setWarning(bad);
   }
@@ -40943,12 +41096,15 @@ let scoreTimingDetail =
   }
   if(window.ResizeObserver){
     var resize=new ResizeObserver(schedule);
-    [home,toggle,summary,panel,eventName].forEach(function(node){resize.observe(node);});
+    [home,toggle,summary,panel,eventName,cc,ccLog,ccStack,sm,smLog,smStack]
+      .forEach(function(node){if(node)resize.observe(node);});
   }
   var mutation=new MutationObserver(schedule);
   mutation.observe(eventName,{childList:true,characterData:true,subtree:true});
   mutation.observe(panel,{childList:true,characterData:true,subtree:true});
   mutation.observe(home,{attributes:true,attributeFilter:['class']});
+  if(cc)mutation.observe(cc,{attributes:true,attributeFilter:['class']});
+  if(sm)mutation.observe(sm,{attributes:true,attributeFilter:['class']});
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
   schedule();
 })();
