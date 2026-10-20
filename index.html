@@ -1,3 +1,10 @@
+<!-- SSHCP V23.73 TEST — exact V23.72-K8M4QV donor, frontend-only.
+     MAX ZOOM must NEVER be caused by intentional dropdown/popover layering.
+     Exclude dropdown option controls from generic collision pairs; keep real
+     clipping/option usability checks, non-dropdown popup interference and all
+     established CC/SM/SC/LB/HOME/SUMMARY/GEEK/QUICK GUIDE rules untouched.
+     No Worker, data, scoring, DPR or modal action changes. TEST; phone validation required. -->
+<!-- SSHCP | BASE KEY: 23.72-K8M4QV | BUILD KEY: 23.73-P7M4QX -->
 <!-- SSHCP V23.72 TEST — exact V23.71-T8Q4MN donor.
      Consolidated UI zoom protection, Summary / NET SCORE fitting, GAME header
      and row limits, portrait GEEK helper/header / DETAIL/FILTER interference,
@@ -15886,7 +15893,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.72</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.73</span></span>
         </button>
         <script>
           (function () {
@@ -41536,8 +41543,19 @@ let scoreTimingDetail =
    const els=visibleChildren(welcome,'.qr-welcome-title-v170,#qrWelcomeTeamV170,.qr-welcome-actions-v170 button');
    if(els.some(n=>outside(box(n),v,slack)))return true;
    const meaningful=els.filter(n=>n.textContent.trim());
-   if(meaningful.some(n=>textClipped(n)))return true;
+   const team=welcome.querySelector('#qrWelcomeTeamV170');
+   const menuOpen=hasOpenDropdownV2373(team);
+   // The tournament selector holds absolutely positioned options. Measuring
+   // the entire TEAM text range also measures those options and produces a
+   // false overflow, even while the selector/labels are perfectly readable.
+   if(meaningful.some(n=>!(menuOpen&&n===team)&&textClipped(n)))return true;
+   if(menuOpen){
+     const trigger=team.querySelector('.sshcp-event-trigger-v2327');
+     if(trigger&&shown(trigger)&&textClipped(trigger))return true;
+   }
    for(let i=0;i<meaningful.length;i++)for(let j=i+1;j<meaningful.length;j++){
+     // An expanded dropdown may legitimately cover later WELCOME actions.
+     if(menuOpen&&(meaningful[i]===team||meaningful[j]===team))continue;
      if(overlap(box(meaningful[i]),box(meaningful[j]),slack))return true;
    }
    return false;
@@ -41572,8 +41590,10 @@ let scoreTimingDetail =
    if(!modal.classList.contains('geek-mode-v180'))return null;
    const filter=modal.querySelector('.geek-filter-popover-v186.open');
    if(filter){
-     const card=modal.querySelector('.modal-box');
-     if(!card||outside(box(filter),box(card),slack))return true;
+     // FILTERS deliberately floats above the GEEK card. Its overlap with
+     // the card and stat table is expected, NOT MAX ZOOM. Only warn when
+     // the floating panel or its own controls become genuinely inaccessible.
+     if(outside(box(filter),v,slack))return true;
      const buttons=visibleChildren(filter,'.geek-filter-choice-v186,.geek-filter-apply-v186');
      if(buttons.some(n=>outside(box(n),box(filter),slack)))return true;
      if(buttons.some(n=>textClipped(n)))return true;
@@ -41592,9 +41612,26 @@ let scoreTimingDetail =
    const helper=modal.querySelector('.geek-bottom-helper-v2229');
    return !!(helper&&shown(helper)&&textClipped(helper));
  }
+ /* V23.73 — a dropdown is a separate intentional foreground layer.
+    Its options MUST NOT collide with background modal buttons, the dropdown
+    trigger, or underlying data. Own-option legibility is checked separately
+    in dedicated surfaces such as GEEK FILTERS. */
+ const intentionalMenuV2373='[role="listbox"],[role="menu"],[role="option"],'+
+   '.geek-filter-popover-v186,.sshcp-event-options-v2327,'+
+   '.home-team-dropup,.score-team-dropdown,.passkey-team-menu,'+
+   '.home-menu-panel-v2054';
+ function inDropdownV2373(node){
+   return !!(node&&node.closest&&node.closest(intentionalMenuV2373));
+ }
+ function hasOpenDropdownV2373(node){
+   return !!(node&&node.querySelector&&
+     Array.from(node.querySelectorAll(intentionalMenuV2373)).some(n=>
+       shown(n)&&!n.hidden&&n.getAttribute('aria-hidden')!=='true'));
+ }
  function interfereButtons(root,slack){
    const buttons=visibleChildren(root,'.modal-actions .modal-btn, .tips-summary-v2215, .tips-ok-v2154,button:not(.geek-team-button-v180)');
-   const actionable=buttons.filter(n=>!n.closest('.quick-guide-scroll-v2050'));
+   const actionable=buttons.filter(n=>
+     !n.closest('.quick-guide-scroll-v2050')&&!inDropdownV2373(n));
    for(let i=0;i<actionable.length;i++){
      const a=box(actionable[i]);
      for(let j=i+1;j<actionable.length;j++){
@@ -41622,7 +41659,8 @@ let scoreTimingDetail =
      return ['hidden','clip'].includes(st.overflowY)&&
             n.scrollHeight>n.clientHeight+2;
    }))return true;
-   const buttons=visibleChildren(card,'.modal-actions .modal-btn,.tips-summary-v2215,.tips-ok-v2154,.score-entry-actions button,.score-entry-control button');
+   const buttons=visibleChildren(card,'.modal-actions .modal-btn,.tips-summary-v2215,.tips-ok-v2154,.score-entry-actions button,.score-entry-control button')
+     .filter(n=>!inDropdownV2373(n));
    if(buttons.some(n=>textClipped(n)))return true;
    if(buttons.some(n=>outside(box(n),box(card),slack)))return true;
    // Text flowing into controls is an actual interference, but ordinary
