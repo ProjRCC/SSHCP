@@ -1,3 +1,17 @@
+<!-- SSHCP V23.76 TEST — exact V23.75-H8M4QX donor, frontend-only.
+     Scramble Summary GEEK/HOME/GAME: center labels geometrically within their
+     existing button boxes and fit full one-line labels to available width.
+     Preserve all button geometry, actions, colors, NET score formatting,
+     Scorecard-only MAX ZOOM rule, Worker, and protected V23.66 GOLDEN.
+     TEST / REAL PHONE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.75-H8M4QX | BUILD KEY: 23.76-R7M4QX -->
+<!-- SSHCP V23.75 TEST — exact V23.74-R6M4QX donor, frontend-only.
+     Scramble Summary NET stroke totals retain one common font size but are
+     additionally capped by the shortest rendered score row. No score/rank/
+     NET +/- hierarchy changes, zoom-warning changes or Worker modifications.
+     V23.74 and all earlier protected GOLDEN sources remain untouched.
+     TEST / PHONE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.74-R6M4QX | BUILD KEY: 23.75-H8M4QX -->
 <!-- SSHCP V23.74 TEST — exact V23.73-P7M4QX donor; frontend only.
      MAX ZOOM REACHED is Scorecard-only: compare the real nine-hole row height
      against HOME, GUIDE, and footer LEADERBOARD button heights. Do not warn on
@@ -15774,6 +15788,21 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 .tips-overlay-v2154.tips-scramble-complete-v2215 .tips-line-v2154{white-space:normal!important;overflow-wrap:normal!important}
 .modal-overlay.game-mode-results-v2026 .game-mode-row-v2026.header .game-mode-cell-v2026{min-width:0!important;white-space:nowrap!important;overflow:hidden!important}
 </style>
+<style id="sshcp-v2376-summary-footer-centered">
+/* V23.76: symmetric padding plus a true two-axis flex center. Summary only.
+   The original three equal button tracks, widths, heights and actions remain. */
+#modalActions.tournament-summary-actions-v1627 > .modal-btn {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  padding:0 4px!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+</style>
 </head>
 
 
@@ -15902,7 +15931,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.74</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.76</span></span>
         </button>
         <script>
           (function () {
@@ -29890,6 +29919,26 @@ let scoreTimingDetail =
         ...Array.from(topGrid.querySelectorAll('.tournament-summary-strokes')),
         ...Array.from(lower.querySelectorAll('.tournament-summary-remaining-cell.net-strokes'))
       ];
+      /* V23.75 — stroke totals are SHARED across all rows, but their historic
+         22px×multiplier cap could still be taller than the compressed lower
+         standings rows under Chrome Page Zoom. Width fitting cannot protect
+         against vertical border crossings. Measure the live stroke cells only
+         after Summary row geometry has been applied, then cap the same single
+         shared font below the shortest actual row's height. No fixed browser
+         zoom threshold, alternate numerical result, or per-row font change. */
+      let shortestStrokeRowV2375 = Infinity;
+      allStrokesV2264.forEach(cell => {
+        const renderedH = cell.getBoundingClientRect().height || cell.clientHeight;
+        if (Number.isFinite(renderedH) && renderedH > 0.5) {
+          shortestStrokeRowV2375 = Math.min(shortestStrokeRowV2375, renderedH);
+        }
+      });
+      const strokesHeightCeilingV2375 = Number.isFinite(shortestStrokeRowV2375)
+        ? Math.max(0.001, (shortestStrokeRowV2375 - 4) * 0.78)
+        : strokesCapV2264;
+      const strokesCapWithinRowsV2375 = Math.min(strokesCapV2264, strokesHeightCeilingV2375);
+      const strokesFloorWithinRowsV2375 = Math.min(strokesFloorV2264, strokesCapWithinRowsV2375);
+
       const lowerNetPrepassV2264 = Array.from(
         lower.querySelectorAll('.tournament-summary-remaining-cell.net-score')
       );
@@ -29949,18 +29998,18 @@ let scoreTimingDetail =
         return required + 4;
       }
 
-      let strokesSizeV2264 = strokesCapV2264;
+      let strokesSizeV2264 = strokesCapWithinRowsV2375;
       let strokesTrackV2264 = requiredStrokeTrackV2264(strokesSizeV2264);
 
       if (
         strokesTrackV2264 > maxStrokeTrackForFullNetV2264 &&
-        strokesFloorV2264 < strokesCapV2264
+        strokesFloorWithinRowsV2375 < strokesCapWithinRowsV2375
       ) {
-        const floorTrack = requiredStrokeTrackV2264(strokesFloorV2264);
+        const floorTrack = requiredStrokeTrackV2264(strokesFloorWithinRowsV2375);
         if (floorTrack <= maxStrokeTrackForFullNetV2264) {
-          let low = strokesFloorV2264;
-          let high = strokesCapV2264;
-          let best = strokesFloorV2264;
+          let low = strokesFloorWithinRowsV2375;
+          let high = strokesCapWithinRowsV2375;
+          let best = strokesFloorWithinRowsV2375;
           for (let i = 0; i < 28; i++) {
             const size = (low + high) / 2;
             if (requiredStrokeTrackV2264(size) <= maxStrokeTrackForFullNetV2264) {
@@ -29973,7 +30022,7 @@ let scoreTimingDetail =
           strokesSizeV2264 = best;
           strokesTrackV2264 = requiredStrokeTrackV2264(strokesSizeV2264);
         } else {
-          strokesSizeV2264 = strokesFloorV2264;
+          strokesSizeV2264 = strokesFloorWithinRowsV2375;
           strokesTrackV2264 = floorTrack;
         }
       }
@@ -30161,11 +30210,15 @@ let scoreTimingDetail =
           button.classList.contains('summary-game-mode-button-v2026')
             ? 0.55
             : 0.35;
-        fitTextToBoxV5(button, button, h * targetRatio, 10, {
-          horizontalPad: 8,
+        /* V23.76 — all three Summary actions are real centered flex buttons.
+           Permit width-driven reduction below the old 10px floor instead of
+           painting part of a word outside its available content rectangle. */
+        fitTextToBoxV5(button, button, h * targetRatio, 0.001, {
+          horizontalPad: 10,
           verticalPad: 4,
           wrap: false,
-          lineHeight: 1
+          lineHeight: 1,
+          noMin: true
         });
       });
 
