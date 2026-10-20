@@ -1,3 +1,11 @@
+<!-- SSHCP V23.70 TEST — exact V23.69-Q7M4VX donor, frontend-only.
+     SCORE ENTRY popup: use current GEEK DETAIL family (fully opaque Gray 3
+     curtain, solid white borderless rounded card, centered responsive layout).
+     Fit CLEAR's complete label to its real button content width at Chrome zoom;
+     keep CLEAR/ENTER/plus/minus/cancel callbacks, pending/save verification,
+     scorecard zoom warning, all other views, Worker and protected GOLDEN intact.
+     TEST / NOT GOLDEN / REAL DEVICE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.69-Q7M4VX | BUILD KEY: 23.70-N6Q4VX -->
 <!-- SSHCP V23.69 TEST — exact V23.68-M8Q4VX donor; frontend-only.
      MAX ZOOM REACHED gains page-specific physical geometry limits:
      SCORECARD: real HOME/GUIDE button height cannot reach the rendered
@@ -15661,6 +15669,64 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
   padding-bottom:var(--v2368-menu-vpad,var(--v2074-menu-item-pad-y,8px))!important;
 }
 </style>
+
+<style id="sshcp-v2370-score-entry-geek-detail-style">
+/* V23.70: GEEK DETAIL'S ACTUAL current Gray 3 / white / borderless popup family.
+   Score-entry ONLY. Do not alter the GEEK DETAIL, scoring, or modal controls. */
+#scoreEntryOverlay.score-entry-overlay{
+  align-items:center!important;
+  justify-content:center!important;
+  padding:20px!important;
+  overflow:hidden!important;
+  background:var(--sshcp-gray-3-v1850,#e8e8e8)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+#scoreEntryOverlay .score-entry-box{
+  width:min(calc(420px * var(--v221-global-scale,1)),calc(100% - 4px))!important;
+  max-height:calc(100dvh - 40px)!important;
+  margin:auto!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  box-sizing:border-box!important;
+  border:0!important;
+  border-radius:calc(18px * var(--v221-global-scale,1))!important;
+  background:#fff!important;
+  box-shadow:0 2px 10px rgba(0,0,0,.05)!important;
+  overscroll-behavior:contain!important;
+}
+/* The three controls retain their functions, heights and blue styling; only
+   horizontal allocation and responsive fit change. CLEAR gets adequate share. */
+#scoreEntryOverlay .score-entry-control{
+  grid-template-columns:minmax(0,1.22fr) minmax(0,0.89fr) minmax(0,0.89fr)!important;
+  gap:min(calc(12px * var(--v221-global-scale,1)),3vw)!important;
+}
+#scoreEntryOverlay .score-entry-control > button{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  text-align:center!important;
+}
+#scoreEntryOverlay #scoreEntryClear{
+  padding-left:1px!important;
+  padding-right:1px!important;
+  letter-spacing:normal!important;
+}
+@media(max-width:260px){
+  #scoreEntryOverlay.score-entry-overlay{padding:12px!important;}
+  #scoreEntryOverlay .score-entry-box{
+    width:100%!important;
+    max-height:calc(100dvh - 24px)!important;
+    padding-left:clamp(6px,4vw,12px)!important;
+    padding-right:clamp(6px,4vw,12px)!important;
+  }
+  #scoreEntryOverlay .score-entry-control,
+  #scoreEntryOverlay .score-entry-actions{width:100%!important;}
+}
+</style>
 </head>
 
 
@@ -15789,7 +15855,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.69</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.70</span></span>
         </button>
         <script>
           (function () {
@@ -41179,6 +41245,57 @@ let scoreTimingDetail =
   if(cc)mutation.observe(cc,{attributes:true,attributeFilter:['class']});
   if(sm)mutation.observe(sm,{attributes:true,attributeFilter:['class']});
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  schedule();
+})();
+</script>
+
+<script id="sshcp-v2370-score-clear-fit">
+/* V23.70: measure actual CLEAR glyphs, not a guessed zoom breakpoint.
+   Does not attach or modify score actions; fitting is visual-only. */
+(function(){
+  'use strict';
+  var overlay=document.getElementById('scoreEntryOverlay');
+  var clear=document.getElementById('scoreEntryClear');
+  var controls=overlay&&overlay.querySelector('.score-entry-control');
+  if(!overlay||!clear||!controls)return;
+  var queued=false;
+  var canvas=document.createElement('canvas');
+  var ctx=canvas.getContext('2d');
+  function fit(){
+    queued=false;
+    if(!overlay.classList.contains('open')||!ctx)return;
+    clear.style.removeProperty('font-size');
+    var css=getComputedStyle(clear);
+    var nominal=parseFloat(css.fontSize)||20;
+    var pad=(parseFloat(css.paddingLeft)||0)+(parseFloat(css.paddingRight)||0);
+    var border=(parseFloat(css.borderLeftWidth)||0)+(parseFloat(css.borderRightWidth)||0);
+    var width=clear.clientWidth-pad-border-1;
+    if(width<=0)return;
+    var label=clear.textContent.trim();
+    var letter=parseFloat(css.letterSpacing)||0;
+    function measured(fontPx){
+      ctx.font=css.fontStyle+' '+css.fontWeight+' '+fontPx+'px '+css.fontFamily;
+      return ctx.measureText(label).width+Math.max(0,label.length-1)*letter;
+    }
+    if(measured(nominal)<=width)return; // Preserve exact normal-size typography.
+    var low=4,high=nominal;
+    for(var i=0;i<18;i++){
+      var mid=(low+high)/2;
+      if(measured(mid)<=width)low=mid;
+      else high=mid;
+    }
+    clear.style.setProperty('font-size',Math.max(4,Math.floor(low*10)/10)+'px','important');
+  }
+  function schedule(){
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(function(){requestAnimationFrame(fit);});
+  }
+  new MutationObserver(schedule).observe(overlay,{attributes:true,attributeFilter:['class']});
+  if(typeof ResizeObserver==='function')new ResizeObserver(schedule).observe(controls);
+  window.addEventListener('resize',schedule,{passive:true});
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule,{passive:true});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
   schedule();
 })();
 </script>
