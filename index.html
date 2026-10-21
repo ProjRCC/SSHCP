@@ -1,3 +1,4 @@
+<!-- SSHCP V23.86 TEST — V23.85 donor. Landscape ALL TEAMS detail only: fit its typography and vertical gaps to the real short WEB viewport, preserve top/bottom clearance and visible title/CLOSE. No portrait, table, score or Worker changes. -->
 <!-- SSHCP V23.85 TEST — V23.82 donor; CC diagnostics three independent lines and no outer frame. -->
 <!-- SSHCP V23.82 TEST — exact V23.81-M6Q4VX donor. CC DIMENSIONS only:
      compact centered two-line display with VIEW/DPR(ADJ)/mode, and EFH/×H/EFW/×W.
@@ -17,6 +18,7 @@
      Preserve global VPH × adjDPR scale, height rules, styling, scoring,
      Worker, popup families, Scorecard-only zoom warning, and GOLDEN V23.78.
      TEST / NOT GOLDEN / IPAD AND PHONE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.85-N7Q4MX | BUILD KEY: 23.86-R8Q4MX -->
 <!-- SSHCP | BASE KEY: 23.82-Q8M4VX | BUILD KEY: 23.85-N7Q4MX -->
 <!-- SSHCP V23.79 TEST — exact protected V23.78-H7M4QX GOLDEN donor.
      Shared maximum app/page width grows from 760 to 900 CSS px; related
@@ -15189,6 +15191,40 @@ html.sshcp-geek-regular-v2230 .rotate-portrait-box{
   -webkit-text-fill-color:var(--sshcp-gray-7-v1851,#444444)!important;
   text-align:center!important;
 }
+/* V23.86: ALL TEAMS detail only. Maintain a visible 6px viewport rail
+   in short landscape WEB and return vertical room to the real content. */
+.modal-overlay.geek-all-teams-detail-v2238{
+  padding:6px 1vw!important;
+  overflow-y:auto!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .modal-box,
+.modal-overlay.geek-all-teams-detail-v2238 .modal-box.geek-detail-expanded-v1920{
+  max-height:calc(100dvh - 12px)!important;
+  padding:6px 14px!important;
+  scroll-padding-top:0!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .modal-title{
+  margin-bottom:4px!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .geek-detail-description-v180{
+  margin-bottom:8px!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .geek-detail-proof-v1920{
+  margin:-3px 0 8px!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .geek-detail-team-name-v1920{
+  margin-bottom:3px!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .geek-detail-result-card-v1928{
+  margin-bottom:3px!important;
+  padding:5px 16px 6px!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .geek-detail-teams-v180{
+  line-height:1.15!important;
+}
+.modal-overlay.geek-all-teams-detail-v2238 .modal-actions{
+  margin-top:7px!important;
+}
 .geek-all-teams-result-cell-v2238{
   cursor:pointer!important;
   touch-action:manipulation!important;
@@ -16064,7 +16100,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.85</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.86</span></span>
         </button>
         <script>
           (function () {
@@ -35283,7 +35319,12 @@ let scoreTimingDetail =
          stay visually comparable to the established portrait GEEK detail instead of
          being halved merely because the phone rotated. */
       const geekDetailBasisV2238 = els.modalOverlay.classList.contains('geek-all-teams-detail-v2238')
-        ? Math.min(820, Math.max(vh, window.innerWidth || document.documentElement.clientWidth || vh))
+        /* V23.86: landscape WEB can be only 298 CSS px high. The former
+           780px-long-side basis made the title/result taller than the space
+           available. Cap that typography basis at twice the actual visible
+           landscape height; larger landscape viewports retain their sizing. */
+        ? Math.min(820, Math.max(vh, window.innerWidth || document.documentElement.clientWidth || vh),
+            2 * Math.max(1, Number(window.visualViewport && window.visualViewport.height) || vh))
         : vh;
       const title = els.modalTitle;
       const description = els.modalBody.querySelector('.geek-detail-description-v180');
@@ -35456,6 +35497,10 @@ let scoreTimingDetail =
         fitGeekResultOneLineV2213(earlyResultSizeV2069);
       }
 
+      if (els.modalOverlay.classList.contains('geek-all-teams-detail-v2238')) {
+        /* Do not inherit a scrolled position which hides the first title. */
+        els.modalBox.scrollTop = 0;
+      }
       if (back) {
         const h = back.getBoundingClientRect().height || 52;
         fitTextToBoxV5(back, back, h * 0.40, 12, {
