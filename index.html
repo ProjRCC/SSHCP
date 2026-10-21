@@ -1,3 +1,12 @@
+<!-- SSHCP V23.78 TEST — exact V23.77-M8Q4VX donor, presentation-only.
+     CC/Scramble-mode confirmation cards: remove inherited black border and
+     fit complete one-line confirmation titles (DELETE SCRAMBLE LOG, test scores).
+     Quick Guide: all three Visual Cue labels stay on one line with one shared
+     actual-width fitted font size; scrolling/progress and other copy unchanged.
+     Preserve two-family gray/shadows, all popup actions, Scorecard-only MAX ZOOM,
+     Worker, scoring, authorization, audit-log deletion, and protected GOLDEN.
+     TEST / NOT GOLDEN / REAL PHONE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.77-M8Q4VX | BUILD KEY: 23.78-H7M4QX -->
 <!-- SSHCP V23.77 TEST — exact V23.76-R7M4QX donor, visual presentation only.
      Two popup families: PAGE (Quick Guide, Scramble Summary, GEEK, GAME/SKINS)
      and INFO (Score Entry, Control Center, passwords, confirmations, detail and
@@ -15858,6 +15867,28 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
   box-shadow: var(--sshcp-page-shadow-v2377) !important;
 }
 </style>
+<style id="sshcp-v2378-confirmations-guide">
+/* Only CC/Scramble shared confirmation card; V23.77 Info shadow remains.
+   The old V17.5 global 2px black border is not part of Info popup styling. */
+#modalOverlay.modal-overlay.reset-authorization .modal-box {
+  border: 0 !important;
+}
+#modalOverlay.modal-overlay.reset-authorization .modal-title {
+  display: block !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+}
+/* The three cue names can shrink but may never split across two lines.
+   Long freeform Quick Guide descriptions remain independently wrappable. */
+#modalOverlay.modal-overlay.quick-guide .quick-guide-legend-copy-v2050 {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  overflow-wrap: normal !important;
+}
+</style>
 </head>
 
 
@@ -15986,7 +16017,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.77</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.78</span></span>
         </button>
         <script>
           (function () {
@@ -37860,19 +37891,38 @@ let scoreTimingDetail =
        three at the inherited Quick Guide text target, then reduce the shared size
        only as much as the longest cue needs so PRIMARY NAVIGATION, SECONDARY
        NAVIGATION and AFTER-PLAY FEATURES each remain on one line. */
+    /* V23.78 — all Visual Cue descriptions share one largest readable font
+       that fits PRIMARY/SECONDARY/AFTER-PLAY on one unbroken line each.
+       Measure real Oswald glyph widths inside their actual FLEX tracks. */
     function fitQuickGuideVisualCueCopyV2079() {
-      const copies=Array.from(els.modalBody.querySelectorAll('.quick-guide-legend-copy-v2050'));
-      if(!copies.length)return false;
-      copies.forEach(copy=>{
+      const copies = Array.from(els.modalBody.querySelectorAll('.quick-guide-legend-copy-v2050'));
+      if (copies.length !== 3) return false;
+      copies.forEach(copy => {
         copy.style.removeProperty('font-size');
-        copy.style.setProperty('white-space','normal','important');
-        copy.style.setProperty('overflow','visible','important');
-        copy.style.setProperty('overflow-wrap','normal','important');
-        copy.style.setProperty('line-height','1.08','important');
-        copy.style.setProperty('text-align','left','important');
+        copy.style.setProperty('white-space', 'nowrap', 'important');
+        copy.style.setProperty('overflow', 'hidden', 'important');
+        copy.style.setProperty('overflow-wrap', 'normal', 'important');
+        copy.style.setProperty('line-height', '1.08', 'important');
+        copy.style.setProperty('text-align', 'left', 'important');
       });
+      let resolved = Infinity;
+      copies.forEach(copy => {
+        const strong = copy.querySelector('strong');
+        if (!strong || copy.clientWidth < 1) return;
+        const natural = parseFloat(getComputedStyle(copy).fontSize) || 1;
+        const textWidth = strong.getBoundingClientRect().width;
+        const budget = Math.max(1, copy.clientWidth - 2);
+        resolved = Math.min(resolved,
+          natural * Math.min(1, budget / Math.max(1, textWidth)));
+      });
+      if (Number.isFinite(resolved)) {
+        const fitted = Math.max(1, resolved - 0.1);
+        copies.forEach(copy => copy.style.setProperty('font-size',
+          fitted.toFixed(3) + 'px', 'important'));
+      }
       return true;
     }
+    window.sshcpFitQuickGuideVisualCueV2378 = fitQuickGuideVisualCueCopyV2079;
 
     function scheduleQuickGuideVisualCueFitV2079() {
       let attempts = 0;
@@ -41563,12 +41613,9 @@ let scoreTimingDetail =
    if(!modal||!modal.classList.contains('quick-guide'))return;
    const title=modal.querySelector('.modal-title');
    if(title)fitOneLine(title,.75);
-   // Wrapping now supplies real row height instead of the V23.1 one-line min.
-   visibleChildren(modal,'.quick-guide-legend-copy-v2050').forEach(n=>{
-     n.style.setProperty('white-space','normal','important');
-     n.style.setProperty('overflow','visible','important');
-     n.style.removeProperty('font-size');
-   });
+   // V23.78: refit a common one-line size after viewport/zoom layout settles.
+   if(typeof window.sshcpFitQuickGuideVisualCueV2378==='function')
+     window.sshcpFitQuickGuideVisualCueV2378();
    if(typeof window.sshcpRefreshGuideProgressV2372==='function')
      window.sshcpRefreshGuideProgressV2372();
  }
@@ -41821,6 +41868,62 @@ let scoreTimingDetail =
  if(tipsOverlay)new MutationObserver(schedule).observe(tipsOverlay,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
  schedule();
+})();
+</script>
+<script id="sshcp-v2378-confirm-title-fit">
+/* Only the CC/Scramble RESET-AUTHORIZATION confirmation presentation. */
+(function(){
+  'use strict';
+  const overlay = document.getElementById('modalOverlay');
+  if (!overlay) return;
+  const title = overlay.querySelector('.modal-title');
+  if (!title) return;
+  let pending = false;
+  let fitted = false;
+  function apply(){
+    pending = false;
+    const active = overlay.classList.contains('open') &&
+                   overlay.classList.contains('reset-authorization');
+    if (!active) {
+      if (fitted) title.style.removeProperty('font-size');
+      fitted = false;
+      return;
+    }
+    // Always restore the existing responsive font before measuring again.
+    title.style.removeProperty('font-size');
+    fitted = true;
+    const computed = getComputedStyle(title);
+    const base = parseFloat(computed.fontSize) || 23;
+    const usable = title.clientWidth - (parseFloat(computed.paddingLeft)||0) -
+                   (parseFloat(computed.paddingRight)||0) - 2;
+    if (usable < 1 || !title.textContent.trim()) return;
+    const range = document.createRange();
+    range.selectNodeContents(title);
+    const width = () => range.getBoundingClientRect().width;
+    if (width() <= usable + 0.5) return;
+    let low = 1, high = base;
+    for (let i = 0; i < 18; i++) {
+      const mid = (low + high) / 2;
+      title.style.setProperty('font-size', mid.toFixed(3) + 'px', 'important');
+      if (width() <= usable + .3) low = mid;
+      else high = mid;
+    }
+    title.style.setProperty('font-size', low.toFixed(3) + 'px', 'important');
+  }
+  function schedule(){
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => requestAnimationFrame(apply));
+  }
+  new MutationObserver(schedule).observe(overlay, {
+    attributes:true, attributeFilter:['class'], childList:true, subtree:true
+  });
+  window.addEventListener('resize',schedule,{passive:true});
+  if (window.visualViewport)
+    window.visualViewport.addEventListener('resize',schedule,{passive:true});
+  if (document.fonts && document.fonts.ready)
+    document.fonts.ready.then(schedule);
+  schedule();
 })();
 </script>
 </body>
