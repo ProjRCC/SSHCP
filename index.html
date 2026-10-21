@@ -1,3 +1,23 @@
+<!-- SSHCP V23.80 TEST — exact V23.79-N8Q4VX donor.
+     The usable app/page cap remains 900 CSS px. The former 756px horizontal
+     sizing reference is a BASELINE, not an upper cap: navigation buttons,
+     rails and layout gaps can now grow proportionally as wide screens approach
+     900px. The <=756px geometry and all phone sizing remain byte-equivalent.
+     Invalidate older boot geometry cache so first paint uses this rule.
+     Preserve global VPH × adjDPR scale, height rules, styling, scoring,
+     Worker, popup families, Scorecard-only zoom warning, and GOLDEN V23.78.
+     TEST / NOT GOLDEN / IPAD AND PHONE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.79-N8Q4VX | BUILD KEY: 23.80-Q7M4VX -->
+<!-- SSHCP V23.79 TEST — exact protected V23.78-H7M4QX GOLDEN donor.
+     Shared maximum app/page width grows from 760 to 900 CSS px; related
+     after-play 98% cap grows from 744.8 to 882 CSS px. Width-based geometry,
+     screen-layout diagnostics and all page/popup caps stay consistent.
+     Preserve the established 756px width-scale baseline (upper cap 1.00),
+     global VPH × adjusted DPR math, 16px internal gutters, all heights,
+     scoring and results, auth, Worker, fades, popup families, and
+     Scorecard-only MAX ZOOM REACHED. No changes to V23.78 GOLDEN.
+     TEST / NOT GOLDEN / PHONE AND IPAD VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.78-H7M4QX | BUILD KEY: 23.79-N8Q4VX -->
 <!-- SSHCP V23.78 TEST — exact V23.77-M8Q4VX donor, presentation-only.
      CC/Scramble-mode confirmation cards: remove inherited black border and
      fit complete one-line confirmation titles (DELETE SCRAMBLE LOG, test scores).
@@ -1493,7 +1513,7 @@
           );
           var bootV16Vars = null;
 
-          if (savedV16Shell && savedV16Shell.v188 === true && savedV16Shell.vars &&
+          if (savedV16Shell && savedV16Shell.v188 === true && savedV16Shell.v2380 === true && savedV16Shell.vars &&
               Number(window.devicePixelRatio || 1) >= window.SSHCP_MIN_ADJ_DPR_V2366) {
             var v16CloseW = Math.abs((savedV16Shell.w || 0) - v16NowW) <= 8;
             var v16CloseH = Math.abs((savedV16Shell.h || 0) - v16NowH) <= 12;
@@ -1525,8 +1545,8 @@
           };
 
           if (!bootV16Vars) {
-            var v16Width = Math.max(1, Math.min(760, v16NowW));
-            var v16Sx = Math.max(0.38, Math.min(1.00, v16Width / 756));
+            var v16Width = Math.max(1, Math.min(900, v16NowW));
+            var v16Sx = Math.max(0.38, v16Width / 756);
             var v16Px = function (value) { return Math.max(1, value * v16Sx); };
 
             /* V18.8: legacy Scorecard/Leaderboard vertical shell values have the
@@ -1560,7 +1580,7 @@
              GEEK MODE BACK/FILTERS. Keep the FINAL RESULTS overlay anchored to
              the true second-column edge from first paint. */
           var v190LeaderFooterGap = 8;
-          var v190BootWidth = Math.max(1, Math.min(760, v16NowW));
+          var v190BootWidth = Math.max(1, Math.min(900, v16NowW));
           var v190BootRail = Number(bootV16Vars['--v16-rail']) || 12;
           bootV16Vars['--v190-leader-footer-gap'] = v190LeaderFooterGap;
           bootV16Vars['--v190-final-action-left'] =
@@ -1756,7 +1776,7 @@
 
     .home-shell {
       width: 100%;
-      max-width: 760px;
+      max-width: 900px;
       min-height: 100dvh;
       margin: 0 auto;
       padding-bottom:
@@ -1836,7 +1856,7 @@
     .scorecard-screen {
       width:
         min(
-          760px,
+          900px,
           100%
         );
       height: 100dvh;
@@ -2162,7 +2182,7 @@
     .leaderboard-screen {
       width:
         min(
-          760px,
+          900px,
           100%
         );
       margin: 0 auto;
@@ -2830,7 +2850,7 @@
 .test-log-hotspot::after{position:absolute;left:50%;top:50%;width:14px;height:14px;transform:translate(-50%,-50%);border-radius:50%;background:#f7f7f7;pointer-events:none;}
 .header-brand{color:var(--gold);font-size:14px;font-weight:700;line-height:1.05;letter-spacing:.35px;text-align:center;white-space:normal;}
 #testLogView{min-height:100dvh;}
-.test-log-screen{width:min(760px,100%);height:100dvh;margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) 12px 0;background:rgba(255,255,255,.92);display:flex;flex-direction:column;overflow:hidden;}
+.test-log-screen{width:min(900px,100%);height:100dvh;margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) 12px 0;background:rgba(255,255,255,.92);display:flex;flex-direction:column;overflow:hidden;}
 .test-log-header{display:grid;grid-template-columns:74px 1fr 74px;gap:8px;align-items:center;margin-bottom:10px;}
 .test-log-title{color:var(--gold);font-size:20px;font-weight:700;text-align:center;letter-spacing:.4px;}
 .test-log-table{width:100%;min-height:0;border:1px solid var(--line-strong);border-radius:8px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:rgba(255,255,255,.55);}
@@ -5915,7 +5935,7 @@ html.sshcp-pre-complete #leaderboardView .leader-final-slot{
   inset:auto!important;
   transform:none!important;
   margin:auto!important;
-  max-width:760px!important;
+  max-width:900px!important;
   padding-bottom:clamp(10px,2vw,18px)!important;
   padding-left:12px!important;
   padding-right:12px!important;
@@ -6737,7 +6757,7 @@ html,body{
 #scorecardView,
 #scorecardView .scorecard-screen{
   width:100%!important;
-  max-width:min(760px,100vw)!important;
+  max-width:min(900px,100vw)!important;
   overflow-x:hidden!important;
 }
 #scorecardView .score-team-select-button{
@@ -7863,7 +7883,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
 .teams-popup-overlay.open{display:flex;}
 .teams-popup-overlay.teams-loading .teams-popup-table-scroll{visibility:hidden;}
 .teams-popup-box{
-  width:min(760px,calc(100vw - 16px));
+  width:min(900px,calc(100vw - 16px));
   height:95dvh;
   max-height:95dvh;
   box-sizing:border-box;
@@ -8017,7 +8037,7 @@ html.sshcp-pre-complete #leaderboardView .access-scorecard {
   position:relative!important;
   inset:auto!important;
   transform:none!important;
-  width:min(98vw,760px)!important;
+  width:min(98vw,900px)!important;
   height:auto!important;
   max-height:90dvh!important;
   min-height:0!important;
@@ -10042,7 +10062,7 @@ body option{
 
 #testLogView .test-log-screen{
   box-sizing:border-box!important;
-  width:min(760px,100%)!important;
+  width:min(900px,100%)!important;
   height:100dvh!important;
   min-height:100dvh!important;
   margin:0 auto!important;
@@ -10291,7 +10311,7 @@ body option{
 #testLogView .control-center-scramble-row-v1938{flex:0 0 auto!important;display:grid!important;grid-template-columns:1fr!important;margin:0!important;}
 #testLogView .control-center-scramble-button-v1938{box-sizing:border-box!important;width:100%!important;height:var(--cc-mode-h-v1824)!important;min-height:var(--cc-mode-h-v1824)!important;max-height:var(--cc-mode-h-v1824)!important;margin:0!important;padding:0 1.1%!important;border:var(--cc-border2-v1824) solid var(--accent)!important;border-radius:var(--cc-radius8-v1824)!important;background:var(--accent)!important;color:var(--on-accent)!important;-webkit-text-fill-color:var(--on-accent)!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;line-height:1!important;}
 #scrambleModeView{min-height:100dvh;--cc-mult-v1824:1;--cc-top-v1824:15px;--cc-bottom-v1824:8px;--cc-title-v1824:22px;--cc-title-gap-v1824:10px;--cc-stack-top-v1824:7px;--cc-stack-gap-v1824:7px;--cc-mode-h-v1824:46px;--cc-bottom-nav-h-v1824:46px;--cc-log-head-h-v1824:28px;--cc-log-row-min-v1824:28px;--cc-log-font-v1824:11px;--cc-cell-vpad-v1824:5px;--cc-radius7-v1824:7px;--cc-radius8-v1824:8px;--cc-border1-v1824:1px;--cc-border2-v1824:2px;}
-#scrambleModeView .test-log-screen{box-sizing:border-box!important;width:min(760px,100%)!important;height:100dvh!important;min-height:100dvh!important;margin:0 auto!important;padding-top:calc(var(--cc-top-v1824) + env(safe-area-inset-top))!important;padding-right:min(3.125vw,23.75px)!important;padding-bottom:max(var(--cc-bottom-v1824),env(safe-area-inset-bottom))!important;padding-left:min(3.125vw,23.75px)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+#scrambleModeView .test-log-screen{box-sizing:border-box!important;width:min(900px,100%)!important;height:100dvh!important;min-height:100dvh!important;margin:0 auto!important;padding-top:calc(var(--cc-top-v1824) + env(safe-area-inset-top))!important;padding-right:min(3.125vw,23.75px)!important;padding-bottom:max(var(--cc-bottom-v1824),env(safe-area-inset-bottom))!important;padding-left:min(3.125vw,23.75px)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
 #scrambleModeView .test-log-header{flex:0 0 auto!important;display:block!important;margin:0 0 var(--cc-title-gap-v1824)!important;}
 #scrambleModeView .test-log-title{margin:0!important;color:var(--accent)!important;font-size:var(--cc-title-v1824)!important;line-height:1!important;text-align:center!important;white-space:nowrap!important;}
 #scrambleModeView .scramble-activity-v1938{flex:1 1 0!important;min-height:0!important;margin:0!important;border:var(--cc-border1-v1824) solid var(--line-strong)!important;border-radius:var(--cc-radius8-v1824)!important;overflow:hidden!important;background:rgba(255,255,255,.55)!important;display:flex!important;flex-direction:column!important;}
@@ -11631,7 +11651,7 @@ button.sshcp-button-pressed-v172{
 #homeView .home-shell{
   display:block!important;
   width:100%!important;
-  max-width:760px!important;
+  max-width:900px!important;
   margin:0 auto!important;
   padding:0!important;
 }
@@ -12104,7 +12124,7 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton{
   position:relative!important;
   inset:auto!important;
   transform:none!important;
-  width:min(98vw,760px)!important;
+  width:min(98vw,900px)!important;
   height:auto!important;
   min-height:0!important;
   max-height:98dvh!important;
@@ -12605,7 +12625,7 @@ body.home-menu-open-v2054{
   display:flex!important;
 }
 .team-info-shell-v2032{
-  width:min(98vw,760px)!important;
+  width:min(98vw,900px)!important;
   height:98dvh!important;
   max-height:98dvh!important;
   min-height:0!important;
@@ -12884,14 +12904,14 @@ body.team-info-open-v2032{
 }
 
 .modal-overlay.tournament-summary .modal-box{
-  width:min(98vw,760px)!important;
+  width:min(98vw,900px)!important;
   height:98dvh!important;
   max-height:98dvh!important;
   border:0!important;
 }
 
 .modal-overlay.geek-mode-v180 .modal-box{
-  width:min(98vw,760px)!important;
+  width:min(98vw,900px)!important;
   height:98dvh!important;
   max-height:98dvh!important;
 }
@@ -12948,8 +12968,8 @@ html.sshcp-tournament-complete #homeView #homeLeaderboardButton.home-tiebreak-v2
 :root{
   --sshcp-shared-gutter-v2123:16px;
   --sshcp-progress-rail-w-v2123:4px;
-  --sshcp-effective-max-w-v2123:760px;
-  --sshcp-afterplay-popup-max-w-v2123:744.8px; 
+  --sshcp-effective-max-w-v2123:900px;
+  --sshcp-afterplay-popup-max-w-v2123:882px; 
 }
 
 #scorecardView .scorecard-screen,
@@ -14615,7 +14635,7 @@ html.sshcp-pre-geek-transition-v2220 body::after{
   opacity:0!important;
 }
 .geek-all-teams-filter-card-v2216{
-  width:min(760px,96vw)!important;
+  width:min(900px,96vw)!important;
   max-height:92dvh!important;
   overflow:auto!important;
   padding:10px!important;
@@ -16017,7 +16037,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.78</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.80</span></span>
         </button>
         <script>
           (function () {
@@ -19630,8 +19650,8 @@ let scoreTimingDetail =
         Number(metrics.innerWidth) ||
         1
       );
-      const fullPageWidth = Math.min(760, layoutWidth);
-      const afterPlayWidth = Math.min(744.8, layoutWidth * 0.98);
+      const fullPageWidth = Math.min(900, layoutWidth);
+      const afterPlayWidth = Math.min(882, layoutWidth * 0.98);
 
       return {
         settled: !!settled,
@@ -19896,8 +19916,8 @@ let scoreTimingDetail =
       const shellScale = stableSvh > 0
         ? globalViewportDprScaleV220(stableSvh, metrics.adjDPR)
         : globalScale;
-      const shellWidth = Math.max(1, Math.min(760, Number(window.innerWidth) || 1));
-      const widthScale = Math.max(0.38, Math.min(1.00, shellWidth / 756));
+      const shellWidth = Math.max(1, Math.min(900, Number(window.innerWidth) || 1));
+      const widthScale = Math.max(0.38, shellWidth / 756);
       const vph = Number(metrics.visualHeight) || Number(metrics.innerHeight) || 0;
       const effective = vph * (Number(metrics.adjDPR) || 2);
       return { metrics, standalone, stableSvh, globalScale, shellScale, widthScale, vph, effective };
@@ -19922,7 +19942,7 @@ let scoreTimingDetail =
           ' (max 0.70, effective ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
         'Shell scale: ×' + screenLayoutRoundV238(scale.shellScale, 4) +
           (Math.abs(scale.shellScale - scale.globalScale) <= 0.002 ? ' (same as global)' : ' (stable shell viewport)'),
-        'Width scale: ×' + screenLayoutRoundV238(scale.widthScale, 4) + ' (shell ÷ 756, capped at 1.00)'
+        'Width scale: ×' + screenLayoutRoundV238(scale.widthScale, 4) + ' (shell ÷ 756; natural growth up to 900px)'
       ];
       return { lines, scale };
     }
@@ -19931,7 +19951,7 @@ let scoreTimingDetail =
       if (shellRect) {
         lines.push('');
         lines.push('WIDTHS / LIMITS');
-        lines.push('Shell width: ' + screenLayoutWidthConstraintV238(shellRect.width, 760));
+        lines.push('Shell width: ' + screenLayoutWidthConstraintV238(shellRect.width, 900));
       }
       if (tableRect) lines.push('Table/content width: ' + screenLayoutPxV238(tableRect.width));
     }
@@ -20440,7 +20460,7 @@ let scoreTimingDetail =
         if (stackRect) lines.push('Control stack: top ' + screenLayoutPxV238(stackRect.top) + ' • h ' + screenLayoutPxV238(stackRect.height) + ' • bottom ' + screenLayoutPxV238(stackRect.bottom));
       }
       lines.push('', 'WIDTHS / LIMITS');
-      if (rect) lines.push('Page width: ' + screenLayoutWidthConstraintV238(rect.width, 760));
+      if (rect) lines.push('Page width: ' + screenLayoutWidthConstraintV238(rect.width, 900));
       lines.push('Global multiplier: ×' + screenLayoutRoundV238(scale.globalScale, 4));
       return { surface, lines, signatureParts: [rect && rect.width, rect && rect.height] };
     }
@@ -26614,7 +26634,7 @@ let scoreTimingDetail =
       const shell = view.querySelector('.scorecard-screen, .leaderboard-screen');
       if (!shell) return null;
 
-      const width = Math.max(1, Math.min(760, shell.clientWidth || window.innerWidth || 1));
+      const width = Math.max(1, Math.min(900, shell.clientWidth || window.innerWidth || 1));
       const stableStandaloneHeightV2066 = getStandaloneSmallViewportHeightV2066();
       const height = Math.max(
         1,
@@ -26630,7 +26650,7 @@ let scoreTimingDetail =
          multiplier. Installed standalone Scorecard/Leaderboard instead use the
          stable 100svh measurement so a late Android viewport settle cannot
          resize the shell after the visible NESR+4 scroll has completed. */
-      const sx = Math.max(0.38, Math.min(1.00, width / 756));
+      const sx = Math.max(0.38, width / 756);
       const metricsV188 = getVerticalMetricsV188();
       const sy = stableStandaloneHeightV2066 > 0
         ? globalViewportDprScaleV220(stableStandaloneHeightV2066, metricsV188.adjDPR)
@@ -26697,6 +26717,7 @@ let scoreTimingDetail =
           'sshcpV16ShellGeometry',
           JSON.stringify({
             v188: true,
+            v2380: true,
             w: window.innerWidth || 0,
             h: window.innerHeight || 0,
             vars
