@@ -1,3 +1,9 @@
+<!-- SSHCP V23.81 TEST — exact V23.80-Q7M4VX donor. Horizontal Scorecard/Leaderboard
+     sizing uses S25 384x2.81=1079 effective-pixel baseline and 75% moderation,
+     with width multiplier minimum 1.000. Recalibrated S25 original nav/rail/gap
+     values exactly. Landscape GEEK 5-row reference now 1079 effective pixels.
+     CC DIMENSIONS and opt-in SCREEN LAYOUT LOG expose new baselines and measured
+     buttons/gaps/gutters. No height/global scaling, scoring or Worker changes. -->
 <!-- SSHCP V23.80 TEST — exact V23.79-N8Q4VX donor.
      The usable app/page cap remains 900 CSS px. The former 756px horizontal
      sizing reference is a BASELINE, not an upper cap: navigation buttons,
@@ -7,7 +13,7 @@
      Preserve global VPH × adjDPR scale, height rules, styling, scoring,
      Worker, popup families, Scorecard-only zoom warning, and GOLDEN V23.78.
      TEST / NOT GOLDEN / IPAD AND PHONE VALIDATION REQUIRED. -->
-<!-- SSHCP | BASE KEY: 23.79-N8Q4VX | BUILD KEY: 23.80-Q7M4VX -->
+<!-- SSHCP | BASE KEY: 23.80-Q7M4VX | BUILD KEY: 23.81-M6Q4VX -->
 <!-- SSHCP V23.79 TEST — exact protected V23.78-H7M4QX GOLDEN donor.
      Shared maximum app/page width grows from 760 to 900 CSS px; related
      after-play 98% cap grows from 744.8 to 882 CSS px. Width-based geometry,
@@ -651,7 +657,17 @@
 <head>
   <meta charset="UTF-8">
 
-  <script>
+  
+<script id="sshcp-v2381-width-baseline">
+/* S25 100% Chrome portrait reference: 384 CSS px x 2.81 adjDPR = 1079.
+   Horizontal factors are intentionally not permitted below 1.00. */
+window.sshcpWidthMultiplierV2381 = function(cssWidth, adjustedDpr) {
+  var w = Math.max(1, Math.min(900, Number(cssWidth) || 1));
+  var d = Math.max(2, Number(adjustedDpr) || 2);
+  return Math.max(1, (w * d * 0.75) / 1079);
+};
+</script>
+<script>
     /* V23.66 — single, centrally controlled DPR floor for all layout math. */
     window.SSHCP_MIN_ADJ_DPR_V2366 = 2.00;
     window.sshcpAdjustedDPRV2366 = function (rawValue) {
@@ -1513,7 +1529,7 @@
           );
           var bootV16Vars = null;
 
-          if (savedV16Shell && savedV16Shell.v188 === true && savedV16Shell.v2380 === true && savedV16Shell.vars &&
+          if (savedV16Shell && savedV16Shell.v188 === true && savedV16Shell.v2381 === true && savedV16Shell.vars &&
               Number(window.devicePixelRatio || 1) >= window.SSHCP_MIN_ADJ_DPR_V2366) {
             var v16CloseW = Math.abs((savedV16Shell.w || 0) - v16NowW) <= 8;
             var v16CloseH = Math.abs((savedV16Shell.h || 0) - v16NowH) <= 12;
@@ -1546,15 +1562,15 @@
 
           if (!bootV16Vars) {
             var v16Width = Math.max(1, Math.min(900, v16NowW));
-            var v16Sx = Math.max(0.38, v16Width / 756);
+            var v16Sx = window.sshcpWidthMultiplierV2381(v16Width, v188Dpr);
             var v16Px = function (value) { return Math.max(1, value * v16Sx); };
 
             /* V18.8: legacy Scorecard/Leaderboard vertical shell values have the
                historical .68 conversion baked into the S25 baseline once.
                Runtime vertical scaling is ONLY the separate device multiplier. */
             bootV16Vars = {
-              '--v16-rail': v16Px(24),
-              '--v16-nav-w': v16Px(141),
+              '--v16-rail': v16Px((24 * 384 / 756)),
+              '--v16-nav-w': v16Px((141 * 384 / 756)),
               '--v16-nav-h': v188RoundY(35),
               '--v16-top-inset': v188RoundY(9.52),
               '--v16-nav-context-gap': v188RoundY(8.16),
@@ -1564,7 +1580,7 @@
               '--v16-leader-table-footer-gap': v188RoundY(12),
               '--v16-footer-h': v188RoundY(50),
               '--v16-bottom-gap': v188RoundY(12.24),
-              '--v16-internal-gap': v16Px(28)
+              '--v16-internal-gap': v16Px((28 * 384 / 756))
             };
             bootV16Vars['--v16-final-action-left'] =
               (v16Width / 3) +
@@ -16037,7 +16053,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.80</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.81</span></span>
         </button>
         <script>
           (function () {
@@ -19705,7 +19721,10 @@ let scoreTimingDetail =
       return (
         'EFFECTIVE ' + Math.round(effectiveHeight) +
         ' = VPH×adjDPR • BASE ' + V220_EFFECTIVE_HEIGHT_BASELINE +
-        ' • SCALE ×' + snap.viewScale.toFixed(3)
+        ' • SCALE ×' + snap.viewScale.toFixed(3) +
+        '\nWIDTH BASE 1079 (384×2.81) • 75% • MAX 900 • WIDTH ×' +
+        window.sshcpWidthMultiplierV2381(Math.min(900, snap.innerWidth), snap.adjDPR).toFixed(4) +
+        ' • GEEK LANDSCAPE: 1079 = 5 ROWS'
       );
     }
 
@@ -19917,7 +19936,7 @@ let scoreTimingDetail =
         ? globalViewportDprScaleV220(stableSvh, metrics.adjDPR)
         : globalScale;
       const shellWidth = Math.max(1, Math.min(900, Number(window.innerWidth) || 1));
-      const widthScale = Math.max(0.38, shellWidth / 756);
+      const widthScale = window.sshcpWidthMultiplierV2381(shellWidth, metrics.adjDPR);
       const vph = Number(metrics.visualHeight) || Number(metrics.innerHeight) || 0;
       const effective = vph * (Number(metrics.adjDPR) || 2);
       return { metrics, standalone, stableSvh, globalScale, shellScale, widthScale, vph, effective };
@@ -19942,7 +19961,7 @@ let scoreTimingDetail =
           ' (max 0.70, effective ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + ')',
         'Shell scale: ×' + screenLayoutRoundV238(scale.shellScale, 4) +
           (Math.abs(scale.shellScale - scale.globalScale) <= 0.002 ? ' (same as global)' : ' (stable shell viewport)'),
-        'Width scale: ×' + screenLayoutRoundV238(scale.widthScale, 4) + ' (shell ÷ 756; natural growth up to 900px)'
+        'Width multiplier: ×' + screenLayoutRoundV238(scale.widthScale, 4) + ' (max 1.00, min(CSS width, 900) × adjDPR × 0.75 ÷ 1079)'
       ];
       return { lines, scale };
     }
@@ -19974,6 +19993,18 @@ let scoreTimingDetail =
       const { lines, scale } = screenLayoutBaseLinesV238('SCORECARD', 'DURING PLAY');
 
       lines.push('', 'TOP → TABLE');
+      if (nav) {
+        const navButtonsV2381 = Array.from(nav.querySelectorAll('.nav-button'));
+        const navRectsV2381 = navButtonsV2381.map(el => screenLayoutRectV238(el)).filter(Boolean);
+        if (navRectsV2381.length >= 2) {
+          lines.push('HOME/GUIDE widths: ' + navRectsV2381.map(r => screenLayoutPxV238(r.width, 2)).join(' / ') +
+            ' • between buttons: ' + screenLayoutPxV238(navRectsV2381[1].left - navRectsV2381[0].right, 2) + ' (includes center title)');
+        }
+        const railV2381 = screenLayoutComputedPxV238(els.scorecardView || els.leaderboardView, '--v16-rail');
+        const gapV2381 = screenLayoutComputedPxV238(els.scorecardView || els.leaderboardView, '--v16-internal-gap');
+        lines.push('Horizontal sizing: rail ' + screenLayoutPxV238(railV2381, 2) + ' • internal gap ' + screenLayoutPxV238(gapV2381, 2) +
+          ' • table gutters: 16px each (unchanged)');
+      }
       if (navRect) {
         lines.push('Nav: top ' + screenLayoutPxV238(navRect.top) + ' • h ' + screenLayoutPxV238(navRect.height) +
           ' (35 × SHELL ×' + screenLayoutRoundV238(scale.shellScale, 4) + ', rounded) • bottom ' + screenLayoutPxV238(navRect.bottom));
@@ -20075,6 +20106,18 @@ let scoreTimingDetail =
       const { lines, scale } = screenLayoutBaseLinesV238(surface, complete ? 'COMPLETE' : 'DURING PLAY');
 
       lines.push('', 'TOP → TABLE');
+      if (nav) {
+        const navButtonsV2381 = Array.from(nav.querySelectorAll('.nav-button'));
+        const navRectsV2381 = navButtonsV2381.map(el => screenLayoutRectV238(el)).filter(Boolean);
+        if (navRectsV2381.length >= 2) {
+          lines.push('HOME/GUIDE widths: ' + navRectsV2381.map(r => screenLayoutPxV238(r.width, 2)).join(' / ') +
+            ' • between buttons: ' + screenLayoutPxV238(navRectsV2381[1].left - navRectsV2381[0].right, 2) + ' (includes center title)');
+        }
+        const railV2381 = screenLayoutComputedPxV238(els.scorecardView || els.leaderboardView, '--v16-rail');
+        const gapV2381 = screenLayoutComputedPxV238(els.scorecardView || els.leaderboardView, '--v16-internal-gap');
+        lines.push('Horizontal sizing: rail ' + screenLayoutPxV238(railV2381, 2) + ' • internal gap ' + screenLayoutPxV238(gapV2381, 2) +
+          ' • table gutters: 16px each (unchanged)');
+      }
       if (navRect) {
         lines.push('Nav: top ' + screenLayoutPxV238(navRect.top) + ' • h ' + screenLayoutPxV238(navRect.height) +
           ' (35 × SHELL ×' + screenLayoutRoundV238(scale.shellScale, 4) + ', rounded) • bottom ' + screenLayoutPxV238(navRect.bottom));
@@ -20223,7 +20266,7 @@ let scoreTimingDetail =
           ' • data row h: ' + screenLayoutPxV238(dataRowH, 2) + ' • target: ' + visibleStatRowsV2314 + ' complete stat rows');
       }
       lines.push('Adaptive rows: effective height ' + screenLayoutPxV238(effectiveHeightV2314, 0) +
-        ' ÷ S25 landscape baseline 995 = ×' + screenLayoutRoundV238(capacityRatioV2314, 3) +
+        ' ÷ S25 portrait-width baseline 1079 (5 rows) = ×' + screenLayoutRoundV238(capacityRatioV2314, 3) +
         ' • theoretical ' + theoreticalStatRowsV2314 + ' • reserve 1 above baseline → ' + visibleStatRowsV2314);
       if (scroll) {
         lines.push('Scroll content: ' + screenLayoutPxV238(scroll.scrollHeight) + ' high × ' + screenLayoutPxV238(scroll.scrollWidth) +
@@ -20612,6 +20655,7 @@ let scoreTimingDetail =
         'Entries: ' + screenLayoutLogEntriesV238.length,
         'Units: actual CSS pixels unless noted.',
         'Global scale formula: max(0.70, VPH × adjDPR ÷ ' + V220_EFFECTIVE_HEIGHT_BASELINE + '); adjDPR = max(2.00, DPR)',
+        'Width multiplier: max(1.00, min(CSS width,900) × adjDPR × 0.75 ÷ 1079); S25 384×2.81 = 1079; landscape GEEK 1079 = 5 stat rows.',
         'Typography: representative samples only; actual computed font sizes are paired with governing target/fit rules when known.',
         'Capture settling: automatic entries are committed only after the same structural signature remains stable across the confirmation window.',
         'AUTHORIZATION / CONFIRMATION NOTE: popup geometry is a coarse sanity check only; ignore detailed sizing unless specifically requested.',
@@ -26650,8 +26694,8 @@ let scoreTimingDetail =
          multiplier. Installed standalone Scorecard/Leaderboard instead use the
          stable 100svh measurement so a late Android viewport settle cannot
          resize the shell after the visible NESR+4 scroll has completed. */
-      const sx = Math.max(0.38, width / 756);
       const metricsV188 = getVerticalMetricsV188();
+      const sx = window.sshcpWidthMultiplierV2381(width, metricsV188.adjDPR);
       const sy = stableStandaloneHeightV2066 > 0
         ? globalViewportDprScaleV220(stableStandaloneHeightV2066, metricsV188.adjDPR)
         : metricsV188.multiplier;
@@ -26670,8 +26714,8 @@ let scoreTimingDetail =
         : sharedRawV187;
 
       const vars = {
-        '--v16-rail': px(24),
-        '--v16-nav-w': px(141),
+        '--v16-rail': px((24 * 384 / 756)),
+        '--v16-nav-w': px((141 * 384 / 756)),
         '--v16-nav-h': py(35),
         '--v16-top-inset': py(9.52),
         '--v16-nav-context-gap': py(8.16),
@@ -26681,7 +26725,7 @@ let scoreTimingDetail =
         '--v16-leader-table-footer-gap': py(12),
         '--v16-footer-h': py(50),
         '--v16-bottom-gap': py(12.24),
-        '--v16-internal-gap': px(28)
+        '--v16-internal-gap': px((28 * 384 / 756))
       };
 
       /* Completed Final Results uses a 1fr / 2fr footer after subtracting
@@ -26717,7 +26761,7 @@ let scoreTimingDetail =
           'sshcpV16ShellGeometry',
           JSON.stringify({
             v188: true,
-            v2380: true,
+            v2381: true,
             w: window.innerWidth || 0,
             h: window.innerHeight || 0,
             vars
@@ -32670,7 +32714,7 @@ let scoreTimingDetail =
       const dprV2314 = window.sshcpAdjustedDPRV2366();
       const vphV2314 = Math.max(1, Number(window.visualViewport && window.visualViewport.height) || Number(window.innerHeight) || 1);
       const effectiveHeightV2314 = vphV2314 * dprV2314;
-      const baselineEffectiveHeightV2314 = 995;
+      const baselineEffectiveHeightV2314 = 1079;
       const baselineRowsV2314 = 5;
       const capacityRatioV2314 = Math.max(0.01, effectiveHeightV2314 / baselineEffectiveHeightV2314);
       const theoreticalRowsV2314 = Math.max(
