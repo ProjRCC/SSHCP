@@ -1,3 +1,11 @@
+<!-- SSHCP V23.77 TEST — exact V23.76-R7M4QX donor, visual presentation only.
+     Two popup families: PAGE (Quick Guide, Scramble Summary, GEEK, GAME/SKINS)
+     and INFO (Score Entry, Control Center, passwords, confirmations, detail and
+     status cards). Both share the solid Gray 3 overlay; INFO receives a gently
+     stronger drop shadow while PAGE retains its subtle shadow. No geometry,
+     text, scoring, Worker, zoom rule, modal timing, or navigation changes.
+     TEST / REAL DEVICE VALIDATION REQUIRED; V23.66 GOLDEN protected. -->
+<!-- SSHCP | BASE KEY: 23.76-R7M4QX | BUILD KEY: 23.77-M8Q4VX -->
 <!-- SSHCP V23.76 TEST — exact V23.75-H8M4QX donor, frontend-only.
      Scramble Summary GEEK/HOME/GAME: center labels geometrically within their
      existing button boxes and fit full one-line labels to available width.
@@ -15803,6 +15811,53 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
   overflow:hidden!important;
 }
 </style>
+<style id="sshcp-v2377-two-popup-families">
+/* V23.77 — one visual specification, applied at the end of the established
+   cascade. Only surface gray and outer shadow change; no structural geometry,
+   opacity transitions, user interaction, element spacing or internal scrolling. */
+:root {
+  --sshcp-popup-backdrop-v2377: var(--sshcp-gray-3-v1850, #e8e8e8);
+  --sshcp-page-shadow-v2377: 0 2px 10px rgba(0,0,0,.05);
+  --sshcp-info-shadow-v2377: 0 8px 26px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.10);
+}
+/* This targets modal SURFACES, not dropdowns, page-transition curtains,
+   the QR WELCOME splash, or internal FILTERS overlays. The single #modalOverlay
+   is used for both PAGE and INFO contexts and is reclassified by its classes. */
+#modalOverlay.modal-overlay,
+#scoreEntryOverlay.score-entry-overlay,
+#tipsOverlayV2154.tips-overlay-v2154,
+.geek-download-status-v2278,
+.geek-pdf-paper-v2281,
+.teams-popup-overlay,
+#teamInfoOverlayV2032.team-info-overlay-v2032 {
+  background: var(--sshcp-popup-backdrop-v2377) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* INFO — CC/password gates, Score Entry, score-save warning, GEEK DETAIL,
+   GEEK PDF messages, Scramble Complete and all other compact modal cards. */
+#modalOverlay.modal-overlay .modal-box,
+#scoreEntryOverlay .score-entry-box,
+#tipsOverlayV2154 .tips-card-v2154,
+.geek-download-status-v2278 .geek-download-status-card-v2278,
+.geek-pdf-paper-v2281 .geek-pdf-paper-card-v2281,
+.teams-popup-overlay .teams-popup-box,
+#teamInfoOverlayV2032 .team-info-shell-v2032 {
+  box-shadow: var(--sshcp-info-shadow-v2377) !important;
+}
+/* PAGE — the four full-size reading/results surfaces. Including the SKINS
+   stand-alone results page under GAME; GEEK DETAIL is explicitly excluded. */
+#modalOverlay.modal-overlay:is(
+  .quick-guide,
+  .tournament-summary,
+  .geek-mode-v180:not(.geek-detail-v180):not(.geek-all-teams-detail-v2238),
+  .game-mode-results-v2026,
+  .skins-results-v1627
+) .modal-box,
+.geek-all-teams-view-v2216 .geek-all-teams-popup-v2220 {
+  box-shadow: var(--sshcp-page-shadow-v2377) !important;
+}
+</style>
 </head>
 
 
@@ -15931,7 +15986,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.76</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.77</span></span>
         </button>
         <script>
           (function () {
