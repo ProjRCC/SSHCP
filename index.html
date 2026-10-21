@@ -1,3 +1,6 @@
+<!-- SSHCP V23.82 TEST — exact V23.81-M6Q4VX donor. CC DIMENSIONS only:
+     compact centered two-line display with VIEW/DPR(ADJ)/mode, and EFH/×H/EFW/×W.
+     Preserve all runtime scaling, score/navigation, popup presentation, and full layout log. -->
 <!-- SSHCP V23.81 TEST — exact V23.80-Q7M4VX donor. Horizontal Scorecard/Leaderboard
      sizing uses S25 384x2.81=1079 effective-pixel baseline and 75% moderation,
      with width multiplier minimum 1.000. Recalibrated S25 original nav/rail/gap
@@ -13,7 +16,7 @@
      Preserve global VPH × adjDPR scale, height rules, styling, scoring,
      Worker, popup families, Scorecard-only zoom warning, and GOLDEN V23.78.
      TEST / NOT GOLDEN / IPAD AND PHONE VALIDATION REQUIRED. -->
-<!-- SSHCP | BASE KEY: 23.80-Q7M4VX | BUILD KEY: 23.81-M6Q4VX -->
+<!-- SSHCP | BASE KEY: 23.81-M6Q4VX | BUILD KEY: 23.82-Q8M4VX -->
 <!-- SSHCP V23.79 TEST — exact protected V23.78-H7M4QX GOLDEN donor.
      Shared maximum app/page width grows from 760 to 900 CSS px; related
      after-play 98% cap grows from 744.8 to 882 CSS px. Width-based geometry,
@@ -15438,7 +15441,7 @@ html.sshcp-geek-all-teams-v2216 .geek-all-teams-row-v2216.header-v2216
   line-height:1.08!important;
   letter-spacing:0!important;
   text-align:center!important;
-  white-space:pre-line!important;
+  white-space:pre!important;
   overflow:hidden!important;
 }
 </style>
@@ -16053,7 +16056,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.81</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.82</span></span>
         </button>
         <script>
           (function () {
@@ -19704,13 +19707,9 @@ let scoreTimingDetail =
     function controlCenterViewportLineV188() {
       const snap = controlCenterViewportSnapshotV2128 ||
         buildControlCenterViewportSnapshotV2128(false);
-      return (
-        'VIEW ' + snap.innerWidth + '×' + snap.innerHeight +
-        ' • VPH ' + Math.round(snap.visualHeight || snap.innerHeight) +
-        ' • DPR ' + snap.dpr.toFixed(2) + ' • adjDPR ' + snap.adjDPR.toFixed(2) +
-        ' • ' + snap.mode +
-        ' • ' + (snap.settled ? 'SETTLED' : 'SETTLING')
-      );
+      return 'VIEW ' + snap.innerWidth + '×' + snap.innerHeight +
+        ' • DPR ' + snap.dpr.toFixed(2) + '(ADJ ' + snap.adjDPR.toFixed(2) + ')' +
+        ' • ' + snap.mode;
     }
 
     function controlCenterGeometryLineV188() {
@@ -19718,14 +19717,11 @@ let scoreTimingDetail =
         buildControlCenterViewportSnapshotV2128(false);
       const effectiveHeight = Number(snap.effectiveHeight) ||
         ((Number(snap.visualHeight) || Number(snap.innerHeight) || 0) * (Number(snap.adjDPR) || 2));
-      return (
-        'EFFECTIVE ' + Math.round(effectiveHeight) +
-        ' = VPH×adjDPR • BASE ' + V220_EFFECTIVE_HEIGHT_BASELINE +
-        ' • SCALE ×' + snap.viewScale.toFixed(3) +
-        '\nWIDTH BASE 1079 (384×2.81) • 75% • MAX 900 • WIDTH ×' +
-        window.sshcpWidthMultiplierV2381(Math.min(900, snap.innerWidth), snap.adjDPR).toFixed(4) +
-        ' • GEEK LANDSCAPE: 1079 = 5 ROWS'
-      );
+      const effectiveWidth = Math.min(900, snap.innerWidth) * snap.adjDPR;
+      return 'EFH ' + Math.round(effectiveHeight) +
+        ' • ×H ' + snap.viewScale.toFixed(3) +
+        ' • EFW ' + Math.round(effectiveWidth) +
+        ' • ×W ' + window.sshcpWidthMultiplierV2381(Math.min(900, snap.innerWidth), snap.adjDPR).toFixed(3);
     }
 
     function updateControlCenterViewportMetricsV188() {
