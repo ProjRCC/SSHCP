@@ -1,3 +1,4 @@
+<!-- SSHCP V23.87 TEST — exact V23.86-R8Q4MX GOLDEN donor. Global height multiplier uses VIEW/innerHeight (not fluctuating visualViewport height); preserve visual viewport for keyboard and popup placement. Width multiplier, Scorecard behavior and Worker unchanged. -->
 <!-- SSHCP V23.86 TEST — V23.85 donor. Landscape ALL TEAMS detail only: fit its typography and vertical gaps to the real short WEB viewport, preserve top/bottom clearance and visible title/CLOSE. No portrait, table, score or Worker changes. -->
 <!-- SSHCP V23.85 TEST — V23.82 donor; CC diagnostics three independent lines and no outer frame. -->
 <!-- SSHCP V23.82 TEST — exact V23.81-M6Q4VX donor. CC DIMENSIONS only:
@@ -18,6 +19,7 @@
      Preserve global VPH × adjDPR scale, height rules, styling, scoring,
      Worker, popup families, Scorecard-only zoom warning, and GOLDEN V23.78.
      TEST / NOT GOLDEN / IPAD AND PHONE VALIDATION REQUIRED. -->
+<!-- SSHCP | BASE KEY: 23.86-R8Q4MX | BUILD KEY: 23.87-M7Q4VX -->
 <!-- SSHCP | BASE KEY: 23.85-N7Q4MX | BUILD KEY: 23.86-R8Q4MX -->
 <!-- SSHCP | BASE KEY: 23.82-Q8M4VX | BUILD KEY: 23.85-N7Q4MX -->
 <!-- SSHCP V23.79 TEST — exact protected V23.78-H7M4QX GOLDEN donor.
@@ -1555,11 +1557,11 @@ window.sshcpWidthMultiplierV2381 = function(cssWidth, adjustedDpr) {
           var v188ScreenLong = Math.max(v188ScreenW, v188ScreenH);
           var v189BootVisualH = Math.max(1, Number(window.visualViewport && window.visualViewport.height) || v16NowH);
           /* V22.0 — one global physical/readability scale from effective
-             viewport height. VPH × DPR keeps the same physical display stable
+             viewport height. VIEW height × DPR keeps the same physical display stable
              across Android system zoom while larger displays scale naturally.
              2034 is the approved normal-Web reference; 0.70 is the tested floor.
              There is intentionally no upper cap. */
-          var v220BootEffectiveHeight = v189BootVisualH * v188Dpr;
+          var v220BootEffectiveHeight = v16NowH * v188Dpr;
           var v188BootMultiplier = Math.max(0.70, v220BootEffectiveHeight / 2034);
           document.documentElement.style.setProperty('--v221-global-scale', v188BootMultiplier.toFixed(5));
           var v188RoundY = function (value) {
@@ -16100,7 +16102,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.86</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.87</span></span>
         </button>
         <script>
           (function () {
@@ -19760,7 +19762,7 @@ let scoreTimingDetail =
       const snap = controlCenterViewportSnapshotV2128 ||
         buildControlCenterViewportSnapshotV2128(false);
       const effectiveHeight = Number(snap.effectiveHeight) ||
-        ((Number(snap.visualHeight) || Number(snap.innerHeight) || 0) * (Number(snap.adjDPR) || 2));
+        ((Number(snap.innerHeight) || 0) * (Number(snap.adjDPR) || 2));
       const effectiveWidth = Math.min(900, snap.innerWidth) * snap.adjDPR;
       return 'EFH ' + Math.round(effectiveHeight) +
         ' • ×H ' + snap.viewScale.toFixed(3) +
@@ -19772,7 +19774,7 @@ let scoreTimingDetail =
       const node = els.screenLogScaleInfoV238;
       if (!node) return;
       const snap = controlCenterViewportSnapshotV2128 || buildControlCenterViewportSnapshotV2128(false);
-      const effectiveHeight = Number(snap.effectiveHeight) || ((Number(snap.visualHeight) || Number(snap.innerHeight) || 0) * snap.adjDPR);
+      const effectiveHeight = Number(snap.effectiveHeight) || ((Number(snap.innerHeight) || 0) * snap.adjDPR);
       const effectiveWidth = Math.min(900, snap.innerWidth) * snap.adjDPR;
       const labels = [
         'VIEW ' + snap.innerWidth + '×' + snap.innerHeight + ' • ' + snap.mode,
@@ -20001,7 +20003,7 @@ let scoreTimingDetail =
         : globalScale;
       const shellWidth = Math.max(1, Math.min(900, Number(window.innerWidth) || 1));
       const widthScale = window.sshcpWidthMultiplierV2381(shellWidth, metrics.adjDPR);
-      const vph = Number(metrics.visualHeight) || Number(metrics.innerHeight) || 0;
+      const vph = Number(metrics.innerHeight) || 0;
       const effective = vph * (Number(metrics.adjDPR) || 2);
       return { metrics, standalone, stableSvh, globalScale, shellScale, widthScale, vph, effective };
     }
@@ -26297,7 +26299,7 @@ let scoreTimingDetail =
 
     /* V22.0 — global display scale. The approved normal-Web reference is
        2034 effective vertical pixels (724 CSS px × DPR 2.81 ≈ 2034).
-       The global multiplier is VPH × DPR / 2034, with a tested 0.70 floor and
+       The global multiplier is VIEW height × DPR / 2034, with a tested 0.70 floor and
        intentionally no upper cap. This is device-agnostic: iPad and Android
        system zoom resolve naturally from the same relationship. */
     const V220_EFFECTIVE_HEIGHT_BASELINE = 2034;
@@ -26378,11 +26380,11 @@ let scoreTimingDetail =
       }
       if (!(s25ScreenLong > 0)) s25ScreenLong = V188_S25_SCREEN_CSS_FALLBACK_H;
 
-      /* V22.0 — global VPH × DPR scale. Shortened browser height remains real
+      /* V23.87 — global VIEW height × DPR scale. Shortened browser height remains real
          layout capacity, while Android system zoom no longer masquerades as a
          physically smaller device. */
-      const effectiveHeightV220 = visualHeight * adjDPR;
-      const multiplier = globalViewportDprScaleV220(visualHeight, adjDPR);
+      const effectiveHeightV220 = innerHeight * adjDPR;
+      const multiplier = globalViewportDprScaleV220(innerHeight, adjDPR);
 
       return {
         innerWidth,
@@ -26754,7 +26756,7 @@ let scoreTimingDetail =
          .68 conversion has been baked into the approved HEADER/FOOTER S25
          baselines below and is no longer applied at runtime.
 
-         V20.66: regular web remains exactly on the established visualViewport
+         V23.87: regular web uses the stable VIEW/innerHeight
          multiplier. Installed standalone Scorecard/Leaderboard instead use the
          stable 100svh measurement so a late Android viewport settle cannot
          resize the shell after the visible NESR+4 scroll has completed. */
