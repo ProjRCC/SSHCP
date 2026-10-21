@@ -1,3 +1,4 @@
+<!-- SSHCP V23.84 TEST — diagnostic typography visibility correction from V23.83. -->
 <!-- SSHCP V23.83 TEST — exact V23.82-Q8M4VX donor. CC DIMENSIONS font fit only:
      compact centered two-line display with VIEW/DPR(ADJ)/mode, and EFH/×H/EFW/×W.
      Preserve all runtime scaling, score/navigation, popup presentation, and full layout log. -->
@@ -16056,7 +16057,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.83</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.84</span></span>
         </button>
         <script>
           (function () {
@@ -19726,6 +19727,9 @@ let scoreTimingDetail =
 
     // V23.83: size only the two CC diagnostics lines to the actual center cell.
     // The two-line content, Screen Layout Log, and responsive calculations are unchanged.
+    // V23.84: expand the *visual height* of the two diagnostics lines without
+    // consuming additional width or changing the CC START/COPY grid columns.
+    // A mild horizontal text compression is accounted for BEFORE choosing size.
     function fitControlCenterDimensionsTextV2383() {
       const el = els.screenLogScaleInfoV238;
       if (!el || !el.clientWidth || !el.clientHeight) return;
@@ -19738,16 +19742,19 @@ let scoreTimingDetail =
       const style = getComputedStyle(el);
       const family = style.fontFamily || 'Oswald, Arial, sans-serif';
       const weight = style.fontWeight || '700';
-      const maxWidth = Math.max(0, el.clientWidth - 6);
-      const maxHeight = Math.max(0, el.clientHeight - 4);
-      let lo = 5, hi = Math.min(28, maxHeight / 2.16);
-      for (let i = 0; i < 20; i++) {
+      const compression = 0.73;
+      const maxWidth = Math.max(0, (el.clientWidth - 8) / compression);
+      const maxHeight = Math.max(0, el.clientHeight - 6);
+      let lo = 5, hi = Math.min(20, maxHeight / 2.16);
+      for (let i = 0; i < 22; i++) {
         const mid = (lo + hi) / 2;
         ctx.font = `${weight} ${mid}px ${family}`;
         if (Math.max(...lines.map(line => ctx.measureText(line).width)) <= maxWidth && mid * 2.16 <= maxHeight) lo = mid;
         else hi = mid;
       }
       el.style.setProperty('font-size', lo.toFixed(2) + 'px', 'important');
+      el.style.setProperty('transform', 'scaleX(' + compression + ')', 'important');
+      el.style.setProperty('transform-origin', 'center center', 'important');
     }
 
     function updateControlCenterViewportMetricsV188() {
