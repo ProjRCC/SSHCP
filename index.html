@@ -1,4 +1,4 @@
-<!-- SSHCP V23.82 TEST — exact V23.81-M6Q4VX donor. CC DIMENSIONS only:
+<!-- SSHCP V23.83 TEST — exact V23.82-Q8M4VX donor. CC DIMENSIONS font fit only:
      compact centered two-line display with VIEW/DPR(ADJ)/mode, and EFH/×H/EFW/×W.
      Preserve all runtime scaling, score/navigation, popup presentation, and full layout log. -->
 <!-- SSHCP V23.81 TEST — exact V23.80-Q7M4VX donor. Horizontal Scorecard/Leaderboard
@@ -16,7 +16,7 @@
      Preserve global VPH × adjDPR scale, height rules, styling, scoring,
      Worker, popup families, Scorecard-only zoom warning, and GOLDEN V23.78.
      TEST / NOT GOLDEN / IPAD AND PHONE VALIDATION REQUIRED. -->
-<!-- SSHCP | BASE KEY: 23.81-M6Q4VX | BUILD KEY: 23.82-Q8M4VX -->
+<!-- SSHCP | BASE KEY: 23.82-Q8M4VX | BUILD KEY: 23.83-N7Q4MX -->
 <!-- SSHCP V23.79 TEST — exact protected V23.78-H7M4QX GOLDEN donor.
      Shared maximum app/page width grows from 760 to 900 CSS px; related
      after-play 98% cap grows from 744.8 to 882 CSS px. Width-based geometry,
@@ -16056,7 +16056,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.82</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.83</span></span>
         </button>
         <script>
           (function () {
@@ -19724,13 +19724,47 @@ let scoreTimingDetail =
         ' • ×W ' + window.sshcpWidthMultiplierV2381(Math.min(900, snap.innerWidth), snap.adjDPR).toFixed(3);
     }
 
+    // V23.83: size only the two CC diagnostics lines to the actual center cell.
+    // The two-line content, Screen Layout Log, and responsive calculations are unchanged.
+    function fitControlCenterDimensionsTextV2383() {
+      const el = els.screenLogScaleInfoV238;
+      if (!el || !el.clientWidth || !el.clientHeight) return;
+      const lines = (el.textContent || '').split('\n');
+      if (lines.length !== 2) return;
+      const canvas = fitControlCenterDimensionsTextV2383.canvas ||
+        (fitControlCenterDimensionsTextV2383.canvas = document.createElement('canvas'));
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const style = getComputedStyle(el);
+      const family = style.fontFamily || 'Oswald, Arial, sans-serif';
+      const weight = style.fontWeight || '700';
+      const maxWidth = Math.max(0, el.clientWidth - 6);
+      const maxHeight = Math.max(0, el.clientHeight - 4);
+      let lo = 5, hi = Math.min(28, maxHeight / 2.16);
+      for (let i = 0; i < 20; i++) {
+        const mid = (lo + hi) / 2;
+        ctx.font = `${weight} ${mid}px ${family}`;
+        if (Math.max(...lines.map(line => ctx.measureText(line).width)) <= maxWidth && mid * 2.16 <= maxHeight) lo = mid;
+        else hi = mid;
+      }
+      el.style.setProperty('font-size', lo.toFixed(2) + 'px', 'important');
+    }
+
     function updateControlCenterViewportMetricsV188() {
       if (!els.screenLogScaleInfoV238) return;
       els.screenLogScaleInfoV238.textContent =
         controlCenterViewportLineV188() + '\n' + controlCenterGeometryLineV188();
+      fitControlCenterDimensionsTextV2383();
+      requestAnimationFrame(fitControlCenterDimensionsTextV2383);
       if (typeof syncScreenLayoutLogControlsV238 === 'function') {
         syncScreenLayoutLogControlsV238();
       }
+    }
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        if (currentView === 'testlog') fitControlCenterDimensionsTextV2383();
+      }).catch(() => {});
     }
 
     function scheduleControlCenterViewportSnapshotV2128() {
