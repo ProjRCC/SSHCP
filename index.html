@@ -1,5 +1,5 @@
-<!-- SSHCP V23.88 TEST — V23.87-M7Q4VX GOLDEN donor. Quick Guide width 95vw capped 900 CSS px; suppress Scorecard MAX ZOOM in landscape; remove demonstrably uncalled legacy warning helpers; clarify diagnostic formula. No scoring, Worker or other layout changes. -->
-<!-- SSHCP | BASE KEY: 23.87-M7Q4VX | BUILD KEY: 23.88-Q7M4VX -->
+<!-- SSHCP V23.89 TEST — exact corrected V23.88-Q7M4VX donor. Scorecard-only presentation: preserve Gray 5 header and 20/15/30/35 tracks; replace white running score boxes and SCORE label with one Gray 2 inset panel capped at 85% header height. Gross normal / Net bold with slash, values target 65% header height and shrink together to fit. Scoring/data/Worker/other screens unchanged. -->
+<!-- SSHCP | BASE KEY: 23.88-Q7M4VX | BUILD KEY: 23.89-R7M4QX -->
 <!-- SSHCP V23.87 GOLDEN — exact V23.86-R8Q4MX GOLDEN donor. Global height multiplier uses VIEW/innerHeight (not fluctuating visualViewport height); preserve visual viewport for keyboard and popup placement. Width multiplier, Scorecard behavior and Worker unchanged. -->
 <!-- SSHCP V23.86 TEST — V23.85 donor. Landscape ALL TEAMS detail only: fit its typography and vertical gaps to the real short WEB viewport, preserve top/bottom clearance and visible title/CLOSE. No portrait, table, score or Worker changes. -->
 <!-- SSHCP V23.85 TEST — V23.82 donor; CC diagnostics three independent lines and no outer frame. -->
@@ -15976,6 +15976,79 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
   overflow-wrap: normal !important;
 }
 </style>
+<style id="sshcp-v2389-scorecard-gross-net-panel">
+/* V23.89: presentation only. Keep the existing Gray 5 header and score column;
+   use one inset Gray 2 field for running Gross / Net, without the SCORE label.
+   The panel is 85% of the actual header height; text targets 65% of that
+   header height (not 65% of the inset panel). */
+#scorecardView .score-table-head > .score-running-header {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  min-width:0!important;
+}
+#scorecardView .score-table-head .score-running-panel-v2389 {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-wrap:nowrap!important;
+  gap:var(--v2389-score-gap,2px)!important;
+  width:calc(100% - 8px)!important;
+  max-width:calc(100% - 8px)!important;
+  min-width:0!important;
+  height:85%!important;
+  max-height:85%!important;
+  box-sizing:border-box!important;
+  padding:0 4px!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:clamp(3px,calc(var(--v5-score-head-h,58px) * .12),8px)!important;
+  background:var(--sshcp-gray-2-v1850,#f2f2f2)!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+#scorecardView .score-table-head .score-running-panel-v2389 > span {
+  display:inline-block!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  outline:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  letter-spacing:0!important;
+  overflow:visible!important;
+  transform:none!important;
+  -webkit-text-stroke:0 transparent!important;
+  paint-order:normal!important;
+  color:var(--sshcp-gray-8-v2102,#2c2c2c)!important;
+  -webkit-text-fill-color:var(--sshcp-gray-8-v2102,#2c2c2c)!important;
+}
+#scorecardView .score-table-head .score-running-panel-v2389 > .score-running-gross {
+  font-weight:400!important;
+}
+#scorecardView .score-table-head .score-running-panel-v2389 > .score-running-net {
+  font-weight:800!important;
+}
+#scorecardView .score-table-head .score-running-panel-v2389 > .score-running-separator-v2389 {
+  font-weight:400!important;
+  font-size:var(--v2389-slash-font,20px)!important;
+}
+#scorecardView .score-table-head .score-running-panel-v2389 > .under-par {
+  color:#c93636!important;
+  -webkit-text-fill-color:#c93636!important;
+}
+</style>
 </head>
 
 
@@ -16104,7 +16177,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.88</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.89</span></span>
         </button>
         <script>
           (function () {
@@ -16235,9 +16308,11 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
           <div>YARDS</div>
 
           <div class="score-running-header">
-            <span id="scoreRunningGross" class="score-running-gross">E</span>
-            <span>SCORE</span>
-            <span id="scoreRunningNet" class="score-running-net">E</span>
+            <div class="score-running-panel-v2389" aria-label="Gross / Net">
+              <span id="scoreRunningGross" class="score-running-gross">E</span>
+              <span class="score-running-separator-v2389" aria-hidden="true">/</span>
+              <span id="scoreRunningNet" class="score-running-net">E</span>
+            </div>
           </div>
 
         </div>
@@ -27024,86 +27099,75 @@ let scoreTimingDetail =
       });
 
       const running = header.querySelector('.score-running-header');
-      if (running) {
-        /* V18.56: use the true side zones around SCORE. Keep both white value
-           boxes identical, centered in their respective zones, pushed as large
-           as possible without crossing boundaries, capped by the row height,
-           and allowed to widen up to 120% of height when space permits. */
-        const parts = Array.from(running.children);
-
-        if (parts[1]) {
-          fitTextToBoxV5(parts[1], parts[1], headerHeight * 0.375, 0.001, {
-            horizontalPad: 10,
-            verticalPad: 4,
-            noMin: true
+      const runningPanelV2389 = running && running.querySelector('.score-running-panel-v2389');
+      if (runningPanelV2389) {
+        /* V23.89: one Gray 2 panel holds both running totals and the slash.
+           Preserve the original gross/net nodes (and their live score colors).
+           The previous two-white-box / SCORE text fitting must NOT run here. */
+        const grossNodeV2389 = runningPanelV2389.querySelector('.score-running-gross');
+        const netNodeV2389 = runningPanelV2389.querySelector('.score-running-net');
+        const slashNodeV2389 = runningPanelV2389.querySelector('.score-running-separator-v2389');
+        const panelStyleV2389 = getComputedStyle(runningPanelV2389);
+        const panelInnerV2389 = Math.max(1,
+          runningPanelV2389.clientWidth -
+          (parseFloat(panelStyleV2389.paddingLeft) || 0) -
+          (parseFloat(panelStyleV2389.paddingRight) || 0) - 2);
+        const gapV2389 = Math.max(1, Math.min(4, headerHeight * .025));
+        els.scorecardView.style.setProperty('--v2389-score-gap', gapV2389.toFixed(3) + 'px');
+        const targetFontV2389 = Math.max(.001, headerHeight * .65);
+        const safeFontV2389 = Math.min(targetFontV2389, runningPanelV2389.clientHeight * .80);
+        const slashRatioV2389 = .70;
+        const samplePairsV2389 = [
+          [String(grossNodeV2389?.textContent || 'E'), String(netNodeV2389?.textContent || 'E')],
+          ['-10', '-10'],
+          ['+10', '+10']
+        ];
+        if (!v5MeasureProbe) {
+          v5MeasureProbe = document.createElement('span');
+          v5MeasureProbe.setAttribute('aria-hidden', 'true');
+          Object.assign(v5MeasureProbe.style, {
+            position:'fixed', left:'-10000px', top:'-10000px',
+            visibility:'hidden', pointerEvents:'none', zIndex:'-1'
           });
+          document.body.appendChild(v5MeasureProbe);
         }
-
-        /* V23.68 — preserve the 24px minimum at ordinary zoom. Once
-           the nine-row cap is active, the running-score boxes must share the
-           header's smaller real height rather than spilling over its edges. */
-        const runningBoxFloorV2368 = reducedHeaderV2368 ? 1 : 24;
-        let boxWidth = Math.max(runningBoxFloorV2368, Math.round(headerHeight * 0.78));
-        let boxHeight = Math.max(runningBoxFloorV2368, Math.round(headerHeight * 0.78));
-        let boxRadius = Math.max(reducedHeaderV2368 ? 1 : 5,
-                                 Math.round(boxHeight * 0.18));
-
-        if (parts[1]) {
-          const runningRect = running.getBoundingClientRect();
-          const scoreRect = parts[1].getBoundingClientRect();
-          const sideGap = Math.max(reducedHeaderV2368 ? 0.25 : 2,
-                                   Math.round(headerHeight * 0.04));
-          const leftZoneWidth = Math.max(0, (scoreRect.left - runningRect.left) - (sideGap * 2));
-          const rightZoneWidth = Math.max(0, (runningRect.right - scoreRect.right) - (sideGap * 2));
-          const zoneWidth = Math.max(0, Math.min(leftZoneWidth, rightZoneWidth));
-          /* V18.57: keep the original 82% ceiling/20px floor unless the
-             shrinking header forces the total boxes to become smaller. */
-          const runningCapFloorV2368 = reducedHeaderV2368 ? 1 : 20;
-          const maxHeightFromRow = Math.max(runningCapFloorV2368, Math.round(headerHeight * 0.82));
-          boxHeight = Math.max(runningCapFloorV2368,
-            Math.min(maxHeightFromRow, zoneWidth || (reducedHeaderV2368 ? 1 : maxHeightFromRow)));
-          boxWidth = Math.max(boxHeight, Math.min(Math.round(boxHeight * 1.20),
-            Math.max(boxHeight, Math.round(zoneWidth || (reducedHeaderV2368 ? 1 : boxHeight)))));
-          boxRadius = Math.max(reducedHeaderV2368 ? 1 : 5,
-            Math.min(Math.round(boxHeight * 0.18), Math.round(boxHeight / 2)));
+        const measureV2389 = (node, sample, font) => {
+          if (!node) return 0;
+          const computed = getComputedStyle(node);
+          v5MeasureProbe.textContent = sample;
+          v5MeasureProbe.style.fontFamily = computed.fontFamily;
+          v5MeasureProbe.style.fontWeight = computed.fontWeight;
+          v5MeasureProbe.style.fontStyle = computed.fontStyle;
+          v5MeasureProbe.style.letterSpacing = '0px';
+          v5MeasureProbe.style.textTransform = 'none';
+          v5MeasureProbe.style.whiteSpace = 'nowrap';
+          v5MeasureProbe.style.width = 'auto';
+          v5MeasureProbe.style.lineHeight = '1';
+          v5MeasureProbe.style.fontSize = font + 'px';
+          return v5MeasureProbe.getBoundingClientRect().width;
+        };
+        const pairWidthV2389 = font => Math.max(...samplePairsV2389.map(pair =>
+          measureV2389(grossNodeV2389, pair[0], font) +
+          measureV2389(slashNodeV2389, '/', font * slashRatioV2389) +
+          measureV2389(netNodeV2389, pair[1], font) + gapV2389 * 2
+        ));
+        let lowV2389 = .001;
+        let highV2389 = safeFontV2389;
+        for (let i = 0; i < 15; i++) {
+          const middle = (lowV2389 + highV2389) / 2;
+          if (pairWidthV2389(middle) <= panelInnerV2389) lowV2389 = middle;
+          else highV2389 = middle;
         }
-
-        els.scorecardView.style.setProperty('--v1855-running-box-w', boxWidth + 'px');
-        els.scorecardView.style.setProperty('--v1855-running-box-h', boxHeight + 'px');
-        els.scorecardView.style.setProperty('--v1855-running-box-radius', boxRadius + 'px');
-
-        const fontMax = Math.max(0.001, boxHeight * 0.60);
-        const fontMin = 0.001;
-        const sharedSamples = ['-10', '+10'];
-        if (parts[0] && String(parts[0].textContent || '').trim()) sharedSamples.push(String(parts[0].textContent || '').trim());
-        if (parts[2] && String(parts[2].textContent || '').trim()) sharedSamples.push(String(parts[2].textContent || '').trim());
-
-        let sharedFontSize = Infinity;
-        [parts[0], parts[2]].forEach(target => {
-          if (!target) return;
-          sharedSamples.forEach(sample => {
-            sharedFontSize = Math.min(
-              sharedFontSize,
-              measureTextFitFontSizeV1856(target, sample, fontMax, fontMin, {
-                horizontalPad: Math.max(5, target.clientWidth * 0.12),
-                verticalPad: Math.max(3, target.clientHeight * 0.14),
-                lineHeight: 1,
-                noMin: true
-              })
-            );
-          });
+        const fittedV2389 = lowV2389;
+        [grossNodeV2389, netNodeV2389].forEach(node => {
+          if (!node) return;
+          node.style.setProperty('font-size', fittedV2389.toFixed(3) + 'px', 'important');
+          node.style.setProperty('line-height', '1', 'important');
         });
-
-        if (!Number.isFinite(sharedFontSize)) sharedFontSize = fontMin;
-
-        [parts[0], parts[2]].forEach(target => {
-          if (!target) return;
-          target.style.setProperty('font-size', sharedFontSize + 'px', 'important');
-          target.style.setProperty('line-height', '1', 'important');
-          target.style.setProperty('white-space', 'nowrap', 'important');
-          target.style.setProperty('overflow', 'hidden', 'important');
-          target.style.setProperty('text-align', 'center', 'important');
-        });
+        if (slashNodeV2389) {
+          slashNodeV2389.style.setProperty('font-size',
+            (fittedV2389 * slashRatioV2389).toFixed(3) + 'px', 'important');
+        }
       }
 
       els.scoreRows.querySelectorAll('.score-row').forEach(row => {
