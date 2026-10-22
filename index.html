@@ -1,5 +1,5 @@
-<!-- SSHCP V23.95 TEST — Scorecard hole numerals use Oswald medium weight 500 instead of bold; current/next hole remains weight 700. Shared presentation change mirrored in SSnoHCP V1.6. Exact SSHCP V23.94 (23.94-K8Q4VX) donor. No scoring, HCP, routing, Worker, manifest, or layout edits. -->
-<!-- SSHCP | BASE KEY: 23.94-K8Q4VX | BUILD KEY: 23.95-L7Q4VX -->
+<!-- SSHCP V23.97 TEST — exact SSHCP V23.94 (23.94-K8Q4VX) donor. Only enforce scorecard HOLE numbers at weight 700; original size/layout/behavior preserved. Visible HOME/build version updated. No other behavior, Worker, manifest, or scoring changes. -->
+<!-- SSHCP | BASE KEY: 23.94-K8Q4VX | BUILD KEY: 23.97-P7Q4MX -->
 <!-- SSHCP V23.94 TEST — neutral ONE-APP SimpleScramble identity: canonical manifest ID /SS/, relative start_url ./ and scope /SS. Both frontends keep the same /SSHCP/manifest.webmanifest link; the manifest contains NO handicap-mode names. No scoring, layout, authorization, Worker or Sheet edits. Exact V23.93 (23.93-J7Q4MX) donor. -->
 <!-- SSHCP | BASE KEY: 23.93-J7Q4MX | BUILD KEY: 23.94-K8Q4VX -->
 <!-- SSHCP V23.93 TEST — UNIFIED SimpleScramble PWA identity: both repository frontends use the SAME /SSHCP/manifest.webmanifest (app ID /SSHCP/, start URL /SSHCP/, navigation scope /SS). Both modes install as SimpleScramble, and MASTER navigation between /SSHCP/ and /SSnoHCP/ remains in scope. Exact V23.92 (23.92-P8Q4MX) donor; scoring, WORKER and visual geometry unchanged. -->
@@ -16099,16 +16099,10 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
   -webkit-text-fill-color:#c93636!important;
 }
 </style>
-<style id="simplescramble-scorecard-hole-weight-shared">
-/* Shared SSHCP/SSnoHCP scorecard typography: keep hole numerals
-   medium (not bold); the current/next hole remains bold. */
-#scorecardView .hole-cell .hole-number {
-  font-weight: 500 !important;
-}
-#scorecardView .hole-cell.next-hole-cell .hole-number,
-#scorecardView .hole-cell[data-entry-hole-cue-v1981="1"] .hole-number {
-  font-weight: 700 !important;
-}
+
+<style id="sshcp-v2397-scorecard-hole-weight">
+/* V23.97: scorecard hole numerals stay Oswald 700. No sizing change. */
+#scorecardView .hole-cell .hole-number { font-weight: 700 !important; }
 </style>
 </head>
 
@@ -16238,7 +16232,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.94</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.97</span></span>
         </button>
         <script>
           (function () {
