@@ -1,6 +1,9 @@
 {
   "name": "SimpleScramble",
   "short_name": "SimpleScramble",
+  "id": "/SS/",
+  "start_url": "./",
+  "scope": "/SS",
   "display": "standalone",
   "background_color": "#133362",
   "theme_color": "#133362",
