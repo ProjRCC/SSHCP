@@ -1,3 +1,5 @@
+<!-- SSHCP V23.91 TEST — exact V23.90-N8Q4VX donor. Scorecard double-notation presentation only: tighten OUTER eagle-circle/double-bogey-square frames from 102% to 92% of unchanged blue score-box height, and give BOTH double-symbol strokes 75% of the established single-symbol border weight. Preserve score numerals, original inner-circle/inner-square dimensions, single-symbol marks, colors, Scorecard/header geometry, scoring, authorization, navigation, GEEK, SKINS, Worker and Sheets unchanged. -->
+<!-- SSHCP | BASE KEY: 23.90-N8Q4VX | BUILD KEY: 23.91-Q7M4VX -->
 <!-- SSHCP V23.90 TEST — exact V23.89-R7M4QX donor. Scorecard running totals ONLY: one centered Gray 3 panel at 80% of SCORE column width and 80% of header height. Gross regular / NET bold separated by a vertical rule at least as tall as the numerals. Both scores centered in equal grid halves, giving balanced outer and inner spacing. Typography targets 60% of header height and fits both scores to their half-cells. Keep Gray 5 outer header, HOLE/PAR/YARDS/SCORE 20/15/30/35, nine-row geometry, all scoring, refresh, authorization, GEEK, SKINS, Worker and Sheets unchanged. -->
 <!-- SSHCP | BASE KEY: 23.89-R7M4QX | BUILD KEY: 23.90-N8Q4VX -->
 <!-- SSHCP V23.89 TEST — exact corrected V23.88-Q7M4VX donor. Scorecard-only presentation: preserve Gray 5 header and 20/15/30/35 tracks; replace white running score boxes and SCORE label with one Gray 2 inset panel capped at 85% header height. Gross normal / Net bold with slash, values target 65% header height and shrink together to fit. Scoring/data/Worker/other screens unchanged. -->
@@ -7501,11 +7503,17 @@ body.master-qr #scorecardView .score-team-select-button:focus{
   border-radius:1px;
 }
 
+/* V23.91: 75% of the existing single-circle/square line weight.
+   Width/height of the INNER symbol and the score/blue button are untouched. */
+#scorecardView .score-cell.notation-double-circle::before,
+#scorecardView .score-cell.notation-double-square::before{
+  border-width:clamp(1.125px,calc(var(--v5-score-box,58px) * .03375),2.25px);
+}
 #scorecardView .score-cell.notation-double-circle::after,
 #scorecardView .score-cell.notation-double-square::after{
-  width:calc(var(--v5-score-box,58px) * 1.02);
-  height:calc(var(--v5-score-box,58px) * 1.02);
-  border:clamp(1.2px,calc(var(--v5-score-box,58px) * .032),2.4px) solid var(--v162-notation-color);
+  width:calc(var(--v5-score-box,58px) * .92);
+  height:calc(var(--v5-score-box,58px) * .92);
+  border:clamp(1.125px,calc(var(--v5-score-box,58px) * .03375),2.25px) solid var(--v162-notation-color);
 }
 
 #scorecardView .score-cell.notation-bold-square::before{
@@ -16192,7 +16200,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.90</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.91</span></span>
         </button>
         <script>
           (function () {
