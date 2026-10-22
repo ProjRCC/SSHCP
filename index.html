@@ -1,3 +1,5 @@
+<!-- SSHCP V23.92 TEST — CF3.36 EVENT!D2-controlled frontend switching in MASTER + validated QR/direct URL correction. Exact V23.91-Q7M4VX donor; scoring and visual geometry unchanged. -->
+<!-- SSHCP | BASE KEY: 23.91-Q7M4VX | BUILD KEY: 23.92-P8Q4MX -->
 <!-- SSHCP V23.91 TEST — exact V23.90-N8Q4VX donor. Scorecard double-notation presentation only: tighten OUTER eagle-circle/double-bogey-square frames from 102% to 92% of unchanged blue score-box height, and give BOTH double-symbol strokes 75% of the established single-symbol border weight. Preserve score numerals, original inner-circle/inner-square dimensions, single-symbol marks, colors, Scorecard/header geometry, scoring, authorization, navigation, GEEK, SKINS, Worker and Sheets unchanged. -->
 <!-- SSHCP | BASE KEY: 23.90-N8Q4VX | BUILD KEY: 23.91-Q7M4VX -->
 <!-- SSHCP V23.90 TEST — exact V23.89-R7M4QX donor. Scorecard running totals ONLY: one centered Gray 3 panel at 80% of SCORE column width and 80% of header height. Gross regular / NET bold separated by a vertical rule at least as tall as the numerals. Both scores centered in equal grid halves, giving balanced outer and inner spacing. Typography targets 60% of header height and fits both scores to their half-cells. Keep Gray 5 outer header, HOLE/PAR/YARDS/SCORE 20/15/30/35, nine-row geometry, all scoring, refresh, authorization, GEEK, SKINS, Worker and Sheets unchanged. -->
@@ -1211,6 +1213,25 @@ window.sshcpWidthMultiplierV2381 = function(cssWidth, adjustedDpr) {
         if (!response.ok || data.ok !== true || data.event !== eventV2318 ||
             data.shortName !== eventV2318 || !data.longName || !data.homeImage || !data.infoImage) {
           throw new Error(data.error || 'Event metadata or identity validation failed.');
+        }
+        // CF3.36: a fresh, identity-verified eventConfig may correct a QR,
+        // bookmark or old PWA launch into the wrong frontend. Neither the
+        // URL nor a cached event guess can decide the tournament's mode.
+        // Older Workers without noHandicap remain non-redirecting (safe rollout).
+        if (data.noHandicap === true) {
+          if (masterEntryV2326 && freshMasterIntentV2336) {
+            // MASTER selection consumed its nonce earlier on this wrong page.
+            // Carry it exactly once to the correct index; qrAuth still verifies GO.
+            try { window.localStorage.setItem(masterIntentKeyV2336,
+              JSON.stringify(freshMasterIntentV2336)); } catch (_) {}
+          }
+          const correctFrontendV3636 = new URL('/SSnoHCP/', window.location.origin);
+          correctFrontendV3636.search = window.location.search;
+          correctFrontendV3636.hash = window.location.hash;
+          window.location.replace(correctFrontendV3636.pathname +
+            correctFrontendV3636.search + correctFrontendV3636.hash);
+          // Do not render a mismatched HOME while the new index navigates.
+          return await new Promise(function(){});
         }
         window.SSHCP_EVENT.DETAILS = String(data.longName);
         window.SSHCP_EVENT.SHORT_NAME = String(data.shortName);
@@ -16200,7 +16221,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.91</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.92</span></span>
         </button>
         <script>
           (function () {
@@ -40366,7 +40387,7 @@ let scoreTimingDetail =
         Math.max(0, performance.now() - started) : 0;
       const scheduledReveal = new Promise(resolve =>
         window.setTimeout(resolve, Math.max(0, 3100 - elapsed)));
-      let keys = new Set();
+      let keys = new Map();
       try {
         const response = await window.fetch(
           'https://rotbtest.projrcc.workers.dev/?action=eventList',
@@ -40378,7 +40399,8 @@ let scoreTimingDetail =
           throw new Error('Invalid tournament directory.');
         for (const item of data.events) {
           const key = String(item && item.event || '');
-          if (/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(key)) keys.add(key);
+          if (/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(key))
+            keys.set(key, item.noHandicap === true);
         }
         if (!keys.size) throw new Error('No active tournaments.');
         await scheduledReveal;
@@ -40440,7 +40462,7 @@ let scoreTimingDetail =
         if (event.key === 'Escape' && !options.hidden) { close(); trigger.focus(); }
       });
       let switchingEventV2330 = false;
-      for (const key of keys) {
+      for (const [key, noHandicapV3636] of keys) {
         const option = document.createElement('button');
         option.type = 'button';
         option.className = 'sshcp-event-option-v2327';
@@ -40470,6 +40492,9 @@ let scoreTimingDetail =
           url.searchParams.set('masterEntrance', '1');
           url.searchParams.set('masterIntent', masterNonceV2336);
           url.searchParams.delete('passkey'); url.searchParams.delete('key');
+          // CF3.36 — route to the event's own repo/index.html, not the chooser's.
+          // This deliberately keeps every active Worker-provided event in MASTER.
+          url.pathname = noHandicapV3636 ? '/SSnoHCP/' : '/SSHCP/';
           const shield = beginDataRevealShieldV177(
             'master-pick-v2330', [], '#fff', true, 5100
           );
