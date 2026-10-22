@@ -1,4 +1,6 @@
-<!-- SSHCP V23.87 TEST — exact V23.86-R8Q4MX GOLDEN donor. Global height multiplier uses VIEW/innerHeight (not fluctuating visualViewport height); preserve visual viewport for keyboard and popup placement. Width multiplier, Scorecard behavior and Worker unchanged. -->
+<!-- SSHCP V23.88 TEST — V23.87-M7Q4VX GOLDEN donor. Quick Guide width 95vw capped 900 CSS px; suppress Scorecard MAX ZOOM in landscape; remove demonstrably uncalled legacy warning helpers; clarify diagnostic formula. No scoring, Worker or other layout changes. -->
+<!-- SSHCP | BASE KEY: 23.87-M7Q4VX | BUILD KEY: 23.88-Q7M4VX -->
+<!-- SSHCP V23.87 GOLDEN — exact V23.86-R8Q4MX GOLDEN donor. Global height multiplier uses VIEW/innerHeight (not fluctuating visualViewport height); preserve visual viewport for keyboard and popup placement. Width multiplier, Scorecard behavior and Worker unchanged. -->
 <!-- SSHCP V23.86 TEST — V23.85 donor. Landscape ALL TEAMS detail only: fit its typography and vertical gaps to the real short WEB viewport, preserve top/bottom clearance and visible title/CLOSE. No portrait, table, score or Worker changes. -->
 <!-- SSHCP V23.85 TEST — V23.82 donor; CC diagnostics three independent lines and no outer frame. -->
 <!-- SSHCP V23.82 TEST — exact V23.81-M6Q4VX donor. CC DIMENSIONS only:
@@ -12961,8 +12963,8 @@ body.team-info-open-v2032{
   padding:0!important;
 }
 .modal-overlay.quick-guide .modal-box{
-  width:min(95vw,500px)!important;
-  max-width:500px!important;
+  width:min(95vw,900px)!important;
+  max-width:900px!important;
   height:95dvh!important;
   min-height:95dvh!important;
   max-height:95dvh!important;
@@ -41466,55 +41468,13 @@ let scoreTimingDetail =
     }
     eventName.style.setProperty('font-size',lo.toFixed(4)+'px','important');
   }
-  function visualBounds(){
-    var vv=window.visualViewport;
-    return {
-      left:vv?vv.offsetLeft:0, top:vv?vv.offsetTop:0,
-      right:(vv?vv.offsetLeft+vv.width:window.innerWidth),
-      bottom:(vv?vv.offsetTop+vv.height:window.innerHeight)
-    };
-  }
-  function intersects(a,b,extra){
-    return Math.min(a.right,b.right)-Math.max(a.left,b.left)>extra &&
-      Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>extra;
-  }
-  function errorInOpenMenu(view,slack){
-    var p=panel.getBoundingClientRect();
-    if(p.width<=0 || p.height<=0 ||
-       p.left<view.left-slack || p.right>view.right+slack ||
-       p.top<view.top-slack || p.bottom>view.bottom+slack) return true;
-    var items=Array.prototype.slice.call(panel.querySelectorAll('.home-menu-item-v2054'));
-    if(items.length!==7) return true;
-    var prev=null;
-    for(var i=0;i<items.length;i++){
-      var b=items[i],r=b.getBoundingClientRect(),style=getComputedStyle(b);
-      if(r.height<25.5 || r.left<p.left-slack || r.right>p.right+slack ||
-         r.top<p.top-slack || r.bottom>p.bottom+slack) return true;
-      if(prev && r.top<prev.bottom+0.8) return true;
-      var contentWidth=b.clientWidth-(parseFloat(style.paddingLeft)||0)-
-        (parseFloat(style.paddingRight)||0)-2;
-      if(contentWidth<=0 || textWidth(b)>contentWidth+slack) return true;
-      prev=r;
-    }
-    return false;
-  }
+
+
+
   /* No CC or Scramble layout modifications: the flex log itself is the early
      physical failure sensor. A log reduced to its sticky header has no usable
      body; do not wait for the first bottom-row button to fall off the page. */
-  function logCollapsed(log,head,stack,view,slack){
-    if(!visible(log)||!visible(head)||!visible(stack))return false;
-    var box=log.getBoundingClientRect(),hdr=head.getBoundingClientRect();
-    var bottom=stack.getBoundingClientRect();
-    var border=getComputedStyle(log);
-    var borders=(parseFloat(border.borderTopWidth)||0)+
-       (parseFloat(border.borderBottomWidth)||0);
-    var bodySpace=box.height-hdr.height-borders;
-    var minimumRoom=shown?4:1.5; // hysteresis in actual CSS geometry, not zoom %
-    if(bodySpace<=minimumRoom) return true;
-    // Secondary safety gate if the stack would run offscreen before the log
-    // contracts on an unfamiliar screen: no controls may become inaccessible.
-    return bottom.bottom>view.bottom+slack || bottom.top<box.bottom-slack;
-  }
+
 
   /* V23.69 — the *rendered* nine-hole row is the Scorecard reference.
      If rows are not yet inserted, the live scroll viewport's ninth is the
@@ -41534,48 +41494,13 @@ let scoreTimingDetail =
     /* Enter at physical equality; require a little breathing room to exit. */
     return buttonH >= rowH-(shown?1.75:0.25);
   }
-  function leaderboardNavTooTall(){
-    if(!visible(leaderHome)||!visible(leaderGuide)||!visible(leaderScroll))return false;
-    var buttonH=Math.max(leaderHome.getBoundingClientRect().height,
-                          leaderGuide.getBoundingClientRect().height);
-    var allRows=leaderRows && leaderRows.querySelectorAll('.leader-row');
-    var count=Math.max(1,Math.min(8,allRows && allRows.length || 1));
-    var first=allRows && allRows.length && allRows[0];
-    var rowH=first && visible(first) ? first.getBoundingClientRect().height :
-      leaderScroll.getBoundingClientRect().height/count;
-    if(!(buttonH>0))return false;
-    if(!(rowH>0))return true;
-    /* Enter at equality; dismiss only when the geometry has recovered
-       beyond the existing shared tolerance, without a forced 100% reset. */
-    return buttonH >= rowH-(shown?1.75:0.25);
-  }
+
   /* V23.69 HOME minimum-logo rule: ten percent of the *visual* viewport
      height, applied to the actually visible image rather than its full CSS
      height when object-fit:contain is letterboxing an extreme aspect ratio.
      While a fresh event image is loading, the visible logo-zone height is
      the only grounded measure; it avoids a spurious 0px-image warning. */
-  function homeLogoTooShort(view){
-    if(!visible(logoZone))return false;
-    var viewportH=Math.max(0,view.bottom-view.top);
-    if(!(viewportH>0))return false;
-    var zone=logoZone.getBoundingClientRect();
-    var top=Math.max(zone.top,view.top);
-    var bottom=Math.min(zone.bottom,view.bottom);
-    if(logoImage && logoImage.complete && logoImage.naturalWidth>0 &&
-       logoImage.naturalHeight>0 && visible(logoImage)){
-      var box=logoImage.getBoundingClientRect();
-      /* HOME uses object-fit:contain and object-position:center top. */
-      var paintH=Math.min(box.height,
-        box.width*logoImage.naturalHeight/logoImage.naturalWidth);
-      top=Math.max(top,box.top);
-      bottom=Math.min(bottom,box.top+paintH);
-    }
-    var visibleLogoH=Math.max(0,bottom-top);
-    var minimumH=viewportH*0.10;
-    /* Only CSS-pixel settling tolerance; no percentage/zoom trigger.
-       When shown, allow small hysteresis before automatic dismissal. */
-    return visibleLogoH<minimumH+(shown?1.5:-0.25);
-  }
+
   function assess(){
     queued=false;
     /* V23.74 — HOME remains responsive, but NO warning outside Scorecard.
@@ -41583,7 +41508,7 @@ let scoreTimingDetail =
        are deliberately retired, not converted to a global zoom calculation. */
     if(home.classList.contains('active')) fitEventName();
     var scoreActive=scorecard && scorecard.classList.contains('active');
-    if(!scoreActive || competingModal()){
+    if(window.innerWidth > window.innerHeight || !scoreActive || competingModal()){
       setWarning(false);
       return;
     }
