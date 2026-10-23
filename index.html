@@ -1,3 +1,4 @@
+<!-- SSHCP V23.102 TEST | BASE KEY: 23.101-T8Q4MX | BUILD KEY: 23.102-V8Q4MX | PWA Control Center height uses the same 100svh portrait viewport authority as HOME/SCORECARD/LEADERBOARD; shared modal title clears temporary summary geometry on close. Do not retain rotation-only sizing. Scoring, authorization, GEEK landscape, Worker unchanged. -->
 <!-- SSHCP V23.101 TEST | BASE KEY: 23.100-C8Q4MX | BUILD KEY: 23.101-T8Q4MX | SWITCH AUTHORIZATION and STARTING HOLE popups borderless. All other scoring/UX preserved. -->
 <!-- SSHCP V23.100 TEST | BASE KEY: 23.99-R7Q4MX | BUILD KEY: 23.100-C8Q4MX | Preserve HOME/LEADERBOARD event-name case; SCORE X hidden; icon X and GEEK download no shadow; GAME detail border removed. Donor: V23.99. -->
 <!-- SSHCP V23.99 TEST | BASE KEY 23.98-N7Q4MX | BUILD KEY 23.99-R7Q4MX | HOME image-only adjustment: logo-to-primary-button gap hv(25) -> hv(14). All button positions/dimensions, approved shadows, scripts, and other layout unchanged. Donor: V23.98. -->
@@ -11714,6 +11715,18 @@ button.sshcp-button-pressed-v172{
     min-height:0!important;
     max-height:100svh!important;
   }
+
+  /* The CC page and its flex screen must share the same stable PWA height
+     authority as HOME/SCORECARD/LEADERBOARD. After GEEK landscape rotates back,
+     Android 100dvh can temporarily exceed window.innerHeight by ~56 CSS px;
+     its surplus otherwise expands only the CC log and pushes controls down. */
+  #testLogView,
+  #testLogView .test-log-screen{
+    height:100svh!important;
+    min-height:100svh!important;
+    max-height:100svh!important;
+    overflow:hidden!important;
+  }
 }
 #homeView .home-shell{
   display:block!important;
@@ -16236,7 +16249,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.101</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.102</span></span>
         </button>
         <script>
           (function () {
@@ -39165,6 +39178,11 @@ let scoreTimingDetail =
           'testing'
         );
 
+      /* The title node is reused by SWITCH AUTHORIZATION after SCRAMBLE
+         SUMMARY. Forget all temporary summary/landscape text fitting whenever
+         a popup closes; the next popup's own CSS chooses its natural size. */
+      ['font-size','line-height','white-space','overflow','text-align']
+        .forEach(property => els.modalTitle.style.removeProperty(property));
 
       els.modalInput.blur();
 
