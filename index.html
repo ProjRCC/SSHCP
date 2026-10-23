@@ -1,3 +1,4 @@
+<!-- SSHCP V23.98 TEST | BASE KEY: 23.97-P7Q4MX | BUILD KEY: 23.98-N7Q4MX | Button-only exterior shadows mirrored from phone-approved SSnoHCP V1.17. Menu items included; Control Center metrics row flat; no table/dropdown/popup-shell shadows. Exact SSHCP V23.97 GOLDEN donor; scoring, Worker, manifests and routing unchanged. -->
 <!-- SSHCP V23.97 TEST — exact SSHCP V23.94 (23.94-K8Q4VX) donor. Only enforce scorecard HOLE numbers at weight 700; original size/layout/behavior preserved. Visible HOME/build version updated. No other behavior, Worker, manifest, or scoring changes. -->
 <!-- SSHCP | BASE KEY: 23.94-K8Q4VX | BUILD KEY: 23.97-P7Q4MX -->
 <!-- SSHCP V23.94 TEST — neutral ONE-APP SimpleScramble identity: canonical manifest ID /SS/, relative start_url ./ and scope /SS. Both frontends keep the same /SSHCP/manifest.webmanifest link; the manifest contains NO handicap-mode names. No scoring, layout, authorization, Worker or Sheet edits. Exact V23.93 (23.93-J7Q4MX) donor. -->
@@ -16232,7 +16233,7 @@ body.sshcp-recovery-v2351 #scorecardView .score-button.pending-clear-v2351.activ
 
         <button id="testLogHotspot" class="home-event-test-hotspot" type="button" aria-label="Open test log">
           <span id="homeEventInfoV2255" class="home-event-info"></span>
-          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.97</span></span>
+          <span class="home-version-info"><span>SSHCP</span> <span class="home-version-number-v1835">V23.98</span></span>
         </button>
         <script>
           (function () {
@@ -42109,5 +42110,78 @@ let scoreTimingDetail =
   schedule();
 })();
 </script>
+<!-- SSHCP V23.98: standalone action-button shadows ONLY. Menus are covered in the following block; no table / dropdown / popup-shell shadows. -->
+<style id="sshcp-v2398-standalone-button-shadows">
+  @layer sshcp-v2398-action-shadows {
+  /* Dedicated cascade layer overrides legacy !important shadow resets only.
+     No layout, display, stacking, overflow, or interaction properties change. */
+  /* Every targeted action uses exactly the same OUTSIDE shadow; no box geometry changes. */
+  #homeLeaderboardButton,
+  #homeView .quick-guide-button,
+  /* HOME's split SCORECARD action is ONE visual button, not two competing shadows. */
+  #homeScorecardAccess > .home-scorecard-split,
+  #scorecardView .score-nav > button.nav-button,
+  #scorecardView .score-bottom-actions > button.bottom-action,
+  #leaderboardView .leader-nav > button.nav-button,
+  #leaderboardView button.leader-final-action,
+  #leaderboardView .leader-bottom > button,
+  #testLogView .test-log-screen button,
+  #scrambleModeView .test-log-screen button,
+  #qrWelcomeOverlayV170 button.qr-welcome-button-v170,
+  #teamsPopupOverlay button.teams-popup-back,
+  #tipsOverlayV2154 button.tips-summary-v2215,
+  #tipsOverlayV2154 button.tips-ok-v2154,
+  #scoreEntryOverlay button,
+  #teamInfoOverlayV2032 button.team-info-back-v2032,
+  #modalOverlay button.modal-btn,
+  #modalOverlay button.modal-close-x,
+  #modalOverlay button.switch-auth-button,
+  #modalOverlay button.geek-filter-apply-v186,
+  #modalOverlay button.geek-all-teams-filter-apply-v2216,
+  #modalOverlay button.geek-copy-v180b,
+  #modalOverlay button.geek-download-v2277,
+  button.geek-download-status-ok-v2279,
+  button.geek-pdf-paper-download-v2281 {
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28) !important;
+  }
+  }
+  /* No styling for team/tournament dropdowns, table/GEEK statistic cells,
+     score boxes, PDF choice options, information panels, or popup shells.
+     Physical menu navigation buttons are separately covered below. */
+</style>
+
+<!-- SSHCP V23.98: approved NoHCP V1.17 follow-up: physical menu buttons and flat Control Center metrics layout. -->
+<style id="sshcp-v2398-menu-buttons-and-flat-cc-metrics">
+  /* MENU and its seven individual, physical navigation buttons are buttons.
+     Preserve the existing menu panel, its geometry, backdrop, and scroll. */
+  #homeView #homeMenuToggleV2054,
+  #homeView #homeMenuPanelV2054 > button.home-menu-item-v2054 {
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28) !important;
+  }
+  /* The screen diagnostics strip is ONLY a 3-column layout, not a card.
+     No stroke, fill, elevation, or clipping around START / text / COPY. */
+  #testLogView #controlCenterViewportMetricsV188 {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    outline: none !important;
+    overflow: visible !important;
+  }
+  #testLogView #screenLogScaleInfoV238 {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+  /* START and COPY remain the only raised shapes in the diagnostic row. */
+  #testLogView #screenLogStartButtonV238,
+  #testLogView #screenLogCopyButtonV238 {
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28) !important;
+  }
+</style>
 </body>
 </html>
